@@ -434,10 +434,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const folder = {
         id: Math.random().toString(36).substr(2, 9),
-        ...req.body,
+        name: req.body.name,
+        parent: req.body.parent || "root",
         createdAt: new Date().toISOString(),
       };
-      res.json(folder);
+      
+      // In a real implementation, you would save this to the database
+      console.log("Creating folder:", folder);
+      
+      res.status(201).json(folder);
     } catch (error) {
       console.error("Error creating folder:", error);
       res.status(500).json({ message: "Failed to create folder" });

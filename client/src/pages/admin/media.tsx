@@ -69,8 +69,10 @@ export default function Media() {
       body: JSON.stringify(folderData),
     }).then(res => res.json()),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/media", currentFolder] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/media"] });
       setIsCreateFolderOpen(false);
+      folderForm.reset();
       toast({ title: "Folder created successfully" });
     },
   });
@@ -288,17 +290,19 @@ export default function Media() {
 
       {/* Drag and Drop Area */}
       <div
-        className={`border-2 border-dashed rounded-lg p-8 mb-6 transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-8 mb-6 transition-colors cursor-pointer hover:border-primary/50 ${
           isDragOver ? 'border-primary bg-primary/10' : 'border-gray-300'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onClick={() => document.getElementById('file-upload')?.click()}
       >
         <div className="text-center">
           <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-lg font-medium text-gray-900 mb-2">Drag and drop files here</p>
-          <p className="text-gray-600">Supports JPG, PNG, PDF, and TXT files</p>
+          <p className="text-gray-600 mb-2">Supports JPG, PNG, PDF, and TXT files</p>
+          <p className="text-sm text-gray-500">or click to browse files</p>
         </div>
       </div>
 
