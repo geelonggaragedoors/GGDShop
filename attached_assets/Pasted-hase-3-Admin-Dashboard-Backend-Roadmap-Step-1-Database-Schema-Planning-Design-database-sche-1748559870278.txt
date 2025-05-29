@@ -1,0 +1,61 @@
+hase 3: Admin Dashboard & Backend Roadmap
+Step 1: Database & Schema Planning
+ Design database schema for products, orders, categories, brands, customers, media/files, staff/roles
+ Add shipping by weight and postcode: include product weight, shipping zones, shipping rates, and order shipping cost in schema
+ Document all fields, relations, and constraints
+Step 2: API & Backend Scaffolding
+ Scaffold Next.js API routes for all resources (products, orders, categories, brands, customers, media, settings)
+ Set up Neon PostgreSQL connection via Prisma
+ Implement CRUD endpoints for each resource
+ Add bulk import/export endpoints for products (CSV/XLSX)
+ Integrate UploadThing for file/image uploads in API
+ Implement search, filter, sort, and pagination in all list endpoints
+Step 3: Admin UI & User Experience
+ Scaffold /admin route with sidebar navigation (Dashboard, Products, Orders, Categories, Brands, Customers, Media, Settings)
+ Build data tables for all resources with search/filter/sort/pagination
+ Add CRUD forms and modals for all entities
+ Implement bulk actions (edit, delete, export)
+ Integrate UploadThing widgets for media/image uploads
+ Add dashboard analytics widgets (sales, KPIs, recent orders, top products)
+ Make UI responsive and mobile-friendly
+ Add inline editing and undo/restore where possible
+Step 4: Staff Authentication & Roles
+ Integrate Clerk for staff login at /admin
+ Implement role-based access (admin, manager, staff)
+ Add staff management UI and API endpoints
+Step 5: Advanced/Optional Features
+ Discount codes, promotions, coupons management
+ Reviews and product Q&A
+ Advanced analytics and reporting
+ Multi-store or multi-warehouse support
+ Staff activity logs and audit trails
+ API keys/webhooks for external integrations
+Step 6: Testing & Staff Feedback
+ User acceptance testing with staff (focus on WooCommerce/Shopify familiarity)
+ Iterate on UX and features based on real feedback
+Step 7: Documentation & Training
+ Document all admin and backend features for staff
+ Create onboarding/training materials for new staff
+This roadmap ensures every backend and admin feature is planned, actionable, and familiar for staff migrating from WooCommerce/Shopify.
+
+Phase 4: File Upload System
+ Configure UploadThing integration
+ Implement product image uploads
+ Create PDF manual upload functionality
+ Build file preview components
+ Develop file management interface
+Phase 5: Storefront Development
+ Create responsive homepage
+ Build product browsing pages
+ Implement product detail page
+ Develop basic search functionality
+ Create brand and category browsing pages
+ Implement cart functionality
+ Build checkout process
+Phase 6: Advanced Features
+ Enhance search with fuzzy matching
+ Implement advanced filtering
+ Create product compatibility system
+ Develop related products functionality
+ Build order history for users
+ Implement stock management alerts
