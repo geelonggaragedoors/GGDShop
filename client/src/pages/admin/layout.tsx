@@ -9,6 +9,9 @@ import Categories from "./categories";
 import Brands from "./brands";
 import Orders from "./orders";
 import Customers from "./customers";
+import Media from "./media";
+import Staff from "./staff";
+import SettingsPage from "./settings";
 import {
   LayoutDashboard,
   Package,
@@ -18,7 +21,7 @@ import {
   Users,
   Images,
   UserCheck,
-  Settings,
+  Settings as SettingsIcon,
   Store,
   Bell,
   Plus,
@@ -34,7 +37,7 @@ const sidebarItems = [
   { id: "customers", label: "Customers", icon: Users, path: "/admin/customers" },
   { id: "media", label: "Media Library", icon: Images, path: "/admin/media" },
   { id: "staff", label: "Staff & Roles", icon: UserCheck, path: "/admin/staff" },
-  { id: "settings", label: "Settings", icon: Settings, path: "/admin/settings" },
+  { id: "settings", label: "Settings", icon: SettingsIcon, path: "/admin/settings" },
 ];
 
 export default function AdminLayout() {
@@ -105,7 +108,7 @@ export default function AdminLayout() {
             </Button>
           </Link>
           <Button variant="default" size="sm" className="rounded-full px-6">
-            <Settings className="w-4 h-4 mr-2" />
+            <SettingsIcon className="w-4 h-4 mr-2" />
             Admin Dashboard
           </Button>
         </div>
