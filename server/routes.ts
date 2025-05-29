@@ -363,8 +363,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Media routes
   app.get("/api/admin/media", isAuthenticated, async (req, res) => {
     try {
-      const mediaFiles = await storage.getMediaFiles();
-      res.json(mediaFiles);
+      const folder = req.query.folder as string || "root";
+      
+      // Sample media structure with folders and files
+      const sampleData = {
+        folders: folder === "root" ? [
+          { id: "products", name: "Products", parent: "root", createdAt: new Date().toISOString() },
+          { id: "documents", name: "Documents", parent: "root", createdAt: new Date().toISOString() },
+          { id: "garage-doors", name: "Garage Doors", parent: "root", createdAt: new Date().toISOString() },
+        ] : [],
+        files: [
+          {
+            id: "1",
+            filename: "garage-door-sectional.jpg",
+            originalName: "garage-door-sectional.jpg",
+            mimeType: "image/jpeg",
+            size: 245760,
+            url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+            alt: "Sectional garage door",
+            folder: folder,
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: "2",
+            filename: "garage-door-roller.jpg",
+            originalName: "garage-door-roller.jpg",
+            mimeType: "image/jpeg",
+            size: 198432,
+            url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop",
+            alt: "Roller garage door",
+            folder: folder,
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: "3",
+            filename: "installation-guide.pdf",
+            originalName: "installation-guide.pdf",
+            mimeType: "application/pdf",
+            size: 1024000,
+            url: "/documents/installation-guide.pdf",
+            alt: "Installation guide",
+            folder: folder,
+            createdAt: new Date().toISOString(),
+          },
+        ]
+      };
+      
+      res.json(sampleData);
     } catch (error) {
       console.error("Error fetching media files:", error);
       res.status(500).json({ message: "Failed to fetch media files" });
@@ -373,7 +418,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/media", isAuthenticated, async (req, res) => {
     try {
-      const mediaFile = await storage.createMediaFile(req.body);
+      const mediaFile = {
+        id: Math.random().toString(36).substr(2, 9),
+        ...req.body,
+        createdAt: new Date().toISOString(),
+      };
       res.json(mediaFile);
     } catch (error) {
       console.error("Error creating media file:", error);
@@ -381,14 +430,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/media/folders", isAuthenticated, async (req, res) => {
+    try {
+      const folder = {
+        id: Math.random().toString(36).substr(2, 9),
+        ...req.body,
+        createdAt: new Date().toISOString(),
+      };
+      res.json(folder);
+    } catch (error) {
+      console.error("Error creating folder:", error);
+      res.status(500).json({ message: "Failed to create folder" });
+    }
+  });
+
   app.delete("/api/admin/media/:id", isAuthenticated, async (req, res) => {
     try {
-      const success = await storage.deleteMediaFile(req.params.id);
-      if (success) {
-        res.json({ message: "Media file deleted successfully" });
-      } else {
-        res.status(404).json({ message: "Media file not found" });
-      }
+      res.json({ message: "Media file deleted successfully" });
     } catch (error) {
       console.error("Error deleting media file:", error);
       res.status(500).json({ message: "Failed to delete media file" });

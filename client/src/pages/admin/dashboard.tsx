@@ -334,6 +334,30 @@ export default function Dashboard() {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="images"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Product Images</FormLabel>
+                          <FormControl>
+                            <div className="space-y-2">
+                              <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => setLocation('/admin/media')}
+                                className="w-full"
+                              >
+                                <Image className="w-4 h-4 mr-2" />
+                                Select from Media Library
+                              </Button>
+                              <Input {...field} placeholder="Or paste image URL" />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <div className="flex space-x-2 pt-4">
                       <Button type="submit" disabled={createProductMutation.isPending}>
                         Add Product
