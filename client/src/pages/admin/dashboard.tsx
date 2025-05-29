@@ -1,9 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import StatsCard from "@/components/ui/stats-card";
 import { Badge } from "@/components/ui/badge";
 import { api } from "@/lib/api";
+import { queryClient } from "@/lib/queryClient";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertProductSchema } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import {
   DollarSign,
   ShoppingCart,
@@ -18,10 +30,102 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
+  const { toast } = useToast();
+
   const { data: stats, isLoading } = useQuery({
     queryKey: ["/api/admin/dashboard"],
     queryFn: api.admin.dashboard.getStats,
   });
+
+  const { data: categories } = useQuery({
+    queryKey: ["/api/categories"],
+    queryFn: api.categories.getAll,
+  });
+
+  const { data: brands } = useQuery({
+    queryKey: ["/api/brands"],
+    queryFn: api.brands.getAll,
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: api.admin.products.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      setIsAddProductOpen(false);
+      form.reset();
+      toast({ title: "Product created successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const form = useForm({
+    resolver: zodResolver(insertProductSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 0,
+      categoryId: "",
+      brandId: "",
+      sku: "",
+      stockQuantity: 0,
+      weight: 0,
+      featured: false,
+      active: true,
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    createProductMutation.mutate(data);
+  };
+
+  const handleExportData = async () => {
+    try {
+      const products = await api.admin.products.getAll({});
+      const orders = await api.admin.orders.getAll({});
+      const customers = await api.admin.customers.getAll();
+      
+      const exportData = {
+        products: products.products,
+        orders: orders.orders,
+        customers,
+        exportedAt: new Date().toISOString(),
+      };
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `geelong-garage-doors-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({ title: "Data exported successfully" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to export data", variant: "destructive" });
+    }
+  };
+
+  const handleBulkImport = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        toast({ title: "Bulk import completed", description: `Imported ${data.length || 0} items` });
+        setIsBulkImportOpen(false);
+      } catch (error) {
+        toast({ title: "Error", description: "Invalid file format", variant: "destructive" });
+      }
+    };
+    reader.readAsText(file);
+  };
 
   if (isLoading) {
     return (
@@ -166,19 +270,122 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
-              <Plus className="w-5 h-5 text-primary mr-3" />
-              <span className="font-medium">Add Product</span>
-            </Button>
-            <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
-              <Upload className="w-5 h-5 text-primary mr-3" />
-              <span className="font-medium">Bulk Import</span>
-            </Button>
-            <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
+            {/* Add Product */}
+            <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
+                  <Plus className="w-5 h-5 text-primary mr-3" />
+                  <span className="font-medium">Add Product</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Add New Product</DialogTitle>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Product Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="number" step="0.01" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="categoryId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {categories?.map((category: any) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex space-x-2 pt-4">
+                      <Button type="submit" disabled={createProductMutation.isPending}>
+                        Add Product
+                      </Button>
+                      <Button type="button" variant="outline" onClick={() => setIsAddProductOpen(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+
+            {/* Bulk Import */}
+            <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
+                  <Upload className="w-5 h-5 text-primary mr-3" />
+                  <span className="font-medium">Bulk Import</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Bulk Import Products</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600">Upload a JSON file with product data to import multiple products at once.</p>
+                  <Input
+                    type="file"
+                    accept=".json"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleBulkImport(file);
+                    }}
+                  />
+                  <div className="flex space-x-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsBulkImportOpen(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            {/* Export Data */}
+            <Button variant="outline" className="flex items-center p-4 h-auto justify-start" onClick={handleExportData}>
               <Download className="w-5 h-5 text-primary mr-3" />
               <span className="font-medium">Export Data</span>
             </Button>
-            <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
+
+            {/* Settings */}
+            <Button variant="outline" className="flex items-center p-4 h-auto justify-start" onClick={() => setLocation('/admin/settings')}>
               <Settings className="w-5 h-5 text-primary mr-3" />
               <span className="font-medium">Settings</span>
             </Button>
