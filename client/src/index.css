@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 207 90% 54%; /* Geelong Garage Doors blue */
+  --primary-foreground: 211 100% 99%;
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 37 85% 53%; /* Orange accent */
+  --accent-foreground: 60 9.1% 97.8%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+  --chart-1: 207 90% 54%;
+  --chart-2: 37 85% 53%;
+  --chart-3: 142 76% 36%;
+  --chart-4: 271 91% 65%;
+  --chart-5: 24 74% 61%;
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 207 90% 54%;
+  --sidebar-primary-foreground: 211 100% 99%;
+  --sidebar-accent: 37 85% 53%;
+  --sidebar-accent-foreground: 60 9.1% 97.8%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 10.6% 64.9%;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 37 85% 53%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.9% 83.9%;
+  --sidebar-primary: 207 90% 54%;
+  --sidebar-primary-foreground: 211 100% 99%;
+  --sidebar-accent: 37 85% 53%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 10.6% 64.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom styles for the garage door theme */
+.hero-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(207 90% 45%) 100%);
+}
+
+.category-card {
+  transition: all 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-card {
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.admin-nav-transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Tab switching styles */
+.tab-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.tab-button.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Loading animations */
+.loading-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-gradient h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-gradient p {
+    font-size: 1.125rem;
+  }
+}
