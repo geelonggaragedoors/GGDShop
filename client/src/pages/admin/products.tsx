@@ -21,8 +21,8 @@ export default function Products() {
     queryKey: ["/api/products", { search, categoryId: selectedCategory, brandId: selectedBrand, limit: pageSize, offset: page * pageSize }],
     queryFn: () => api.admin.products.getAll({
       search: search || undefined,
-      categoryId: selectedCategory || undefined,
-      brandId: selectedBrand || undefined,
+      categoryId: selectedCategory === "all" ? undefined : selectedCategory || undefined,
+      brandId: selectedBrand === "all" ? undefined : selectedBrand || undefined,
       limit: pageSize,
       offset: page * pageSize,
     }),
@@ -166,7 +166,7 @@ export default function Products() {
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 {categories?.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
@@ -179,7 +179,7 @@ export default function Products() {
                 <SelectValue placeholder="All Brands" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Brands</SelectItem>
+                <SelectItem value="all">All Brands</SelectItem>
                 {brands?.map((brand) => (
                   <SelectItem key={brand.id} value={brand.id}>
                     {brand.name}

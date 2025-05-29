@@ -24,7 +24,7 @@ export default function Orders() {
   const { data: ordersData, isLoading } = useQuery({
     queryKey: ["/api/admin/orders", { status: statusFilter, limit: pageSize, offset: page * pageSize }],
     queryFn: () => api.admin.orders.getAll({
-      status: statusFilter || undefined,
+      status: statusFilter === "all" ? undefined : statusFilter || undefined,
       limit: pageSize,
       offset: page * pageSize,
     }),
@@ -227,7 +227,7 @@ export default function Orders() {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
                 <SelectItem value="shipped">Shipped</SelectItem>
