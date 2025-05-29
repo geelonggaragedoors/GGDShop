@@ -5,6 +5,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "./dashboard";
 import Products from "./products";
+import Categories from "./categories";
+import Brands from "./brands";
+import Orders from "./orders";
+import Customers from "./customers";
 import {
   LayoutDashboard,
   Package,
@@ -71,13 +75,13 @@ export default function AdminLayout() {
       case "products":
         return <Products />;
       case "orders":
-        return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Orders Management</h2><p className="text-gray-600">Order management interface will be implemented here...</p></div></div>;
+        return <Orders />;
       case "categories":
-        return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Categories Management</h2><p className="text-gray-600">Category management interface will be implemented here...</p></div></div>;
+        return <Categories />;
       case "brands":
-        return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Brands Management</h2><p className="text-gray-600">Brand management interface will be implemented here...</p></div></div>;
+        return <Brands />;
       case "customers":
-        return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Customers Management</h2><p className="text-gray-600">Customer management interface will be implemented here...</p></div></div>;
+        return <Customers />;
       case "media":
         return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Media Library</h2><p className="text-gray-600">Media management interface will be implemented here...</p></div></div>;
       case "staff":
