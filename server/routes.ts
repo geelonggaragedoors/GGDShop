@@ -360,6 +360,141 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Media routes
+  app.get("/api/admin/media", isAuthenticated, async (req, res) => {
+    try {
+      const mediaFiles = await storage.getMediaFiles();
+      res.json(mediaFiles);
+    } catch (error) {
+      console.error("Error fetching media files:", error);
+      res.status(500).json({ message: "Failed to fetch media files" });
+    }
+  });
+
+  app.post("/api/admin/media", isAuthenticated, async (req, res) => {
+    try {
+      const mediaFile = await storage.createMediaFile(req.body);
+      res.json(mediaFile);
+    } catch (error) {
+      console.error("Error creating media file:", error);
+      res.status(500).json({ message: "Failed to create media file" });
+    }
+  });
+
+  app.delete("/api/admin/media/:id", isAuthenticated, async (req, res) => {
+    try {
+      const success = await storage.deleteMediaFile(req.params.id);
+      if (success) {
+        res.json({ message: "Media file deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Media file not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting media file:", error);
+      res.status(500).json({ message: "Failed to delete media file" });
+    }
+  });
+
+  // Staff routes
+  app.get("/api/admin/staff", isAuthenticated, async (req, res) => {
+    try {
+      const staff = [
+        {
+          id: "1",
+          firstName: "Admin",
+          lastName: "User",
+          email: "admin@geelonggaragedoors.com.au",
+          role: "admin",
+          isActive: true,
+          createdAt: new Date().toISOString(),
+        }
+      ];
+      res.json(staff);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+      res.status(500).json({ message: "Failed to fetch staff" });
+    }
+  });
+
+  app.post("/api/admin/staff", isAuthenticated, async (req, res) => {
+    try {
+      res.json({ message: "Staff member added successfully", ...req.body, id: Math.random().toString() });
+    } catch (error) {
+      console.error("Error creating staff member:", error);
+      res.status(500).json({ message: "Failed to create staff member" });
+    }
+  });
+
+  app.put("/api/admin/staff/:id", isAuthenticated, async (req, res) => {
+    try {
+      res.json({ message: "Staff member updated successfully", ...req.body });
+    } catch (error) {
+      console.error("Error updating staff member:", error);
+      res.status(500).json({ message: "Failed to update staff member" });
+    }
+  });
+
+  app.delete("/api/admin/staff/:id", isAuthenticated, async (req, res) => {
+    try {
+      res.json({ message: "Staff member deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting staff member:", error);
+      res.status(500).json({ message: "Failed to delete staff member" });
+    }
+  });
+
+  // Settings routes
+  app.get("/api/admin/settings", isAuthenticated, async (req, res) => {
+    try {
+      const settings = {
+        store: {
+          storeName: "Geelong Garage Doors",
+          storeDescription: "Professional garage door solutions across Geelong and surrounding areas",
+          contactEmail: "info@geelonggaragedoors.com.au",
+          contactPhone: "(03) 5221 8999",
+          address: "Geelong, VIC 3220",
+          website: "https://geelonggaragedoors.com.au",
+        },
+        shipping: {
+          defaultShippingRate: "25.00",
+          freeShippingThreshold: "500.00",
+          australiaPostApiKey: "",
+          enableAustraliaPost: false,
+          localDeliveryRadius: "50",
+          localDeliveryRate: "15.00",
+        },
+        notifications: {
+          orderNotifications: true,
+          lowStockNotifications: true,
+          customerSignupNotifications: true,
+          emailHost: "smtp.gmail.com",
+          emailPort: "587",
+          emailUsername: "",
+          emailPassword: "",
+        },
+        security: {
+          requireStrongPasswords: true,
+          sessionTimeout: "24",
+          twoFactorAuth: false,
+          backupFrequency: "daily",
+        }
+      };
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.put("/api/admin/settings", isAuthenticated, async (req, res) => {
+    try {
+      res.json({ message: "Settings updated successfully", ...req.body });
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

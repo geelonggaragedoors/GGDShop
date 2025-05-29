@@ -86,11 +86,11 @@ export default function AdminLayout() {
       case "customers":
         return <Customers />;
       case "media":
-        return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Media Library</h2><p className="text-gray-600">Media management interface will be implemented here...</p></div></div>;
+        return <Media />;
       case "staff":
-        return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Staff & Roles Management</h2><p className="text-gray-600">Staff management interface will be implemented here...</p></div></div>;
+        return <Staff />;
       case "settings":
-        return <div className="p-6"><div className="bg-white rounded-xl shadow-sm border p-6"><h2 className="text-xl font-semibold mb-4">Settings</h2><p className="text-gray-600">Settings interface will be implemented here...</p></div></div>;
+        return <SettingsPage />;
       default:
         return <Dashboard />;
     }
