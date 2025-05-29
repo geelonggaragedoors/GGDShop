@@ -1,0 +1,316 @@
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import DataTable from "@/components/ui/data-table";
+import { api } from "@/lib/api";
+import { queryClient } from "@/lib/queryClient";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertCategorySchema } from "@shared/schema";
+import { Plus, Edit, Trash2, Search } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const formSchema = insertCategorySchema.extend({
+  slug: z.string().min(1, "Slug is required"),
+});
+
+export default function Categories() {
+  const [search, setSearch] = useState("");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const { toast } = useToast();
+
+  const { data: categories, isLoading } = useQuery({
+    queryKey: ["/api/admin/categories"],
+    queryFn: api.admin.categories.getAll,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: api.admin.categories.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      setIsCreateOpen(false);
+      toast({ title: "Category created successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => api.admin.categories.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      setEditingCategory(null);
+      toast({ title: "Category updated successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: api.admin.categories.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      toast({ title: "Category deleted successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      description: "",
+      image: "",
+      sortOrder: 0,
+      isActive: true,
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    if (editingCategory) {
+      updateMutation.mutate({ id: editingCategory.id, data });
+    } else {
+      createMutation.mutate(data);
+    }
+  };
+
+  const generateSlug = (name: string) => {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  };
+
+  const handleNameChange = (name: string) => {
+    form.setValue('name', name);
+    if (!editingCategory) {
+      form.setValue('slug', generateSlug(name));
+    }
+  };
+
+  const openEditDialog = (category: any) => {
+    setEditingCategory(category);
+    form.reset({
+      name: category.name,
+      slug: category.slug,
+      description: category.description || "",
+      image: category.image || "",
+      sortOrder: category.sortOrder || 0,
+      isActive: category.isActive,
+    });
+  };
+
+  const closeDialog = () => {
+    setIsCreateOpen(false);
+    setEditingCategory(null);
+    form.reset();
+  };
+
+  const filteredCategories = categories?.filter(category =>
+    category.name.toLowerCase().includes(search.toLowerCase())
+  ) || [];
+
+  const columns = [
+    {
+      header: "Name",
+      accessorKey: "name",
+      cell: ({ row }: any) => (
+        <div>
+          <p className="font-medium text-gray-900">{row.original.name}</p>
+          <p className="text-sm text-gray-500">/{row.original.slug}</p>
+        </div>
+      ),
+    },
+    {
+      header: "Description",
+      accessorKey: "description",
+      cell: ({ row }: any) => (
+        <p className="text-gray-600 max-w-xs truncate">
+          {row.original.description || "—"}
+        </p>
+      ),
+    },
+    {
+      header: "Sort Order",
+      accessorKey: "sortOrder",
+      cell: ({ row }: any) => (
+        <span className="text-gray-600">{row.original.sortOrder || 0}</span>
+      ),
+    },
+    {
+      header: "Status",
+      accessorKey: "isActive",
+      cell: ({ row }: any) => (
+        <Badge variant={row.original.isActive ? "default" : "secondary"}>
+          {row.original.isActive ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      header: "Actions",
+      accessorKey: "actions",
+      cell: ({ row }: any) => (
+        <div className="flex space-x-2">
+          <Button size="sm" variant="ghost" onClick={() => openEditDialog(row.original)}>
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="text-red-600 hover:text-red-700"
+            onClick={() => deleteMutation.mutate(row.original.id)}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="p-6">
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Categories Management</h2>
+              <p className="text-gray-600">Organize your product categories</p>
+            </div>
+            <Dialog open={isCreateOpen || !!editingCategory} onOpenChange={closeDialog}>
+              <DialogTrigger asChild>
+                <Button onClick={() => setIsCreateOpen(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Category
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingCategory ? "Edit Category" : "Create New Category"}
+                  </DialogTitle>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              onChange={(e) => handleNameChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="slug"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Slug</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} rows={3} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="sortOrder"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Sort Order</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="number" 
+                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="isActive"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between">
+                          <FormLabel>Active</FormLabel>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex space-x-2 pt-4">
+                      <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                        {editingCategory ? "Update" : "Create"}
+                      </Button>
+                      <Button type="button" variant="outline" onClick={closeDialog}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="flex-1 relative">
+              <Input
+                placeholder="Search categories..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10"
+              />
+              <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <DataTable
+          columns={columns}
+          data={filteredCategories}
+          loading={isLoading}
+        />
+      </Card>
+    </div>
+  );
+}
