@@ -81,7 +81,7 @@ export default function StorefrontHeader() {
         </div>
         
         {/* Navigation menu */}
-        <nav className="py-3 border-t border-gray-100">
+        <nav className="py-3 border-t border-gray-100 text-[14px] font-normal">
           <ul className="flex space-x-8">
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Home</a></li>
             {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
