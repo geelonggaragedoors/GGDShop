@@ -678,31 +678,7 @@ export default function Products() {
                           </div>
                         )}
 
-                        {/* Existing Images in Selected Folder */}
-                        {mediaData?.files?.filter((file: any) => file.mimeType.startsWith('image/')).length > 0 && (
-                          <div className="space-y-2">
-                            <p className="text-xs font-medium text-gray-700">Available in {currentFolder === 'root' ? 'Root Folder' : mediaData?.folders?.find((f: any) => f.id === currentFolder)?.name}:</p>
-                            <div className="grid grid-cols-8 gap-1 max-h-20 overflow-auto">
-                              {mediaData.files.filter((file: any) => file.mimeType.startsWith('image/')).map((image: any) => (
-                                <button
-                                  key={image.id}
-                                  type="button"
-                                  className={`relative border rounded overflow-hidden hover:border-blue-500 ${
-                                    selectedImages.find(img => img.id === image.id) ? 'border-blue-500 ring-1 ring-blue-200' : ''
-                                  }`}
-                                  onClick={() => selectImage(image)}
-                                  title={image.originalName}
-                                >
-                                  <img 
-                                    src={image.url} 
-                                    alt={image.alt || image.originalName}
-                                    className="w-full h-10 object-cover"
-                                  />
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+
                       </div>
                       
                         <div className="flex space-x-2 pt-4">
@@ -963,47 +939,46 @@ export default function Products() {
                           </div>
                         )}
 
-                        {/* Folder Navigation */}
-                        <div className="flex flex-wrap gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentFolder("root")}
-                            className={currentFolder === "root" ? "bg-blue-100" : ""}
-                          >
-                            📁 Root
-                          </Button>
-                          {mediaData && mediaData.folders?.map((folder: any) => (
-                            <Button
-                              key={folder.name}
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setCurrentFolder(folder.name)}
-                              className={currentFolder === folder.name ? "bg-blue-100" : ""}
-                            >
-                              📁 {folder.name}
-                            </Button>
-                          ))}
-                        </div>
 
-                        {/* Drag & Drop Zone */}
-                        <div
-                          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                            isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-                          }`}
-                          onDragOver={handleDragOver}
-                          onDragLeave={handleDragLeave}
-                          onDrop={handleDrop}
-                        >
-                          <Image className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-                          <p className="text-sm text-gray-600 mb-2">
-                            Drag & drop images here, or select from library below
+
+                        {/* UploadThing Upload Zone */}
+                        <div className="border-2 border-dashed rounded-lg p-4 text-center">
+                          <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                          <p className="text-xs text-gray-600 mb-3">
+                            Upload additional product images
                           </p>
-                          <p className="text-xs text-gray-500">
-                            Supports: JPG, PNG, WebP
-                          </p>
+                          <UploadButton
+                            endpoint="imageUploader"
+                            onClientUploadComplete={(res) => {
+                              if (res && res.length > 0) {
+                                const newImages = res.map(file => ({
+                                  id: file.key || Math.random().toString(),
+                                  url: file.url,
+                                  originalName: file.name,
+                                  alt: file.name,
+                                  filename: file.name
+                                }));
+                                setSelectedImages(prev => [...prev, ...newImages]);
+                                toast({
+                                  title: "Upload successful",
+                                  description: `${res.length} image(s) uploaded successfully`,
+                                });
+                              }
+                            }}
+                            onUploadError={(error: Error) => {
+                              console.error("Upload error:", error);
+                              toast({
+                                title: "Upload failed",
+                                description: error.message,
+                                variant: "destructive",
+                              });
+                            }}
+                            appearance={{
+                              button: "ut-ready:bg-blue-500 ut-ready:bg-opacity-100 ut-uploading:cursor-not-allowed ut-uploading:bg-blue-500/50 bg-blue-500 text-white px-3 py-1 text-xs rounded hover:bg-blue-600",
+                              container: "flex flex-col items-center",
+                              allowedContent: "text-xs text-gray-500 mt-1"
+                            }}
+                          />
                         </div>
 
                         {/* Selected Images Display */}
