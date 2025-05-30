@@ -1,0 +1,121 @@
+chunk-RPCDYKBN.js?v=88d999b9:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+blob:https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/3aff7e3b-2ac6-48f3-ac7b-2afef60b95d8:1 
+            
+            
+           GET blob:https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/3aff7e3b-2ac6-48f3-ac7b-2afef60b95d8 net::ERR_FILE_NOT_FOUND
+Image
+commitMount @ chunk-RPCDYKBN.js?v=88d999b9:8412
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=88d999b9:17102
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=88d999b9:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=88d999b9:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=88d999b9:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=88d999b9:19353
+commitRoot @ chunk-RPCDYKBN.js?v=88d999b9:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=88d999b9:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=88d999b9:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=88d999b9:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=88d999b9:555
+flush @ @tanstack_react-query.js?v=88d999b9:569
+batch @ @tanstack_react-query.js?v=88d999b9:587
+dispatch_fn @ @tanstack_react-query.js?v=88d999b9:996
+setData @ @tanstack_react-query.js?v=88d999b9:696
+onSuccess @ @tanstack_react-query.js?v=88d999b9:897
+resolve @ @tanstack_react-query.js?v=88d999b9:456
+Promise.then
+run @ @tanstack_react-query.js?v=88d999b9:498
+start @ @tanstack_react-query.js?v=88d999b9:536
+fetch @ @tanstack_react-query.js?v=88d999b9:926
+executeFetch_fn @ @tanstack_react-query.js?v=88d999b9:2211
+onSubscribe @ @tanstack_react-query.js?v=88d999b9:1898
+subscribe @ @tanstack_react-query.js?v=88d999b9:24
+(anonymous) @ @tanstack_react-query.js?v=88d999b9:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=88d999b9:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=88d999b9:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=88d999b9:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=88d999b9:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=88d999b9:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=88d999b9:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=88d999b9:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=88d999b9:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=88d999b9:19416
+commitRoot @ chunk-RPCDYKBN.js?v=88d999b9:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=88d999b9:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=88d999b9:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=88d999b9:18627
+@radix-ui_react-dialog.js?v=88d999b9:339 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=88d999b9:339
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=88d999b9:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=88d999b9:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=88d999b9:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=88d999b9:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=88d999b9:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=88d999b9:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=88d999b9:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=88d999b9:19416
+commitRoot @ chunk-RPCDYKBN.js?v=88d999b9:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=88d999b9:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=88d999b9:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=88d999b9:18627
+products.tsx:122 
+            
+            
+           POST https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/admin/media 413 (Request Entity Too Large)
+mutationFn @ products.tsx:122
+await in mutationFn
+fn @ @tanstack_react-query.js?v=88d999b9:1189
+run @ @tanstack_react-query.js?v=88d999b9:494
+start @ @tanstack_react-query.js?v=88d999b9:536
+execute @ @tanstack_react-query.js?v=88d999b9:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=88d999b9:2630
+(anonymous) @ @tanstack_react-query.js?v=88d999b9:3295
+(anonymous) @ products.tsx:216
+handleFileSelect @ products.tsx:214
+callCallback2 @ chunk-RPCDYKBN.js?v=88d999b9:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=88d999b9:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=88d999b9:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=88d999b9:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=88d999b9:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=88d999b9:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=88d999b9:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=88d999b9:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=88d999b9:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=88d999b9:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=88d999b9:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=88d999b9:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=88d999b9:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=88d999b9:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=88d999b9:5449
+products.tsx:670 Warning: Each child in a list should have a unique "key" prop.
+
+Check the render method of `Products`. See https://reactjs.org/link/warning-keys for more information.
+    at div
+    at Products (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/products.tsx:40:31)
+    at main
+    at div
+    at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:59:22)
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=88d999b9:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=88d999b9:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=x1PCflJZ7ntE72Nv9Q4He:29:42)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-5AJU3CG7.js?v=88d999b9:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=88d999b9:61:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=88d999b9:2805:3)
+    at App
+printWarning @ react_jsx-dev-runtime.js?v=88d999b9:64
+error @ react_jsx-dev-runtime.js?v=88d999b9:48
+validateExplicitKey @ react_jsx-dev-runtime.js?v=88d999b9:724
+validateChildKeys @ react_jsx-dev-runtime.js?v=88d999b9:737
+jsxWithValidation @ react_jsx-dev-runtime.js?v=88d999b9:855
+Products @ products.tsx:670
+renderWithHooks @ chunk-RPCDYKBN.js?v=88d999b9:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=88d999b9:14582
+beginWork @ chunk-RPCDYKBN.js?v=88d999b9:15924
+beginWork$1 @ chunk-RPCDYKBN.js?v=88d999b9:19753
+performUnitOfWork @ chunk-RPCDYKBN.js?v=88d999b9:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=88d999b9:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=88d999b9:19116
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=88d999b9:18678
+workLoop @ chunk-RPCDYKBN.js?v=88d999b9:197
+flushWork @ chunk-RPCDYKBN.js?v=88d999b9:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=88d999b9:384

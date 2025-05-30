@@ -604,63 +604,51 @@ export default function Products() {
                           />
                         </div>
 
-                      {/* Product Images Section - Simplified */}
+                      {/* Product Images Section */}
                       <div className="space-y-3">
                         <FormLabel className="text-sm">Product Images</FormLabel>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {/* Folder Selection */}
-                          <div>
-                            <FormLabel className="text-xs text-gray-600">Select Folder</FormLabel>
-                            <Select value={currentFolder} onValueChange={setCurrentFolder}>
-                              <SelectTrigger className="h-8 text-sm">
-                                <SelectValue placeholder="Choose folder" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="root">Root Folder</SelectItem>
-                                {(mediaData as any)?.folders?.map((folder: any) => (
-                                  <SelectItem key={folder.id} value={folder.id}>
-                                    📁 {folder.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          {/* Selected Images Count */}
-                          <div className="flex items-end">
-                            <p className="text-xs text-gray-600">
-                              {selectedImages.length} image{selectedImages.length !== 1 ? 's' : ''} selected
-                            </p>
-                          </div>
+                        <div className="text-xs text-gray-600 mb-2">
+                          {selectedImages.length} image{selectedImages.length !== 1 ? 's' : ''} selected
                         </div>
 
-                        {/* Drag & Drop Upload Zone */}
-                        <div
-                          className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-                            isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-                          }`}
-                          onDragOver={handleDragOver}
-                          onDragLeave={handleDragLeave}
-                          onDrop={handleDrop}
-                        >
+                        {/* UploadThing Upload Zone */}
+                        <div className="border-2 border-dashed rounded-lg p-4 text-center">
                           <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-                          <p className="text-xs text-gray-600 mb-2">
-                            Drag & drop images here to upload to <strong>{currentFolder === 'root' ? 'Root Folder' : mediaData?.folders?.find((f: any) => f.id === currentFolder)?.name || 'Selected Folder'}</strong>
+                          <p className="text-xs text-gray-600 mb-3">
+                            Upload product images
                           </p>
-                          <input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={handleFileSelect}
-                            className="hidden"
-                            id="file-upload-product"
+                          <UploadButton
+                            endpoint="imageUploader"
+                            onClientUploadComplete={(res) => {
+                              if (res && res.length > 0) {
+                                const newImages = res.map(file => ({
+                                  id: file.key || Math.random().toString(),
+                                  url: file.url,
+                                  originalName: file.name,
+                                  alt: file.name
+                                }));
+                                setSelectedImages(prev => [...prev, ...newImages]);
+                                toast({
+                                  title: "Upload successful",
+                                  description: `${res.length} image(s) uploaded successfully`,
+                                });
+                              }
+                            }}
+                            onUploadError={(error: Error) => {
+                              console.error("Upload error:", error);
+                              toast({
+                                title: "Upload failed",
+                                description: error.message,
+                                variant: "destructive",
+                              });
+                            }}
+                            appearance={{
+                              button: "ut-ready:bg-blue-500 ut-ready:bg-opacity-100 ut-uploading:cursor-not-allowed ut-uploading:bg-blue-500/50 bg-blue-500 text-white px-3 py-1 text-xs rounded hover:bg-blue-600",
+                              container: "flex flex-col items-center",
+                              allowedContent: "text-xs text-gray-500 mt-1"
+                            }}
                           />
-                          <label htmlFor="file-upload-product">
-                            <Button type="button" variant="outline" size="sm" asChild>
-                              <span className="text-xs">Browse Files</span>
-                            </Button>
-                          </label>
                         </div>
 
                         {/* Selected Images Preview */}
