@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Heart, ShoppingCart, Phone, Mail, User, Package, Menu, X, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
 
 export default function StorefrontHeader() {
-  const [cartCount] = useState(2);
-  const [wishlistCount] = useState(3);
-  const [cartTotal] = useState(1250);
+  const { cartCount, cartTotal } = useCart();
+  const { wishlistCount } = useWishlist();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isShopMegaMenuOpen, setIsShopMegaMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");

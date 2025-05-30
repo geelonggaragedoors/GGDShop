@@ -8,6 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Heart, ShoppingCart, Truck, Shield, ArrowLeft, Plus, Minus } from "lucide-react";
 import { api } from "@/lib/api";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useToast } from "@/hooks/use-toast";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 
@@ -15,6 +18,9 @@ export default function ProductDetail() {
   const { slug } = useParams();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { toast } = useToast();
 
   const { data: product, isLoading } = useQuery({
     queryKey: [`/api/products/slug/${slug}`],
@@ -25,6 +31,28 @@ export default function ProductDetail() {
     queryKey: [`/api/products`, { categoryId: product?.categoryId, limit: 4 }],
     enabled: !!product?.categoryId,
   });
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    
+    addToCart(product, quantity);
+    toast({
+      title: "Added to cart",
+      description: `${quantity} ${product.name} added to your cart.`,
+    });
+  };
+
+  const handleWishlistToggle = () => {
+    if (!product) return;
+    
+    toggleWishlist(product);
+    toast({
+      title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
+      description: isInWishlist(product.id) 
+        ? `${product.name} removed from your wishlist.`
+        : `${product.name} added to your wishlist.`,
+    });
+  };
 
   if (isLoading) {
     return (
