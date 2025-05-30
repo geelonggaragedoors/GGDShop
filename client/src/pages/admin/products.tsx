@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import DataTable from "@/components/ui/data-table";
@@ -317,7 +317,7 @@ export default function Products() {
                               <FormItem>
                                 <FormLabel className="text-sm">Product Name</FormLabel>
                                 <FormControl>
-                                  <Input {...field} className="h-9" />
+                                  <Input {...field} placeholder="Sectional Garage Door" className="h-9" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -330,7 +330,7 @@ export default function Products() {
                               <FormItem>
                                 <FormLabel className="text-sm">SKU</FormLabel>
                                 <FormControl>
-                                  <Input {...field} className="h-9" />
+                                  <Input {...field} placeholder="GGD-SEC-001" className="h-9" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -341,10 +341,13 @@ export default function Products() {
                             name="price"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">Price ($)</FormLabel>
+                                <FormLabel className="text-sm">Price (Inc. GST)</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="number" step="0.01" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                                  <Input {...field} type="number" step="0.01" placeholder="1599.00" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
                                 </FormControl>
+                                <FormDescription className="text-xs text-gray-500">
+                                  GST inclusive price (e.g. $1599.00 inc. GST)
+                                </FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -359,7 +362,7 @@ export default function Products() {
                             <FormItem>
                               <FormLabel className="text-sm">Description</FormLabel>
                               <FormControl>
-                                <Textarea {...field} rows={2} className="text-sm" />
+                                <Textarea {...field} rows={2} placeholder="High-quality sectional garage door with insulation and remote control access..." className="text-sm" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -373,10 +376,13 @@ export default function Products() {
                             name="stockQuantity"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">Stock Qty</FormLabel>
+                                <FormLabel className="text-sm">Stock Quantity</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="number" className="h-9" onChange={(e) => field.onChange(parseInt(e.target.value))} />
+                                  <Input {...field} type="number" placeholder="25" className="h-9" onChange={(e) => field.onChange(parseInt(e.target.value))} />
                                 </FormControl>
+                                <FormDescription className="text-xs text-gray-500">
+                                  Current inventory count
+                                </FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -440,8 +446,11 @@ export default function Products() {
                               <FormItem>
                                 <FormLabel className="text-sm">Weight (kg)</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="number" step="0.1" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                                  <Input {...field} type="number" step="0.1" placeholder="85.5" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
                                 </FormControl>
+                                <FormDescription className="text-xs text-gray-500">
+                                  For shipping calculations (e.g. 85.5 kg)
+                                </FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}
