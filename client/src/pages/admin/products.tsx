@@ -119,6 +119,7 @@ export default function Products() {
     resolver: zodResolver(insertProductSchema),
     defaultValues: {
       name: "",
+      slug: "",
       description: "",
       price: 0,
       categoryId: "",
@@ -126,8 +127,8 @@ export default function Products() {
       sku: "",
       stockQuantity: 0,
       weight: 0,
-      featured: false,
-      active: true,
+      isFeatured: false,
+      isActive: true,
     },
   });
 
@@ -137,7 +138,7 @@ export default function Products() {
     console.log('Form is valid:', form.formState.isValid);
     console.log('Selected images:', selectedImages);
     
-    // Generate slug from product name
+    // Auto-generate slug from product name when the form submits
     const slug = data.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -147,14 +148,7 @@ export default function Products() {
       ...data,
       slug,
       images: selectedImages.map(img => img.url),
-      // Map form field names to database field names
-      isFeatured: data.featured,
-      isActive: data.active,
     };
-    
-    // Remove the old field names
-    delete productData.featured;
-    delete productData.active;
     
     console.log('Final product data to submit:', productData);
     console.log('About to call mutation...');
@@ -499,7 +493,7 @@ export default function Products() {
                           />
                           <FormField
                             control={form.control}
-                            name="featured"
+                            name="isFeatured"
                             render={({ field }) => (
                               <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl>
@@ -511,7 +505,7 @@ export default function Products() {
                           />
                           <FormField
                             control={form.control}
-                            name="active"
+                            name="isActive"
                             render={({ field }) => (
                               <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl>
