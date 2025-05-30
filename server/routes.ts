@@ -20,6 +20,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   await setupAuth(app);
 
+  // UploadThing routes
+  const { GET, POST } = createRouteHandler({
+    router: ourFileRouter,
+  });
+
+  app.get("/api/uploadthing", async (req, res) => {
+    const response = await GET(req as any);
+    return res.status(response.status).send(await response.text());
+  });
+
+  app.post("/api/uploadthing", async (req, res) => {
+    const response = await POST(req as any);
+    return res.status(response.status).send(await response.text());
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
