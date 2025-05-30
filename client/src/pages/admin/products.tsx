@@ -454,7 +454,7 @@ export default function Products() {
                                 <FormControl>
                                   <Switch checked={field.value} onCheckedChange={field.onChange} />
                                 </FormControl>
-                                <FormLabel className="text-sm">Featured Product</FormLabel>
+                                <FormLabel className="text-sm">Featured</FormLabel>
                               </FormItem>
                             )}
                           />
