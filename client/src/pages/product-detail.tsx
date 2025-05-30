@@ -241,12 +241,18 @@ export default function ProductDetail() {
                 <Button
                   className="flex-1"
                   disabled={product.stockQuantity === 0}
+                  onClick={handleAddToCart}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Add to Cart
                 </Button>
-                <Button variant="outline" size="icon">
-                  <Heart className="w-4 h-4" />
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleWishlistToggle}
+                  className={isInWishlist(product.id) ? "text-red-500 border-red-500" : ""}
+                >
+                  <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
                 </Button>
               </div>
             </div>

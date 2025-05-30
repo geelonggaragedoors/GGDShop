@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter, Grid, List, Star, ShoppingCart, Heart } from "lucide-react";
 import { api } from "@/lib/api";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useToast } from "@/hooks/use-toast";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 
@@ -22,6 +25,10 @@ export default function Products() {
   const [page, setPage] = useState(0);
   const [pageSize] = useState(12);
   const [showFilters, setShowFilters] = useState(false);
+  
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { toast } = useToast();
 
   const { data: categories } = useQuery({
     queryKey: ["/api/categories"],
@@ -73,6 +80,28 @@ export default function Products() {
       return product.images[0];
     }
     return "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600";
+  };
+
+  const handleAddToCart = (product: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+    toast({
+      title: "Added to cart",
+      description: `${product.name} added to your cart.`,
+    });
+  };
+
+  const handleWishlistToggle = (product: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(product);
+    toast({
+      title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
+      description: isInWishlist(product.id) 
+        ? `${product.name} removed from your wishlist.`
+        : `${product.name} added to your wishlist.`,
+    });
   };
 
   return (
@@ -291,8 +320,13 @@ export default function Products() {
                             </div>
                           )}
                           <div className="absolute top-2 sm:top-3 right-2 sm:right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button size="sm" variant="outline" className="bg-white/90 backdrop-blur-sm h-8 w-8 p-0">
-                              <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className={`bg-white/90 backdrop-blur-sm h-8 w-8 p-0 ${isInWishlist(product.id) ? 'text-red-500 border-red-500' : ''}`}
+                              onClick={(e) => handleWishlistToggle(product, e)}
+                            >
+                              <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                             </Button>
                           </div>
                         </div>
