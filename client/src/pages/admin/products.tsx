@@ -26,6 +26,8 @@ export default function Products() {
   const [page, setPage] = useState(0);
   const [pageSize] = useState(10);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const [selectedImages, setSelectedImages] = useState<any[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [currentFolder, setCurrentFolder] = useState("root");
@@ -68,6 +70,22 @@ export default function Products() {
       form.reset();
       setSelectedImages([]);
       toast({ title: "Product created successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const updateProductMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => api.admin.products.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      setIsEditProductOpen(false);
+      setEditingProduct(null);
+      form.reset();
+      setSelectedImages([]);
+      toast({ title: "Product updated successfully" });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -137,6 +155,7 @@ export default function Products() {
     console.log('Form errors:', form.formState.errors);
     console.log('Form is valid:', form.formState.isValid);
     console.log('Selected images:', selectedImages);
+    console.log('Editing product:', editingProduct);
     
     // Auto-generate slug from product name when the form submits
     const slug = data.name
@@ -152,7 +171,12 @@ export default function Products() {
     
     console.log('Final product data to submit:', productData);
     console.log('About to call mutation...');
-    createProductMutation.mutate(productData);
+    
+    if (editingProduct) {
+      updateProductMutation.mutate({ id: editingProduct.id, data: productData });
+    } else {
+      createProductMutation.mutate(productData);
+    }
   };
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -203,6 +227,45 @@ export default function Products() {
 
   const removeSelectedImage = (imageId: string) => {
     setSelectedImages(prev => prev.filter(img => img.id !== imageId));
+  };
+
+  const openEditDialog = (product: any) => {
+    setEditingProduct(product);
+    setIsEditProductOpen(true);
+    
+    // Pre-populate form with existing product data
+    form.reset({
+      name: product.name,
+      slug: product.slug,
+      description: product.description || "",
+      price: product.price,
+      categoryId: product.categoryId || "",
+      brandId: product.brandId || "",
+      sku: product.sku || "",
+      stockQuantity: product.stockQuantity || 0,
+      weight: product.weight || 0,
+      isFeatured: product.isFeatured || false,
+      isActive: product.isActive !== false,
+    });
+    
+    // Pre-populate selected images if they exist
+    if (product.images && product.images.length > 0) {
+      const imageObjects = product.images.map((url: string, index: number) => ({
+        id: `existing-${index}`,
+        url: url,
+        filename: `Image ${index + 1}`,
+      }));
+      setSelectedImages(imageObjects);
+    } else {
+      setSelectedImages([]);
+    }
+  };
+
+  const closeEditDialog = () => {
+    setIsEditProductOpen(false);
+    setEditingProduct(null);
+    form.reset();
+    setSelectedImages([]);
   };
 
   const columns = [
@@ -282,7 +345,12 @@ export default function Products() {
       accessorKey: "actions",
       cell: ({ row }: any) => (
         <div className="flex space-x-2">
-          <Button size="sm" variant="ghost" className="p-1">
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="p-1"
+            onClick={() => openEditDialog(row.original)}
+          >
             <Edit className="w-4 h-4" />
           </Button>
           <Button size="sm" variant="ghost" className="p-1 text-red-600 hover:text-red-700">
@@ -651,6 +719,348 @@ export default function Products() {
                             Create Product
                           </Button>
                           <Button type="button" variant="outline" onClick={() => setIsAddProductOpen(false)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              
+              {/* Edit Product Dialog */}
+              <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
+                <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden">
+                  <DialogHeader>
+                    <DialogTitle>Edit Product</DialogTitle>
+                  </DialogHeader>
+                  <div className="overflow-y-auto max-h-[calc(90vh-120px)] pr-2">
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        {/* 3-Column Layout for Basic Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Product Name</FormLabel>
+                                <FormControl>
+                                  <Input {...field} placeholder="e.g., Sectional Garage Door" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="sku"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>SKU</FormLabel>
+                                <FormControl>
+                                  <Input {...field} placeholder="e.g., SGD-001" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="price"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Price (GST Inc.)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    step="0.01"
+                                    placeholder="e.g., 1550.00"
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Category and Brand Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <FormField
+                            control={form.control}
+                            name="categoryId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Category</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {categories?.map((category: any) => (
+                                      <SelectItem key={category.id} value={category.id}>
+                                        {category.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="brandId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Brand</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select brand" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {brands?.map((brand: any) => (
+                                      <SelectItem key={brand.id} value={brand.id}>
+                                        {brand.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Description */}
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  {...field} 
+                                  placeholder="e.g., High-quality sectional garage door with insulated panels, perfect for residential use..."
+                                  className="min-h-[80px]"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Stock, Weight and Toggles */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                          <FormField
+                            control={form.control}
+                            name="stockQuantity"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Stock Quantity</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    placeholder="e.g., 25"
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="weight"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Weight (kg)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="number" 
+                                    step="0.1"
+                                    placeholder="e.g., 45.5"
+                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="isFeatured"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="text-sm">Featured</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="isActive"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="text-sm">Active</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                      {/* Product Images Section - Simplified */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Product Images</FormLabel>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowFolderInput(!showFolderInput)}
+                            >
+                              <FolderPlus className="w-4 h-4 mr-1" />
+                              New Folder
+                            </Button>
+                          </div>
+                        </div>
+
+                        {showFolderInput && (
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="Folder name"
+                              value={newFolderName}
+                              onChange={(e) => setNewFolderName(e.target.value)}
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => createFolderMutation.mutate({ name: newFolderName, parent: currentFolder })}
+                              disabled={!newFolderName.trim()}
+                            >
+                              Create
+                            </Button>
+                          </div>
+                        )}
+
+                        {/* Folder Navigation */}
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentFolder("root")}
+                            className={currentFolder === "root" ? "bg-blue-100" : ""}
+                          >
+                            📁 Root
+                          </Button>
+                          {mediaData && mediaData.folders?.map((folder: any) => (
+                            <Button
+                              key={folder.name}
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setCurrentFolder(folder.name)}
+                              className={currentFolder === folder.name ? "bg-blue-100" : ""}
+                            >
+                              📁 {folder.name}
+                            </Button>
+                          ))}
+                        </div>
+
+                        {/* Drag & Drop Zone */}
+                        <div
+                          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                            isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                          }`}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                        >
+                          <Image className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+                          <p className="text-sm text-gray-600 mb-2">
+                            Drag & drop images here, or select from library below
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Supports: JPG, PNG, WebP
+                          </p>
+                        </div>
+
+                        {/* Selected Images Display */}
+                        {selectedImages.length > 0 && (
+                          <div>
+                            <p className="text-sm font-medium mb-2">Selected Images ({selectedImages.length})</p>
+                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                              {selectedImages.map((image) => (
+                                <div key={image.id} className="relative group">
+                                  <img
+                                    src={image.url}
+                                    alt={image.filename}
+                                    className="w-full h-16 object-cover rounded border"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeSelectedImage(image.id)}
+                                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Media Library */}
+                        {mediaData && (
+                          <div>
+                            <p className="text-sm font-medium mb-2">
+                              Media Library - {currentFolder === "root" ? "Root" : currentFolder}
+                            </p>
+                            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 max-h-48 overflow-y-auto border rounded p-3">
+                              {mediaData.files?.map((file: any) => (
+                                <button
+                                  key={file.id}
+                                  type="button"
+                                  onClick={() => selectImage(file)}
+                                  className="relative group hover:ring-2 hover:ring-blue-500 rounded transition-all"
+                                >
+                                  <img
+                                    src={file.url}
+                                    alt={file.filename}
+                                    className="w-full h-16 object-cover rounded border"
+                                  />
+                                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded flex items-center justify-center">
+                                    <span className="text-white text-xs opacity-0 group-hover:opacity-100">Select</span>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                        <div className="flex space-x-2 pt-4">
+                          <Button 
+                            type="submit" 
+                            disabled={updateProductMutation.isPending}
+                          >
+                            {updateProductMutation.isPending ? "Updating..." : "Update Product"}
+                          </Button>
+                          <Button type="button" variant="outline" onClick={closeEditDialog}>
                             Cancel
                           </Button>
                         </div>
