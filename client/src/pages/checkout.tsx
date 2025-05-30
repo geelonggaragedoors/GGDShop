@@ -11,6 +11,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
+import StorefrontHeader from "@/components/storefront/header";
+import StorefrontFooter from "@/components/storefront/footer";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
@@ -25,20 +27,25 @@ export default function Checkout() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-6">Add some products to your cart before checking out.</p>
-          <Link href="/products">
-            <Button>Continue Shopping</Button>
-          </Link>
+      <div className="min-h-screen bg-gray-50">
+        <StorefrontHeader />
+        <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 200px)" }}>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
+            <p className="text-gray-600 mb-6">Add some products to your cart before checking out.</p>
+            <Link href="/products">
+              <Button>Continue Shopping</Button>
+            </Link>
+          </div>
         </div>
+        <StorefrontFooter />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <StorefrontHeader />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -310,6 +317,7 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+      <StorefrontFooter />
     </div>
   );
 }
