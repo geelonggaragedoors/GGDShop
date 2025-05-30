@@ -110,7 +110,7 @@ export default function Products() {
         </div>
 
         {/* Mobile Filter Toggle */}
-        <div className="lg:hidden mb-4">
+        <div className="md:hidden mb-4">
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
@@ -121,9 +121,9 @@ export default function Products() {
           </Button>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-8">
           {/* Filters Sidebar */}
-          <div className={`lg:w-72 xl:w-80 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <div className={`md:w-64 lg:w-72 xl:w-80 ${showFilters ? 'block' : 'hidden md:block'}`}>
             <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-4 text-lg">Filter Products</h3>
               
