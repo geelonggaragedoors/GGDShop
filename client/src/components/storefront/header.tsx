@@ -92,7 +92,7 @@ export default function StorefrontHeader() {
             <Button variant="ghost" size="sm" className="relative hidden sm:flex">
               <Heart className="w-5 h-5" />
               {wishlistCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 text-xs bg-accent hover:bg-accent">
+                <Badge className="inline-flex items-center rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent text-primary-foreground absolute -top-1 -right-1 w-5 h-5 p-0 text-xs bg-accent hover:bg-accent ml-[0px] mr-[0px] pl-[5px] pr-[5px] font-semibold">
                   {wishlistCount}
                 </Badge>
               )}
