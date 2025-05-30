@@ -90,7 +90,7 @@ export default function StorefrontHeader() {
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden"
+              className="md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -99,7 +99,7 @@ export default function StorefrontHeader() {
         </div>
         
         {/* Desktop Navigation */}
-        <nav className="hidden lg:block py-3 border-t border-gray-100">
+        <nav className="hidden md:block py-3 border-t border-gray-100">
           <ul className="flex space-x-8 text-sm font-medium">
             <li><Link href="/" className="text-gray-700 hover:text-primary transition-colors">Home</Link></li>
             
