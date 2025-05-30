@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -13,11 +13,23 @@ export default function StorefrontHeader() {
   const [cartTotal] = useState(1250);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isShopMegaMenuOpen, setIsShopMegaMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [, setLocation] = useLocation();
 
   const { data: categories } = useQuery({
     queryKey: ["/api/categories"],
     queryFn: api.categories.getAll,
   });
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setLocation(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setShowMobileSearch(false);
+      setIsMobileMenuOpen(false);
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -52,20 +64,27 @@ export default function StorefrontHeader() {
           
           {/* Search bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
-            <div className="relative">
+            <form onSubmit={handleSearch} className="relative w-full">
               <Input 
                 type="text" 
                 placeholder="Search products..." 
                 className="w-full pl-10 pr-4"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-            </div>
+            </form>
           </div>
           
           {/* Cart and actions */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Mobile search */}
-            <Button variant="ghost" size="sm" className="md:hidden">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="md:hidden"
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+            >
               <Search className="w-5 h-5" />
             </Button>
             
@@ -100,6 +119,23 @@ export default function StorefrontHeader() {
             </Button>
           </div>
         </div>
+        
+        {/* Mobile Search Dropdown */}
+        {showMobileSearch && (
+          <div className="md:hidden bg-white border-t border-gray-200 px-4 py-3">
+            <form onSubmit={handleSearch} className="relative">
+              <Input 
+                type="text" 
+                placeholder="Search products..." 
+                className="w-full pl-10 pr-4"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+              <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+            </form>
+          </div>
+        )}
         
         {/* Desktop Navigation */}
         <nav className="hidden md:block py-3 border-t border-gray-100">
@@ -179,9 +215,9 @@ export default function StorefrontHeader() {
               )}
             </li>
             
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Installation</a></li>
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Repair Services</a></li>
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</a></li>
+            <li><Link href="/installation" className="text-gray-700 hover:text-primary font-medium transition-colors">Installation</Link></li>
+            <li><Link href="/repair-services" className="text-gray-700 hover:text-primary font-medium transition-colors">Repair Services</Link></li>
+            <li><Link href="/contact" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</Link></li>
           </ul>
         </nav>
 
@@ -191,14 +227,16 @@ export default function StorefrontHeader() {
             <div className="py-4 space-y-4">
               {/* Mobile Search */}
               <div className="px-4 md:hidden">
-                <div className="relative">
+                <form onSubmit={handleSearch} className="relative">
                   <Input 
                     type="text" 
                     placeholder="Search products..." 
                     className="w-full pl-10 pr-4"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                </div>
+                </form>
               </div>
               
               {/* Mobile Menu Items */}
@@ -250,9 +288,9 @@ export default function StorefrontHeader() {
                   </li>
                   
                   {/* Services */}
-                  <li><a href="#" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Installation</a></li>
-                  <li><a href="#" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Repair Services</a></li>
-                  <li><a href="#" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Contact</a></li>
+                  <li><Link href="/installation" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Installation</Link></li>
+                  <li><Link href="/repair-services" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Repair Services</Link></li>
+                  <li><Link href="/contact" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Contact</Link></li>
                 </ul>
               </div>
             </div>
