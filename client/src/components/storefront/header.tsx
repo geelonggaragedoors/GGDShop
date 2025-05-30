@@ -107,63 +107,70 @@ export default function StorefrontHeader() {
             <li className="relative group"
                 onMouseEnter={() => setIsShopMegaMenuOpen(true)}
                 onMouseLeave={() => setIsShopMegaMenuOpen(false)}>
-              <button className="text-gray-700 hover:text-primary font-medium transition-colors flex items-center">
+              <button className="text-gray-700 hover:text-primary font-medium transition-colors flex items-center py-3">
                 Shop
                 <ChevronDown className="w-3 h-3 ml-1" />
               </button>
               
+              {/* Invisible bridge to prevent menu from closing */}
+              {isShopMegaMenuOpen && (
+                <div className="absolute left-0 top-full w-screen max-w-6xl h-2 bg-transparent z-40"></div>
+              )}
+              
               {/* Mega Menu */}
               {isShopMegaMenuOpen && (
-                <div className="absolute left-0 top-full mt-1 w-screen max-w-6xl bg-white border border-gray-200 rounded-lg shadow-xl z-50">
-                  <div className="grid grid-cols-4 gap-8 p-8">
-                    {/* Categories Column */}
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
-                      <ul className="space-y-2">
-                        {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => (
-                          <li key={category.id}>
+                <div className="absolute left-0 top-full pt-2 w-screen max-w-6xl z-50">
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-xl">
+                    <div className="grid grid-cols-4 gap-8 p-8">
+                      {/* Categories Column */}
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
+                        <ul className="space-y-2">
+                          {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => (
+                            <li key={category.id}>
+                              <Link 
+                                href={`/products/${category.slug}`}
+                                className="text-gray-600 hover:text-primary transition-colors text-sm"
+                              >
+                                {category.name}
+                              </Link>
+                            </li>
+                          ))}
+                          <li>
                             <Link 
-                              href={`/products/${category.slug}`}
-                              className="text-gray-600 hover:text-primary transition-colors text-sm"
+                              href="/products"
+                              className="text-primary font-medium hover:text-primary/80 transition-colors text-sm"
                             >
-                              {category.name}
+                              View All Products →
                             </Link>
                           </li>
-                        ))}
-                        <li>
-                          <Link 
-                            href="/products"
-                            className="text-primary font-medium hover:text-primary/80 transition-colors text-sm"
-                          >
-                            View All Products →
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                    
-                    {/* Subcategories for each main category */}
-                    {categories?.filter((category: any) => !category.parentId && category.isActive).slice(0, 3).map((category: any) => {
-                      const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
-                      if (subcategories.length === 0) return null;
+                        </ul>
+                      </div>
                       
-                      return (
-                        <div key={category.id}>
-                          <h3 className="font-semibold text-gray-900 mb-4">{category.name}</h3>
-                          <ul className="space-y-2">
-                            {subcategories.map((subcategory: any) => (
-                              <li key={subcategory.id}>
-                                <Link 
-                                  href={`/products/${subcategory.slug}`}
-                                  className="text-gray-600 hover:text-primary transition-colors text-sm"
-                                >
-                                  {subcategory.name}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      );
-                    })}
+                      {/* Subcategories for each main category */}
+                      {categories?.filter((category: any) => !category.parentId && category.isActive).slice(0, 3).map((category: any) => {
+                        const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
+                        if (subcategories.length === 0) return null;
+                        
+                        return (
+                          <div key={category.id}>
+                            <h3 className="font-semibold text-gray-900 mb-4">{category.name}</h3>
+                            <ul className="space-y-2">
+                              {subcategories.map((subcategory: any) => (
+                                <li key={subcategory.id}>
+                                  <Link 
+                                    href={`/products/${subcategory.slug}`}
+                                    className="text-gray-600 hover:text-primary transition-colors text-sm"
+                                  >
+                                    {subcategory.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}
