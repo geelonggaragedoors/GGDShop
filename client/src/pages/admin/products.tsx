@@ -472,165 +472,117 @@ export default function Products() {
                           />
                         </div>
 
-                      {/* Product Images Section - Reorganized for better space usage */}
+                      {/* Product Images Section - Simplified */}
                       <div className="space-y-3">
-                        <FormLabel>Product Images</FormLabel>
+                        <FormLabel className="text-sm">Product Images</FormLabel>
                         
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          {/* Left Column: Upload & Selected Images */}
-                          <div className="space-y-3">
-                            {/* Drag & Drop Upload Zone - Compact */}
-                            <div
-                              className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-                                isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-                              }`}
-                              onDragOver={handleDragOver}
-                              onDragLeave={handleDragLeave}
-                              onDrop={handleDrop}
-                            >
-                              <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-                              <p className="text-xs text-gray-600 mb-2">
-                                Drag & drop or browse
-                              </p>
-                              <input
-                                type="file"
-                                multiple
-                                accept="image/*"
-                                onChange={handleFileSelect}
-                                className="hidden"
-                                id="file-upload"
-                              />
-                              <label htmlFor="file-upload">
-                                <Button type="button" variant="outline" size="sm" asChild>
-                                  <span className="text-xs">Browse Files</span>
-                                </Button>
-                              </label>
-                            </div>
-
-                            {/* Selected Images Display - Compact */}
-                            {selectedImages.length > 0 && (
-                              <div className="space-y-2">
-                                <p className="text-xs text-gray-600">Selected ({selectedImages.length})</p>
-                                <div className="grid grid-cols-4 gap-1">
-                                  {selectedImages.map((image) => (
-                                    <div key={image.id} className="relative group">
-                                      <img 
-                                        src={image.url} 
-                                        alt={image.alt || image.originalName}
-                                        className="w-full h-16 object-cover rounded border"
-                                      />
-                                      <Button
-                                        type="button"
-                                        variant="destructive"
-                                        size="sm"
-                                        className="absolute top-0 right-0 h-4 w-4 p-0 opacity-0 group-hover:opacity-100"
-                                        onClick={() => removeSelectedImage(image.id)}
-                                      >
-                                        <X className="h-2 w-2" />
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {/* Folder Selection */}
+                          <div>
+                            <FormLabel className="text-xs text-gray-600">Select Folder</FormLabel>
+                            <Select value={currentFolder} onValueChange={setCurrentFolder}>
+                              <SelectTrigger className="h-8 text-sm">
+                                <SelectValue placeholder="Choose folder" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="root">Root Folder</SelectItem>
+                                {mediaData?.folders?.map((folder: any) => (
+                                  <SelectItem key={folder.id} value={folder.id}>
+                                    📁 {folder.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
 
-                          {/* Right Column: Media Library Browser - Compact */}
-                          <div className="border rounded-lg p-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-xs font-medium">Media Library</p>
-                              {showFolderInput ? (
-                                <div className="flex space-x-1">
-                                  <Input
-                                    placeholder="Folder name"
-                                    value={newFolderName}
-                                    onChange={(e) => setNewFolderName(e.target.value)}
-                                    className="h-6 text-xs w-20"
+                          {/* Selected Images Count */}
+                          <div className="flex items-end">
+                            <p className="text-xs text-gray-600">
+                              {selectedImages.length} image{selectedImages.length !== 1 ? 's' : ''} selected
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Drag & Drop Upload Zone */}
+                        <div
+                          className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+                            isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                          }`}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                        >
+                          <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                          <p className="text-xs text-gray-600 mb-2">
+                            Drag & drop images here to upload to <strong>{currentFolder === 'root' ? 'Root Folder' : mediaData?.folders?.find((f: any) => f.id === currentFolder)?.name || 'Selected Folder'}</strong>
+                          </p>
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                            id="file-upload-product"
+                          />
+                          <label htmlFor="file-upload-product">
+                            <Button type="button" variant="outline" size="sm" asChild>
+                              <span className="text-xs">Browse Files</span>
+                            </Button>
+                          </label>
+                        </div>
+
+                        {/* Selected Images Preview */}
+                        {selectedImages.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-xs font-medium text-gray-700">Selected Images:</p>
+                            <div className="grid grid-cols-6 gap-2">
+                              {selectedImages.map((image) => (
+                                <div key={image.id} className="relative group">
+                                  <img 
+                                    src={image.url} 
+                                    alt={image.alt || image.originalName}
+                                    className="w-full h-12 object-cover rounded border"
                                   />
                                   <Button
                                     type="button"
+                                    variant="destructive"
                                     size="sm"
-                                    className="h-6 px-2 text-xs"
-                                    onClick={createFolder}
-                                    disabled={!newFolderName.trim()}
+                                    className="absolute -top-1 -right-1 h-4 w-4 p-0 opacity-0 group-hover:opacity-100"
+                                    onClick={() => removeSelectedImage(image.id)}
                                   >
-                                    Add
+                                    <X className="h-2 w-2" />
                                   </Button>
                                 </div>
-                              ) : (
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-6 px-2"
-                                  onClick={() => setShowFolderInput(true)}
-                                >
-                                  <FolderPlus className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </div>
-
-                            <div className="max-h-32 overflow-auto">
-                              {/* Folders - Compact Grid */}
-                              {mediaData?.folders && mediaData.folders.length > 0 && (
-                                <div className="grid grid-cols-3 gap-1 mb-2">
-                                  {mediaData.folders.map((folder: any) => (
-                                    <button
-                                      key={folder.id}
-                                      type="button"
-                                      className="p-1 border rounded text-xs hover:bg-gray-50 flex flex-col items-center"
-                                      onClick={() => setCurrentFolder(folder.id)}
-                                    >
-                                      <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
-                                        📁
-                                      </div>
-                                      <span className="truncate w-full text-xs">{folder.name}</span>
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* Back button for subfolders */}
-                              {currentFolder !== "root" && (
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="mb-2 h-6 text-xs"
-                                  onClick={() => setCurrentFolder("root")}
-                                >
-                                  ← Back
-                                </Button>
-                              )}
-
-                              {/* Images - Compact Grid */}
-                              <div className="grid grid-cols-3 gap-1">
-                                {mediaData?.files?.filter((file: any) => file.mimeType.startsWith('image/')).map((image: any) => (
-                                  <button
-                                    key={image.id}
-                                    type="button"
-                                    className={`relative border rounded overflow-hidden hover:border-blue-500 ${
-                                      selectedImages.find(img => img.id === image.id) ? 'border-blue-500 ring-1 ring-blue-200' : ''
-                                    }`}
-                                    onClick={() => selectImage(image)}
-                                  >
-                                    <img 
-                                      src={image.url} 
-                                      alt={image.alt || image.originalName}
-                                      className="w-full h-12 object-cover"
-                                    />
-                                  </button>
-                                ))}
-                              </div>
-
-                              {(!mediaData?.files || mediaData.files.length === 0) && (
-                                <div className="text-center py-4 text-gray-500 text-xs">
-                                  No images in this folder
-                                </div>
-                              )}
+                              ))}
                             </div>
                           </div>
-                        </div>
+                        )}
+
+                        {/* Existing Images in Selected Folder */}
+                        {mediaData?.files?.filter((file: any) => file.mimeType.startsWith('image/')).length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-xs font-medium text-gray-700">Available in {currentFolder === 'root' ? 'Root Folder' : mediaData?.folders?.find((f: any) => f.id === currentFolder)?.name}:</p>
+                            <div className="grid grid-cols-8 gap-1 max-h-20 overflow-auto">
+                              {mediaData.files.filter((file: any) => file.mimeType.startsWith('image/')).map((image: any) => (
+                                <button
+                                  key={image.id}
+                                  type="button"
+                                  className={`relative border rounded overflow-hidden hover:border-blue-500 ${
+                                    selectedImages.find(img => img.id === image.id) ? 'border-blue-500 ring-1 ring-blue-200' : ''
+                                  }`}
+                                  onClick={() => selectImage(image)}
+                                  title={image.originalName}
+                                >
+                                  <img 
+                                    src={image.url} 
+                                    alt={image.alt || image.originalName}
+                                    className="w-full h-10 object-cover"
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       
                         <div className="flex space-x-2 pt-4">
