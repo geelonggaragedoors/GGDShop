@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation, useRoute } from "wouter";
+import { useLocation, useRoute, Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -262,7 +262,8 @@ export default function Products() {
                 {products.map((product: any) => (
                   <div key={product.id} className="group">
                     {viewMode === "grid" ? (
-                      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                      <Link href={`/product/${product.slug}`}>
+                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                         <div className="relative aspect-square overflow-hidden bg-gray-50">
                           <img
                             src={getProductImage(product)}
@@ -313,12 +314,14 @@ export default function Products() {
                           <Button 
                             className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 sm:py-3 text-sm"
                             disabled={product.stockQuantity === 0}
+                            onClick={(e) => e.preventDefault()}
                           >
                             <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                             {product.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                           </Button>
                         </div>
-                      </div>
+                        </div>
+                      </Link>
                     ) : (
                       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow">
                         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-6">
