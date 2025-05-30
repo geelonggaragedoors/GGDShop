@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import DataTable from "@/components/ui/data-table";
 import { api } from "@/lib/api";
@@ -78,6 +79,7 @@ export default function Categories() {
       slug: "",
       description: "",
       image: "",
+      parentId: "",
       sortOrder: 0,
       isActive: true,
     },
@@ -109,6 +111,7 @@ export default function Categories() {
       slug: category.slug,
       description: category.description || "",
       image: category.image || "",
+      parentId: category.parentId || "",
       sortOrder: category.sortOrder || 0,
       isActive: category.isActive,
     });
@@ -128,12 +131,25 @@ export default function Categories() {
     {
       header: "Name",
       accessorKey: "name",
-      cell: ({ row }: any) => (
-        <div>
-          <p className="font-medium text-gray-900">{row.original.name}</p>
-          <p className="text-sm text-gray-500">/{row.original.slug}</p>
-        </div>
-      ),
+      cell: ({ row }: any) => {
+        const category = row.original;
+        const parentCategory = categories?.find((c: any) => c.id === category.parentId);
+        return (
+          <div>
+            <p className="font-medium text-gray-900">
+              {category.parentId ? `├─ ${category.name}` : category.name}
+            </p>
+            <p className="text-sm text-gray-500">
+              /{category.slug}
+              {parentCategory && (
+                <span className="ml-2 text-blue-600">
+                  (under {parentCategory.name})
+                </span>
+              )}
+            </p>
+          </div>
+        );
+      },
     },
     {
       header: "Description",
@@ -190,9 +206,11 @@ export default function Categories() {
               <h2 className="text-xl font-semibold text-gray-900">Categories Management</h2>
               <p className="text-gray-600">Organize your product categories</p>
             </div>
-            <Dialog open={isCreateOpen || !!editingCategory} onOpenChange={closeDialog}>
+            <Dialog open={isCreateOpen || !!editingCategory} onOpenChange={(open) => {
+              if (!open) closeDialog();
+            }}>
               <DialogTrigger asChild>
-                <Button onClick={() => setIsCreateOpen(true)}>
+                <Button>
                   <Plus className="w-4 h-4 mr-2" />
                   Add Category
                 </Button>
@@ -230,6 +248,31 @@ export default function Categories() {
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="parentId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Parent Category</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select parent category (optional)" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="">None (Main Category)</SelectItem>
+                              {categories?.filter((c: any) => !c.parentId && (!editingCategory || c.id !== editingCategory.id)).map((category: any) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
