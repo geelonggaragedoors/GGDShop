@@ -242,17 +242,19 @@ export default function StorefrontHeader() {
                 </Badge>
               )}
             </Button>
-            <Button variant="ghost" size="sm" className="relative">
-              <ShoppingCart className="w-5 h-5" />
-              {cartCount > 0 && (
-                <Badge className="inline-flex items-center rounded-full border font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 absolute -top-1 -right-1 w-5 h-5 p-0 text-xs pl-[5px] pr-[5px]">
-                  {cartCount}
-                </Badge>
-              )}
+            <Button variant="ghost" size="sm" className="relative" asChild>
+              <Link href="/checkout">
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <Badge className="inline-flex items-center rounded-full border font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 absolute -top-1 -right-1 w-5 h-5 p-0 text-xs pl-[5px] pr-[5px]">
+                    {cartCount}
+                  </Badge>
+                )}
+              </Link>
             </Button>
-            <span className="text-lg font-semibold text-primary hidden sm:block">
+            <Link href="/checkout" className="text-lg font-semibold text-primary hidden sm:block hover:text-primary/80 transition-colors cursor-pointer">
               ${cartTotal.toLocaleString()}
-            </span>
+            </Link>
             
             {/* Mobile menu button */}
             <Button

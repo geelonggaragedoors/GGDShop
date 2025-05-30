@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
+import Checkout from "@/pages/checkout";
 import AdminLayout from "@/pages/admin/layout";
 import NotFound from "@/pages/not-found";
 
@@ -18,6 +19,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/checkout" component={Checkout} />
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/products/:categorySlug?" component={Products} />
       {isAuthenticated && (
