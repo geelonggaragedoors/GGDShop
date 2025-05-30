@@ -132,6 +132,11 @@ export default function Products() {
   });
 
   const onSubmit = (data: any) => {
+    console.log('onSubmit called with data:', data);
+    console.log('Form errors:', form.formState.errors);
+    console.log('Form is valid:', form.formState.isValid);
+    console.log('Selected images:', selectedImages);
+    
     // Generate slug from product name
     const slug = data.name
       .toLowerCase()
@@ -151,7 +156,8 @@ export default function Products() {
     delete productData.featured;
     delete productData.active;
     
-    console.log('Submitting product data:', productData);
+    console.log('Final product data to submit:', productData);
+    console.log('About to call mutation...');
     createProductMutation.mutate(productData);
   };
 
@@ -631,7 +637,15 @@ export default function Products() {
                       </div>
                       
                         <div className="flex space-x-2 pt-4">
-                          <Button type="submit" disabled={createProductMutation.isPending}>
+                          <Button 
+                            type="submit" 
+                            disabled={createProductMutation.isPending}
+                            onClick={(e) => {
+                              console.log('Create Product button clicked!');
+                              console.log('Button event:', e);
+                              console.log('Form state:', form.formState);
+                            }}
+                          >
                             Create Product
                           </Button>
                           <Button type="button" variant="outline" onClick={() => setIsAddProductOpen(false)}>
