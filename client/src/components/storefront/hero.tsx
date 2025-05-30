@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export default function Hero() {
   return (
@@ -22,9 +23,11 @@ export default function Hero() {
             Quality residential and commercial garage doors, parts, and expert installation services across Geelong and surrounding areas.
           </p>
           <div className="flex space-x-4">
-            <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
-              Shop Now
-            </Button>
+            <Link href="/products">
+              <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
+                Shop Now
+              </Button>
+            </Link>
             <Button 
               size="lg" 
               variant="outline" 

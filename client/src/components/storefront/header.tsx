@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -83,32 +84,32 @@ export default function StorefrontHeader() {
         {/* Navigation menu */}
         <nav className="py-3 border-t border-gray-100 text-[14px] font-normal">
           <ul className="flex space-x-8">
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Home</a></li>
+            <li><Link href="/" className="text-gray-700 hover:text-primary font-medium transition-colors">Home</Link></li>
             {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
               const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
               const hasSubcategories = subcategories.length > 0;
               
               return (
                 <li key={category.id} className={hasSubcategories ? "relative group" : ""}>
-                  <a href="#" className={`text-gray-700 hover:text-primary font-medium transition-colors ${hasSubcategories ? 'flex items-center' : ''}`}>
+                  <Link href={`/products/${category.slug}`} className={`text-gray-700 hover:text-primary font-medium transition-colors ${hasSubcategories ? 'flex items-center' : ''}`}>
                     {category.name}
                     {hasSubcategories && (
                       <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     )}
-                  </a>
+                  </Link>
                   {hasSubcategories && (
                     <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                       <div className="py-1">
                         {subcategories.map((subcategory: any) => (
-                          <a
+                          <Link
                             key={subcategory.id}
-                            href="#"
+                            href={`/products/${subcategory.slug}`}
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
                           >
                             {subcategory.name}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -116,6 +117,7 @@ export default function StorefrontHeader() {
                 </li>
               );
             })}
+            <li><Link href="/products" className="text-gray-700 hover:text-primary font-medium transition-colors">All Products</Link></li>
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Installation</a></li>
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Repair Services</a></li>
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</a></li>
