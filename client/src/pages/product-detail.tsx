@@ -144,10 +144,10 @@ export default function ProductDetail() {
 
             {/* Price */}
             <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</span>
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <span className="text-3xl font-bold text-primary">${parseFloat(product.price).toFixed(2)}</span>
+              {product.compareAtPrice && parseFloat(product.compareAtPrice) > parseFloat(product.price) && (
                 <span className="text-xl text-gray-500 line-through">
-                  ${product.compareAtPrice.toFixed(2)}
+                  ${parseFloat(product.compareAtPrice).toFixed(2)}
                 </span>
               )}
             </div>
