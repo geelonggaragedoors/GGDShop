@@ -43,8 +43,11 @@ export default function StorefrontHeader() {
         {/* Main header */}
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center">
-            <h1 className="text-xl sm:text-2xl font-bold text-primary">Geelong Garage Doors</h1>
-            <span className="ml-2 text-sm text-gray-500 hidden md:block">Professional Garage Door Solutions</span>
+            <img 
+              src="/assets/logo-pdfs.png" 
+              alt="Geelong Garage Doors" 
+              className="h-8 sm:h-10 md:h-12 w-auto"
+            />
           </div>
           
           {/* Search bar - Hidden on mobile */}
