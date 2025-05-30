@@ -1,0 +1,30 @@
+chunk-RPCDYKBN.js?v=7b76b3d1:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+@radix-ui_react-dialog.js?v=7b76b3d1:339 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=7b76b3d1:339
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEvent
+products.tsx:646 Form state: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEvent
+products.tsx:646 Form state: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEvent
+products.tsx:646 Form state: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEvent
+products.tsx:646 Form state: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEvent
+products.tsx:646 Form state: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEvent
+products.tsx:646 Form state: ObjectdefaultValues: {name: '', description: '', price: 0, categoryId: '', brandId: '', …}dirtyFields: (...)disabled: (...)errors: (...)isDirty: (...)isLoading: (...)isSubmitSuccessful: (...)isSubmitted: (...)isSubmitting: (...)isValid: (...)isValidating: (...)name: (...)submitCount: (...)touchedFields: (...)type: (...)validatingFields: (...)values: (...)get dirtyFields: () => {…}get disabled: () => {…}get errors: () => {…}get isDirty: () => {…}get isLoading: () => {…}get isSubmitSuccessful: () => {…}get isSubmitted: () => {…}get isSubmitting: () => {…}get isValid: () => {…}get isValidating: () => {…}get name: () => {…}get submitCount: () => {…}get touchedFields: () => {…}get type: () => {…}get validatingFields: () => {…}get values: () => {…}[[Prototype]]: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEventaltKey: falsebubbles: truebutton: 0buttons: 0cancelable: trueclientX: 619clientY: 797ctrlKey: falsecurrentTarget: nulldefaultPrevented: falsedetail: 6eventPhase: 3getModifierState: ƒ modifierStateGetter(keyArg)isDefaultPrevented: ƒ functionThatReturnsFalse()isPropagationStopped: ƒ functionThatReturnsFalse()isTrusted: truemetaKey: falsemovementX: 0movementY: 0nativeEvent: PointerEvent {isTrusted: true, pointerId: 1, width: 1, height: 1, pressure: 0, …}pageX: 619pageY: 797relatedTarget: nullscreenX: -1301screenY: 385shiftKey: falsetarget: button.inline-flex.items-center.justify-center.gap-2.whitespace-nowrap.rounded-md.text-sm.font-medium.ring-offset-background.transition-colors.focus-visible:outline-none.focus-visible:ring-2.focus-visible:ring-ring.focus-visible:ring-offset-2.disabled:pointer-events-none.disabled:opacity-50.[&_svg]:pointer-events-none.[&_svg]:size-4.[&_svg]:shrink-0.bg-primary.text-primary-foreground.hover:bg-primary/90.h-10.px-4.py-2timeStamp: 41707.39999999851type: "click"view: Window {window: Window, self: Window, document: document, name: '', location: Location, …}_reactName: "onClick"_targetInst: null[[Prototype]]: Object
+products.tsx:646 Form state: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEvent
+products.tsx:646 Form state: Object
+products.tsx:644 Create Product button clicked!
+products.tsx:645 Button event: SyntheticBaseEventaltKey: falsebubbles: truebutton: 0buttons: 0cancelable: trueclientX: 616clientY: 797ctrlKey: falsecurrentTarget: nulldefaultPrevented: falsedetail: 1eventPhase: 3getModifierState: ƒ modifierStateGetter(keyArg)isDefaultPrevented: ƒ functionThatReturnsFalse()isPropagationStopped: ƒ functionThatReturnsFalse()isTrusted: truemetaKey: falsemovementX: 0movementY: 0nativeEvent: PointerEvent {isTrusted: true, pointerId: 1, width: 1, height: 1, pressure: 0, …}pageX: 616pageY: 797relatedTarget: nullscreenX: -1304screenY: 385shiftKey: falsetarget: button.inline-flex.items-center.justify-center.gap-2.whitespace-nowrap.rounded-md.text-sm.font-medium.ring-offset-background.transition-colors.focus-visible:outline-none.focus-visible:ring-2.focus-visible:ring-ring.focus-visible:ring-offset-2.disabled:pointer-events-none.disabled:opacity-50.[&_svg]:pointer-events-none.[&_svg]:size-4.[&_svg]:shrink-0.bg-primary.text-primary-foreground.hover:bg-primary/90.h-10.px-4.py-2timeStamp: 42449.70000000298type: "click"view: Window {window: Window, self: Window, document: document, name: '', location: Location, …}_reactName: "onClick"_targetInst: null[[Prototype]]: Object
+products.tsx:646 Form state: ObjectdefaultValues: {name: '', description: '', price: 0, categoryId: '', brandId: '', …}dirtyFields: (...)disabled: (...)errors: (...)isDirty: (...)isLoading: (...)isSubmitSuccessful: (...)isSubmitted: (...)isSubmitting: (...)isValid: (...)isValidating: (...)name: (...)submitCount: (...)touchedFields: (...)type: (...)validatingFields: (...)values: (...)get dirtyFields: () => {…}get disabled: () => {…}get errors: () => {…}get isDirty: () => {…}get isLoading: () => {…}get isSubmitSuccessful: () => {…}get isSubmitted: () => {…}get isSubmitting: () => {…}get isValid: () => {…}get isValidating: () => {…}get name: () => {…}get submitCount: () => {…}get touchedFields: () => {…}get type: () => {…}get validatingFields: () => {…}get values: () => {…}[[Prototype]]: Object

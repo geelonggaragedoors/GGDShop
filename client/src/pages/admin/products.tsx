@@ -642,8 +642,16 @@ export default function Products() {
                             disabled={createProductMutation.isPending}
                             onClick={(e) => {
                               console.log('Create Product button clicked!');
-                              console.log('Button event:', e);
                               console.log('Form state:', form.formState);
+                              console.log('Form errors:', form.formState.errors);
+                              console.log('Form is valid:', form.formState.isValid);
+                              console.log('Form values:', form.getValues());
+                              
+                              // Manually trigger validation to see what's wrong
+                              form.trigger().then((isValid) => {
+                                console.log('Manual validation result:', isValid);
+                                console.log('Validation errors after trigger:', form.formState.errors);
+                              });
                             }}
                           >
                             Create Product
