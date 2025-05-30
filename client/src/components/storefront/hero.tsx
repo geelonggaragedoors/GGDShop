@@ -31,7 +31,7 @@ export default function Hero() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-2 border-white text-white hover:bg-white hover:text-primary"
+              className="border-2 border-white hover:bg-white hover:text-primary text-[#2b3990] font-extrabold text-[14px]"
             >
               Get Quote
             </Button>
