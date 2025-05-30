@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X } from "lucide-react";
+import { UploadButton } from "@/lib/uploadthing";
 
 export default function Products() {
   const [search, setSearch] = useState("");
