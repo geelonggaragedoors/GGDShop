@@ -79,17 +79,23 @@ export default function Categories() {
       slug: "",
       description: "",
       image: "",
-      parentId: "",
+      parentId: "none",
       sortOrder: 0,
       isActive: true,
     },
   });
 
   const onSubmit = (data: any) => {
+    // Convert "none" to null for parentId
+    const submissionData = {
+      ...data,
+      parentId: data.parentId === "none" ? null : data.parentId || null
+    };
+    
     if (editingCategory) {
-      updateMutation.mutate({ id: editingCategory.id, data });
+      updateMutation.mutate({ id: editingCategory.id, data: submissionData });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(submissionData);
     }
   };
 
@@ -111,7 +117,7 @@ export default function Categories() {
       slug: category.slug,
       description: category.description || "",
       image: category.image || "",
-      parentId: category.parentId || "",
+      parentId: category.parentId || "none",
       sortOrder: category.sortOrder || 0,
       isActive: category.isActive,
     });
@@ -265,7 +271,7 @@ export default function Categories() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="">None (Main Category)</SelectItem>
+                              <SelectItem value="none">None (Main Category)</SelectItem>
                               {categories?.filter((c: any) => !c.parentId && (!editingCategory || c.id !== editingCategory.id)).map((category: any) => (
                                 <SelectItem key={category.id} value={category.id}>
                                   {category.name}
