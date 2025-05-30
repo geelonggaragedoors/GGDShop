@@ -67,8 +67,9 @@ export default function StorefrontHeader() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium">My Account</p>
                       {user?.firstName && (
-                        <p className="font-medium">{user.firstName} {user.lastName}</p>
+                        <p className="text-sm">{user.firstName} {user.lastName}</p>
                       )}
                       <p className="w-[200px] truncate text-sm text-muted-foreground">
                         {user?.email}
@@ -76,36 +77,46 @@ export default function StorefrontHeader() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <UserCircle className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer">
+                      <UserCircle className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Package className="mr-2 h-4 w-4" />
-                    <span>Orders</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="cursor-pointer">
+                      <Package className="mr-2 h-4 w-4" />
+                      <span>Orders</span>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Wishlist</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/wishlist" className="cursor-pointer">
+                      <Heart className="mr-2 h-4 w-4" />
+                      <span>Wishlist</span>
+                    </Link>
                   </DropdownMenuItem>
-                  {isAuthenticated && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <Link href="/admin">Admin Panel</Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <a href="/api/logout">Sign out</a>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Admin Panel</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <a href="/api/logout" className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign out</span>
+                    </a>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <a href="/api/login" className="hover:text-primary transition-colors">Sign In</a>
+              <div className="flex items-center space-x-3">
+                <a href="/api/login" className="hover:text-primary transition-colors">Sign In</a>
+                <span className="text-gray-300">|</span>
+                <a href="/api/login" className="hover:text-primary transition-colors">Create Account</a>
+              </div>
             )}
             <a href="#" className="hover:text-primary transition-colors">Track Order</a>
           </div>
@@ -151,20 +162,22 @@ export default function StorefrontHeader() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative hidden sm:flex">
+                  <Button variant="ghost" size="sm" className="relative hidden sm:flex items-center space-x-2 px-3">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={user?.profileImageUrl} alt={user?.firstName || user?.email} />
+                      <AvatarImage src={user?.profileImageUrl || undefined} alt={user?.firstName || user?.email} />
                       <AvatarFallback className="text-xs">
                         {user?.firstName ? user.firstName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
+                    <span className="text-sm font-medium">My Account</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium">My Account</p>
                       {user?.firstName && (
-                        <p className="font-medium">{user.firstName} {user.lastName}</p>
+                        <p className="text-sm">{user.firstName} {user.lastName}</p>
                       )}
                       <p className="w-[200px] truncate text-sm text-muted-foreground">
                         {user?.email}
@@ -172,36 +185,53 @@ export default function StorefrontHeader() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <UserCircle className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer">
+                      <UserCircle className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Package className="mr-2 h-4 w-4" />
-                    <span>Orders</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="cursor-pointer">
+                      <Package className="mr-2 h-4 w-4" />
+                      <span>Orders</span>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Wishlist</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/wishlist" className="cursor-pointer">
+                      <Heart className="mr-2 h-4 w-4" />
+                      <span>Wishlist</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <Link href="/admin">Admin Panel</Link>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Admin Panel</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <a href="/api/logout">Sign out</a>
+                  <DropdownMenuItem asChild>
+                    <a href="/api/logout" className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign out</span>
+                    </a>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="ghost" size="sm" className="hidden sm:flex" asChild>
-                <a href="/api/login">
-                  <User className="w-5 h-5" />
-                </a>
-              </Button>
+              <div className="hidden sm:flex items-center space-x-2">
+                <Button variant="ghost" size="sm" asChild>
+                  <a href="/api/login" className="flex items-center space-x-1">
+                    <User className="w-4 h-4" />
+                    <span className="text-sm">Sign In</span>
+                  </a>
+                </Button>
+                <span className="text-gray-300">|</span>
+                <Button variant="ghost" size="sm" asChild>
+                  <a href="/api/login" className="text-sm">Create Account</a>
+                </Button>
+              </div>
             )}
             
             <Button variant="ghost" size="sm" className="relative hidden sm:flex">
