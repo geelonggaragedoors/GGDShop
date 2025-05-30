@@ -82,19 +82,19 @@ export default function StorefrontHeader() {
         </div>
         
         {/* Navigation menu */}
-        <nav className="py-3 border-t border-gray-100 text-[14px] font-normal">
-          <ul className="flex space-x-8">
-            <li><Link href="/" className="text-gray-700 hover:text-primary font-medium transition-colors">Home</Link></li>
+        <nav className="py-3 border-t border-gray-100 text-[14px] font-normal overflow-x-auto">
+          <ul className="flex space-x-4 lg:space-x-8 min-w-max lg:min-w-0">
+            <li><Link href="/" className="text-gray-700 hover:text-primary font-medium transition-colors whitespace-nowrap">Home</Link></li>
             {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
               const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
               const hasSubcategories = subcategories.length > 0;
               
               return (
                 <li key={category.id} className={hasSubcategories ? "relative group" : ""}>
-                  <Link href={`/products/${category.slug}`} className={`text-gray-700 hover:text-primary font-medium transition-colors ${hasSubcategories ? 'flex items-center' : ''}`}>
+                  <Link href={`/products/${category.slug}`} className={`text-gray-700 hover:text-primary font-medium transition-colors whitespace-nowrap ${hasSubcategories ? 'flex items-center' : ''}`}>
                     {category.name}
                     {hasSubcategories && (
-                      <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 ml-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     )}
@@ -117,10 +117,10 @@ export default function StorefrontHeader() {
                 </li>
               );
             })}
-            <li><Link href="/products" className="text-gray-700 hover:text-primary font-medium transition-colors">All Products</Link></li>
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Installation</a></li>
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Repair Services</a></li>
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</a></li>
+            <li><Link href="/products" className="text-gray-700 hover:text-primary font-medium transition-colors whitespace-nowrap">All Products</Link></li>
+            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors whitespace-nowrap">Installation</a></li>
+            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors whitespace-nowrap">Repair Services</a></li>
+            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors whitespace-nowrap">Contact</a></li>
           </ul>
         </nav>
       </div>
