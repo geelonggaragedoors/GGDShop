@@ -4,14 +4,18 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Heart, ShoppingCart, Phone, Mail, User, Package, Menu, X, ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Heart, ShoppingCart, Phone, Mail, User, Package, Menu, X, ChevronDown, LogOut, Settings, UserCircle } from "lucide-react";
 import { api } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function StorefrontHeader() {
   const { cartCount, cartTotal } = useCart();
   const { wishlistCount } = useWishlist();
+  const { user, isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isShopMegaMenuOpen, setIsShopMegaMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,7 +52,61 @@ export default function StorefrontHeader() {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <a href="#" className="hover:text-primary transition-colors">Account</a>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-7 w-7">
+                      <AvatarImage src={user?.profileImageUrl} alt={user?.firstName || user?.email} />
+                      <AvatarFallback>
+                        {user?.firstName ? user.firstName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      {user?.firstName && (
+                        <p className="font-medium">{user.firstName} {user.lastName}</p>
+                      )}
+                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Package className="mr-2 h-4 w-4" />
+                    <span>Orders</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>Wishlist</span>
+                  </DropdownMenuItem>
+                  {isAuthenticated && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <Link href="/admin">Admin Panel</Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <a href="/api/logout">Sign out</a>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <a href="/api/login" className="hover:text-primary transition-colors">Sign In</a>
+            )}
             <a href="#" className="hover:text-primary transition-colors">Track Order</a>
           </div>
         </div>
@@ -89,6 +147,63 @@ export default function StorefrontHeader() {
               <Search className="w-5 h-5" />
             </Button>
             
+            {/* User account - Desktop */}
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative hidden sm:flex">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={user?.profileImageUrl} alt={user?.firstName || user?.email} />
+                      <AvatarFallback className="text-xs">
+                        {user?.firstName ? user.firstName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      {user?.firstName && (
+                        <p className="font-medium">{user.firstName} {user.lastName}</p>
+                      )}
+                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Package className="mr-2 h-4 w-4" />
+                    <span>Orders</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>Wishlist</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <Link href="/admin">Admin Panel</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <a href="/api/logout">Sign out</a>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" className="hidden sm:flex" asChild>
+                <a href="/api/login">
+                  <User className="w-5 h-5" />
+                </a>
+              </Button>
+            )}
+            
             <Button variant="ghost" size="sm" className="relative hidden sm:flex">
               <Heart className="w-5 h-5" />
               {wishlistCount > 0 && (
@@ -100,7 +215,7 @@ export default function StorefrontHeader() {
             <Button variant="ghost" size="sm" className="relative">
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 text-xs">
+                <Badge className="inline-flex items-center rounded-full border font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 absolute -top-1 -right-1 w-5 h-5 p-0 text-xs pl-[5px] pr-[5px]">
                   {cartCount}
                 </Badge>
               )}
