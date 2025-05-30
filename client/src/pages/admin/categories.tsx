@@ -37,9 +37,14 @@ export default function Categories() {
   const createMutation = useMutation({
     mutationFn: api.admin.categories.create,
     onSuccess: () => {
+      // Invalidate all category-related queries
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey.some(key => typeof key === 'string' && key.includes('categories'))
+      });
       setIsCreateOpen(false);
+      form.reset();
       toast({ title: "Category created successfully" });
     },
     onError: (error: any) => {
@@ -50,9 +55,14 @@ export default function Categories() {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => api.admin.categories.update(id, data),
     onSuccess: () => {
+      // Invalidate all category-related queries
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey.some(key => typeof key === 'string' && key.includes('categories'))
+      });
       setEditingCategory(null);
+      form.reset();
       toast({ title: "Category updated successfully" });
     },
     onError: (error: any) => {
@@ -63,8 +73,12 @@ export default function Categories() {
   const deleteMutation = useMutation({
     mutationFn: api.admin.categories.delete,
     onSuccess: () => {
+      // Invalidate all category-related queries
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey.some(key => typeof key === 'string' && key.includes('categories'))
+      });
       toast({ title: "Category deleted successfully" });
     },
     onError: (error: any) => {
