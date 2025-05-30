@@ -111,6 +111,13 @@ export default function Products() {
 
   const uploadFileMutation = useMutation({
     mutationFn: async (file: File) => {
+      // Convert file to base64 for storage
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+
       const response = await fetch("/api/admin/media", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -119,7 +126,7 @@ export default function Products() {
           originalName: file.name,
           mimeType: file.type,
           size: file.size,
-          url: URL.createObjectURL(file),
+          url: base64, // Store base64 instead of blob URL
           folder: currentFolder,
           alt: "",
         }),
