@@ -107,7 +107,7 @@ export default function StorefrontHeader() {
             <li className="relative group"
                 onMouseEnter={() => setIsShopMegaMenuOpen(true)}
                 onMouseLeave={() => setIsShopMegaMenuOpen(false)}>
-              <button className="text-gray-700 hover:text-primary font-medium transition-colors flex items-center py-3">
+              <button className="text-gray-700 hover:text-primary font-medium transition-colors flex items-center">
                 Shop
                 <ChevronDown className="w-3 h-3 ml-1" />
               </button>
