@@ -11,8 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import StorefrontHeader from "@/components/storefront/header";
-import StorefrontFooter from "@/components/storefront/footer";
+import SimpleHeader from "@/components/storefront/simple-header";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
@@ -28,7 +27,7 @@ export default function Checkout() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <StorefrontHeader />
+        <SimpleHeader />
         <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 200px)" }}>
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
@@ -38,14 +37,13 @@ export default function Checkout() {
             </Link>
           </div>
         </div>
-        <StorefrontFooter />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <StorefrontHeader />
+      <SimpleHeader />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -317,7 +315,6 @@ export default function Checkout() {
           </div>
         </div>
       </div>
-      <StorefrontFooter />
     </div>
   );
 }
