@@ -277,19 +277,30 @@ export default function Products() {
     {
       header: "Product",
       accessorKey: "name",
-      cell: ({ row }: any) => (
-        <div className="flex items-center space-x-3">
-          <img 
-            src={row.original.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center"}
-            alt={row.original.name}
-            className="w-12 h-12 object-cover rounded-lg"
-          />
-          <div>
-            <p className="font-medium text-gray-900">{row.original.name}</p>
-            <p className="text-sm text-gray-600">SKU: {row.original.sku}</p>
+      cell: ({ row }: any) => {
+        const product = row.original;
+        const firstImage = Array.isArray(product.images) && product.images.length > 0 
+          ? product.images[0] 
+          : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center";
+        
+        return (
+          <div className="flex items-center space-x-3">
+            <img 
+              src={firstImage}
+              alt={product.name}
+              className="w-12 h-12 object-cover rounded-lg"
+              onError={(e) => {
+                // Fallback to placeholder if image fails to load
+                e.currentTarget.src = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center";
+              }}
+            />
+            <div>
+              <p className="font-medium text-gray-900">{product.name}</p>
+              <p className="text-sm text-gray-600">SKU: {product.sku}</p>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       header: "Category",
