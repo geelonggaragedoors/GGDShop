@@ -278,6 +278,10 @@ export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  price: z.number().min(0, "Price must be a positive number"),
+  weight: z.number().min(0, "Weight must be a positive number").optional(),
+  stockQuantity: z.number().int().min(0, "Stock quantity must be a non-negative integer"),
 });
 
 export const insertCustomerSchema = createInsertSchema(customers).omit({
