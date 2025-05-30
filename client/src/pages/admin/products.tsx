@@ -633,33 +633,6 @@ export default function Products() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-6">
-                        <FormField
-                          control={form.control}
-                          name="featured"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center space-x-2">
-                              <FormControl>
-                                <Switch checked={field.value} onCheckedChange={field.onChange} />
-                              </FormControl>
-                              <FormLabel>Featured Product</FormLabel>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="active"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center space-x-2">
-                              <FormControl>
-                                <Switch checked={field.value} onCheckedChange={field.onChange} />
-                              </FormControl>
-                              <FormLabel>Active</FormLabel>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
                         <div className="flex space-x-2 pt-4">
                           <Button type="submit" disabled={createProductMutation.isPending}>
                             Create Product
