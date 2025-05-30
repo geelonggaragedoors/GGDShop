@@ -13,7 +13,7 @@ import {
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
-import { createRouteHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/express";
 import { ourFileRouter } from "./uploadthing";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -21,19 +21,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
 
   // UploadThing routes
-  const { GET, POST } = createRouteHandler({
+  const uploadRouter = createRouteHandler({
     router: ourFileRouter,
   });
 
-  app.get("/api/uploadthing", async (req, res) => {
-    const response = await GET(req as any);
-    return res.status(response.status).send(await response.text());
-  });
-
-  app.post("/api/uploadthing", async (req, res) => {
-    const response = await POST(req as any);
-    return res.status(response.status).send(await response.text());
-  });
+  app.use("/api/uploadthing", uploadRouter);
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
