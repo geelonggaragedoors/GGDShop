@@ -21,6 +21,7 @@ export default function Products() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(0);
   const [pageSize] = useState(12);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: categories } = useQuery({
     queryKey: ["/api/categories"],
@@ -108,9 +109,21 @@ export default function Products() {
           </p>
         </div>
 
-        <div className="flex flex-col xl:flex-row gap-6 lg:gap-8">
+        {/* Mobile Filter Toggle */}
+        <div className="lg:hidden mb-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Filter className="w-4 h-4" />
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Filters Sidebar */}
-          <div className="xl:w-72 lg:w-80">
+          <div className={`lg:w-72 xl:w-80 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-4 text-lg">Filter Products</h3>
               
@@ -237,7 +250,7 @@ export default function Products() {
 
             {/* Products */}
             {productsLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <Card key={i} className="animate-pulse">
                     <div className="aspect-square bg-gray-200 rounded-t-lg"></div>
@@ -256,7 +269,7 @@ export default function Products() {
               </div>
             ) : (
               <div className={viewMode === "grid" ? 
-                "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" : 
+                "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" : 
                 "space-y-4 sm:space-y-6"
               }>
                 {products.map((product: any) => (
