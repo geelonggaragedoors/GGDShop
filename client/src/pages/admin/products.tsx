@@ -343,7 +343,14 @@ export default function Products() {
                               <FormItem>
                                 <FormLabel className="text-sm">Price (Inc. GST)</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="number" step="0.01" placeholder="1599.00" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01" 
+                                    placeholder="1599.00" 
+                                    className="h-9"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                                  />
                                 </FormControl>
                                 <FormDescription className="text-xs text-gray-500">
                                   GST inclusive price (e.g. $1599.00 inc. GST)
@@ -378,7 +385,13 @@ export default function Products() {
                               <FormItem>
                                 <FormLabel className="text-sm">Stock Quantity</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="number" placeholder="25" className="h-9" onChange={(e) => field.onChange(parseInt(e.target.value))} />
+                                  <Input 
+                                    type="number" 
+                                    placeholder="25" 
+                                    className="h-9"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseInt(e.target.value))}
+                                  />
                                 </FormControl>
                                 <FormDescription className="text-xs text-gray-500">
                                   Current inventory count
@@ -446,7 +459,14 @@ export default function Products() {
                               <FormItem>
                                 <FormLabel className="text-sm">Weight (kg)</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="number" step="0.1" placeholder="85.5" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                                  <Input 
+                                    type="number" 
+                                    step="0.1" 
+                                    placeholder="85.5" 
+                                    className="h-9"
+                                    value={field.value || ""}
+                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                                  />
                                 </FormControl>
                                 <FormDescription className="text-xs text-gray-500">
                                   For shipping calculations (e.g. 85.5 kg)
