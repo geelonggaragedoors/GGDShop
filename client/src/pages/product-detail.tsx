@@ -371,7 +371,7 @@ export default function ProductDetail() {
                       <h4 className="font-medium text-gray-900 mb-1 line-clamp-2">
                         {similarProduct.name}
                       </h4>
-                      <p className="text-primary font-semibold">${similarProduct.price.toFixed(2)}</p>
+                      <p className="text-primary font-semibold">${parseFloat(similarProduct.price).toFixed(2)}</p>
                     </CardContent>
                   </Card>
                 </Link>
