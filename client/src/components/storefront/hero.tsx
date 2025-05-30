@@ -24,7 +24,7 @@ export default function Hero() {
           </p>
           <div className="flex space-x-4">
             <Link href="/products">
-              <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
+              <Button size="lg" className="hover:bg-gray-100 bg-[#2b3990] text-[#ffffff] font-bold text-[16px]">
                 Shop Now
               </Button>
             </Link>
