@@ -132,10 +132,26 @@ export default function Products() {
   });
 
   const onSubmit = (data: any) => {
+    // Generate slug from product name
+    const slug = data.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    
     const productData = {
       ...data,
+      slug,
       images: selectedImages.map(img => img.url),
+      // Map form field names to database field names
+      isFeatured: data.featured,
+      isActive: data.active,
     };
+    
+    // Remove the old field names
+    delete productData.featured;
+    delete productData.active;
+    
+    console.log('Submitting product data:', productData);
     createProductMutation.mutate(productData);
   };
 
