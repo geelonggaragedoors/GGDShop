@@ -308,142 +308,169 @@ export default function Products() {
                   <div className="overflow-y-auto max-h-[calc(90vh-120px)] pr-2">
                     <Form {...form}>
                       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Product Name</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="sku"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>SKU</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={3} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="price"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Price ($)</FormLabel>
-                              <FormControl>
-                                <Input {...field} type="number" step="0.01" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="stockQuantity"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Stock Quantity</FormLabel>
-                              <FormControl>
-                                <Input {...field} type="number" onChange={(e) => field.onChange(parseInt(e.target.value))} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="categoryId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Category</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        {/* 3-Column Layout for Basic Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Product Name</FormLabel>
                                 <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select category" />
-                                  </SelectTrigger>
+                                  <Input {...field} className="h-9" />
                                 </FormControl>
-                                <SelectContent>
-                                  {categories?.map((category: any) => (
-                                    <SelectItem key={category.id} value={category.id}>
-                                      {category.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="sku"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">SKU</FormLabel>
+                                <FormControl>
+                                  <Input {...field} className="h-9" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="price"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Price ($)</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" step="0.01" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Description - Full Width */}
                         <FormField
                           control={form.control}
-                          name="brandId"
+                          name="description"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Brand</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select brand" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {brands?.map((brand: any) => (
-                                    <SelectItem key={brand.id} value={brand.id}>
-                                      {brand.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <FormLabel className="text-sm">Description</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} rows={2} className="text-sm" />
+                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                      </div>
-                      
-                      <FormField
-                        control={form.control}
-                        name="weight"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Weight (kg)</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" step="0.1" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                        
+                        {/* 3-Column Layout for Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <FormField
+                            control={form.control}
+                            name="stockQuantity"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Stock Qty</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" className="h-9" onChange={(e) => field.onChange(parseInt(e.target.value))} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="categoryId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Category</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9 text-sm">
+                                      <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {categories?.map((category: any) => (
+                                      <SelectItem key={category.id} value={category.id}>
+                                        {category.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="brandId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Brand</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9 text-sm">
+                                      <SelectValue placeholder="Select brand" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {brands?.map((brand: any) => (
+                                      <SelectItem key={brand.id} value={brand.id}>
+                                        {brand.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Weight and Toggles Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                          <FormField
+                            control={form.control}
+                            name="weight"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm">Weight (kg)</FormLabel>
+                                <FormControl>
+                                  <Input {...field} type="number" step="0.1" className="h-9" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="featured"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="text-sm">Featured Product</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="active"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="text-sm">Active</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
                       {/* Product Images Section - Reorganized for better space usage */}
                       <div className="space-y-3">
