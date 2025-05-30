@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Heart, ShoppingCart, Truck, Shield, ArrowLeft, Plus, Minus } from "lucide-react";
 import { api } from "@/lib/api";
+import StorefrontHeader from "@/components/storefront/header";
+import StorefrontFooter from "@/components/storefront/footer";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -70,6 +72,7 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <StorefrontHeader />
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
@@ -380,6 +383,7 @@ export default function ProductDetail() {
           </div>
         )}
       </div>
+      <StorefrontFooter />
     </div>
   );
 }
