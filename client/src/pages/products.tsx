@@ -237,7 +237,7 @@ export default function Products() {
 
             {/* Products */}
             {productsLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <Card key={i} className="animate-pulse">
                     <div className="aspect-square bg-gray-200 rounded-t-lg"></div>
@@ -256,7 +256,7 @@ export default function Products() {
               </div>
             ) : (
               <div className={viewMode === "grid" ? 
-                "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" : 
+                "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8" : 
                 "space-y-4 sm:space-y-6"
               }>
                 {products.map((product: any) => (
