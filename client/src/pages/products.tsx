@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Grid, List, Star, ShoppingCart } from "lucide-react";
+import { Search, Filter, Grid, List, Star, ShoppingCart, Heart } from "lucide-react";
 import { api } from "@/lib/api";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
@@ -75,50 +75,68 @@ export default function Products() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <StorefrontHeader />
+      
+      {/* Breadcrumb */}
+      <div className="bg-gray-50 border-b">
+        <div className="container mx-auto px-4 py-3">
+          <nav className="text-sm text-gray-600">
+            <span>Home</span>
+            <span className="mx-2">/</span>
+            <span className="text-gray-900 font-medium">
+              {params?.categorySlug ? 
+                categories?.find((cat: any) => cat.slug === params.categorySlug)?.name || "Products" 
+                : "All Products"
+              }
+            </span>
+          </nav>
+        </div>
+      </div>
       
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">
             {params?.categorySlug ? 
               categories?.find((cat: any) => cat.slug === params.categorySlug)?.name || "Products" 
               : "All Products"
             }
           </h1>
-          <p className="text-gray-600">
-            Discover our range of quality garage doors and accessories
+          <p className="text-lg text-gray-600 max-w-2xl">
+            Discover our premium range of garage doors, parts, and accessories designed for durability and style
           </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
-          <div className="lg:w-64 space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Search</h3>
+          <div className="lg:w-72 space-y-6">
+            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Filter Products</h3>
+              
+              {/* Search */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
                 <div className="relative">
                   <Input
                     placeholder="Search products..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 border-gray-300 focus:border-primary focus:ring-primary"
                   />
                   <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
+              {/* Categories */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-gray-300 focus:border-primary focus:ring-primary">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {filteredCategories.map((category: any) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
@@ -126,18 +144,17 @@ export default function Products() {
                     ))}
                   </SelectContent>
                 </Select>
-              </CardContent>
-            </Card>
+              </div>
 
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Brands</h3>
+              {/* Brands */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
                 <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-gray-300 focus:border-primary focus:ring-primary">
                     <SelectValue placeholder="All Brands" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Brands</SelectItem>
+                    <SelectItem value="all">All Brands</SelectItem>
                     {activeBrands.map((brand: any) => (
                       <SelectItem key={brand.id} value={brand.id}>
                         {brand.name}
@@ -145,37 +162,62 @@ export default function Products() {
                     ))}
                   </SelectContent>
                 </Select>
-              </CardContent>
-            </Card>
+              </div>
+
+              {/* Clear Filters */}
+              {(selectedCategory || selectedBrand || search) && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSelectedCategory("");
+                    setSelectedBrand("");
+                    setSearch("");
+                  }}
+                  className="w-full"
+                >
+                  Clear All Filters
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Products Grid */}
           <div className="flex-1">
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">
-                  {totalProducts} products found
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+              <div className="flex items-center space-x-4 mb-4 sm:mb-0">
+                <span className="text-sm font-medium text-gray-700">
+                  {totalProducts} {totalProducts === 1 ? 'product' : 'products'} found
                 </span>
+                {(selectedCategory || selectedBrand || search) && (
+                  <Badge variant="secondary" className="bg-blue-50 text-blue-700">
+                    Filtered
+                  </Badge>
+                )}
               </div>
               
               <div className="flex items-center space-x-4">
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="price">Price</SelectItem>
-                    <SelectItem value="newest">Newest</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-40 border-gray-300">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name">Name A-Z</SelectItem>
+                      <SelectItem value="price">Price: Low to High</SelectItem>
+                      <SelectItem value="newest">Newest First</SelectItem>
+                      <SelectItem value="featured">Featured</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 
-                <div className="flex border rounded-md">
+                <div className="flex border border-gray-300 rounded-md">
                   <Button
                     size="sm"
                     variant={viewMode === "grid" ? "default" : "ghost"}
                     onClick={() => setViewMode("grid")}
+                    className="rounded-r-none"
                   >
                     <Grid className="w-4 h-4" />
                   </Button>
@@ -183,6 +225,7 @@ export default function Products() {
                     size="sm"
                     variant={viewMode === "list" ? "default" : "ghost"}
                     onClick={() => setViewMode("list")}
+                    className="rounded-l-none"
                   >
                     <List className="w-4 h-4" />
                   </Button>
@@ -210,43 +253,71 @@ export default function Products() {
                 <p className="text-gray-600">Try adjusting your search or filter criteria</p>
               </div>
             ) : (
-              <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+              <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" : "space-y-6"}>
                 {products.map((product: any) => (
-                  <Card key={product.id} className="group hover:shadow-lg transition-shadow">
+                  <div key={product.id} className="group">
                     {viewMode === "grid" ? (
-                      <>
-                        <div className="aspect-square overflow-hidden rounded-t-lg bg-gray-100">
+                      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                        <div className="relative aspect-square overflow-hidden bg-gray-50">
                           <img
                             src={getProductImage(product)}
                             alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                            {product.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                            {product.shortDescription || product.description}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-lg font-bold text-primary">
-                              {formatPrice(parseFloat(product.price))}
-                            </span>
-                            <Button size="sm">
-                              <ShoppingCart className="w-4 h-4 mr-2" />
-                              Add to Cart
+                          {product.featured && (
+                            <div className="absolute top-3 left-3">
+                              <Badge className="bg-orange-500 hover:bg-orange-600 text-white font-medium">
+                                Featured
+                              </Badge>
+                            </div>
+                          )}
+                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button size="sm" variant="outline" className="bg-white/90 backdrop-blur-sm">
+                              <Heart className="w-4 h-4" />
                             </Button>
                           </div>
-                          {product.isFeatured && (
-                            <Badge className="mt-2">Featured</Badge>
-                          )}
-                        </CardContent>
-                      </>
+                        </div>
+                        <div className="p-6">
+                          <div className="mb-3">
+                            <h3 className="font-semibold text-gray-900 text-lg mb-1 line-clamp-2 leading-tight">
+                              {product.name}
+                            </h3>
+                            <p className="text-sm text-gray-600 line-clamp-2">
+                              {product.shortDescription || product.description}
+                            </p>
+                          </div>
+                          
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <span className="text-2xl font-bold text-gray-900">
+                                {formatPrice(parseFloat(product.price))}
+                              </span>
+                              <span className="text-sm text-gray-500 ml-1">inc. GST</span>
+                            </div>
+                            {product.stockQuantity > 0 ? (
+                              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                                In Stock
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50">
+                                Out of Stock
+                              </Badge>
+                            )}
+                          </div>
+
+                          <Button 
+                            className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3"
+                            disabled={product.stockQuantity === 0}
+                          >
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            {product.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                          </Button>
+                        </div>
+                      </div>
                     ) : (
-                      <CardContent className="p-4">
-                        <div className="flex space-x-4">
-                          <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                      <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                        <div className="flex space-x-6">
+                          <div className="w-32 h-32 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
                             <img
                               src={getProductImage(product)}
                               alt={product.name}
@@ -254,58 +325,88 @@ export default function Products() {
                             />
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 mb-1">
-                              {product.name}
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-2">
+                            <div className="flex justify-between items-start mb-2">
+                              <h3 className="font-semibold text-gray-900 text-xl">
+                                {product.name}
+                              </h3>
+                              {product.featured && (
+                                <Badge className="bg-orange-500 hover:bg-orange-600 text-white">
+                                  Featured
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-gray-600 mb-4 line-clamp-3">
                               {product.shortDescription || product.description}
                             </p>
                             <div className="flex items-center justify-between">
-                              <span className="text-lg font-bold text-primary">
-                                {formatPrice(parseFloat(product.price))}
-                              </span>
-                              <Button size="sm">
+                              <div className="flex items-center space-x-4">
+                                <div>
+                                  <span className="text-2xl font-bold text-gray-900">
+                                    {formatPrice(parseFloat(product.price))}
+                                  </span>
+                                  <span className="text-sm text-gray-500 ml-1">inc. GST</span>
+                                </div>
+                                {product.stockQuantity > 0 ? (
+                                  <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                                    In Stock
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50">
+                                    Out of Stock
+                                  </Badge>
+                                )}
+                              </div>
+                              <Button 
+                                className="bg-primary hover:bg-primary/90 text-white font-medium px-6"
+                                disabled={product.stockQuantity === 0}
+                              >
                                 <ShoppingCart className="w-4 h-4 mr-2" />
-                                Add to Cart
+                                {product.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                               </Button>
                             </div>
                           </div>
                         </div>
-                      </CardContent>
+                      </div>
                     )}
-                  </Card>
+                  </div>
                 ))}
               </div>
             )}
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-8">
-                <div className="flex space-x-2">
+              <div className="flex justify-center mt-12">
+                <div className="flex items-center space-x-2 bg-white border border-gray-200 rounded-lg p-2 shadow-sm">
                   <Button
-                    variant="outline"
+                    variant="ghost"
+                    size="sm"
                     disabled={page === 0}
                     onClick={() => setPage(page - 1)}
+                    className="px-4"
                   >
                     Previous
                   </Button>
-                  {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                    const pageNum = page < 3 ? i : page - 2 + i;
+                  {Array.from({ length: Math.min(7, totalPages) }).map((_, i) => {
+                    const pageNum = page < 3 ? i : page - 3 + i;
                     if (pageNum >= totalPages) return null;
                     return (
                       <Button
                         key={pageNum}
-                        variant={pageNum === page ? "default" : "outline"}
+                        variant={pageNum === page ? "default" : "ghost"}
+                        size="sm"
                         onClick={() => setPage(pageNum)}
+                        className={`w-10 h-10 ${pageNum === page ? 'bg-primary text-white' : 'hover:bg-gray-50'}`}
                       >
                         {pageNum + 1}
                       </Button>
                     );
                   })}
                   <Button
-                    variant="outline"
+                    variant="ghost"
+                    size="sm"
                     disabled={page === totalPages - 1}
                     onClick={() => setPage(page + 1)}
+                    className="px-4"
                   >
                     Next
                   </Button>
