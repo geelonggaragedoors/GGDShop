@@ -212,15 +212,14 @@ export default function Categories() {
               <h2 className="text-xl font-semibold text-gray-900">Categories Management</h2>
               <p className="text-gray-600">Organize your product categories</p>
             </div>
+            <Button onClick={() => setIsCreateOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Category
+            </Button>
+            
             <Dialog open={isCreateOpen || !!editingCategory} onOpenChange={(open) => {
               if (!open) closeDialog();
             }}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Category
-                </Button>
-              </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>
