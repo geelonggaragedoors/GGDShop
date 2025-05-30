@@ -506,26 +506,51 @@ export default function Products() {
                           <FormField
                             control={form.control}
                             name="categoryId"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm">Category</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="h-9 text-sm">
-                                      <SelectValue placeholder="Select category" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {categories?.map((category: any) => (
-                                      <SelectItem key={category.id} value={category.id}>
-                                        {category.name}
+                            render={({ field }) => {
+                              const renderCategoryOptions = () => {
+                                const parentCategories = categories?.filter((c: any) => !c.parentId) || [];
+                                const options: JSX.Element[] = [];
+                                
+                                parentCategories.forEach((category: any) => {
+                                  options.push(
+                                    <SelectItem key={category.id} value={category.id}>
+                                      {category.name}
+                                    </SelectItem>
+                                  );
+                                  
+                                  const subcategories = categories?.filter((sub: any) => sub.parentId === category.id) || [];
+                                  subcategories.forEach((subcategory: any) => {
+                                    options.push(
+                                      <SelectItem key={subcategory.id} value={subcategory.id}>
+                                        &nbsp;&nbsp;├─ {subcategory.name}
                                       </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                                    );
+                                  });
+                                });
+                                
+                                return options;
+                              };
+                              
+                              return (
+                                <FormItem>
+                                  <FormLabel className="text-sm">Category</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="h-9 text-sm">
+                                        <SelectValue placeholder="Select category" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {renderCategoryOptions()}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription className="text-xs text-gray-500">
+                                    Choose main category or subcategory
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
                           />
                           <FormField
                             control={form.control}
@@ -774,26 +799,51 @@ export default function Products() {
                           <FormField
                             control={form.control}
                             name="categoryId"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Category</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select category" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {categories?.map((category: any) => (
-                                      <SelectItem key={category.id} value={category.id}>
-                                        {category.name}
+                            render={({ field }) => {
+                              const renderCategoryOptions = () => {
+                                const parentCategories = categories?.filter((c: any) => !c.parentId) || [];
+                                const options: JSX.Element[] = [];
+                                
+                                parentCategories.forEach((category: any) => {
+                                  options.push(
+                                    <SelectItem key={category.id} value={category.id}>
+                                      {category.name}
+                                    </SelectItem>
+                                  );
+                                  
+                                  const subcategories = categories?.filter((sub: any) => sub.parentId === category.id) || [];
+                                  subcategories.forEach((subcategory: any) => {
+                                    options.push(
+                                      <SelectItem key={subcategory.id} value={subcategory.id}>
+                                        &nbsp;&nbsp;├─ {subcategory.name}
                                       </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                                    );
+                                  });
+                                });
+                                
+                                return options;
+                              };
+                              
+                              return (
+                                <FormItem>
+                                  <FormLabel>Category</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select category" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {renderCategoryOptions()}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription className="text-xs text-gray-500">
+                                    Choose main category or subcategory
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
                           />
                           <FormField
                             control={form.control}
