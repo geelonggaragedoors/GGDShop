@@ -617,7 +617,7 @@ export default function Products() {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="root">Root Folder</SelectItem>
-                                {mediaData?.folders?.map((folder: any) => (
+                                {(mediaData as any)?.folders?.map((folder: any) => (
                                   <SelectItem key={folder.id} value={folder.id}>
                                     📁 {folder.name}
                                   </SelectItem>
