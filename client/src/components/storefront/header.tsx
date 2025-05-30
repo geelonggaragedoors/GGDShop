@@ -1,13 +1,20 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Heart, ShoppingCart, Phone, Mail, User, Package } from "lucide-react";
+import { api } from "@/lib/api";
 
 export default function StorefrontHeader() {
   const [cartCount] = useState(2);
   const [wishlistCount] = useState(3);
   const [cartTotal] = useState(1250);
+
+  const { data: categories } = useQuery({
+    queryKey: ["/api/categories"],
+    queryFn: api.categories.getAll,
+  });
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -77,23 +84,38 @@ export default function StorefrontHeader() {
         <nav className="py-3 border-t border-gray-100">
           <ul className="flex space-x-8">
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Home</a></li>
-            <li className="relative group">
-              <a href="#" className="text-gray-700 hover:text-primary font-medium flex items-center transition-colors">
-                Residential Doors 
-                <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </a>
-            </li>
-            <li className="relative group">
-              <a href="#" className="text-gray-700 hover:text-primary font-medium flex items-center transition-colors">
-                Commercial Doors
-                <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </a>
-            </li>
-            <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Parts & Accessories</a></li>
+            {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
+              const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
+              const hasSubcategories = subcategories.length > 0;
+              
+              return (
+                <li key={category.id} className={hasSubcategories ? "relative group" : ""}>
+                  <a href="#" className={`text-gray-700 hover:text-primary font-medium transition-colors ${hasSubcategories ? 'flex items-center' : ''}`}>
+                    {category.name}
+                    {hasSubcategories && (
+                      <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    )}
+                  </a>
+                  {hasSubcategories && (
+                    <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="py-1">
+                        {subcategories.map((subcategory: any) => (
+                          <a
+                            key={subcategory.id}
+                            href="#"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
+                          >
+                            {subcategory.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Installation</a></li>
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Repair Services</a></li>
             <li><a href="#" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</a></li>
