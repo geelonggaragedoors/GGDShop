@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import DataTable from "@/components/ui/data-table";
 import { api } from "@/lib/api";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Plus, Search, Edit, Trash2, Image } from "lucide-react";
+import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X } from "lucide-react";
 
 export default function Products() {
   const [search, setSearch] = useState("");
@@ -26,6 +26,11 @@ export default function Products() {
   const [page, setPage] = useState(0);
   const [pageSize] = useState(10);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<any[]>([]);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [currentFolder, setCurrentFolder] = useState("root");
+  const [showFolderInput, setShowFolderInput] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
   const { toast } = useToast();
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
@@ -49,6 +54,11 @@ export default function Products() {
     queryFn: api.brands.getAll,
   });
 
+  const { data: mediaData, refetch: refetchMedia } = useQuery({
+    queryKey: ["/api/admin/media", currentFolder],
+    queryFn: () => apiRequest(`/api/admin/media?folder=${currentFolder}`),
+  });
+
   const createProductMutation = useMutation({
     mutationFn: api.admin.products.create,
     onSuccess: () => {
@@ -56,10 +66,52 @@ export default function Products() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       setIsAddProductOpen(false);
       form.reset();
+      setSelectedImages([]);
       toast({ title: "Product created successfully" });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const createFolderMutation = useMutation({
+    mutationFn: async (data: { name: string; parent: string }) => {
+      const response = await fetch("/api/admin/media/folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      refetchMedia();
+      setShowFolderInput(false);
+      setNewFolderName("");
+      toast({ title: "Folder created successfully" });
+    },
+  });
+
+  const uploadFileMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: `${Date.now()}-${file.name}`,
+          originalName: file.name,
+          mimeType: file.type,
+          size: file.size,
+          url: URL.createObjectURL(file),
+          folder: currentFolder,
+          alt: "",
+        }),
+      });
+      return response.json();
+    },
+    onSuccess: (newFile) => {
+      refetchMedia();
+      setSelectedImages(prev => [...prev, newFile]);
+      toast({ title: "File uploaded successfully" });
     },
   });
 
@@ -80,7 +132,61 @@ export default function Products() {
   });
 
   const onSubmit = (data: any) => {
-    createProductMutation.mutate(data);
+    const productData = {
+      ...data,
+      images: selectedImages.map(img => img.url),
+    };
+    createProductMutation.mutate(productData);
+  };
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    files.forEach(file => {
+      if (file.type.startsWith('image/')) {
+        uploadFileMutation.mutate(file);
+      }
+    });
+  }, [uploadFileMutation]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      if (file.type.startsWith('image/')) {
+        uploadFileMutation.mutate(file);
+      }
+    });
+  };
+
+  const createFolder = () => {
+    if (newFolderName.trim()) {
+      createFolderMutation.mutate({
+        name: newFolderName.trim(),
+        parent: currentFolder,
+      });
+    }
+  };
+
+  const selectImage = (image: any) => {
+    if (!selectedImages.find(img => img.id === image.id)) {
+      setSelectedImages(prev => [...prev, image]);
+    }
+  };
+
+  const removeSelectedImage = (imageId: string) => {
+    setSelectedImages(prev => prev.filter(img => img.id !== imageId));
   };
 
   const columns = [
@@ -337,6 +443,175 @@ export default function Products() {
                           </FormItem>
                         )}
                       />
+
+                      {/* Product Images Section */}
+                      <div className="space-y-4">
+                        <FormLabel>Product Images</FormLabel>
+                        
+                        {/* Selected Images Display */}
+                        {selectedImages.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-sm text-gray-600">Selected Images ({selectedImages.length})</p>
+                            <div className="grid grid-cols-3 gap-2">
+                              {selectedImages.map((image) => (
+                                <div key={image.id} className="relative group">
+                                  <img 
+                                    src={image.url} 
+                                    alt={image.alt || image.originalName}
+                                    className="w-full h-20 object-cover rounded border"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+                                    onClick={() => removeSelectedImage(image.id)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Drag & Drop Upload Zone */}
+                        <div
+                          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                            isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                          }`}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                        >
+                          <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                          <p className="text-sm text-gray-600 mb-2">
+                            Drag & drop images here, or click to browse
+                          </p>
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                            id="file-upload"
+                          />
+                          <label htmlFor="file-upload">
+                            <Button type="button" variant="outline" size="sm" asChild>
+                              <span>Browse Files</span>
+                            </Button>
+                          </label>
+                        </div>
+
+                        {/* Media Library Browser */}
+                        <div className="border rounded-lg p-4 max-h-64 overflow-auto">
+                          <div className="flex items-center justify-between mb-3">
+                            <p className="text-sm font-medium">Media Library</p>
+                            <div className="flex space-x-2">
+                              {showFolderInput ? (
+                                <div className="flex space-x-1">
+                                  <Input
+                                    placeholder="Folder name"
+                                    value={newFolderName}
+                                    onChange={(e) => setNewFolderName(e.target.value)}
+                                    className="h-8 text-xs w-24"
+                                  />
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    className="h-8 px-2"
+                                    onClick={createFolder}
+                                    disabled={!newFolderName.trim()}
+                                  >
+                                    Create
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 px-2"
+                                    onClick={() => setShowFolderInput(false)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8"
+                                  onClick={() => setShowFolderInput(true)}
+                                >
+                                  <FolderPlus className="h-3 w-3 mr-1" />
+                                  New Folder
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Folders */}
+                          {mediaData?.folders && mediaData.folders.length > 0 && (
+                            <div className="grid grid-cols-4 gap-2 mb-3">
+                              {mediaData.folders.map((folder: any) => (
+                                <button
+                                  key={folder.id}
+                                  type="button"
+                                  className="p-2 border rounded text-xs hover:bg-gray-50 flex flex-col items-center"
+                                  onClick={() => setCurrentFolder(folder.id)}
+                                >
+                                  <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center mb-1">
+                                    📁
+                                  </div>
+                                  <span className="truncate w-full">{folder.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Back button for subfolders */}
+                          {currentFolder !== "root" && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="mb-3 h-8"
+                              onClick={() => setCurrentFolder("root")}
+                            >
+                              ← Back to Root
+                            </Button>
+                          )}
+
+                          {/* Images */}
+                          <div className="grid grid-cols-4 gap-2">
+                            {mediaData?.files?.filter((file: any) => file.mimeType.startsWith('image/')).map((image: any) => (
+                              <button
+                                key={image.id}
+                                type="button"
+                                className={`relative border rounded overflow-hidden hover:border-blue-500 ${
+                                  selectedImages.find(img => img.id === image.id) ? 'border-blue-500 ring-2 ring-blue-200' : ''
+                                }`}
+                                onClick={() => selectImage(image)}
+                              >
+                                <img 
+                                  src={image.url} 
+                                  alt={image.alt || image.originalName}
+                                  className="w-full h-16 object-cover"
+                                />
+                                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
+                                  {image.originalName}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+
+                          {(!mediaData?.files || mediaData.files.length === 0) && (
+                            <div className="text-center py-8 text-gray-500 text-sm">
+                              No images in this folder. Upload some images above.
+                            </div>
+                          )}
+                        </div>
+                      </div>
                       
                       <div className="flex items-center space-x-6">
                         <FormField
