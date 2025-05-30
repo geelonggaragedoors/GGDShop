@@ -4,12 +4,37 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart } from "lucide-react";
 import { api } from "@/lib/api";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useToast } from "@/hooks/use-toast";
 
 export default function FeaturedProducts() {
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { toast } = useToast();
+  
   const { data: productsData, isLoading } = useQuery({
     queryKey: ["/api/products", { featured: true, limit: 4 }],
     queryFn: () => api.products.getAll({ featured: true, limit: 4 }),
   });
+
+  const handleAddToCart = (product: any) => {
+    addToCart(product, 1);
+    toast({
+      title: "Added to cart",
+      description: `${product.name} added to your cart.`,
+    });
+  };
+
+  const handleWishlistToggle = (product: any) => {
+    toggleWishlist(product);
+    toast({
+      title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
+      description: isInWishlist(product.id) 
+        ? `${product.name} removed from your wishlist.`
+        : `${product.name} added to your wishlist.`,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -115,9 +140,10 @@ export default function FeaturedProducts() {
                 <Button 
                   size="sm" 
                   variant="secondary" 
-                  className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-md"
+                  className={`absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-md ${isInWishlist(product.id) ? 'text-red-500' : ''}`}
+                  onClick={() => handleWishlistToggle(product)}
                 >
-                  <Heart className="w-4 h-4 text-gray-400 hover:text-red-500" />
+                  <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current text-red-500' : 'text-gray-400 hover:text-red-500'}`} />
                 </Button>
               </div>
               
@@ -137,7 +163,11 @@ export default function FeaturedProducts() {
                       </span>
                     )}
                   </div>
-                  <Button size="sm" className="text-sm">
+                  <Button 
+                    size="sm" 
+                    className="text-sm"
+                    onClick={() => handleAddToCart(product)}
+                  >
                     Add to Cart
                   </Button>
                 </div>

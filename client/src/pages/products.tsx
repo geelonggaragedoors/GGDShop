@@ -361,7 +361,7 @@ export default function Products() {
                           <Button 
                             className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 sm:py-3 text-sm"
                             disabled={product.stockQuantity === 0}
-                            onClick={(e) => e.preventDefault()}
+                            onClick={(e) => handleAddToCart(product, e)}
                           >
                             <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                             {product.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
