@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { fileStorage } from "./fileStorage";
 import { 
   insertProductSchema, 
@@ -591,6 +592,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error updating settings:", error);
       res.status(500).json({ message: "Failed to update settings" });
     }
+  });
+
+  // PayPal routes
+  app.get("/paypal/setup", async (req, res) => {
+    await loadPaypalDefault(req, res);
+  });
+
+  app.post("/paypal/order", async (req, res) => {
+    // Request body should contain: { intent, amount, currency }
+    await createPaypalOrder(req, res);
+  });
+
+  app.post("/paypal/order/:orderID/capture", async (req, res) => {
+    await capturePaypalOrder(req, res);
   });
 
   const httpServer = createServer(app);

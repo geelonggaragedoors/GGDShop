@@ -12,6 +12,7 @@ import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import SimpleHeader from "@/components/storefront/simple-header";
+import PayPalButton from "@/components/PayPalButton";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
@@ -303,9 +304,30 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                <Button className="w-full" size="lg">
-                  Complete Order
-                </Button>
+                <div className="space-y-4">
+                  <Button className="w-full" size="lg">
+                    Complete Order
+                  </Button>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-muted-foreground">
+                        Or pay with
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full">
+                    <PayPalButton 
+                      amount={finalTotal.toFixed(2)}
+                      currency="AUD"
+                      intent="capture"
+                    />
+                  </div>
+                </div>
 
                 <p className="text-xs text-gray-600 text-center">
                   By placing your order, you agree to our Terms of Service and Privacy Policy.
