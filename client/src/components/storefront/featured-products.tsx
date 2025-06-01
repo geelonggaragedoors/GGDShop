@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
+import { getOptimizedImageUrl, generateSrcSet, generateSizes } from "@/lib/image-optimizer";
 
 export default function FeaturedProducts() {
   const { addToCart } = useCart();
@@ -123,9 +124,22 @@ export default function FeaturedProducts() {
             <Card key={product.id || index} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group product-card border-0">
               <div className="relative">
                 <img 
-                  src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300"}
-                  alt={product.name}
+                  src={getOptimizedImageUrl(
+                    product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300",
+                    { width: 400, height: 300, quality: 85 }
+                  )}
+                  srcSet={generateSrcSet(product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64", [300, 400, 600])}
+                  sizes={generateSizes([
+                    { size: '(max-width: 768px)', width: 300 },
+                    { size: '(max-width: 1200px)', width: 400 },
+                    { size: '100vw', width: 400 }
+                  ])}
+                  alt={product.name || 'Product image'}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading={index < 4 ? "eager" : "lazy"}
+                  decoding="async"
+                  width="400"
+                  height="300"
                 />
                 {(index === 0 || product.compareAtPrice) && (
                   <Badge className="absolute top-3 left-3 bg-accent hover:bg-accent text-accent-foreground">
