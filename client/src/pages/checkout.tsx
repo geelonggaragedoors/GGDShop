@@ -12,7 +12,7 @@ import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import SimpleHeader from "@/components/storefront/simple-header";
-import SimplePayPalButton from "@/components/SimplePayPalButton";
+import BasicPayPalButton from "@/components/BasicPayPalButton";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
@@ -321,7 +321,7 @@ export default function Checkout() {
                   </div>
                   
                   <div className="w-full">
-                    <SimplePayPalButton 
+                    <BasicPayPalButton 
                       amount={finalTotal.toFixed(2)}
                       currency="AUD"
                       intent="capture"
