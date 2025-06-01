@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { fileStorage } from "./fileStorage";
 import { 
   insertProductSchema, 
@@ -594,18 +593,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PayPal routes
+  // PayPal routes (temporarily disabled for troubleshooting)
   app.get("/paypal/setup", async (req, res) => {
-    await loadPaypalDefault(req, res);
+    res.status(503).json({ error: "PayPal service temporarily unavailable" });
   });
 
   app.post("/paypal/order", async (req, res) => {
-    // Request body should contain: { intent, amount, currency }
-    await createPaypalOrder(req, res);
+    res.status(503).json({ error: "PayPal service temporarily unavailable" });
   });
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
-    await capturePaypalOrder(req, res);
+    res.status(503).json({ error: "PayPal service temporarily unavailable" });
   });
 
   const httpServer = createServer(app);
