@@ -11,6 +11,8 @@ import { api } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
+import { getOptimizedImageUrl, generateSrcSet, generateSizes } from "@/lib/image-optimizer";
+import { ImageSkeleton } from "@/components/ui/image-skeleton";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 

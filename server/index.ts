@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -6,6 +7,29 @@ import { setupVite, serveStatic, log } from "./vite";
 process.env.UPLOADTHING_TOKEN = 'eyJhcGlLZXkiOiJza19saXZlXzA2MTI4MjRkNDkwZGY1ZTVjY2RkMGNlMWJhYzY2ZWI3YzVkYzdiZmY1NWVhMWY3YmU5NzhhYzQ1M2E5NTRlZWUiLCJhcHBJZCI6ImUydWNibmYxbnQiLCJyZWdpb25zIjpbInNlYTEiXX0=';
 
 const app = express();
+
+// Add compression middleware for faster response times
+app.use(compression({
+  level: 6,
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
+
+// Add cache headers for static assets
+app.use((req, res, next) => {
+  if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  } else if (req.url.startsWith('/api/')) {
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+  }
+  next();
+});
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
