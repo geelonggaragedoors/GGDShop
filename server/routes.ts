@@ -132,6 +132,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PayPal configuration (public)
+  app.get('/api/paypal-config', async (req, res) => {
+    res.json({
+      clientId: process.env.PAYPAL_CLIENT_ID
+    });
+  });
+
   // Customer registration (public)
   app.post('/api/customers', async (req, res) => {
     try {
