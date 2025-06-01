@@ -56,10 +56,13 @@ export default function SimplePayPalButton({
 
   useEffect(() => {
     const loadPayPalScript = async () => {
-      // Remove existing PayPal script if any
-      const existingScript = document.querySelector('script[src*="paypal.com/sdk"]');
-      if (existingScript) {
-        existingScript.remove();
+      // Remove ALL existing PayPal scripts
+      const existingScripts = document.querySelectorAll('script[src*="paypal.com"]');
+      existingScripts.forEach(script => script.remove());
+      
+      // Clear any existing PayPal global
+      if (window.paypal) {
+        delete window.paypal;
       }
 
       // Get PayPal client ID from the server
@@ -74,14 +77,18 @@ export default function SimplePayPalButton({
         console.error('Failed to get PayPal config:', error);
       }
       
+      console.log('Loading PayPal SDK with client ID:', clientId);
+      
       const script = document.createElement("script");
       script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&intent=${intent}`;
       script.async = true;
       
       script.onload = () => {
         console.log("PayPal SDK loaded successfully");
+        console.log("PayPal object:", window.paypal);
+        console.log("PayPal.Buttons:", window.paypal?.Buttons);
         
-        if (window.paypal && paypalRef.current) {
+        if (window.paypal && window.paypal.Buttons && paypalRef.current) {
           // Clear the container first
           paypalRef.current.innerHTML = '';
           
@@ -97,6 +104,8 @@ export default function SimplePayPalButton({
               label: 'paypal'
             }
           }).render(paypalRef.current);
+        } else {
+          console.error("PayPal Buttons not available");
         }
       };
       
