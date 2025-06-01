@@ -63,8 +63,14 @@ export async function getClientToken() {
   }
 
   try {
+    const auth = Buffer.from(
+      `${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`,
+    ).toString("base64");
+
     const { result } = await oAuthAuthorizationController.requestToken(
-      {},
+      {
+        authorization: `Basic ${auth}`,
+      },
       { intent: "sdk_init", response_type: "client_token" },
     );
 

@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { fileStorage } from "./fileStorage";
 import { 
   insertProductSchema, 
@@ -593,17 +594,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PayPal routes (temporarily disabled for troubleshooting)
+  // PayPal routes
   app.get("/paypal/setup", async (req, res) => {
-    res.status(503).json({ error: "PayPal service temporarily unavailable" });
+    try {
+      await loadPaypalDefault(req, res);
+    } catch (error) {
+      console.error("PayPal setup error:", error);
+      res.status(500).json({ error: "PayPal configuration error" });
+    }
   });
 
   app.post("/paypal/order", async (req, res) => {
-    res.status(503).json({ error: "PayPal service temporarily unavailable" });
+    try {
+      await createPaypalOrder(req, res);
+    } catch (error) {
+      console.error("PayPal order creation error:", error);
+      res.status(500).json({ error: "Failed to create PayPal order" });
+    }
   });
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
-    res.status(503).json({ error: "PayPal service temporarily unavailable" });
+    try {
+      await capturePaypalOrder(req, res);
+    } catch (error) {
+      console.error("PayPal capture error:", error);
+      res.status(500).json({ error: "Failed to capture PayPal payment" });
+    }
   });
 
   const httpServer = createServer(app);
