@@ -1,0 +1,461 @@
+3530-295efd47b415eaa2.js:1 Replit version 4a387611, pid2 version 0.0.1358
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+/new?tab=github:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+ [LaunchDarkly] LaunchDarkly client initialized
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+icons.util.repl.co/bash.svg:1 
+            
+            
+           Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ onClick is deprecated, please use onPress
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+icons.util.repl.co/bash.svg:1 
+            
+            
+           Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ Adding extension: Google Cloud Auth Object
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'battery'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'layout-animations'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'navigation-override'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'oversized-images'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'publickey-credentials'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'speaker-selection'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'unoptimized-images'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'unsized-media'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'pointer-lock'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-bfed75ff30a22f4a.js:1
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+<link rel=preload> has an invalid `href` value
+<link rel=preload> has an invalid `href` value
+<link rel=preload> has an invalid `href` value
+<link rel=preload> has an invalid `href` value
+<link rel=preload> has an invalid `href` value
+<link rel=preload> has an invalid `href` value
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+js:3 Uncaught TypeError: Cannot read properties of undefined (reading 'startsWith')
+    at js:3:337173
+    at Module.<anonymous> (js:3:338669)
+    at t (js:3:157)
+    at __FIRST_RENDER_EXPERIMENTS__.venmoVaultWithoutPurchase (js:3:941)
+    at js:3:951
+    at js:4:5
+eruda.js:2 PayPal SDK loaded
+eruda.js:2 window.paypal available: true
+eruda.js:2 window.paypal.Buttons available: false
+eruda.js:2 PayPal SDK not properly loaded
+Mt.forEach.n.<computed> @ VM133 eruda.js:2
+eruda.js:2 window.paypal object: <button type=​"button" role=​"radio" aria-checked=​"false" data-state=​"unchecked" value=​"paypal" data-replit-metadata=​"client/​src/​pages/​checkout.tsx:​198:​20" data-component-name=​"RadioGroupItem" class=​"aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50" id=​"paypal" tabindex=​"-1" data-radix-collection-item>​</button>​
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+eruda.js:2 
+            
+            
+           GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/auth/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=4e836efb:840
+run @ @tanstack_react-query.js?v=4e836efb:494
+start @ @tanstack_react-query.js?v=4e836efb:536
+fetch @ @tanstack_react-query.js?v=4e836efb:926
+executeFetch_fn @ @tanstack_react-query.js?v=4e836efb:2211
+onSubscribe @ @tanstack_react-query.js?v=4e836efb:1898
+subscribe @ @tanstack_react-query.js?v=4e836efb:24
+(anonymous) @ @tanstack_react-query.js?v=4e836efb:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=4e836efb:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4e836efb:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4e836efb:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4e836efb:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4e836efb:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4e836efb:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384
+js:3 Uncaught TypeError: Cannot read properties of undefined (reading 'startsWith')
+    at js:3:337173
+    at Module.<anonymous> (js:3:338669)
+    at t (js:3:157)
+    at __FIRST_RENDER_EXPERIMENTS__.venmoVaultWithoutPurchase (js:3:941)
+    at js:3:951
+    at js:4:5
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&disable-funding=card&components=buttons:3
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&disable-funding=card&components=buttons:3
+t @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&disable-funding=card&components=buttons:3
+__FIRST_RENDER_EXPERIMENTS__.venmoVaultWithoutPurchase @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&disable-funding=card&components=buttons:3
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&disable-funding=card&components=buttons:3
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&disable-funding=card&components=buttons:4
+eruda.js:2 PayPal SDK loaded
+eruda.js:2 window.paypal available: true
+eruda.js:2 window.paypal.Buttons available: false
+eruda.js:2 PayPal SDK not properly loaded
+Mt.forEach.n.<computed> @ Console.js:61
+script.onload @ PayPalButtons.tsx:86
+script
+loadPayPal @ PayPalButtons.tsx:39
+await in loadPayPal
+(anonymous) @ PayPalButtons.tsx:108
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4e836efb:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4e836efb:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4e836efb:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4e836efb:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4e836efb:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384
+eruda.js:2 window.paypal object: <button type=​"button" role=​"radio" aria-checked=​"false" data-state=​"unchecked" value=​"paypal" data-replit-metadata=​"client/​src/​pages/​checkout.tsx:​198:​20" data-component-name=​"RadioGroupItem" class=​"aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50" id=​"paypal" tabindex=​"-1" data-radix-collection-item>​</button>​
+client:602 
+            
+            
+           GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/index.css?t=1748829104584&v=QCBOyHO9gt0M0BSV9s8gb net::ERR_ABORTED 502 (Bad Gateway)
+importUpdatedModule @ client:602
+fetchUpdate @ client:211
+queueUpdate @ client:186
+(anonymous) @ client:642
+handleMessage @ client:640
+(anonymous) @ client:550
+eruda.js:2 [hmr] Failed to reload /src/index.css?v=QCBOyHO9gt0M0BSV9s8gb. This could be due to syntax errors or importing non-existent modules. (see errors above)
+Mt.forEach.n.<computed> @ Console.js:61
+warnFailedUpdate @ client:176
+fetchUpdate @ client:213
+await in fetchUpdate
+queueUpdate @ client:186
+(anonymous) @ client:642
+handleMessage @ client:640
+(anonymous) @ client:550
+client:602 
+            
+            
+           GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/PayPalButtons.tsx?t=1748829104584 net::ERR_ABORTED 502 (Bad Gateway)
+importUpdatedModule @ client:602
+fetchUpdate @ client:211
+queueUpdate @ client:186
+(anonymous) @ client:642
+handleMessage @ client:640
+(anonymous) @ client:550
+eruda.js:2 [hmr] Failed to reload /src/components/PayPalButtons.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+Mt.forEach.n.<computed> @ Console.js:61
+warnFailedUpdate @ client:176
+fetchUpdate @ client:213
+await in fetchUpdate
+queueUpdate @ client:186
+(anonymous) @ client:642
+handleMessage @ client:640
+(anonymous) @ client:550
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fcheckout&id=%3Ar397%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+queryClient.ts:32 
+            
+            
+           GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/auth/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=4e836efb:840
+run @ @tanstack_react-query.js?v=4e836efb:494
+start @ @tanstack_react-query.js?v=4e836efb:536
+fetch @ @tanstack_react-query.js?v=4e836efb:926
+executeFetch_fn @ @tanstack_react-query.js?v=4e836efb:2211
+onSubscribe @ @tanstack_react-query.js?v=4e836efb:1898
+subscribe @ @tanstack_react-query.js?v=4e836efb:24
+(anonymous) @ @tanstack_react-query.js?v=4e836efb:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=4e836efb:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4e836efb:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4e836efb:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4e836efb:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4e836efb:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4e836efb:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384
+ 
+            
+            
+           GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/auth/user 401 (Unauthorized)
+window.fetch @ eruda.js:2
+(anonymous) @ queryClient.ts:19
+fetchFn @ @tanstack_react-query.js:840
+run @ @tanstack_react-query.js:494
+start @ @tanstack_react-query.js:536
+fetch @ @tanstack_react-query.js:926
+executeFetch_fn @ @tanstack_react-query.js:2211
+onSubscribe @ @tanstack_react-query.js:1898
+subscribe @ @tanstack_react-query.js:24
+(anonymous) @ @tanstack_react-query.js:3022
+subscribeToStore @ chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js:9119
+commitRootImpl @ chunk-RPCDYKBN.js:19432
+commitRoot @ chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js:18718
+workLoop @ chunk-RPCDYKBN.js:197
+flushWork @ chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js:384
+queryClient.ts:32 
+            
+            
+           GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/auth/user 401 (Unauthorized)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=4e836efb:840
+run @ @tanstack_react-query.js?v=4e836efb:494
+start @ @tanstack_react-query.js?v=4e836efb:536
+fetch @ @tanstack_react-query.js?v=4e836efb:926
+executeFetch_fn @ @tanstack_react-query.js?v=4e836efb:2211
+onSubscribe @ @tanstack_react-query.js?v=4e836efb:1898
+subscribe @ @tanstack_react-query.js?v=4e836efb:24
+(anonymous) @ @tanstack_react-query.js?v=4e836efb:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=4e836efb:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4e836efb:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4e836efb:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4e836efb:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4e836efb:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4e836efb:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384
+js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3 Uncaught TypeError: Cannot read properties of undefined (reading 'startsWith')
+    at js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3:337173
+    at Module.<anonymous> (js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3:338669)
+    at t (js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3:157)
+    at __FIRST_RENDER_EXPERIMENTS__.venmoVaultWithoutPurchase (js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3:941)
+    at js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3:951
+    at js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:4:5
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3
+t @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3
+__FIRST_RENDER_EXPERIMENTS__.venmoVaultWithoutPurchase @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:3
+(anonymous) @ js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&components=buttons:4
+Console.js:61 PayPal SDK script loaded
+Console.js:61 window.paypal exists: true
+Console.js:61 PayPal object type: object
+Console.js:61 After delay - PayPal Buttons exists: false
+Console.js:61 PayPal object properties: (2) ['__reactFiber$1sbv0sar5ly', '__reactProps$1sbv0sar5ly']
+Console.js:61 PayPal Buttons function not available
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ PayPalButtons.tsx:82
+setTimeout
+script.onload @ PayPalButtons.tsx:44
+script
+loadPayPal @ PayPalButtons.tsx:34
+await in loadPayPal
+(anonymous) @ PayPalButtons.tsx:104
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4e836efb:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4e836efb:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4e836efb:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4e836efb:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4e836efb:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384

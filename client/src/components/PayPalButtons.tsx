@@ -37,17 +37,20 @@ export default function PayPalButtons({ amount, currency, intent }: PayPalButton
         
         script.onload = () => {
           console.log('PayPal SDK script loaded');
-          console.log('window.paypal exists:', !!window.paypal);
-          console.log('PayPal object type:', typeof window.paypal);
           
-          // Give PayPal SDK more time to fully initialize
+          // Store PayPal SDK reference before React can overwrite it
+          const paypalSDK = window.paypal;
+          console.log('PayPal SDK type:', typeof paypalSDK);
+          console.log('PayPal SDK has Buttons:', !!paypalSDK?.Buttons);
+          
+          // Give PayPal SDK time to fully initialize
           setTimeout(() => {
-            console.log('After delay - PayPal Buttons exists:', !!window.paypal?.Buttons);
-            console.log('PayPal object properties:', Object.keys(window.paypal || {}));
+            // Use the stored reference instead of window.paypal
+            console.log('PayPal SDK Buttons after delay:', !!paypalSDK?.Buttons);
             
-            if (window.paypal && typeof window.paypal.Buttons === 'function') {
+            if (paypalSDK && typeof paypalSDK.Buttons === 'function') {
               try {
-                window.paypal.Buttons({
+                paypalSDK.Buttons({
                   createOrder: async () => {
                     const response = await fetch('/api/paypal/order', {
                       method: 'POST',
