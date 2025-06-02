@@ -1,4 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
+
+interface Window {
+  paypal: any;
+}
+
+declare global {
+  interface Window {
+    paypal: any;
+  }
+}
 
 interface PayPalButtonsProps {
   amount: string;
@@ -6,107 +16,80 @@ interface PayPalButtonsProps {
   intent: string;
 }
 
-export default function PayPalButtons({
-  amount,
-  currency,
-  intent,
-}: PayPalButtonsProps) {
+export default function PayPalButtons({ amount, currency, intent }: PayPalButtonsProps) {
   const paypalRef = useRef<HTMLDivElement>(null);
+  const messageRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadPayPal = async () => {
       try {
-        // Get client ID from server
-        const response = await fetch('/api/paypal-config');
-        const config = await response.json();
-        
-        if (!config.clientId) {
-          throw new Error('PayPal client ID not configured');
-        }
+        setIsLoading(true);
+        setError(null);
+
+        // Get PayPal config
+        const configResponse = await fetch('/api/paypal-config');
+        const config = await configResponse.json();
 
         // Remove existing PayPal scripts
         document.querySelectorAll('script[src*="paypal.com/sdk"]').forEach(s => s.remove());
         
-        // Load PayPal SDK for live environment with minimal configuration
+        // Load PayPal JavaScript SDK
         const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=${intent}`;
         script.async = true;
         
         script.onload = () => {
           console.log('PayPal SDK loaded');
-          console.log('window.paypal:', window.paypal);
-          console.log('window.paypal.Buttons:', window.paypal?.Buttons);
+          console.log('window.paypal available:', !!window.paypal);
+          console.log('window.paypal.Buttons available:', !!window.paypal?.Buttons);
           
-          // Add delay to ensure SDK is fully initialized
-          setTimeout(() => {
-            console.log('Checking PayPal after delay:', window.paypal?.Buttons);
-            if (window.paypal && window.paypal.Buttons && paypalRef.current) {
-              // Render PayPal Buttons using official SDK approach
-            window.paypal.Buttons({
-              style: {
-                layout: 'vertical',
-                color: 'blue',
-                shape: 'rect',
-                label: 'paypal'
-              },
-              createOrder: async () => {
-                const orderResponse = await fetch('/paypal/order', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    amount: amount,
-                    currency: currency,
-                    intent: intent
-                  })
-                });
-                const orderData = await orderResponse.json();
-                return orderData.id;
-              },
-              onApprove: async (data: any) => {
-                const captureResponse = await fetch(`/paypal/order/${data.orderID}/capture`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' }
-                });
-                const result = await captureResponse.json();
-                alert('Payment completed successfully!');
-                console.log('Payment captured:', result);
-              },
-              onError: (err: any) => {
-                console.error('PayPal error:', err);
-                alert('Payment failed. Please try again.');
-              },
-              onCancel: () => {
-                console.log('Payment cancelled by user');
-              }
-            }).render(paypalRef.current);
-
-            // Render Pay Later messages if available
-            if (window.paypal.Messages) {
-              const messageContainer = document.createElement('div');
-              messageContainer.className = 'paypal-messages mt-3';
-              paypalRef.current.appendChild(messageContainer);
-              
-              window.paypal.Messages({
-                amount: parseFloat(amount),
-                placement: 'payment',
-                style: {
-                  layout: 'text'
+          // Check if PayPal SDK loaded properly
+          if (window.paypal && window.paypal.Buttons) {
+            try {
+              // Render PayPal Buttons
+              window.paypal.Buttons({
+                createOrder: async () => {
+                  const response = await fetch('/api/paypal/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, currency, intent })
+                  });
+                  const data = await response.json();
+                  return data.id;
+                },
+                onApprove: async (data: any) => {
+                  const response = await fetch(`/api/paypal/order/${data.orderID}/capture`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                  });
+                  const result = await response.json();
+                  console.log('Payment successful:', result);
+                  return result;
+                },
+                onError: (err: any) => {
+                  console.error('PayPal error:', err);
+                  setError('Payment failed. Please try again.');
                 }
-              }).render(messageContainer);
-            }
+              }).render(paypalRef.current);
 
-            setIsLoading(false);
+              setIsLoading(false);
+            } catch (err) {
+              console.error('Error rendering PayPal buttons:', err);
+              setError('Failed to initialize PayPal buttons');
+              setIsLoading(false);
+            }
           } else {
-            console.error('PayPal SDK initialization failed');
-            console.log('Available PayPal object properties:', Object.keys(window.paypal || {}));
-            setError('PayPal SDK failed to initialize - credentials may be invalid');
+            console.error('PayPal SDK not properly loaded');
+            console.log('window.paypal object:', window.paypal);
+            setError('PayPal SDK failed to load properly. Please check your credentials.');
             setIsLoading(false);
           }
         };
         
         script.onerror = () => {
+          console.error('Failed to load PayPal SDK script');
           setError('Failed to load PayPal SDK');
           setIsLoading(false);
         };
@@ -114,6 +97,7 @@ export default function PayPalButtons({
         document.head.appendChild(script);
         
       } catch (error) {
+        console.error('PayPal initialization error:', error);
         setError('PayPal initialization failed');
         setIsLoading(false);
       }
@@ -124,34 +108,31 @@ export default function PayPalButtons({
 
   if (error) {
     return (
-      <div className="p-4 border border-red-200 rounded bg-red-50">
-        <p className="text-red-700 text-sm">{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="mt-2 px-3 py-1 text-sm border rounded hover:bg-gray-50"
-        >
-          Retry
-        </button>
+      <div className="p-4 border border-red-200 rounded-lg bg-red-50">
+        <p className="text-red-600 text-sm">{error}</p>
+        <p className="text-red-500 text-xs mt-1">
+          This may indicate an issue with the PayPal credentials or account configuration.
+        </p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6 border border-gray-200 rounded-lg">
+        <div className="animate-pulse">
+          <div className="h-12 bg-gray-200 rounded mb-2"></div>
+          <div className="h-12 bg-gray-200 rounded"></div>
+        </div>
+        <p className="text-gray-500 text-sm mt-2">Loading PayPal...</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div ref={paypalRef} className="min-h-[60px]">
-        {isLoading && (
-          <div className="animate-pulse space-y-2">
-            <div className="h-12 bg-gray-200 rounded"></div>
-            <div className="h-12 bg-gray-200 rounded"></div>
-          </div>
-        )}
-      </div>
+    <div className="space-y-4">
+      <div ref={paypalRef} id="paypal-button-container"></div>
+      <div ref={messageRef} id="paypal-messages"></div>
     </div>
   );
-}
-
-declare global {
-  interface Window {
-    paypal: any;
-  }
 }
