@@ -29,9 +29,9 @@ export default function PayPalButtons({
         // Remove existing PayPal scripts
         document.querySelectorAll('script[src*="paypal.com/sdk"]').forEach(s => s.remove());
         
-        // Load PayPal SDK following official documentation
+        // Load PayPal SDK for live environment with minimal configuration
         const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=${intent}&components=buttons,messages&enable-funding=venmo,paylater`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}`;
         script.async = true;
         
         script.onload = () => {
@@ -39,8 +39,11 @@ export default function PayPalButtons({
           console.log('window.paypal:', window.paypal);
           console.log('window.paypal.Buttons:', window.paypal?.Buttons);
           
-          if (window.paypal && window.paypal.Buttons && paypalRef.current) {
-            // Render PayPal Buttons using official SDK approach
+          // Add delay to ensure SDK is fully initialized
+          setTimeout(() => {
+            console.log('Checking PayPal after delay:', window.paypal?.Buttons);
+            if (window.paypal && window.paypal.Buttons && paypalRef.current) {
+              // Render PayPal Buttons using official SDK approach
             window.paypal.Buttons({
               style: {
                 layout: 'vertical',
