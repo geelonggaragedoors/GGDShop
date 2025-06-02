@@ -44,10 +44,14 @@ export default function PayPalButtons({
 
         // Load PayPal SDK with comprehensive configuration
         const script = document.createElement("script");
-        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=${intent}&components=buttons,marks,messages&enable-funding=venmo,paylater&disable-funding=card`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=${intent}&components=buttons,messages&enable-funding=venmo,paylater`;
         script.async = true;
         
         script.onload = () => {
+          console.log('PayPal SDK script loaded');
+          console.log('window.paypal:', window.paypal);
+          console.log('window.paypal.Buttons:', window.paypal?.Buttons);
+          
           if (window.paypal && window.paypal.Buttons && paypalRef.current) {
             // Clear container
             paypalRef.current.innerHTML = '';
