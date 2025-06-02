@@ -30,25 +30,23 @@ export default function PayPalButtons({ amount, currency, intent }: PayPalButton
         // Remove existing PayPal scripts
         document.querySelectorAll('script[src*="paypal.com/sdk"]').forEach(s => s.remove());
         
-        // Test with a more complete PayPal SDK URL including components
+        // Use PayPal SDK with vault and iframe-compatible settings
         const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=capture&components=buttons`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=capture&vault=false&components=buttons&debug=true`;
         script.async = true;
+        script.setAttribute('data-namespace', 'PayPalSDK');
         
         script.onload = () => {
-          console.log('PayPal SDK script loaded');
+          console.log('PayPal SDK script loaded with debug mode');
           
-          // Store PayPal SDK reference before React can overwrite it
-          const paypalSDK = window.paypal;
-          console.log('PayPal SDK type:', typeof paypalSDK);
-          console.log('PayPal SDK has Buttons:', !!paypalSDK?.Buttons);
-          
-          // Give PayPal SDK time to fully initialize
+          // Check if SDK loaded with debug information
           setTimeout(() => {
-            // Use the stored reference instead of window.paypal
-            console.log('PayPal SDK Buttons after delay:', !!paypalSDK?.Buttons);
+            const paypalSDK = window.paypal;
+            console.log('PayPal SDK available:', !!paypalSDK);
+            console.log('PayPal SDK Buttons function:', typeof paypalSDK?.Buttons);
             
-            if (paypalSDK && typeof paypalSDK.Buttons === 'function') {
+            // Try alternative access method if direct access fails
+            if (paypalSDK && paypalSDK.Buttons) {
               try {
                 paypalSDK.Buttons({
                   createOrder: async () => {
