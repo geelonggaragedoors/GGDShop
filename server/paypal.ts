@@ -109,7 +109,7 @@ export async function createPaypalOrder(req: Request, res: Response) {
 
     const collect = {
       body: {
-        intent: intent,
+        intent: intent.toUpperCase(), // PayPal expects uppercase
         purchaseUnits: [
           {
             amount: {
