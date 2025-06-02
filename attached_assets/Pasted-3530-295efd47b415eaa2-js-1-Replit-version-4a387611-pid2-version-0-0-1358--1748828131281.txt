@@ -1,0 +1,180 @@
+3530-295efd47b415eaa2.js:1 Replit version 4a387611, pid2 version 0.0.1358
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+/new?tab=github:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+ [LaunchDarkly] LaunchDarkly client initialized
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+icons.util.repl.co/bash.svg:1 
+            
+            
+           Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ onClick is deprecated, please use onPress
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+icons.util.repl.co/bash.svg:1 
+            
+            
+           Failed to load resource: net::ERR_NAME_NOT_RESOLVED
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-b0234c20f1cf8075.js:38
+ Adding extension: Google Cloud Auth Object
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'battery'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'layout-animations'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'navigation-override'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'oversized-images'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'publickey-credentials'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'speaker-selection'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'unoptimized-images'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'unsized-media'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Unrecognized feature: 'pointer-lock'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-bfed75ff30a22f4a.js:1
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-bfed75ff30a22f4a.js:1
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+[Violation] Potential permissions policy violation: payment is not allowed in this document.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+checkout:48 <link rel=preload> has an invalid `href` value
+checkout:48 <link rel=preload> has an invalid `href` value
+787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture:3 Uncaught TypeError: Cannot read properties of undefined (reading 'startsWith')
+    at js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture:3:337173
+    at Module.<anonymous> (js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture:3:338669)
+    at t (js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture:3:157)
+    at __FIRST_RENDER_EXPERIMENTS__.venmoVaultWithoutPurchase (js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture:3:941)
+    at js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture:3:951
+    at js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture:4:5
+Console.js:61 PayPal SDK loaded
+Console.js:61 window.paypal available: true
+Console.js:61 window.paypal.Buttons available: false
+Console.js:61 PayPal SDK not properly loaded
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 window.paypal object: <button type=​"button" role=​"radio" aria-checked=​"false" data-state=​"unchecked" value=​"paypal" data-replit-metadata=​"client/​src/​pages/​checkout.tsx:​198:​20" data-component-name=​"RadioGroupItem" class=​"aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50" id=​"paypal" tabindex=​"-1" data-radix-collection-item>​</button>​
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.

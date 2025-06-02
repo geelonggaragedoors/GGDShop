@@ -35,9 +35,9 @@ export default function PayPalButtons({ amount, currency, intent }: PayPalButton
         // Remove existing PayPal scripts
         document.querySelectorAll('script[src*="paypal.com/sdk"]').forEach(s => s.remove());
         
-        // Load PayPal JavaScript SDK
+        // Load PayPal JavaScript SDK with minimal configuration to avoid iframe issues
         const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=${intent}`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}`;
         script.async = true;
         
         script.onload = () => {
