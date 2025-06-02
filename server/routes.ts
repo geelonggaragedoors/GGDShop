@@ -602,6 +602,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // PayPal routes
+  app.get("/api/paypal-config", (req, res) => {
+    res.json({ clientId: process.env.PAYPAL_CLIENT_ID });
+  });
+
   app.get("/paypal/setup", async (req, res) => {
     try {
       await loadPaypalDefault(req, res);
@@ -626,6 +630,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("PayPal capture error:", error);
       res.status(500).json({ error: "Failed to capture PayPal payment" });
+    }
+  });
+
+  // Server-side PayPal checkout (bypass JavaScript SDK)
+  app.post("/api/paypal/redirect-checkout", async (req, res) => {
+    try {
+      const { amount, currency } = req.body;
+      
+      // Get PayPal access token
+      const tokenResponse = await fetch('https://api.paypal.com/v1/oauth2/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Basic ${Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64')}`
+        },
+        body: 'grant_type=client_credentials'
+      });
+      
+      const tokenData = await tokenResponse.json();
+      
+      // Create PayPal order
+      const orderResponse = await fetch('https://api.paypal.com/v2/checkout/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${tokenData.access_token}`,
+          'PayPal-Request-Id': `order-${Date.now()}`
+        },
+        body: JSON.stringify({
+          intent: 'CAPTURE',
+          purchase_units: [{
+            amount: {
+              currency_code: currency,
+              value: amount
+            }
+          }],
+          application_context: {
+            return_url: `${req.protocol}://${req.get('host')}/checkout/success`,
+            cancel_url: `${req.protocol}://${req.get('host')}/checkout`,
+            user_action: 'PAY_NOW'
+          }
+        })
+      });
+
+      const orderData = await orderResponse.json();
+      
+      if (orderData.links) {
+        const approveLink = orderData.links.find((link: any) => link.rel === 'approve');
+        res.json({ approveUrl: approveLink.href, orderId: orderData.id });
+      } else {
+        throw new Error('No approval link found');
+      }
+    } catch (error) {
+      console.error('PayPal redirect checkout error:', error);
+      res.status(500).json({ error: 'Failed to create PayPal checkout' });
     }
   });
 

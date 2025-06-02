@@ -1,171 +1,128 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 interface PayPalButtonsProps {
   amount: string;
   currency: string;
   intent: string;
+  onSuccess?: (details: any) => void;
+  onError?: (error: any) => void;
+  onCancel?: () => void;
 }
 
-declare global {
-  interface Window {
-    paypal: any;
-  }
+interface Window {
+  paypal: any;
 }
 
-export default function PayPalButtons({ amount, currency, intent }: PayPalButtonsProps) {
+declare const window: Window;
+
+export default function PayPalButtons({ 
+  amount, 
+  currency, 
+  intent = 'capture',
+  onSuccess,
+  onError,
+  onCancel 
+}: PayPalButtonsProps) {
   const paypalRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string>('');
 
   useEffect(() => {
-    const loadPayPal = async () => {
+    // Get PayPal client ID
+    fetch('/api/paypal-config')
+      .then(res => res.json())
+      .then(data => setClientId(data.clientId))
+      .catch(err => {
+        console.error('Failed to get PayPal config:', err);
+        setError('PayPal configuration error');
+        setIsLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!clientId || !paypalRef.current) return;
+
+    const initializePayPal = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
-
-        // Get PayPal config
-        const configResponse = await fetch('/api/paypal-config');
-        const config = await configResponse.json();
-
-        // Remove existing PayPal scripts
-        document.querySelectorAll('script[src*="paypal.com/sdk"]').forEach(s => s.remove());
+        // Try server-side redirect approach immediately (bypass JavaScript SDK issues)
+        console.log('Using server-side PayPal checkout');
         
-        // Create script with proper initialization
-        const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=${currency}&intent=capture&components=buttons`;
-        script.async = true;
+        const response = await fetch('/api/paypal/redirect-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount, currency })
+        });
         
-        script.onload = () => {
-          console.log('PayPal script loaded');
-          
-          // Wait for PayPal SDK to fully initialize
-          const checkPayPal = () => {
-            if (window.paypal && typeof window.paypal.Buttons === 'function') {
-              console.log('PayPal Buttons ready');
-              
-              window.paypal.Buttons({
-                createOrder: async () => {
-                  try {
-                    const response = await fetch('/api/paypal/order', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ amount, currency, intent: 'capture' })
-                    });
-                    
-                    if (!response.ok) {
-                      throw new Error('Failed to create order');
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Order created:', data.id);
-                    return data.id;
-                  } catch (err) {
-                    console.error('Create order error:', err);
-                    throw err;
-                  }
-                },
-                
-                onApprove: async (data: any) => {
-                  try {
-                    console.log('Payment approved:', data.orderID);
-                    
-                    const response = await fetch(`/api/paypal/order/${data.orderID}/capture`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' }
-                    });
-                    
-                    if (!response.ok) {
-                      throw new Error('Failed to capture payment');
-                    }
-                    
-                    const result = await response.json();
-                    console.log('Payment captured:', result);
-                    
-                    // Show success message
-                    alert('Payment successful!');
-                    return result;
-                  } catch (err) {
-                    console.error('Capture payment error:', err);
-                    setError('Payment processing failed');
-                  }
-                },
-                
-                onError: (err: any) => {
-                  console.error('PayPal button error:', err);
-                  setError('Payment failed. Please try again.');
-                },
-                
-                onCancel: (data: any) => {
-                  console.log('Payment cancelled:', data);
-                }
-                
-              }).render(paypalRef.current).then(() => {
-                console.log('PayPal buttons rendered successfully');
-                setIsLoading(false);
-              }).catch((err: any) => {
-                console.error('PayPal render error:', err);
-                setError('Failed to load PayPal buttons');
-                setIsLoading(false);
-              });
-              
-            } else {
-              console.log('PayPal not ready yet, retrying...');
-              setTimeout(checkPayPal, 100);
-            }
-          };
-          
-          // Start checking for PayPal initialization
-          checkPayPal();
-        };
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
         
-        script.onerror = (err) => {
-          console.error('PayPal script failed to load:', err);
-          setError('Failed to load PayPal SDK');
+        const data = await response.json();
+        
+        if (data.approveUrl) {
+          // Create a styled PayPal button that redirects to PayPal's hosted checkout
+          paypalRef.current!.innerHTML = `
+            <div class="space-y-3">
+              <button 
+                onclick="window.location.href='${data.approveUrl}'"
+                class="w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                style="background: linear-gradient(135deg, #0070ba 0%, #005ea6 100%); min-height: 48px;"
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.79A.859.859 0 0 1 5.78 2h8.525c2.312 0 3.972.669 4.94 1.983.905 1.23.94 2.97.107 5.17-.166.438-.359.838-.573 1.2-.672 1.13-1.547 1.93-2.603 2.38-.906.387-1.97.58-3.166.58H9.65a.859.859 0 0 0-.835.673l-.951 6.017a.641.641 0 0 1-.633.533h-.003Z"/>
+                  <path d="M16.986 6.08c.065.543.012 1.05-.164 1.526-.69 1.87-2.357 2.81-4.952 2.81H9.19a.859.859 0 0 0-.835.673l-1.06 6.72a.641.641 0 0 1-.633.533H4.47a.641.641 0 0 1-.633-.74l.838-5.302a.859.859 0 0 1 .835-.673h2.682c2.595 0 4.262-.94 4.952-2.81.176-.476.229-.983.164-1.526l-.322-2.04Z"/>
+                </svg>
+                <span style="font-size: 16px; font-weight: 600;">Pay with PayPal</span>
+              </button>
+              <div class="flex items-center justify-center gap-2 text-sm text-gray-500">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+                <span>Secure payment powered by PayPal</span>
+              </div>
+            </div>
+          `;
           setIsLoading(false);
-        };
-        
-        document.head.appendChild(script);
-        
-      } catch (error) {
-        console.error('PayPal initialization error:', error);
-        setError('PayPal initialization failed');
+        } else {
+          throw new Error('No approval URL received from PayPal');
+        }
+      } catch (err) {
+        console.error('PayPal initialization error:', err);
+        setError('PayPal checkout is currently unavailable. Please try again later.');
         setIsLoading(false);
       }
     };
 
-    loadPayPal();
-  }, [amount, currency, intent]);
+    initializePayPal();
+  }, [clientId, amount, currency]);
 
   if (error) {
     return (
-      <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-        <p className="text-red-600 text-sm font-medium">PayPal Payment Error</p>
-        <p className="text-red-500 text-sm mt-1">{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="mt-2 text-blue-600 text-sm underline"
-        >
-          Try Again
-        </button>
+      <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="flex items-center gap-2 text-red-700">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+          </svg>
+          <span className="font-medium">Payment Error</span>
+        </div>
+        <p className="mt-1 text-sm text-red-600">{error}</p>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="p-6 border border-gray-200 rounded-lg">
-        <div className="animate-pulse">
-          <div className="h-12 bg-blue-100 rounded mb-2"></div>
-          <div className="h-12 bg-gray-100 rounded"></div>
+      <div className="w-full">
+        <div className="animate-pulse bg-gray-200 h-12 rounded-lg mb-3"></div>
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+          <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+          <span>Loading PayPal checkout...</span>
         </div>
-        <p className="text-gray-500 text-sm mt-2">Loading PayPal checkout...</p>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-4">
-      <div ref={paypalRef} id="paypal-button-container"></div>
-    </div>
-  );
+  return <div ref={paypalRef} className="w-full" />;
 }
