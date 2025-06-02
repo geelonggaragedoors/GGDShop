@@ -35,7 +35,11 @@ export default function PayPalButtons({
         script.async = true;
         
         script.onload = () => {
-          if (window.paypal && paypalRef.current) {
+          console.log('PayPal SDK loaded');
+          console.log('window.paypal:', window.paypal);
+          console.log('window.paypal.Buttons:', window.paypal?.Buttons);
+          
+          if (window.paypal && window.paypal.Buttons && paypalRef.current) {
             // Render PayPal Buttons using official SDK approach
             window.paypal.Buttons({
               style: {
@@ -92,7 +96,9 @@ export default function PayPalButtons({
 
             setIsLoading(false);
           } else {
-            setError('PayPal SDK failed to initialize');
+            console.error('PayPal SDK initialization failed');
+            console.log('Available PayPal object properties:', Object.keys(window.paypal || {}));
+            setError('PayPal SDK failed to initialize - credentials may be invalid');
             setIsLoading(false);
           }
         };
