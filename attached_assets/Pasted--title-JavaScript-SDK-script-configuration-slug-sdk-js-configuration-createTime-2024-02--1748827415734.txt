@@ -1,0 +1,720 @@
+---
+title: JavaScript SDK script configuration
+slug: /sdk/js/configuration/
+createTime: '2024-02-22T17:02:13.715Z'
+updateTime: '2025-03-04T13:44:15.241Z'
+---
+
+
+# JavaScript SDK script configuration
+
+The JavaScript SDK displays relevant, PayPal-supported payment methods on your page, giving your buyers a personalized and streamlined checkout experience.
+
+
+
+## Add the SDK 
+You can integrate the SDK in a script tag or as a module:
+
+ 
+
+### Script tag
+You can add the SDK in a script tag. This loads the main object PayPal to the global window scope of the browser. Replace YOUR_CLIENT_ID with your client ID.
+
+
+**info**
+Note:Load the JavaScript SDK directly from https://www.paypal.com/sdk/js . Don't include it in a bundle or host it yourself. For more information, see [Load the JavaScript SDK from the PayPal server](https://developer.paypal.com/sdk/js/performance/#link-loadthejavascriptsdkfromthepaypalserver/) .
+
+
+
+#### **`Sample script tag`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID"></script>
+```
+
+### Module
+You can use the SDK as a module. Loading the SDK as a module brings certain advantages, especially when working with a [JavaScript framework](https://developer.paypal.com/docs/checkout/standard/customize/single-page-app/) . For example, you can optimize performance because the module lets you control loading behavior in JavaScript instead of HTML. It can also help reduce bugs by encapsulating data.
+
+- Use the **paypal-js**  [npm package](https://www.npmjs.com/package/@paypal/paypal-js) to integrate with front-end tools.
+- Use the **react-paypal-js**  [npm package](https://www.npmjs.com/package/@paypal/react-paypal-js) within the React.js framework.
+
+
+#### **`Use the paypal-js npm package to integrate with front-end tools`**
+```javascript
+import { loadScript } from "@paypal/paypal-js";
+loadScript({ "client-id": YOUR_CLIENT_ID })
+.then((paypal) => {
+    // start to use the PayPal JS SDK script
+})
+.catch((err) => {
+    console.error("failed to load the PayPal JS SDK script", err);
+});
+```
+
+
+#### **`Use the react-paypal-js npm package within the React.js framework`**
+```javascript
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+export default function App() {
+    return (
+        <PayPalScriptProvider options={{ "client-id": YOUR_CLIENT_ID }}/>
+    );
+}
+```
+
+You can configure and customize your integration by passing query parameters and script parameters in the JavaScript SDK script tag. These parameters personalize your setup and help PayPal decide the optimal funding sources and buttons to show to your buyers.
+
+ 
+
+### Query parameters
+Query parameters help define specific content or actions based on the data being passed. Each piece of data you send contains the following:
+
+- A key-value pair. Keys define the piece of information needed, and the value provides that information. The key is separated from the value by an equal sign ( = ).
+- A question mark ( ? ) to signify the beginning of the key-value pairs in the query string.
+- Ampersands ( & ) if you need to provide more than 1 set of values at a time.
+- Information that PayPal needs to handle your request.
+
+In this example, you send your authorization and components as query parameters:
+
+
+#### **`Query parameters`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=card-fields"></script>
+```
+
+### Script parameters
+Script parameters are additional key value pairs you can add to the script tag to provide information you need for your site to work, a single-use token, or information you'd like to capture on a page for analytics reasons.
+
+For example, a token that identifies your buyer:
+
+
+#### **`Script parameters`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID" data-client-token="abc123xyz=="></script>
+```
+
+
+## Query parameters 
+Use test parameters to see JavaScript SDK results. If you don't pass a parameter, the default value is used.
+
+
+### client-ID
+The client-ID identifies the PayPal account that sets up and finalizes transactions. By default, funds from any transactions are settled into this account. If you are facilitating transactions on behalf of other merchants and capturing funds into their accounts, see merchant-ID .
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| test | none | Your PayPal REST client ID. This identifies your PayPal account, and determines where any transactions are paid to. While you're testing in sandbox, you can useclient-id=sbas a shortcut. |
+
+
+#### **`client-ID`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID">
+ </script>
+```
+
+### buyer-country
+The buyer country determines which funding sources are eligible for a given buyer. Defaults to the buyer's IP geolocation. Any country that you can pass as a locale is a valid buyer country.
+
+Note:The buyer country is only used in the sandbox. Don't pass this query parameter in production.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| US,CA,GB,DE,FR | automatic | The buyer country. Available in the sandbox for testing. |
+
+
+#### **`buyer-country`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&buyer-country=US">
+</script>
+```
+
+### commit
+The commit status of the transaction. Determines whether to show a **Pay Now** or **Continue** button in the Checkout flow.
+
+- Use the **Pay Now** button when the buyer completes payment on the PayPal review page. For example, digitally-delivered items without shipping costs.
+- Use the **Continue** button when the buyer completes payment on your site to account for shipping, tax, and other items before submitting the order.
+
+Important:When you integrate with a PayPal API, make sure the commit value you pass in the API call matches the value you pass in the JavaScript call.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| true,false | true | Set to true if the transaction is completed on the PayPal review page or false if the amount captured changes after the buyer returns to your site. Not applicable for subscriptions.
+
+- true shows a **Pay Now** button in the PayPal Checkout flow. The final amount doesn't change after the buyer returns from PayPal to your site.
+- false shows a **Continue** button in the PayPal Checkout flow. The final amount might change after the buyer returns from PayPal to your site due to shipping, taxes, or other fees, the final amount. |
+
+
+#### **`commit`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&commit=false">
+</script>
+```
+
+### components
+The PayPal components you intend to render on your page. Each component you use must be separated by a comma ( , ). If you don't pass any components, the default payment buttons component automatically renders all eligible buttons in a single location on your page.
+
+| Option | Description |
+| --- | --- |
+| buttons | Places all of the eligible checkout buttons on your page. |
+| marks | Presents other funding sources on your page alongside PayPal using[radio buttons](https://developer.paypal.com/docs/checkout/standard/customize/display-payment-methods/). |
+| messages | Displays messaging for the most relevant[Pay Later](https://developer.paypal.com/docs/checkout/pay-later/us/)offer for every purchase. |
+| funding-eligibility | Allows you to choose the individual payment buttons (methods) you want to display on your web page. |
+| hosted-fields | Shows your own hosted credit and debit card fields. |
+| applepay | Displays the Apple Pay button |
+
+For example, you want to offer your buyers **Pay Later** options when they choose PayPal along with other payment options:
+
+
+#### **`components`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=buttons,marks,messages=">
+</script>
+```
+
+### currency
+The currency for the transaction. Funds are captured into your account in the specified currency. Defaults to USD .
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| USD,CAD,EUR | USD | The currency of the transaction or subscription plan. |
+
+
+#### **`currency`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=EUR">
+</script>
+```
+| Currency | Code |
+| --- | --- |
+| Australian Dollar | AUD |
+| Brazilian real | BRL |
+| Canadian dollar | CAD |
+| Czech koruna | CZK |
+| Danish krone | DKK |
+| Euro | EUR |
+| Hong Kong dollar | HKD |
+| Hungarian forint | HUF |
+| Israeli new shekel | ILS |
+| Japanese yen | JPY |
+| Malaysian ringgit | MYR |
+| Mexican peso | MXN |
+| New Taiwan dollar | TWD |
+| New Zealand dollar | NZD |
+| Norwegian krone | NOK |
+| Philippine peso | PHP |
+| Polish złoty | PLN |
+| Pound sterling | GBP |
+| Russian ruble | RUB |
+| Singapore dollar | SGD |
+| Swedish krona | SEK |
+| Swiss franc | CHF |
+| Thai baht | THB |
+| United States dollar | USD |
+
+
+### debug
+Set to true to enable debug mode. Debug mode is recommended only for testing and debugging, because it increases the size of the script and negatively impacts performance. Defaults to false .
+
+
+#### **`debug`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&debug=true"></script>
+```
+| Option | Description |
+| --- | --- |
+| true | Enable debug mode. |
+| false | Disable debug mode. |
+
+
+### disable-card
+**Note:****This parameter is deprecated.**In previous versions of the JavaScript SDK that displayed individual card icons, this parameter disabled specific cards for the transaction. Any cards passed were not displayed in the checkout buttons.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| visa | none | **Deprecated**. Cards to disable from showing in the checkout buttons. |
+
+
+#### **`disable-card`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&disable-card=amex,jcb"></script>
+```
+| Option | Description |
+| --- | --- |
+| visa | Visa |
+| mastercard | Mastercard |
+| amex | American Express |
+| discover | Discover |
+| jcb | JCB |
+| elo | Elo |
+| hiper | Hiper |
+
+
+### disable-funding
+The disabled funding sources for the transaction. Any funding sources that you pass aren't displayed as buttons at checkout. By default, funding source eligibility is determined based on a variety of factors. Don't use this query parameter to disable advanced credit and debit card payments.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| card,credit,bancontact | none | Funding sources to disallow from showing in the checkout buttons. Don't use this query parameter to disable advanced credit and debit card payments. |
+
+**Note:Passcreditindisable-fundingfor merchants that fall into these categories:**
+
+- Real money gaming merchants
+- Non-US merchants who don't have the correct licenses and approvals to display the **Credit** button
+
+
+#### **`disable-funding`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&disable-funding=credit,card">
+</script>
+```
+| Option | Description |
+| --- | --- |
+| card | Credit or debit cards |
+| credit | PayPal Credit (US, UK) |
+| paylater | Pay Later (US, UK), Pay in 4 (AU), 4X PayPal (France), Später Bezahlen (Germany) |
+| bancontact | Bancontact |
+| blik | BLIK |
+| eps | eps |
+| giropay | giropay |
+| ideal | iDEAL |
+| mercadopago | Mercado Pago |
+| mybank | MyBank |
+| p24 | Przelewy24 |
+| sepa | SEPA-Lastschrift |
+| sofort | Sofort |
+| venmo | Venmo |
+
+
+### enable-funding
+The enabled funding sources for the transaction. By default, funding source eligibility is determined based on a variety of factors. Enable funding can be used to ensure a funding source is rendered, if eligible.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| venmo,paylater | none | Funding sources to display as buttons at checkout. |
+
+
+#### **`enable-funding`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&enable-funding=venmo">
+</script>
+```
+| Option | Description |
+| --- | --- |
+| card | Credit or debit cards |
+| credit | PayPal Credit (US, UK) |
+| paylater | Pay Later (US, UK), Pay in 4 (AU), 4X PayPal (France), Später Bezahlen (Germany) |
+| bancontact | Bancontact |
+| blik | BLIK |
+| eps | eps |
+| giropay | giropay |
+| ideal | iDEAL |
+| mercadopago | Mercado Pago |
+| mybank | MyBank |
+| p24 | Przelewy24 |
+| sepa | SEPA-Lastschrift |
+| sofort | Sofort |
+| venmo | Venmo |
+
+
+### integration-date
+The integration date of the script, passed as a YYYY-MM-DD value. Defaults to the date when your client ID was created, which reflects the date that you added the PayPal integration to your site. This parameter ensures backwards compatibility.
+
+- Your site automatically gets any backward-compatible changes made to the PayPal script.
+- These changes include: - New funding sources
+- Buttons
+- Updated user interfaces
+- Bug fixes
+- Security fixes
+- Performance optimizations
+
+ 
+- You don't need to change the integration-date to enable new features.
+- Your site doesn't get any backward incompatible updates made to the PayPal script after the specified integration-date , or after the date your client-id was created, if you don't pass the integration-date parameter.
+- If your client-id doesn't change, you can omit the integration-date parameter and the script will maintain backward compatibility.
+- If your client-id changes dynamically, you must pass an integration date, which ensures that no breaking changes are made to your integration. This could be the case if you build a cart app, which enables merchants to dynamically set a client ID to add PayPal to their store.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| 2018-11-30 | automatic | The date of integration. Used to ensure backwards compatibility. |
+
+
+#### **`integration-date`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&integration-date=2018-11-07"></script>
+```
+
+### intent
+The intent for the transaction. This determines whether the funds are captured immediately while the buyer is present on the page. Defaults to capture .
+
+**Important:** When you integrate with a PayPal API, make sure the intent value you pass in the API call matches the value you pass in the JavaScript call.
+
+| Option | Description |
+| --- | --- |
+| capture | The funds are captured immediately while the buyer is present on your site. |
+| authorize | The funds are authorized immediately and then reauthorized or captured later. |
+| subscription | Used along withvault=trueto specify this is a subscription transaction. |
+| tokenize | Used along withvault=trueandcreateBillingAgreementto specify this is a billing (without purchase) transaction. |
+
+
+#### **`intent`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&intent=authorize"></script>
+```
+**Intent options when integrating with older APIs**
+
+When you integrate the JavaScript SDK with an older API like the [Orders V1](https://developer.paypal.com/docs/api/orders/v1/) REST API or one of our NVP/SOAP solutions, you can use the following options:
+
+| Option | Description |
+| --- | --- |
+| captureorsale | The funds are captured immediately while the buyer is present on your site. The value you use should match theintentvalue in the API call. |
+| authorize | The funds are authorized immediately and then reauthorized or captured later. |
+| order | The funds are validated without an authorization and you can reauthorize or capture later. |
+
+
+### locale
+The locale renders components. By default PayPal detects the correct locale for the buyer based on their geolocation and browser preferences. It is recommended to pass this parameter only if you need the PayPal buttons to render in the same language as the rest of your site.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| en_US,fr_FR,de_DO | automatic | The locale used to localize any components. PayPal recommends not setting this parameter, as the buyer's locale is automatically set by PayPal. |
+
+
+#### **`locale`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&locale=fr_FR"></script>
+```
+| Country | Code | Locale |
+| --- | --- | --- |
+| ALBANIA | AL | en_AL |
+| ALGERIA | DZ | ar_DZen_DZfr_DZes_DZzh_DZ |
+| ANDORRA | AD | en_ADfr_ADes_ADzh_AD |
+| ANGOLA | AO | en_AOfr_AOes_AOzh_AO |
+| ANGUILLA | AI | en_AIfr_AIes_AIzh_AI |
+| ANTIGUA & BARBUDA | AG | en_AGfr_AGes_AGzh_AG |
+| ARGENTINA | AR | es_ARen_AR |
+| ARMENIA | AM | en_AMfr_AMes_AMzh_AM |
+| ARUBA | AW | en_AWfr_AWes_AWzh_AW |
+| AUSTRALIA | AU | en_AU |
+| AUSTRIA | AT | de_ATen_AT |
+| AZERBAIJAN | AZ | en_AZfr_AZes_AZzh_AZ |
+| BAHAMAS | BS | en_BSfr_BSes_BSzh_BS |
+| BAHRAIN | BH | ar_BHen_BHfr_BHes_BHzh_BH |
+| BARBADOS | BB | en_BBfr_BBes_BBzh_BB |
+| BELARUS | BY | en_BY |
+| BELGIUM | BE | en_BEnl_BEfr_BE |
+| BELIZE | BZ | en_BZes_BZfr_BZzh_BZ |
+| BENIN | BJ | fr_BJen_BJes_BJzh_BJ |
+| BERMUDA | BM | en_BMfr_BMes_BMzh_BM |
+| BHUTAN | BT | en_BT |
+| BOLIVIA | BO | es_BOen_BOfr_BOzh_BO |
+| BOSNIA & HERZEGOVINA | BA | en_BA |
+| BOTSWANA | BW | en_BWfr_BWes_BWzh_BW |
+| BRAZIL | BR | pt_BRen_BR |
+| BRITISH VIRGIN ISLANDS | VG | en_VGfr_VGes_VGzh_VG |
+| BRUNEI | BN | en_BN |
+| BULGARIA | BG | en_BG |
+| BURKINA FASO | BF | fr_BFen_BFes_BFzh_BF |
+| BURUNDI | BI | fr_BIen_BIes_BIzh_BI |
+| CAMBODIA | KH | en_KH |
+| CAMEROON | CM | fr_CMen_CM |
+| CANADA | CA | en_CAfr_CA |
+| CAPE VERDE | CV | en_CVfr_CVes_CVzh_CV |
+| CAYMAN ISLANDS | KY | en_KYfr_KYes_KYzh_KY |
+| CHAD | TD | fr_TDen_TDes_TDzh_TD |
+| CHILE | CL | es_CLen_CLfr_CLzh_CL |
+| CHINA | CN | zh_CN |
+| COLOMBIA | CO | es_COen_COfr_COzh_CO |
+| COMOROS | KM | fr_KMen_KMes_KMzh_KM |
+| CONGO-BRAZZAVILLE | CG | en_CGfr_CGes_CGzh_CG |
+| CONGO-KINSHASA | CD | fr_CDen_CDes_CDzh_CD |
+| COOK ISLANDS | CK | en_CKfr_CKes_CKzh_CK |
+| COSTA RICA | CR | es_CRen_CRfr_CRzh_CR |
+| CÔTE D'IVOIRE | CI | fr_CIen_CI |
+| CROATIA | HR | en_HR |
+| CYPRUS | CY | en_CY |
+| CZECH REPUBLIC | CZ | cs_CZen_CZfr_CZes_CZzh_CZ |
+| DENMARK | DK | da_DKen_DK |
+| DJIBOUTI | DJ | fr_DJen_DJes_DJzh_DJ |
+| DOMINICA | DM | en_DMfr_DMes_DMzh_DM |
+| DOMINICAN REPUBLIC | DO | es_DOen_DOfr_DOzh_DO |
+| ECUADOR | EC | es_ECen_ECfr_ECzh_EC |
+| EGYPT | EG | ar_EGen_EGfr_EGes_EGzh_EG |
+| EL SALVADOR | SV | es_SVen_SVfr_SVzh_SV |
+| ERITREA | ER | en_ERfr_ERes_ERzh_ER |
+| ESTONIA | EE | en_EEru_EEfr_EEes_EEzh_EE |
+| ETHIOPIA | ET | en_ETfr_ETes_ETzh_ET |
+| FALKLAND ISLANDS | FK | en_FKfr_FKes_FKzh_FK |
+| FAROE ISLANDS | FO | da_FOen_FOfr_FOes_FOzh_FO |
+| FIJI | FJ | en_FJfr_FJes_FJzh_FJ |
+| FINLAND | FI | fi_FIen_FIfr_FIes_FIzh_FI |
+| FRANCE | FR | fr_FRen_FR |
+| FRENCH GUIANA | GF | en_GFfr_GFes_GFzh_GF |
+| FRENCH POLYNESIA | PF | en_PFfr_PFes_PFzh_PF |
+| GABON | GA | fr_GAen_GAes_GAzh_GA |
+| GAMBIA | GM | en_GMfr_GMes_GMzh_GM |
+| GEORGIA | GE | en_GEfr_GEes_GEzh_GE |
+| GERMANY | DE | de_DEen_DE |
+| GIBRALTAR | GI | en_GIfr_GIes_GIzh_GI |
+| GREECE | GR | el_GRen_GRfr_GRes_GRzh_GR |
+| GREENLAND | GL | da_GLen_GLfr_GLes_GLzh_GL |
+| GRENADA | GD | en_GDfr_GDes_GDzh_GD |
+| GUADELOUPE | GP | en_GPfr_GPes_GPzh_GP |
+| GUATEMALA | GT | es_GTen_GTfr_GTzh_GT |
+| GUINEA | GN | fr_GNen_GNes_GNzh_GN |
+| GUINEA - BISSAU | GW | en_GWfr_GWes_GWzh_GW |
+| GUYANA | GY | en_GYfr_GYes_GYzh_GY |
+| HONDURAS | HN | es_HNen_HNfr_HNzh_HN |
+| HONG KONG SAR CHINA | HK | en_HKzh_HK |
+| HUNGARY | HU | hu_HUen_HUfr_HUes_HUzh_HU |
+| ICELAND | IS | en_IS |
+| INDIA | IN | en_IN |
+| INDONESIA | ID | id_IDen_ID |
+| IRELAND | IE | en_IEfr_IEes_IEzh_IE |
+| ISRAEL | IL | he_ILen_IL |
+| ITALY | IT | it_ITen_IT |
+| JAMAICA | JM | en_JMes_JMfr_JMzh_JM |
+| JAPAN | JP | ja_JPen_JP |
+| JORDAN | JO | ar_JOen_JOfr_JOes_JOzh_JO |
+| KAZAKHSTAN | KZ | en_KZfr_KZes_KZzh_KZ |
+| KENYA | KE | en_KEfr_KEes_KEzh_KE |
+| KIRIBATI | KI | en_KIfr_KIes_KIzh_KI |
+| KUWAIT | KW | ar_KWen_KWfr_KWes_KWzh_KW |
+| KYRGYZSTAN | KG | en_KGfr_KGes_KGzh_KG |
+| LAOS | LA | en_LA |
+| LATVIA | LV | en_LVru_LVfr_LVes_LVzh_LV |
+| LESOTHO | LS | en_LSfr_LSes_LSzh_LS |
+| LIECHTENSTEIN | LI | en_LIfr_LIes_LIzh_LI |
+| LITHUANIA | LT | en_LTru_LTfr_LTes_LTzh_LT |
+| LUXEMBOURG | LU | en_LUde_LUfr_LUes_LUzh_LU |
+| MACEDONIA | MK | en_MK |
+| MADAGASCAR | MG | en_MGfr_MGes_MGzh_MG |
+| MALAWI | MW | en_MWfr_MWes_MWzh_MW |
+| MALAYSIA | MY | en_MY |
+| MALDIVES | MV | en_MV |
+| MALI | ML | fr_MLen_MLes_MLzh_ML |
+| MALTA | MT | en_MT |
+| MARSHALL ISLANDS | MH | en_MHfr_MHes_MHzh_MH |
+| MARTINIQUE | MQ | en_MQfr_MQes_MQzh_MQ |
+| MAURITANIA | MR | en_MRfr_MRes_MRzh_MR |
+| MAURITIUS | MU | en_MUfr_MUes_MUzh_MU |
+| MAYOTTE | YT | en_YTfr_YTes_YTzh_YT |
+| MEXICO | MX | es_MXen_MX |
+| MICRONESIA | FM | en_FM |
+| MOLDOVA | MD | en_MD |
+| MONACO | MC | fr_MCen_MC |
+| MONGOLIA | MN | en_MN |
+| MONTENEGRO | ME | en_ME |
+| MONTSERRAT | MS | en_MSfr_MSes_MSzh_MS |
+| MOROCCO | MA | ar_MAen_MAfr_MAes_MAzh_MA |
+| MOZAMBIQUE | MZ | en_MZfr_MZes_MZzh_MZ |
+| NAMIBIA | NA | en_NAfr_NAes_NAzh_NA |
+| NAURU | NR | en_NRfr_NRes_NRzh_NR |
+| NEPAL | NP | en_NP |
+| NETHERLANDS | NL | nl_NLen_NL |
+| NETHERLANDS ANTILLES | AN | en_ANfr_ANes_ANzh_AN |
+| NEW CALEDONIA | NC | en_NCfr_NCes_NCzh_NC |
+| NEW ZEALAND | NZ | en_NZfr_NZes_NZzh_NZ |
+| NICARAGUA | NI | es_NIen_NIfr_NIzh_NI |
+| NIGER | NE | fr_NEen_NEes_NEzh_NE |
+| NIGERIA | NG | en_NG |
+| NIUE | NU | en_NUfr_NUes_NUzh_NU |
+| NORFOLK ISLAND | NF | en_NFfr_NFes_NFzh_NF |
+| NORWAY | NO | no_NOen_NO |
+| OMAN | OM | ar_OMen_OMfr_OMes_OMzh_OM |
+| PALAU | PW | en_PWfr_PWes_PWzh_PW |
+| PANAMA | PA | es_PAen_PAfr_PAzh_PA |
+| PAPAUA NEW GUINEA | PG | en_PGfr_PGes_PGzh_PG |
+| PARAGUAY | PY | es_PYen_PY |
+| PERU | PE | es_PEen_PEfr_PEzh_PE |
+| PHILIPPINES | PH | en_PH |
+| PITCAIRN ISLANDS | PN | en_PNfr_PNes_PNzh_PN |
+| POLAND | PL | pl_PLen_PL |
+| PORTUGAL | PT | pt_PTen_PT |
+| QATAR | QA | en_QAfr_QAes_QAzh_QAar_QA |
+| RÉUNION | RE | en_REfr_REes_REzh_RE |
+| ROMANIA | RO | en_ROfr_ROes_ROzh_RO |
+| RUSSIA | RU | ru_RUen_RU |
+| RWANDA | RW | fr_RWen_RWes_RWzh_RW |
+| SAMOA | WS | en_WS |
+| SAN MARINO | SM | en_SMfr_SMes_SMzh_SM |
+| SÃO TOMÉ & PRÍNCIPE | ST | en_STfr_STes_STzh_ST |
+| SAUDI ARABIA | SA | ar_SAen_SAfr_SAes_SAzh_SA |
+| SENEGAL | SN | fr_SNen_SNes_SNzh_SN |
+| SERBIA | RS | en_RSfr_RSes_RSzh_RS |
+| SEYCHELLES | SC | fr_SCen_SCes_SCzh_SC |
+| SIERRA LEONE | SL | en_SLfr_SLes_SLzh_SL |
+| SINGAPORE | SG | en_SG |
+| SLOVAKIA | SK | sk_SKen_SKfr_SKes_SKzh_SK |
+| SLOVENIA | SI | en_SIfr_SIes_SIzh_SI |
+| SOLOMON ISLANDS | SB | en_SBfr_SBes_SBzh_SB |
+| SOMALIA | SO | en_SOfr_SOes_SOzh_SO |
+| SOUTH AFRICA | ZA | en_ZAfr_ZAes_ZAzh_ZA |
+| SOUTH KOREA | KR | ko_KRen_KR |
+| SPAIN | ES | es_ESen_ES |
+| SRI LANKA | LK | en_LK |
+| ST. HELENA | SH | en_SHfr_SHes_SHzh_SH |
+| ST. KITTS & NEVIS | KN | en_KNfr_KNes_KNzh_KN |
+| ST. LUCIA | LC | en_LCfr_LCes_LCzh_LC |
+| ST. PIERRE & MIQUELON | PM | en_PMfr_PMes_PMzh_PM |
+| ST. VINCENT & GRENADINES | VC | en_VCfr_VCes_VCzh_VC |
+| SURINAME | SR | en_SRfr_SRes_SRzh_SR |
+| SVALBARD & JAN MAYEN | SJ | en_SJfr_SJes_SJzh_SJ |
+| SWAZILAND | SZ | en_SZfr_SZes_SZzh_SZ |
+| SWEDEN | SE | sv_SEen_SE |
+| SWITZERLAND | CH | de_CHfr_CHen_CH |
+| TAIWAN | TW | zh_TWen_TW |
+| TAJIKISTAN | TJ | en_TJfr_TJes_TJzh_TJ |
+| TANZANIA | TZ | en_TZfr_TZes_TZzh_TZ |
+| THAILAND | TH | th_THen_TH |
+| TOGO | TG | fr_TGen_TGes_TGzh_TG |
+| TONGA | TO | en_TO |
+| TRINIDAD & TOBAGO | TT | en_TTfr_TTes_TTzh_TT |
+| TUNISIA | TN | ar_TNen_TNfr_TNes_TNzh_TN |
+| TURKMENISTAN | TM | en_TMfr_TMes_TMzh_TM |
+| TURKS & CAICOS ISLANDS | TC | en_TCfr_TCes_TCzh_TC |
+| TUVALU | TV | en_TVfr_TVes_TVzh_TV |
+| TURKEY | TR | tr_TRen_TR |
+| UGANDA | UG | en_UGfr_UGes_UGzh_UG |
+| UKRAINE | UA | en_UAru_UAfr_UAes_UAzh_UA |
+| UNITED ARAB EMIRATES | AE | en_AEfr_AEes_AEzh_AEar_AE |
+| UNITED KINGDOM | GB | en_GB |
+| UNITED STATES | US | en_USfr_USes_USzh_US |
+| URUGUAY | UY | es_UYen_UYfr_UYzh_UY |
+| VANUATU | VU | en_VUfr_VUes_VUzh_VU |
+| VATICAN CITY | VA | en_VAfr_VAes_VAzh_VA |
+| VENEZUELA | VE | es_VEen_VEfr_VEzh_VE |
+| VIETNAM | VN | en_VN |
+| WALLIS & FUTUNA | WF | en_WFfr_WFes_WFzh_WF |
+| YEMEN | YE | ar_YEen_YEfr_YEes_YEzh_YE |
+| ZAMBIA | ZM | en_ZMfr_ZMes_ZMzh_ZM |
+| ZIMBABWE | ZW | en_ZW |
+
+ 
+### merchant-id
+The merchant ID of a merchant for whom you are facilitating a transaction.
+
+Use this parameter only for partner, marketplaces, and cart solutions when you are acting on behalf of another merchant to facilitate their PayPal transactions.
+
+| Example value | Default | Description |
+| --- | --- | --- |
+| ABC123 | automatic | The merchant for whom you are facilitating a transaction. |
+
+
+#### **`merchant-id`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&merchant-id=XXX"></script>
+```
+| Integration | Use Case | Client ID | Merchant ID | Additional parameters |
+| --- | --- | --- | --- | --- |
+| Standalone integration | Capturing funds directly into my PayPal account. | Pass a client ID associated with your account. | Don't pass a merchant ID, because it is automatically derived. |
+| Partner or Marketplace integration | Facilitating payments on behalf of other merchants. | Pass a client ID associated with your partner or marketplace account. | You must pass the merchant ID of the merchant for whom you are facilitating payments. |
+| Cart integration | Facilitating payments on behalf of other merchants for whom I have client IDs. | Pass the client ID of the merchant for whom you are facilitating payments. | Don't pass a merchant ID. | Pass theintegration-dateparameter to ensure your integration doesn't break as new client IDs onboard to your site. |
+
+
+### vault
+Whether the payment information in the transaction will be saved. Save your customers' payment information for billing agreements, subscriptions, or recurring payments.
+
+Set to true if the payment sets up a billing agreement, reference transaction, subscription, or recurring payment. Defaults to false .
+
+**Note:Not all payment methods can be saved.**
+
+
+#### **`vault`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&vault=true"></script>
+```
+| Option | Description |
+| --- | --- |
+| true | Show only funding sources that you can save or use to create a billing agreement, reference transaction, subscription, or recurring payment. |
+| false | Show all funding sources. |
+
+
+
+## Script parameters 
+Script parameters are additional key value pairs you can add to the script tag to provide information you need.
+
+
+### data-csp-nonce
+Pass a Content Security Policy single-use token if you use them on your site. See [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) for details.
+
+| Option | Description |
+| --- | --- |
+| data-csp-nonce | CSP single-use token used to render the button. |
+
+
+#### **`data-csp-nonce`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID" data-csp-nonce="MY_CSP_NONCE">
+```
+
+### data-client-token
+Client token used to identify your buyers.
+
+| Option | Description |
+| --- | --- |
+| data-client-token | Client token used for identifying your buyers. |
+
+
+#### **`data-client-token sample`**
+```javascript
+<script src="https://sandbox.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID" data-client-token="abc123xyz=="></script>
+
+```
+
+### data-page-type
+Pass a page type to log any interactions with the components you use and the type of page where the JavaScript SDK loads. This attribute accepts the following page types: product-listing , search-results , product-details , mini-cart , cart or checkout .
+
+| Option | Description |
+| --- | --- |
+| data-page-type | Log page type and interactions for the JavaScript SDK. |
+
+
+#### **`data-page-type`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID" data-page-type="product-details"></script>
+```
+
+### data-partner-attribution-id
+Pass your partner attribution ID, or build notation (BN) code, to receive revenue attribution. Your BN code is issued to you as part of the partner onboarding process and provides tracking on all your transactions. To find your BN code:
+
+- Log in to the [Developer Dashboard](https://developer.paypal.com/dashboard) with your PayPal account.
+- In the left-hand navigation menu, select My Apps & Credentials.
+- Select your app.
+- Under App Settings, find your BN code.
+
+| Option | Description |
+| --- | --- |
+| data-partner-attribution-id | Partner attribution ID used for revenue attribution. |
+
+
+#### **`data-partner-attribution-id`**
+```javascript
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID" data-partner-attribution-id="MY_PARTNER_ATTRIBUTION_ID"></script>
+```
+
+### data-user-id-token
+Attribute to pass the id_token from your server into the JavaScript SDK.
+
+| Option | Description |
+| --- | --- |
+| data-user-id-token | Attribute to pass theid_tokenfrom your server into the JavaScript SDK. The OAuth 2.0 API to retrieve anaccess_tokenhas an additional parameter,response_type, that can be set toid_token. |
+
+
+#### **`data-user-id-token sample`**
+```javascript
+<script src="https://sandbox.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID" data-user-id-token="YOUR-ID-TOKEN"></script>
+```
+
+
+## Next steps & customizations 
+
+
+[JSSDK Complete Reference](https://developer.paypal.com/sdk/js/reference/)
+
+Dynamically exposes objects and methods.
+
+
+
+[Performance Optimization](https://developer.paypal.com/sdk/js/performance/)
+
+Optimize loading the JavaScript SDK.
+
