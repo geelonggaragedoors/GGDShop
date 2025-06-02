@@ -1,0 +1,77 @@
+checkout:47 <link rel=preload> has an invalid `href` value
+chunk-RPCDYKBN.js?v=4e836efb:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+blob:https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/3aff7e3b-2ac6-48f3-ac7b-2afef60b95d8:1 
+            
+            
+           GET blob:https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/3aff7e3b-2ac6-48f3-ac7b-2afef60b95d8 net::ERR_FILE_NOT_FOUND
+Image
+commitMount @ chunk-RPCDYKBN.js?v=4e836efb:8412
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:17102
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=4e836efb:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19353
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384
+queryClient.ts:32 
+            
+            
+           GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/auth/user 401 (Unauthorized)
+(anonymous) @ queryClient.ts:32
+fetchFn @ @tanstack_react-query.js?v=4e836efb:840
+run @ @tanstack_react-query.js?v=4e836efb:494
+start @ @tanstack_react-query.js?v=4e836efb:536
+fetch @ @tanstack_react-query.js?v=4e836efb:926
+executeFetch_fn @ @tanstack_react-query.js?v=4e836efb:2211
+onSubscribe @ @tanstack_react-query.js?v=4e836efb:1898
+subscribe @ @tanstack_react-query.js?v=4e836efb:24
+(anonymous) @ @tanstack_react-query.js?v=4e836efb:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=4e836efb:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4e836efb:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4e836efb:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4e836efb:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4e836efb:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4e836efb:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384
+js?client-id=Ae7z-JqAi5tCxn8KmxhZ01NnEG21PpIfOrBv2SicvFaKxHFTSdwRJoNpakvA-K2AdrWrjiZ8OO4F085_&currency=AUD&intent=capture&vault=false&components=buttons&debug=true:3123 paypal_js_sdk_v5_init {uidAttribute: 'missing', cacheType: 'sdk_client_cache_hit', jsSdkLibrary: 'none', locale: 'en_US', integrationSource: 'none', …}
+PayPalButtons.tsx:40 PayPal SDK script loaded with debug mode
+PayPalButtons.tsx:45 PayPal SDK available: true
+PayPalButtons.tsx:46 PayPal SDK Buttons function: undefined
+PayPalButtons.tsx:83 PayPal Buttons function not available
+(anonymous) @ PayPalButtons.tsx:83
+setTimeout
+script.onload @ PayPalButtons.tsx:43
+script
+loadPayPal @ PayPalButtons.tsx:34
+await in loadPayPal
+(anonymous) @ PayPalButtons.tsx:105
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4e836efb:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4e836efb:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4e836efb:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4e836efb:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4e836efb:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4e836efb:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4e836efb:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4e836efb:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4e836efb:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4e836efb:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4e836efb:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4e836efb:18718
+workLoop @ chunk-RPCDYKBN.js?v=4e836efb:197
+flushWork @ chunk-RPCDYKBN.js?v=4e836efb:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4e836efb:384
