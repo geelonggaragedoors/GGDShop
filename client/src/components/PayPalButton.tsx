@@ -42,29 +42,48 @@ export default function PayPalButton({
       });
   }, []);
 
-  // Initialize PayPal SDK
+  // Initialize PayPal - prioritize server-side redirect for reliability
   useEffect(() => {
     if (!clientId || !paypalRef.current) return;
 
+    // Immediately use server-side redirect approach for better reliability
+    console.log('Using server-side PayPal redirect approach');
+    setShowFallback(true);
+    setIsLoading(false);
+    
+    // Alternative: Try SDK approach with quick timeout
+    /*
+    const timeoutId = setTimeout(() => {
+      console.log('PayPal SDK timeout, switching to fallback');
+      setShowFallback(true);
+      setIsLoading(false);
+    }, 3000);
+
     const loadPayPalSDK = () => {
-      // Check if PayPal SDK is already loaded
-      if (window.paypal) {
+      if (window.paypal && window.paypal.Buttons) {
+        clearTimeout(timeoutId);
         initializePayPalButtons();
         return;
       }
 
-      // Load PayPal SDK script
       const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&intent=${intent}&enable-funding=venmo&disable-funding=card`;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&intent=${intent}`;
       script.async = true;
       
       script.onload = () => {
-        console.log('PayPal SDK loaded successfully');
-        initializePayPalButtons();
+        clearTimeout(timeoutId);
+        setTimeout(() => {
+          if (window.paypal && window.paypal.Buttons) {
+            initializePayPalButtons();
+          } else {
+            setShowFallback(true);
+            setIsLoading(false);
+          }
+        }, 500);
       };
       
-      script.onerror = (err) => {
-        console.error('PayPal SDK failed to load:', err);
+      script.onerror = () => {
+        clearTimeout(timeoutId);
         setShowFallback(true);
         setIsLoading(false);
       };
@@ -72,9 +91,12 @@ export default function PayPalButton({
       document.head.appendChild(script);
     };
 
+    loadPayPalSDK();
+    */
+
     const initializePayPalButtons = () => {
       if (!window.paypal || !window.paypal.Buttons) {
-        console.error('PayPal Buttons not available');
+        console.error('PayPal Buttons not available, using fallback');
         setShowFallback(true);
         setIsLoading(false);
         return;
@@ -95,13 +117,18 @@ export default function PayPalButton({
               });
               
               if (!response.ok) {
+                console.error('PayPal order creation failed:', response.status);
                 throw new Error(`HTTP error! status: ${response.status}`);
               }
               
               const orderData = await response.json();
+              console.log('PayPal order created:', orderData.id);
               return orderData.id;
             } catch (error) {
               console.error('Error creating PayPal order:', error);
+              // Fall back to server-side redirect
+              setShowFallback(true);
+              setIsLoading(false);
               throw error;
             }
           },

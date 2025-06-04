@@ -76,19 +76,31 @@ export default function Checkout() {
   };
 
   const handleCardPayment = async () => {
-    if (!validateForm(true)) return;
+    console.log('Card payment button clicked');
+    console.log('Form validation result:', validateForm());
+    console.log('Form data:', formData);
     
+    if (!validateForm(true)) {
+      console.log('Form validation failed');
+      return;
+    }
+    
+    console.log('Starting card payment processing');
     setIsProcessing(true);
+    
     try {
       // Simulate card payment processing
+      console.log('Processing payment...');
       await new Promise(resolve => setTimeout(resolve, 2000));
       
+      console.log('Payment successful, redirecting to success page');
       toast({
         title: "Order Confirmed",
         description: "Your order has been successfully placed.",
       });
       setLocation('/checkout/success');
     } catch (error) {
+      console.error('Payment error:', error);
       toast({
         title: "Payment Failed",
         description: "There was an issue processing your payment. Please try again.",
@@ -356,11 +368,21 @@ export default function Checkout() {
                 <div className="space-y-4">
                   {cartItems.map((item) => (
                     <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                      <img 
-                        src={item.image || "/api/placeholder/80/80"} 
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
+                      <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                        {item.image ? (
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-16 h-16 object-cover rounded"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.parentElement!.innerHTML = '<div class="text-gray-400 text-xs text-center">No Image</div>';
+                            }}
+                          />
+                        ) : (
+                          <div className="text-gray-400 text-xs text-center">No Image</div>
+                        )}
+                      </div>
                       <div className="flex-1">
                         <h4 className="font-medium">{item.name}</h4>
                         <p className="text-sm text-gray-600">${item.price}</p>
