@@ -94,9 +94,47 @@ export default function Checkout() {
     setIsProcessing(true);
     
     try {
+      // Create order in database
+      const orderData = {
+        customerData: formData,
+        cartItems,
+        shippingMethod,
+        paymentMethod: 'card',
+        totals: {
+          subtotal: cartTotal,
+          shipping: shippingCost,
+          tax: gst,
+          total: finalTotal
+        }
+      };
+
+      console.log('Creating order in database...');
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error('Failed to create order');
+      }
+
+      const { order } = await orderResponse.json();
+      console.log('Order created:', order);
+
       // Simulate card payment processing
       console.log('Processing payment...');
       await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Update order payment status
+      await fetch(`/api/orders/${order.id}/payment-status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentStatus: 'paid', status: 'processing' })
+      });
+
+      // Clear cart
+      cartItems.forEach(item => removeFromCart(item.productId));
       
       console.log('Payment successful, redirecting to success page');
       toast({
@@ -465,6 +503,18 @@ export default function Checkout() {
                           amount={finalTotal.toFixed(2)}
                           currency="AUD"
                           intent="capture"
+                          orderData={{
+                            customerData: formData,
+                            cartItems,
+                            shippingMethod,
+                            paymentMethod: 'paypal',
+                            totals: {
+                              subtotal: cartTotal,
+                              shipping: shippingCost,
+                              tax: gst,
+                              total: finalTotal
+                            }
+                          }}
                           onSuccess={handlePayPalSuccess}
                           onError={handlePayPalError}
                           onCancel={() => console.log('PayPal payment cancelled')}

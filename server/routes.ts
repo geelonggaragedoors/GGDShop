@@ -633,6 +633,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update order payment status
+  app.patch("/api/orders/:id/payment-status", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { paymentStatus, status } = req.body;
+      
+      await storage.updateOrderStatus(id, status);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
   // Order creation endpoint
   app.post("/api/orders", async (req, res) => {
     try {
