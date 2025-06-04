@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,9 +18,86 @@ import PayPalButton from "@/components/PayPalButton";
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const [isGuestCheckout, setIsGuestCheckout] = useState(!isAuthenticated);
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    postcode: '',
+    state: ''
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const validateForm = (showToast = false) => {
+    const required = ['firstName', 'lastName', 'email', 'address', 'city', 'postcode', 'state'];
+    const missing = required.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missing.length > 0 && showToast) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required shipping details.",
+        variant: "destructive"
+      });
+    }
+    return missing.length === 0;
+  };
+
+  const isFormValid = validateForm();
+
+  const handlePayPalSuccess = (details: any) => {
+    console.log('PayPal payment successful:', details);
+    toast({
+      title: "Payment Successful",
+      description: "Your PayPal payment has been processed successfully.",
+    });
+    setLocation('/checkout/success');
+  };
+
+  const handlePayPalError = (error: any) => {
+    console.error('PayPal payment error:', error);
+    toast({
+      title: "Payment Failed",
+      description: "There was an issue processing your PayPal payment. Please try again.",
+      variant: "destructive"
+    });
+  };
+
+  const handleCardPayment = async () => {
+    if (!validateForm(true)) return;
+    
+    setIsProcessing(true);
+    try {
+      // Simulate card payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast({
+        title: "Order Confirmed",
+        description: "Your order has been successfully placed.",
+      });
+      setLocation('/checkout/success');
+    } catch (error) {
+      toast({
+        title: "Payment Failed",
+        description: "There was an issue processing your payment. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const shippingCost = shippingMethod === "express" ? 25 : 15;
   const gst = (cartTotal + shippingCost) * 0.1;
@@ -97,39 +175,76 @@ export default function Checkout() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" />
+                    <Label htmlFor="firstName">First Name *</Label>
+                    <Input 
+                      id="firstName" 
+                      placeholder="John" 
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" />
+                    <Label htmlFor="lastName">Last Name *</Label>
+                    <Input 
+                      id="lastName" 
+                      placeholder="Doe" 
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john@example.com" />
+                  <Label htmlFor="email">Email *</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="john@example.com" 
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" type="tel" placeholder="+61 4XX XXX XXX" />
+                  <Input 
+                    id="phone" 
+                    type="tel" 
+                    placeholder="+61 4XX XXX XXX" 
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" placeholder="123 Main Street" />
+                  <Label htmlFor="address">Address *</Label>
+                  <Input 
+                    id="address" 
+                    placeholder="123 Main Street" 
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input id="city" placeholder="Geelong" />
+                    <Label htmlFor="city">City *</Label>
+                    <Input 
+                      id="city" 
+                      placeholder="Geelong" 
+                      value={formData.city}
+                      onChange={(e) => handleInputChange('city', e.target.value)}
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="postcode">Postcode</Label>
-                    <Input id="postcode" placeholder="3220" />
+                    <Label htmlFor="postcode">Postcode *</Label>
+                    <Input 
+                      id="postcode" 
+                      placeholder="3220" 
+                      value={formData.postcode}
+                      onChange={(e) => handleInputChange('postcode', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="state">State</Label>
-                  <Select>
+                  <Label htmlFor="state">State *</Label>
+                  <Select value={formData.state} onValueChange={(value) => handleInputChange('state', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
                     </SelectTrigger>
@@ -306,23 +421,49 @@ export default function Checkout() {
 
                 <div className="space-y-4">
                   {paymentMethod === "card" && (
-                    <Button className="w-full" size="lg">
-                      Complete Order
+                    <Button 
+                      className="w-full" 
+                      size="lg"
+                      onClick={handleCardPayment}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? "Processing..." : "Complete Order"}
                     </Button>
                   )}
                   
                   {paymentMethod === "paypal" && (
                     <div className="w-full">
-                      <PayPalButton 
-                        amount={finalTotal.toFixed(2)}
-                        currency="AUD"
-                        intent="capture"
-                      />
+                      {isFormValid ? (
+                        <PayPalButton 
+                          amount={finalTotal.toFixed(2)}
+                          currency="AUD"
+                          intent="capture"
+                          onSuccess={handlePayPalSuccess}
+                          onError={handlePayPalError}
+                          onCancel={() => console.log('PayPal payment cancelled')}
+                        />
+                      ) : (
+                        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                          <p className="text-yellow-800 text-sm">
+                            Please complete all required shipping information before proceeding with PayPal payment.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
 
                   {paymentMethod === "afterpay" && (
-                    <Button className="w-full" size="lg" variant="outline">
+                    <Button 
+                      className="w-full" 
+                      size="lg" 
+                      variant="outline"
+                      onClick={() => {
+                        toast({
+                          title: "Afterpay Integration",
+                          description: "Afterpay payment integration coming soon!",
+                        });
+                      }}
+                    >
                       Pay with Afterpay
                     </Button>
                   )}
