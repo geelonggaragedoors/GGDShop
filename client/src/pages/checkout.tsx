@@ -14,6 +14,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import SimpleHeader from "@/components/storefront/simple-header";
 import PayPalButton from "@/components/PayPalButton";
+import AddressAutocomplete from "@/components/ui/address-autocomplete";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
@@ -43,6 +44,33 @@ export default function Checkout() {
       const updated = { ...prev, [field]: value };
       console.log('Updated form data:', updated);
       return updated;
+    });
+  };
+
+  const handleAddressSelect = (addressData: any) => {
+    console.log('Address selected:', addressData);
+    const { components } = addressData;
+    
+    // Map Google Places components to form fields
+    const streetAddress = `${components.street_number || ''} ${components.route || ''}`.trim();
+    const city = components.locality || '';
+    const state = components.administrative_area_level_1 || '';
+    const postcode = components.postal_code || '';
+    
+    // Update form data with address components
+    setFormData(prev => ({
+      ...prev,
+      address: streetAddress,
+      city: city,
+      state: state.toLowerCase(),
+      postcode: postcode
+    }));
+    
+    console.log('Auto-populated address fields:', {
+      address: streetAddress,
+      city,
+      state: state.toLowerCase(),
+      postcode
     });
   };
 
@@ -269,12 +297,12 @@ export default function Checkout() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="address">Address *</Label>
-                  <Input 
-                    id="address" 
-                    placeholder="123 Main Street" 
-                    value={formData.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
+                  <Label htmlFor="address-autocomplete">Address *</Label>
+                  <AddressAutocomplete
+                    id="address-autocomplete"
+                    placeholder="Start typing your address..."
+                    onAddressSelect={handleAddressSelect}
+                    defaultValue={formData.address}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
