@@ -182,7 +182,7 @@ export default function Checkout() {
     }
   };
 
-  const shippingCost = shippingMethod === "express" ? 25 : 15;
+  const shippingCost = 15; // Standard shipping only
   const gst = (cartTotal + shippingCost) * 0.1;
   const finalTotal = cartTotal + shippingCost + gst;
 
@@ -352,32 +352,20 @@ export default function Checkout() {
                 <CardTitle>Shipping Method</CardTitle>
               </CardHeader>
               <CardContent>
-                <RadioGroup value={shippingMethod} onValueChange={setShippingMethod}>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="standard" id="standard" />
-                      <Label htmlFor="standard">
-                        <div>
-                          <div className="font-medium">Standard Shipping</div>
-                          <div className="text-sm text-gray-600">5-7 business days</div>
-                        </div>
-                      </Label>
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
                     </div>
-                    <span className="font-medium">$15.00</span>
+                    <Label>
+                      <div>
+                        <div className="font-medium">Standard Shipping</div>
+                        <div className="text-sm text-gray-600">5-7 business days</div>
+                      </div>
+                    </Label>
                   </div>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="express" id="express" />
-                      <Label htmlFor="express">
-                        <div>
-                          <div className="font-medium">Express Shipping</div>
-                          <div className="text-sm text-gray-600">2-3 business days</div>
-                        </div>
-                      </Label>
-                    </div>
-                    <span className="font-medium">$25.00</span>
-                  </div>
-                </RadioGroup>
+                  <span className="font-medium">$15.00</span>
+                </div>
               </CardContent>
             </Card>
 
