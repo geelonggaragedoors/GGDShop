@@ -465,10 +465,36 @@ export default function Checkout() {
                           onCancel={() => console.log('PayPal payment cancelled')}
                         />
                       ) : (
-                        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <p className="text-yellow-800 text-sm">
-                            Please complete all required shipping information before proceeding with PayPal payment.
-                          </p>
+                        <div className="space-y-3">
+                          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <p className="text-yellow-800 text-sm font-medium mb-2">
+                              Please complete all required shipping information:
+                            </p>
+                            <ul className="text-yellow-700 text-xs space-y-1">
+                              {!formData.firstName && <li>• First Name</li>}
+                              {!formData.lastName && <li>• Last Name</li>}
+                              {!formData.email && <li>• Email Address</li>}
+                              {!formData.address && <li>• Street Address</li>}
+                              {!formData.city && <li>• City</li>}
+                              {!formData.postcode && <li>• Postcode</li>}
+                              {!formData.state && <li>• State</li>}
+                            </ul>
+                          </div>
+                          <button
+                            onClick={() => {
+                              // Focus on first empty required field
+                              const firstEmpty = ['firstName', 'lastName', 'email', 'address', 'city', 'postcode'].find(
+                                field => !formData[field as keyof typeof formData]
+                              );
+                              if (firstEmpty) {
+                                document.getElementById(firstEmpty)?.focus();
+                              }
+                            }}
+                            className="w-full bg-gray-300 text-gray-600 font-semibold py-3 px-6 rounded-lg cursor-not-allowed"
+                            disabled
+                          >
+                            Complete Required Fields to Continue
+                          </button>
                         </div>
                       )}
                     </div>
