@@ -633,10 +633,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Order creation endpoint
+  app.post("/api/orders", async (req, res) => {
+    try {
+      const { customerData, cartItems, shippingMethod, paymentMethod, totals } = req.body;
+      
+      // Create customer if doesn't exist
+      let customer = await storage.getCustomerByEmail(customerData.email);
+      if (!customer) {
+        customer = await storage.createCustomer({
+          email: customerData.email,
+          firstName: customerData.firstName,
+          lastName: customerData.lastName,
+          phone: customerData.phone
+        });
+      }
+
+      // Generate order number
+      const orderNumber = `GGD-${Date.now().toString().slice(-8)}`;
+
+      // Create order
+      const order = await storage.createOrder({
+        orderNumber,
+        customerId: customer.id,
+        customerEmail: customer.email,
+        status: paymentMethod === 'paypal' ? 'pending_payment' : 'processing',
+        paymentStatus: 'pending',
+        subtotal: totals.subtotal.toString(),
+        shippingCost: totals.shipping.toString(),
+        taxAmount: totals.tax.toString(),
+        total: totals.total.toString(),
+        shippingAddress: `${customerData.address}, ${customerData.city}, ${customerData.state} ${customerData.postcode}`,
+        notes: `Shipping: ${shippingMethod === 'express' ? 'Express (2-3 days)' : 'Standard (5-7 days)'}`
+      });
+
+      // Add order items
+      for (const item of cartItems) {
+        await storage.addOrderItem({
+          orderId: order.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price.toString(),
+          total: (item.price * item.quantity).toString()
+        });
+      }
+
+      res.json({ order, customer });
+    } catch (error) {
+      console.error("Error creating order:", error);
+      res.status(500).json({ message: "Failed to create order" });
+    }
+  });
+
   // Server-side PayPal checkout (bypass JavaScript SDK)
   app.post("/api/paypal/redirect-checkout", async (req, res) => {
     try {
-      const { amount, currency } = req.body;
+      const { amount, currency, orderData } = req.body;
+      
+      // Create order in database first if orderData provided
+      let dbOrder = null;
+      if (orderData) {
+        const orderResponse = await fetch(`${req.protocol}://${req.get('host')}/api/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        });
+        const result = await orderResponse.json();
+        dbOrder = result.order;
+      }
       
       // Get PayPal access token
       const tokenResponse = await fetch('https://api.paypal.com/v1/oauth2/token', {
@@ -664,21 +728,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
             amount: {
               currency_code: currency,
               value: amount
-            }
+            },
+            custom_id: dbOrder?.id // Link to our database order
           }],
           application_context: {
-            return_url: `${req.protocol}://${req.get('host')}/checkout/success`,
+            return_url: `${req.protocol}://${req.get('host')}/checkout/success?order_id=${dbOrder?.id || ''}`,
             cancel_url: `${req.protocol}://${req.get('host')}/checkout`,
             user_action: 'PAY_NOW'
           }
         })
       });
 
-      const orderData = await orderResponse.json();
+      const orderData_paypal = await orderResponse.json();
       
-      if (orderData.links) {
-        const approveLink = orderData.links.find((link: any) => link.rel === 'approve');
-        res.json({ approveUrl: approveLink.href, orderId: orderData.id });
+      if (orderData_paypal.links) {
+        const approveLink = orderData_paypal.links.find((link: any) => link.rel === 'approve');
+        res.json({ 
+          approveUrl: approveLink.href, 
+          orderId: orderData_paypal.id,
+          dbOrderId: dbOrder?.id 
+        });
       } else {
         throw new Error('No approval link found');
       }

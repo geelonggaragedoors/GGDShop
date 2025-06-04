@@ -5,6 +5,7 @@ interface PayPalButtonProps {
   amount: string;
   currency: string;
   intent: string;
+  orderData?: any;
   onSuccess?: (details: any) => void;
   onError?: (error: any) => void;
   onCancel?: () => void;
@@ -14,6 +15,7 @@ export default function PayPalButton({
   amount, 
   currency, 
   intent = 'capture',
+  orderData,
   onSuccess,
   onError,
   onCancel 
@@ -29,7 +31,7 @@ export default function PayPalButton({
       const response = await fetch('/api/paypal/redirect-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, currency })
+        body: JSON.stringify({ amount, currency, orderData })
       });
       
       if (!response.ok) {
