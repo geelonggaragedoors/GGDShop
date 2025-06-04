@@ -12,7 +12,7 @@ import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import SimpleHeader from "@/components/storefront/simple-header";
-import PayPalButtons from "@/components/PayPalButtons";
+import PayPalButton from "@/components/PayPalButton";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
@@ -305,28 +305,27 @@ export default function Checkout() {
                 </div>
 
                 <div className="space-y-4">
-                  <Button className="w-full" size="lg">
-                    Complete Order
-                  </Button>
+                  {paymentMethod === "card" && (
+                    <Button className="w-full" size="lg">
+                      Complete Order
+                    </Button>
+                  )}
                   
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
+                  {paymentMethod === "paypal" && (
+                    <div className="w-full">
+                      <PayPalButton 
+                        amount={finalTotal.toFixed(2)}
+                        currency="AUD"
+                        intent="capture"
+                      />
                     </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-muted-foreground">
-                        Or pay with
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="w-full">
-                    <PayPalButtons 
-                      amount={finalTotal.toFixed(2)}
-                      currency="AUD"
-                      intent="capture"
-                    />
-                  </div>
+                  )}
+
+                  {paymentMethod === "afterpay" && (
+                    <Button className="w-full" size="lg" variant="outline">
+                      Pay with Afterpay
+                    </Button>
+                  )}
                 </div>
 
                 <p className="text-xs text-gray-600 text-center">
