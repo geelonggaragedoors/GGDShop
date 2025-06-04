@@ -601,6 +601,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Google Places API key endpoint
+  app.get("/api/google-places-key", async (req, res) => {
+    try {
+      res.json({ apiKey: process.env.GOOGLE_PLACES_API_KEY });
+    } catch (error) {
+      console.error("Error fetching Google Places API key:", error);
+      res.status(500).json({ message: "Failed to fetch API key" });
+    }
+  });
+
   // PayPal routes
   app.get("/api/paypal-config", (req, res) => {
     res.json({ clientId: process.env.PAYPAL_CLIENT_ID });

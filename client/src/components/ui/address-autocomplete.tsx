@@ -59,6 +59,11 @@ export default function AddressAutocomplete({
 
       // Load the Google Places script
       const script = document.createElement('script');
+      
+      window.initGooglePlaces = () => {
+        initializeAutocomplete();
+      };
+
       // Fetch API key from backend
       fetch('/api/google-places-key')
         .then(res => res.json())
@@ -71,14 +76,6 @@ export default function AddressAutocomplete({
         .catch(err => {
           console.error('Failed to load Google Places API key:', err);
         });
-      
-      return;
-
-      window.initGooglePlaces = () => {
-        initializeAutocomplete();
-      };
-
-      document.head.appendChild(script);
     };
 
     const initializeAutocomplete = () => {
