@@ -292,7 +292,7 @@ export const events = pgTable("events", {
 });
 
 export const userSessions = pgTable("user_sessions", {
-  id: varchar("id").primaryKey(),
+  sessionId: varchar("session_id").primaryKey(),
   userId: varchar("user_id"), // null for anonymous sessions
   startTime: timestamp("start_time").defaultNow(),
   endTime: timestamp("end_time"),

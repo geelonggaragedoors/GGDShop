@@ -43,7 +43,7 @@ export class AnalyticsService {
       if (Object.keys(updateData).length > 0) {
         await db.update(userSessions)
           .set(updateData)
-          .where(eq(userSessions.id, data.id));
+          .where(eq(userSessions.sessionId, data.sessionId));
       }
     }
   }
