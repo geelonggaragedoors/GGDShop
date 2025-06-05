@@ -172,7 +172,7 @@ export default function Orders() {
             size="sm" 
             variant="ghost"
             onClick={() => {
-              setSelectedOrder(row.original);
+              setSelectedOrderId(row.original.id);
               setIsOrderDetailsOpen(true);
             }}
           >

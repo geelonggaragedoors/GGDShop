@@ -932,7 +932,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const orderItems = await storage.getOrderItems(order.id);
       
       // Get customer details
-      const customer = await storage.getCustomerById(order.customerId);
+      const customer = order.customerId ? await storage.getCustomerById(order.customerId) : null;
 
       // Format response
       const trackingData = {
