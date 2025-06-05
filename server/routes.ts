@@ -724,22 +724,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { weight, length, width, height, boxSize, toPostcode } = req.body;
       
-      if (!weight || !length || !width || !height || !boxSize) {
+      if (!weight || !length || !width || !height || !boxSize || !toPostcode) {
         return res.status(400).json({ 
-          error: "Missing required dimensions or box size" 
+          message: "Missing required fields: weight, length, width, height, boxSize, toPostcode" 
         });
       }
 
       const { calculateTotalShippingCost } = await import("./australiaPost");
       
-      const dimensions = { weight, length, width, height };
+      const dimensions = { 
+        weight: parseFloat(weight), 
+        length: parseFloat(length), 
+        width: parseFloat(width), 
+        height: parseFloat(height) 
+      };
       const result = await calculateTotalShippingCost(dimensions, boxSize, toPostcode);
       
       res.json(result);
     } catch (error) {
       console.error("Shipping calculation error:", error);
       res.status(500).json({ 
-        error: "Failed to calculate shipping cost" 
+        message: "Failed to calculate shipping cost" 
       });
     }
   });
