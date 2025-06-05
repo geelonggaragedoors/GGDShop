@@ -167,7 +167,7 @@ export default function Contact() {
                         </div>
                         <h3 className="text-xl font-semibold mb-2">{info.title}</h3>
                         <p className="text-[#2b3990] font-medium mb-2">{info.details}</p>
-                        <p className="text-gray-600 text-xs break-words leading-relaxed overflow-hidden max-w-full">{info.description}</p>
+                        <p className="text-gray-600 text-[10px] break-words leading-tight overflow-hidden w-full px-2">{info.description}</p>
                       </CardContent>
                     </Card>
                   </a>
@@ -181,7 +181,7 @@ export default function Contact() {
                       </div>
                       <h3 className="text-xl font-semibold mb-2">{info.title}</h3>
                       <p className="text-[#2b3990] font-medium mb-2">{info.details}</p>
-                      <p className="text-gray-600 text-xs break-words leading-relaxed overflow-hidden max-w-full">{info.description}</p>
+                      <p className="text-gray-600 text-[10px] break-words leading-tight overflow-hidden w-full px-2">{info.description}</p>
                     </CardContent>
                   </Card>
                 );
