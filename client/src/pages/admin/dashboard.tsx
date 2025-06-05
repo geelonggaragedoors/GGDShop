@@ -187,97 +187,140 @@ export default function Dashboard() {
           value={`$${stats?.totalRevenue?.toLocaleString() || '0'}`}
           icon={DollarSign}
           description="Total sales revenue"
+          iconColor="text-emerald-600"
+          iconBg="bg-emerald-50"
         />
         <StatsCard
           title="Total Orders"
           value={stats?.totalOrders || 0}
           icon={ShoppingCart}
           description="Orders this month"
+          iconColor="text-blue-600"
+          iconBg="bg-blue-50"
         />
         <StatsCard
           title="Products"
           value={counts?.products || 0}
           icon={Package}
           description="Active products"
+          iconColor="text-purple-600"
+          iconBg="bg-purple-50"
         />
         <StatsCard
           title="Customers"
           value={stats?.totalCustomers || 0}
           icon={Users}
           description="Registered customers"
+          iconColor="text-orange-600"
+          iconBg="bg-orange-50"
         />
       </div>
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
+        <Card className="relative overflow-hidden bg-gradient-to-br from-white to-blue-50/30 border border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold">Recent Orders</CardTitle>
-              <Button variant="link" size="sm" className="text-primary">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                  <Receipt className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-lg font-semibold">Recent Orders</CardTitle>
+              </div>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" onClick={() => setLocation('/admin/orders')}>
                 View All
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-4">
+          <CardContent className="p-0">
+            <div className="divide-y divide-gray-100">
               {stats?.recentOrders?.slice(0, 5).map((order: any) => (
-                <Link key={order.id} to={`/admin/orders/${order.id}`}>
-                  <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 -mx-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Receipt className="w-5 h-5 text-gray-600" />
+                <div 
+                  key={order.id} 
+                  className="p-4 hover:bg-blue-50/50 cursor-pointer transition-all duration-200 group"
+                  onClick={() => setLocation(`/admin/orders`)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Receipt className="w-6 h-6 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{order.orderNumber}</p>
+                        <p className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">{order.orderNumber}</p>
                         <p className="text-sm text-gray-600">{order.customerName || order.customerEmail}</p>
+                        <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">${order.total}</p>
-                      <Badge variant={order.status === 'completed' ? 'default' : 'secondary'}>
+                      <p className="font-bold text-lg text-gray-900">${order.total}</p>
+                      <Badge 
+                        variant={order.status === 'completed' ? 'default' : order.status === 'pending' ? 'secondary' : 'outline'}
+                        className="capitalize"
+                      >
                         {order.status}
                       </Badge>
                     </div>
                   </div>
-                </Link>
+                </div>
               )) || (
-                <p className="text-center text-gray-500 py-8">No orders found</p>
+                <div className="p-8 text-center">
+                  <Receipt className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 font-medium">No orders found</p>
+                </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
+        <Card className="relative overflow-hidden bg-gradient-to-br from-white to-purple-50/30 border border-purple-100 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold">Top Products</CardTitle>
-              <TrendingUp className="w-5 h-5 text-primary" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-lg font-semibold">Top Products</CardTitle>
+              </div>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" onClick={() => setLocation('/admin/products')}>
+                View All
+              </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-4">
+          <CardContent className="p-0">
+            <div className="divide-y divide-gray-100">
               {stats?.topProducts?.slice(0, 5).map((product: any) => (
-                <Link key={product.id} to={`/products/${product.slug || product.id}`}>
-                  <div className="flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 py-2 -mx-2">
-                    <div className="flex items-center space-x-3">
-                      <img 
-                        src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=80&h=80&fit=crop&crop=center"} 
-                        alt={product.name}
-                        className="w-12 h-12 object-cover rounded-lg"
-                      />
+                <div 
+                  key={product.id} 
+                  className="p-4 hover:bg-purple-50/50 cursor-pointer transition-all duration-200 group"
+                  onClick={() => setLocation(`/products/${product.slug || product.id}`)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 group-hover:scale-110 transition-transform">
+                        <img 
+                          src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=80&h=80&fit=crop&crop=center"} 
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900">{product.name}</p>
+                        <p className="font-semibold text-gray-900 group-hover:text-purple-700 transition-colors line-clamp-1">{product.name}</p>
                         <p className="text-sm text-gray-600">{product.sales} sales</p>
+                        <p className="text-xs text-gray-500">Revenue: ${product.revenue?.toLocaleString()}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">${product.revenue?.toLocaleString()}</p>
+                      <div className="w-8 h-8 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center">
+                        <TrendingUp className="w-4 h-4 text-purple-600" />
+                      </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               )) || (
-                <p className="text-center text-gray-500 py-8">No products found</p>
+                <div className="p-8 text-center">
+                  <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 font-medium">No products found</p>
+                </div>
               )}
             </div>
           </CardContent>
@@ -285,43 +328,84 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
+      <Card className="relative overflow-hidden bg-gradient-to-br from-white to-gray-50/50 border border-gray-200 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-gray-700 to-gray-800 text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+              <Settings className="w-4 h-4" />
+            </div>
+            <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
+          </div>
         </CardHeader>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Add Product */}
-            <Button 
-              variant="outline" 
-              className="flex flex-col items-center justify-center p-3 h-16 w-full"
+            <div 
+              className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               onClick={() => setIsAddProductOpen(true)}
             >
-              <Plus className="w-4 h-4 text-primary mb-1" />
-              <span className="text-xs font-medium">Add Product</span>
-            </Button>
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Plus className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-emerald-800 group-hover:text-emerald-900">Add Product</p>
+                  <p className="text-xs text-emerald-600">Create new product</p>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-200/30 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+            </div>
 
             {/* Bulk Import */}
-            <Button 
-              variant="outline" 
-              className="flex flex-col items-center justify-center p-3 h-16 w-full"
+            <div 
+              className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               onClick={() => setIsBulkImportOpen(true)}
             >
-              <Upload className="w-4 h-4 text-primary mb-1" />
-              <span className="text-xs font-medium">Bulk Import</span>
-            </Button>
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Upload className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-blue-800 group-hover:text-blue-900">Bulk Import</p>
+                  <p className="text-xs text-blue-600">Upload CSV file</p>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-blue-200/30 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+            </div>
 
             {/* Export Data */}
-            <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full" onClick={handleExportData}>
-              <Download className="w-4 h-4 text-primary mb-1" />
-              <span className="text-xs font-medium">Export Data</span>
-            </Button>
+            <div 
+              className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              onClick={handleExportData}
+            >
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Download className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-purple-800 group-hover:text-purple-900">Export Data</p>
+                  <p className="text-xs text-purple-600">Download JSON</p>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-200/30 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+            </div>
 
             {/* Settings */}
-            <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full" onClick={() => setLocation('/admin/settings')}>
-              <Settings className="w-4 h-4 text-primary mb-1" />
-              <span className="text-xs font-medium">Settings</span>
-            </Button>
+            <div 
+              className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              onClick={() => setLocation('/admin/settings')}
+            >
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Settings className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-orange-800 group-hover:text-orange-900">Settings</p>
+                  <p className="text-xs text-orange-600">Configure system</p>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-200/30 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+            </div>
           </div>
         </CardContent>
       </Card>
