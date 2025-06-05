@@ -499,6 +499,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update order details (comprehensive PATCH endpoint)
+  app.patch('/api/admin/orders/:id', isAuthenticated, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const updateData = req.body;
+      
+      const success = await storage.updateOrder(orderId, updateData);
+      if (!success) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      res.json({ message: "Order updated successfully" });
+    } catch (error) {
+      console.error("Error updating order:", error);
+      res.status(500).json({ message: "Failed to update order" });
+    }
+  });
+
+  // Mark order as printed
+  app.post('/api/admin/orders/:id/print', isAuthenticated, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const { printedBy } = req.body;
+      
+      const success = await storage.updateOrder(orderId, {
+        printedAt: new Date(),
+        printedBy: printedBy || 'Admin User'
+      });
+      
+      if (!success) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      res.json({ message: "Order marked as printed successfully" });
+    } catch (error) {
+      console.error("Error marking order as printed:", error);
+      res.status(500).json({ message: "Failed to mark order as printed" });
+    }
+  });
+
+  // Send order email
+  app.post('/api/admin/orders/:id/email', isAuthenticated, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const { type } = req.body;
+      
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const customer = await storage.getCustomer(order.customerId || '');
+      if (!customer) {
+        return res.status(404).json({ message: "Customer not found" });
+      }
+      
+      const orderItems = await storage.getOrderItems(orderId);
+      
+      if (type === 'receipt') {
+        await emailService.sendOrderConfirmation(order, customer, orderItems);
+      } else if (type === 'status_update') {
+        await emailService.sendOrderStatusUpdate(order, customer, 'previous_status');
+      }
+      
+      res.json({ message: "Email sent successfully" });
+    } catch (error) {
+      console.error("Error sending order email:", error);
+      res.status(500).json({ message: "Failed to send email" });
+    }
+  });
+
   // Admin customer management
   app.get('/api/admin/customers', isAuthenticated, async (req, res) => {
     try {

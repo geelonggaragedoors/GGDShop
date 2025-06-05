@@ -98,6 +98,7 @@ export interface IStorage {
   getOrderItems(orderId: string): Promise<OrderItem[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: string, status: string): Promise<boolean>;
+  updateOrder(id: string, updates: Partial<Order>): Promise<boolean>;
   addOrderItem(item: InsertOrderItem): Promise<OrderItem>;
 
   // Media operations
@@ -454,6 +455,22 @@ export class DatabaseStorage implements IStorage {
       .set({ status, updatedAt: new Date() })
       .where(eq(orders.id, id));
     return result.rowCount! > 0;
+  }
+
+  async updateOrder(id: string, updates: Partial<Order>): Promise<boolean> {
+    const result = await db
+      .update(orders)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(orders.id, id));
+    return result.rowCount! > 0;
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    return this.getOrderById(id);
+  }
+
+  async getCustomer(id: string): Promise<Customer | undefined> {
+    return this.getCustomerById(id);
   }
 
   async getOrderByNumber(orderNumber: string): Promise<Order | undefined> {
