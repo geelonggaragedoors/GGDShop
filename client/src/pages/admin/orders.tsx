@@ -185,6 +185,19 @@ export default function Orders() {
 
   const totalPages = ordersData ? Math.ceil(ordersData.total / pageSize) : 0;
 
+  // Show order details if one is selected
+  if (isOrderDetailsOpen && selectedOrder) {
+    return (
+      <OrderDetails 
+        order={selectedOrder} 
+        onClose={() => {
+          setIsOrderDetailsOpen(false);
+          setSelectedOrder(null);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="p-6">
       <Card className="mb-6">
