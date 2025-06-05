@@ -319,6 +319,26 @@ export const seoMetrics = pgTable("seo_metrics", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Customer reviews table
+export const customerReviews = pgTable("customer_reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  customerName: varchar("customer_name").notNull(),
+  customerEmail: varchar("customer_email"),
+  rating: integer("rating").notNull(), // 1-5 stars
+  title: varchar("title").notNull(),
+  comment: text("comment").notNull(),
+  productId: uuid("product_id"), // optional - review can be about service in general
+  orderId: uuid("order_id"), // optional - link to specific order
+  isVerified: boolean("is_verified").default(false), // verified purchase
+  isVisible: boolean("is_visible").default(true),
+  isMockData: boolean("is_mock_data").default(false), // to identify mock reviews
+  adminResponse: text("admin_response"), // optional admin reply
+  adminResponseBy: varchar("admin_response_by"), // admin who replied
+  adminResponseAt: timestamp("admin_response_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
   parent: one(categories, {
@@ -387,6 +407,17 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   }),
 }));
 
+export const customerReviewsRelations = relations(customerReviews, ({ one }) => ({
+  product: one(products, {
+    fields: [customerReviews.productId],
+    references: [products.id],
+  }),
+  order: one(orders, {
+    fields: [customerReviews.orderId],
+    references: [orders.id],
+  }),
+}));
+
 // Insert schemas
 export const insertCategorySchema = createInsertSchema(categories).omit({
   id: true,
@@ -444,6 +475,15 @@ export const insertRoleSchema = createInsertSchema(roles).omit({
   updatedAt: true,
 });
 
+export const insertCustomerReviewSchema = createInsertSchema(customerReviews).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  adminResponseAt: true,
+}).extend({
+  rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating must be at most 5"),
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -480,6 +520,9 @@ export type InsertStaffInvitation = z.infer<typeof insertStaffInvitationSchema>;
 
 export type Role = typeof roles.$inferSelect;
 export type InsertRole = z.infer<typeof insertRoleSchema>;
+
+export type CustomerReview = typeof customerReviews.$inferSelect;
+export type InsertCustomerReview = z.infer<typeof insertCustomerReviewSchema>;
 
 // Analytics types
 export type PageView = typeof pageViews.$inferSelect;
