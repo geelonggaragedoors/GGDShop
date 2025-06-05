@@ -21,6 +21,22 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  const [location] = useLocation();
+
+  // Handle admin routes - redirect to login if not authenticated
+  const AdminRoute = ({ component: Component }: { component: React.ComponentType }) => {
+    if (isLoading) {
+      return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    }
+    
+    if (!isAuthenticated) {
+      // Redirect to login for admin routes
+      window.location.href = '/api/login';
+      return null;
+    }
+    
+    return <Component />;
+  };
 
   return (
     <Switch>
@@ -34,12 +50,8 @@ function Router() {
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/products/:categorySlug?" component={Products} />
-      {isAuthenticated && (
-        <>
-          <Route path="/admin" component={AdminLayout} />
-          <Route path="/admin/:path*" component={AdminLayout} />
-        </>
-      )}
+      <Route path="/admin" component={() => <AdminRoute component={AdminLayout} />} />
+      <Route path="/admin/:path*" component={() => <AdminRoute component={AdminLayout} />} />
       <Route component={NotFound} />
     </Switch>
   );
