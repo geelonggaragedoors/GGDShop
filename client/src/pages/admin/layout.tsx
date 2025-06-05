@@ -130,7 +130,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Tabs */}
-      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-white rounded-full shadow-lg border p-1">
+      <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-white rounded-full shadow-lg border p-1">
         <div className="flex space-x-1">
           <Link href="/">
             <Button variant="ghost" size="sm" className="rounded-full px-6">
@@ -148,13 +148,12 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 w-64 h-screen bg-white shadow-lg border-r z-40">
         <div className="p-6 border-b">
-          <div className="flex flex-col items-center">
+          <div className="flex justify-center">
             <img 
               src="/logo.png"
               alt="Geelong Garage Doors" 
-              className="h-10 w-auto mb-2"
+              className="h-10 w-auto"
             />
-            <h2 className="text-lg font-bold text-black">Admin Dashboard</h2>
           </div>
         </div>
         
