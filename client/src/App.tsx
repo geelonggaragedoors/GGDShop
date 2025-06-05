@@ -25,7 +25,10 @@ function Router() {
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/products/:categorySlug?" component={Products} />
       {isAuthenticated && (
-        <Route path="/admin/:path*" component={AdminLayout} />
+        <>
+          <Route path="/admin" component={AdminLayout} />
+          <Route path="/admin/:path*" component={AdminLayout} />
+        </>
       )}
       <Route component={NotFound} />
     </Switch>
