@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { Link } from "wouter";
 
 const categoryImages = {
   "residential": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600",
@@ -49,22 +50,24 @@ export default function Categories() {
         <h3 className="text-3xl font-bold text-center mb-12 text-gray-900">Shop by Category</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {displayCategories.map((category) => (
-            <div key={category.id} className="group cursor-pointer category-card">
-              <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
-                <div className="relative">
-                  <img 
-                    src={category.image || getImageForCategory(category.name)}
-                    alt={category.name}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <h4 className="text-xl font-semibold mb-1">{category.name}</h4>
-                    <p className="text-gray-200">View Products</p>
+            <Link key={category.id} href={`/products?category=${category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}`}>
+              <div className="group cursor-pointer category-card">
+                <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
+                  <div className="relative">
+                    <img 
+                      src={category.image || getImageForCategory(category.name)}
+                      alt={category.name}
+                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="text-xl font-semibold mb-1">{category.name}</h4>
+                      <p className="text-gray-200">View Products</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            </div>
+                </Card>
+              </div>
+            </Link>
           ))}
           
           {/* Fallback categories if no data */}
