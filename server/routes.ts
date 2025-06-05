@@ -175,6 +175,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Counts endpoint for sidebar badges
+  app.get("/api/admin/counts", isAuthenticated, async (req, res) => {
+    try {
+      const [productsResult, ordersResult] = await Promise.all([
+        storage.getProducts({ includeUnpublished: true, limit: 1 }), // Get total count for admin
+        storage.getOrders({ limit: 1 }) // Get total count
+      ]);
+      
+      const counts = {
+        products: productsResult.total || 0,
+        orders: ordersResult.total || 0
+      };
+      
+      res.json(counts);
+    } catch (error) {
+      console.error("Error fetching counts:", error);
+      res.status(500).json({ message: "Failed to fetch counts" });
+    }
+  });
+
   // Protected admin routes
   app.get('/api/admin/dashboard', isAuthenticated, async (req, res) => {
     try {

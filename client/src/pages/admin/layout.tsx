@@ -48,7 +48,7 @@ export default function AdminLayout() {
   const { user } = useAuth();
   
   // Fetch counts for sidebar badges
-  const { data: counts } = useQuery({
+  const { data: counts } = useQuery<{ products: number; orders: number }>({
     queryKey: ["/api/admin/counts"],
     enabled: !!user,
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -150,12 +150,12 @@ export default function AdminLayout() {
                     >
                       <Icon className="w-4 h-4 mr-3" />
                       {item.label}
-                      {(item.id === "products" && counts?.products > 0) && (
+                      {(item.id === "products" && counts?.products && counts.products > 0) && (
                         <Badge variant="secondary" className="ml-auto">
                           {counts.products}
                         </Badge>
                       )}
-                      {(item.id === "orders" && counts?.orders > 0) && (
+                      {(item.id === "orders" && counts?.orders && counts.orders > 0) && (
                         <Badge variant="secondary" className="ml-auto">
                           {counts.orders}
                         </Badge>
