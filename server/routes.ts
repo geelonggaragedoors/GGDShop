@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+import { calculateShippingCost, validateShippingDimensions, getAvailableServices } from "./australiaPost";
 import { fileStorage } from "./fileStorage";
 import { 
   insertProductSchema, 
@@ -154,6 +155,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Australia Post shipping services (public)
+  app.get('/api/shipping/services', getAvailableServices);
+
   // Shipping calculation (public)
   app.post('/api/shipping/calculate', async (req, res) => {
     try {
@@ -181,11 +185,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin product management
+  app.get('/api/admin/products', isAuthenticated, async (req, res) => {
+    try {
+      const { categoryId, brandId, search, featured, active, limit, offset } = req.query;
+      const params = {
+        categoryId: categoryId as string,
+        brandId: brandId as string,
+        search: search as string,
+        featured: featured === 'true',
+        active: active !== 'false',
+        includeUnpublished: true, // Show all products in admin
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
+      };
+
+      const result = await storage.getProducts(params);
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching admin products:", error);
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
   app.post('/api/admin/products', isAuthenticated, async (req, res) => {
     try {
       const productData = insertProductSchema.parse(req.body);
-      const product = await storage.createProduct(productData);
-      res.status(201).json(product);
+      
+      // Validate shipping dimensions
+      const validation = validateShippingDimensions(productData);
+      
+      if (!validation.isValid) {
+        // Save as draft if shipping info is missing
+        productData.status = 'draft';
+        const product = await storage.createProduct(productData);
+        return res.status(201).json({
+          ...product,
+          validationError: `Shipping size and weight must be provided. Product will be saved as a draft until all details are entered. Missing: ${validation.missingFields.join(', ')}`
+        });
+      }
+      
+      // Calculate shipping cost and publish product
+      try {
+        const shippingCost = await calculateShippingCost({
+          weight: productData.weight!,
+          length: productData.length!,
+          width: productData.width!,
+          height: productData.height!
+        });
+        
+        productData.shippingCost = shippingCost.toString();
+        productData.status = 'published';
+        
+        const product = await storage.createProduct(productData);
+        res.status(201).json(product);
+      } catch (shippingError) {
+        console.error("Error calculating shipping:", shippingError);
+        // Save as draft if shipping calculation fails
+        productData.status = 'draft';
+        const product = await storage.createProduct(productData);
+        res.status(201).json({
+          ...product,
+          validationError: "Unable to calculate shipping cost. Product saved as draft."
+        });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid product data", errors: error.errors });
@@ -198,6 +259,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/admin/products/:id', isAuthenticated, async (req, res) => {
     try {
       const productData = insertProductSchema.partial().parse(req.body);
+      
+      // Check if this update includes shipping dimensions
+      const hasShippingData = productData.weight || productData.length || productData.width || productData.height;
+      
+      if (hasShippingData) {
+        // Get current product to merge data
+        const currentProduct = await storage.getProductById(req.params.id);
+        if (!currentProduct) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+        
+        // Merge current and new data for validation
+        const mergedData = { ...currentProduct, ...productData };
+        const validation = validateShippingDimensions(mergedData);
+        
+        if (!validation.isValid) {
+          // Update as draft if shipping info is still missing
+          productData.status = 'draft';
+          const product = await storage.updateProduct(req.params.id, productData);
+          return res.json({
+            ...product,
+            validationError: `Shipping size and weight must be provided. Product will be saved as a draft until all details are entered. Missing: ${validation.missingFields.join(', ')}`
+          });
+        }
+        
+        // Calculate shipping cost and publish product
+        try {
+          const shippingCost = await calculateShippingCost({
+            weight: mergedData.weight!,
+            length: mergedData.length!,
+            width: mergedData.width!,
+            height: mergedData.height!
+          });
+          
+          productData.shippingCost = shippingCost.toString();
+          productData.status = 'published';
+        } catch (shippingError) {
+          console.error("Error calculating shipping:", shippingError);
+          productData.status = 'draft';
+        }
+      }
+      
       const product = await storage.updateProduct(req.params.id, productData);
       if (!product) {
         return res.status(404).json({ message: "Product not found" });

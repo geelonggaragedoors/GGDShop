@@ -292,6 +292,19 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount! > 0;
   }
 
+  async updateProductStatusAndShipping(id: string, shippingCost: number): Promise<Product | undefined> {
+    const [updatedProduct] = await db
+      .update(products)
+      .set({ 
+        shippingCost: shippingCost.toString(),
+        status: 'published',
+        updatedAt: new Date() 
+      })
+      .where(eq(products.id, id))
+      .returning();
+    return updatedProduct;
+  }
+
   // Customer operations
   async getCustomers(): Promise<Customer[]> {
     return db.select().from(customers).where(eq(customers.isActive, true)).orderBy(desc(customers.createdAt));
