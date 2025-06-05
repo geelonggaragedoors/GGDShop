@@ -170,8 +170,8 @@ export default function AdminLayout() {
                       variant={isActive ? "default" : "ghost"}
                       className={`w-full justify-start transition-all duration-300 group ${
                         isActive 
-                          ? "bg-primary text-primary-foreground shadow-lg" 
-                          : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-[1.02] hover:border-blue-200 border border-transparent"
+                          ? "bg-blue-600 text-white shadow-lg" 
+                          : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-[1.02] hover:border-blue-200 border border-transparent focus:bg-blue-50 focus:text-blue-700 active:bg-blue-100"
                       }`}
                     >
                       <Icon className={`w-4 h-4 mr-3 transition-all duration-300 ${
