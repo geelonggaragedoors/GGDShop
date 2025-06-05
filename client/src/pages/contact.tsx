@@ -18,7 +18,9 @@ import {
   Clock, 
   MessageSquare, 
   Send,
-  CheckCircle
+  CheckCircle,
+  Award,
+  Shield
 } from "lucide-react";
 
 const contactInfo = [
