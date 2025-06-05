@@ -88,6 +88,8 @@ export interface IStorage {
     offset?: number;
   }): Promise<{ orders: Order[]; total: number }>;
   getOrderById(id: string): Promise<Order | undefined>;
+  getOrderByNumber(orderNumber: string): Promise<Order | undefined>;
+  getOrderItems(orderId: string): Promise<OrderItem[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: string, status: string): Promise<boolean>;
   addOrderItem(item: InsertOrderItem): Promise<OrderItem>;
@@ -420,6 +422,15 @@ export class DatabaseStorage implements IStorage {
       .set({ status, updatedAt: new Date() })
       .where(eq(orders.id, id));
     return result.rowCount! > 0;
+  }
+
+  async getOrderByNumber(orderNumber: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber));
+    return order;
+  }
+
+  async getOrderItems(orderId: string): Promise<OrderItem[]> {
+    return db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
   }
 
   async addOrderItem(item: InsertOrderItem): Promise<OrderItem> {

@@ -12,7 +12,7 @@ interface SEOHeadProps {
   structuredData?: any;
 }
 
-export default function SEOHead({
+export function SEOHead({
   title,
   description,
   keywords,

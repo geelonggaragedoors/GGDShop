@@ -7,7 +7,7 @@ import FeaturedProducts from "@/components/storefront/featured-products";
 import Services from "@/components/storefront/services";
 import StorefrontFooter from "@/components/storefront/footer";
 import { useAuth } from "@/hooks/useAuth";
-import SEOHead from "@/components/SEOHead";
+import { SEOHead } from "@/components/SEOHead";
 import { analytics } from "@/lib/analytics";
 
 export default function Home() {
