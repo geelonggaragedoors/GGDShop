@@ -12,6 +12,7 @@ import {
   staffInvitations,
   roles,
   customerReviews,
+  enquiries,
   type User,
   type UpsertUser,
   type Category,
