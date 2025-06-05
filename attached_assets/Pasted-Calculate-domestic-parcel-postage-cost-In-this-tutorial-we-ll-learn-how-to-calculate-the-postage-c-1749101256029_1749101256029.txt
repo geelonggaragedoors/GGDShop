@@ -1,0 +1,406 @@
+Calculate domestic parcel postage cost
+In this tutorial, we'll learn how to calculate the postage cost for a domestic parcel delivery using the Postage Assessment Calculation API.
+
+Create an account to access the Postage Assessment Calculation API.
+
+Related Links
+ Parcel sizing guidelines 
+ PAC API Reference
+ International Parcel Calculation
+The following steps will be completed:
+
+Retrieve a list of available postage services based on the dimensions, weight and destination of the item to be sent and choose a postage service
+Calculate the cost of sending the parcel based on the postage service chosen in step 1
+Optional step: Call a service to retrieve a list of standard parcel sizes available for purchase at Australia Post retail outlets.
+
+Authentication
+The Postage Assessment Calculation API requests follow a consistent pattern
+
+REST based HTTP GET requests returning either XML or JSON (depending on the URL)
+All requests require setting a valid API Key into a HTTP Header variable called AUTH-KEY
+All requests require setting a valid API Key into a HTTP Header variable called AUTH-KEY
+Optional Step: Retrieve Australia Post standard parcel sizes
+The Domestic Parcel Size data service to lookup the standard parcel box sizes available for purchase at all Australia Post retail outlets:
+
+PHPJava
+Raw 
+// Set your API key: remember to change this to your live API key in production
+$apiKey = 'your_api_key';
+
+// Set the URL for the Domestic Parcel Size service
+$urlPrefix = 'digitalapi.auspost.com.au';
+$parcelTypesURL = 'https://' . $urlPrefix . '/postage/parcel/domestic/size.json';
+
+// Lookup domestic parcel types (different kinds of standard boxes etc)
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $parcelTypesURL);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('AUTH-KEY: ' . $apiKey));
+$rawBody = curl_exec($ch);
+
+// Check the response: if the body is empty then an error occurred
+if(!$rawBody){
+  die('Error: "' . curl_error($ch) . '" - Code: ' . curl_errno($ch));
+}
+
+// All good, lets parse the response into a JSON object
+$parcelTypesJSON = json_decode($rawBody);
+The code above generates the following HTTP request:
+
+HTTP Request
+Raw 
+GET /postage/parcel/domestic/size.json HTTP/1.1
+Host: digitalapi.auspost.com.au
+User-Agent: Curl
+AUTH-KEY: your_api_key
+The response contains
+
+A list of all standard box sizes available for purchase at Australia Post retail outlets
+The dimensions returned have the format length x width x height in centimetres
+A 'My own box' option if you choose to use your own box
+JSON
+Raw 
+{
+  "sizes": {
+    "size": [
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_OTH",
+        "name": "My own box"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_BC",
+        "name": "Bx1 (22.0 x 16.0 x 7.7)",
+        "value": "22.0x16.0x7.7"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_BM",
+        "name": "Bx2 (31.0 x 22.5 x 10.2)",
+        "value": "31.0x22.5x10.2"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_BP",
+        "name": "Bx3 (40.0 x 20.0 x 18.0)",
+        "value": "40.0x20.0x18.0"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_BT",
+        "name": "Bx4 (43.0 x 30.5 x 14.0)",
+        "value": "43.0x30.5x14.0"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_BW",
+        "name": "Bx5 (40.5 x 30.0 x 25.5)",
+        "value": "40.5x30.0x25.5"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_VCB",
+        "name": "Bx6 (22.0 x 14.5 x 3.5)",
+        "value": "22.0x14.5x3.5"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_CD",
+        "name": "Bx7 (14.5 x 12.7 x 1.0)",
+        "value": "14.5x12.7x1.0"
+      },
+      {
+        "code": "AUS_PARCEL_TYPE_BOXED_TOUGHPAK",
+        "name": "Bx8 (36.3 x 21.2 x 6.5)",
+        "value": "36.3x21.2x6.5"
+      }
+    ]
+  }
+}
+In the next step, you can use the dimensions returned for one of these standard box sizes, or input your own custom dimensions.
+
+Step 1: Retrieve a list of available domestic postage services
+In this step, we’ll call the the domestic parcel service to retrieve a list of available postage services that Australia Post provides for delivering a parcel.
+
+The postage services available will be based on the input parameters you provide. For example, origin and destination postcodes in rural areas will exclude Express Post delivery options as rural postcodes are not covered by the Express post network.
+
+Input parameters required
+
+Origin and destination postcodes of the item to be sent
+Dimensions of the box the item will be sent in
+Dimensions have the format length x width x height in centimetre
+Use the dimensions of a standard Australia Post box (calculated in the optional step) or input your own custom dimensions
+Weight of the item to be sent (in kg)
+Note: There are maximum allowed values for the dimensions and weight parameters! You can read more about those here).
+
+Note: this request (and all Postage Assessment API requests) are HTTP GET; parameters should be set in the query string.
+PHPJava
+Raw 
+// Set your API key: remember to change this to your live API key in production
+$apiKey = 'your_api_key';
+
+// Define the service input parameters
+$fromPostcode = '2000';
+$toPostcode = '3000';
+$parcelLengthInCMs = 22;
+$parcelWidthInCMs = 16;
+$parcelHeighthInCMs = 7.7;
+$parcelWeightInKGs = 1.5;
+
+// Set the query params
+$queryParams = array(
+  "from_postcode" => $fromPostcode,
+  "to_postcode" => $toPostcode,
+  "length" => $parcelLengthInCMs,
+  "width" => $parcelWidthInCMs,
+  "height" => $parcelHeighthInCMs,
+  "weight" => $parcelWeightInKGs
+);
+
+// Set the URL for the Domestic Parcel Size service
+$urlPrefix = 'digitalapi.auspost.com.au';
+$postageTypesURL = 'https://' . $urlPrefix . '/postage/parcel/domestic/service.json?' .
+http_build_query($queryParams);
+
+// Lookup available domestic parcel delivery service types
+curl_setopt($ch, CURLOPT_URL, $postageTypesURL);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('AUTH-KEY: ' . $apiKey));
+$rawBody = curl_exec($ch);
+
+// Check the response; if the body is empty then an error has occurred
+if(!$rawBody){
+  die('Error: "' . curl_error($ch) . '" - Code: ' . curl_errno($ch));
+}
+
+// All good, lets parse the response into a JSON object
+$serviceTypesJSON = json_decode($rawBody);
+The code above generates the following HTTP request:
+
+HTTP Request
+Raw 
+GET /postage/parcel/domestic/service.json?length=22&width=16&height=7.7&weight=1.5&from_postcode=2000&to_postcode=3000
+HTTP/1.1
+Host: digitalapi.auspost.com.au
+User-Agent: Curl
+AUTH-KEY: your_api_key
+The response contains
+
+A list of the available postage services based on the input parameters you provided
+Each available postage service is described in the "code" attribute of the response
+Option and sub-option choices that allow the addition of extra features to the delivery service
+These options include features such as extra cover and signature on delivery
+The price for each postage service
+Note: If no options or sub-options are required, this price can be used as the final calculated delivery price
+JSON
+Raw 
+{
+  "services": {
+    "service": [
+      {
+        "code": "AUS_PARCEL_EXPRESS",
+        "name": "Express Post",
+        "price": "24.05",
+        "max_extra_cover": 300,
+        "options": {
+          "option": [
+            {
+              "code": "AUS_SERVICE_OPTION_STANDARD",
+              "name": "Standard Service",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 300
+                }
+              }
+            },
+            {
+              "code": "AUS_SERVICE_OPTION_SIGNATURE_ON_DELIVERY",
+              "name": "Signature on Delivery",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 5000
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "code": "AUS_PARCEL_EXPRESS_SATCHEL_3KG",
+        "name": "Express Post Medium (3Kg) Satchel",
+        "price": "14.80",
+        "max_extra_cover": 300,
+        "options": {
+          "option": [
+            {
+              "code": "AUS_SERVICE_OPTION_STANDARD",
+              "name": "Standard Service",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 300
+                }
+              }
+            },
+            {
+              "code": "AUS_SERVICE_OPTION_SIGNATURE_ON_DELIVERY",
+              "name": "Signature on Delivery",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 5000
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "code": "AUS_PARCEL_REGULAR",
+        "name": "Parcel Post",
+        "price": "15.05",
+        "max_extra_cover": 300,
+        "options": {
+          "option": [
+            {
+              "code": "AUS_SERVICE_OPTION_STANDARD",
+              "name": "Standard Service",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 300
+                }
+              }
+            },
+            {
+              "code": "AUS_SERVICE_OPTION_SIGNATURE_ON_DELIVERY",
+              "name": "Signature on Delivery",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 5000
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "code": "AUS_PARCEL_REGULAR_SATCHEL_3KG",
+        "name": "Parcel Post Medium Satchel",
+        "price": "13.40",
+        "max_extra_cover": 300,
+        "options": {
+          "option": [
+            {
+              "code": "AUS_SERVICE_OPTION_STANDARD",
+              "name": "Standard Service",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 300
+                }
+              }
+            },
+            {
+              "code": "AUS_SERVICE_OPTION_SIGNATURE_ON_DELIVERY",
+              "name": "Signature on Delivery",
+              "suboptions": {
+                "option": {
+                  "code": "AUS_SERVICE_OPTION_EXTRA_COVER",
+                  "name": "Extra Cover",
+                  "max_extra_cover": 5000
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+Choose a service code that corresponds to a postal service matching the speed, size and price requirements for your delivery. This code will be used in the next step to calculate the total delivery price for your item.
+
+Step 2: Calculate total delivery price
+In this step, we’ll call the domestic parcel calculate service to calculate the total delivery price. This call is similar to that made in step 1 but now includes the service ‘code’ you have chosen for your delivery.
+
+Input parameters required
+
+Origin and destination postcodes of the item to be sent
+Dimensions of the box the item will be sent in
+Dimensions have the format length x width x height in centimetres
+Use the dimensions of a standard Australia Post box (calculated in the optional step) or input your own custom dimensions
+Weight of the item to be sent (in kg)
+Service code
+This code corresponds to the postal service calculated in step 1
+PHPJava
+Raw 
+// Set your API key: remember to change this to your live API key in production
+$apiKey = 'your_api_key';
+
+// Define the service input parameters
+$fromPostcode = '2000';
+$toPostcode = '3000';
+$parcelLengthInCMs = 22;
+$parcelWidthInCMs = 16;
+$parcelHeighthInCMs = 7.7;
+$parcelWeightInKGs = 1.5;
+
+// Set the query params
+$queryParams = array(
+  "from_postcode" => $fromPostcode,
+  "to_postcode" => $toPostcode,
+  "length" => $parcelLengthInCMs,
+  "width" => $parcelWidthInCMs,
+  "height" => $parcelHeighthInCMs,
+  "weight" => $parcelWeightInKGs,
+  "service_code" => 'AUS_PARCEL_REGULAR'
+);
+
+// Set the URL for the Domestic Parcel Calculation service
+$urlPrefix = 'digitalapi.auspost.com.au';
+$calculateRateURL = 'https://' . $urlPrefix . '/postage/parcel/domestic/calculate.json?' .
+http_build_query($queryParams);
+
+// Calculate the final domestic parcel delivery price
+curl_setopt($ch, CURLOPT_URL, $calculateRateURL);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('AUTH-KEY: ' . $apiKey));
+$rawBody = curl_exec($ch);
+
+// Check the response; if the body is empty than an error has occurred
+if(!$rawBody){
+  die('Error: "' . curl_error($ch) . '" - Code: ' . curl_errno($ch));
+}
+
+// All good, lets parse the response into a JSON object
+$priceJSON = json_decode($rawBody);
+The code above generates the following HTTP request:
+
+HTTP Request
+Raw 
+GET /postage/parcel/domestic/calculate.json?length=22&width=16&height=7.7&weight=1.5&from_postcode=2000&to_postcode=3000&service_code=AUS_PARCEL_REGULAR
+HTTP/1.1
+Host: digitalapi.auspost.com.au
+User-Agent: Curl
+AUTH-KEY: your_api_key
+The response contains
+
+The final calculated delivery price
+JSON
+Raw 
+{
+  "postage_result": {
+    "service": "Parcel Post",
+    "delivery_time": "Delivered in 4 business days",
+    "total_cost": "15.05",
+    "costs": {
+      "cost": {
+        "item": "Parcel Post",
+        "cost": "15.05"
+      }
+    }
+  }
+}

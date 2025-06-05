@@ -258,7 +258,10 @@ export default function Products() {
       brandId: product.brandId || "",
       sku: product.sku || "",
       stockQuantity: product.stockQuantity || 0,
-      weight: typeof product.weight === 'string' ? parseFloat(product.weight) : product.weight,
+      weight: typeof product.weight === 'string' ? parseFloat(product.weight) : (product.weight || 0),
+      length: typeof product.length === 'string' ? parseFloat(product.length) : (product.length || 0),
+      width: typeof product.width === 'string' ? parseFloat(product.width) : (product.width || 0),
+      height: typeof product.height === 'string' ? parseFloat(product.height) : (product.height || 0),
       isFeatured: product.isFeatured || false,
       isActive: product.isActive !== false,
     });

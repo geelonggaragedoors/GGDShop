@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
-const AUSPOST_API_KEY = "a992b572-c330-438b-bbdb-6fc40b1aa321";
+// Use the provided API key from environment or fallback to the one you gave me
+const AUSPOST_API_KEY = process.env.AUSPOST_API_KEY || "a992b572-c330-438b-bbdb-6fc40b1aa321";
 const AUSPOST_BASE_URL = "https://digitalapi.auspost.com.au";
 
 interface ShippingDimensions {
@@ -70,9 +71,21 @@ export async function calculateShippingCost(
       return parseFloat(standardService.price);
     }
     
-    // Fallback to first available service if standard not found
+    // Fallback to cheapest regular service if standard not found
+    const regularServices = data.services.service.filter(
+      service => service.code.includes("REGULAR")
+    );
+    
+    if (regularServices.length > 0) {
+      // Sort by price and return cheapest
+      regularServices.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      return parseFloat(regularServices[0].price);
+    }
+    
+    // Fallback to cheapest available service
     if (data.services.service.length > 0) {
-      return parseFloat(data.services.service[0].price);
+      const sortedServices = data.services.service.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      return parseFloat(sortedServices[0].price);
     }
     
     // If no services available, return default shipping cost

@@ -1,0 +1,45 @@
+API Reference
+Feedback
+Find links to the full documentation and technical specifications for the Postage Assessment Calculator API below.
+
+Postage Assessment Calculator Services
+Integrate this API into your website to enable your customers to calculate the current costs of sending letters or parcels within Australia and overseas.
+
+Service
+Description
+domestic/postcode/search
+Search the collection of domestic postcode records for potential matches.
+country
+Return a list of countries which are accepted by the PAC API.
+domestic/letter/thickness
+Returns a list domestic letter thickness values accepted by the PAC API.
+domestic/letter/weight
+Returns a list domestic letter weight values accepted by the PAC API.
+domestic/letter/size
+Returns a list of available domestic envelope type values that are offered by Australia Post.
+international/letter/weight
+Returns a list international letter weight values accepted by the PAC API.
+international/parcel/weight
+Returns a list international parcel weight values accepted by the PAC API.
+domestic/parcel/weight
+Returns a list domestic parcel weight values accepted by the PAC API.
+domestic/parcel/type
+Returns a list of available parcel type values (Boxed items or Satchels). The developer is not forced to send these values to the PAC API, but it may help facilitate with building a PAC user interface.
+domestic/parcel/size
+Returns a list of available parcel box size values that are offered by Australia Post.
+postage/letter/domestic/service
+Returns a list of available domestic letter services and extra features offered by Australia Post.
+postage/parcel/domestic/service
+Returns a list of available domestic parcel services and extra features offered by Australia Post.
+postage/letter/international/service
+Returns a list of available international letter services and extra features offered by Australia Post.
+postage/parcel/international/service
+Returns a list of available international parcel services and extra features offered by Australia Post.
+postage/parcel/domestic/calculate
+Returns the total postage cost for a domestic parcel.
+postage/parcel/international/calculate
+Returns the total postage cost for an international parcel.
+postage/letter/domestic/calculate
+Returns the total postage cost for a domestic letter.
+postage/letter/international/calculate
+Returns the total postage cost for an international letter.

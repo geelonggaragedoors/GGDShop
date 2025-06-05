@@ -1,0 +1,81 @@
+API Explorer
+Try live API calls with our API Explorer to see sample responses without writing a single line of code.
+
+ 
+Postage Assessment Calculator
+
+v1.1
+
+Calculate the current costs of sending letters or parcels
+
+postcode/search
+
+Search the collection of postcode records for potential matches.
+
+country
+
+Return a list of countries which are accepted by the PAC API.
+
+domestic/letter/thickness
+
+Returns a list domestic letter thickness values accepted by the PAC API.
+
+domestic/letter/weight
+
+Returns a list domestic letter weight values accepted by the PAC API.
+
+domestic/letter/size
+
+Returns a list of available domestic envelope type values that are offered by Australia Post.
+
+international/letter/weight
+
+Returns a list international letter weight values accepted by the PAC API.
+
+international/parcel/weight
+
+Returns a list international parcel weight values accepted by the PAC API.
+
+domestic/parcel/weight
+
+Returns a list domestic parcel weight values accepted by the PAC API.
+
+domestic/parcel/type
+
+Returns a list of available parcel type values (Boxed items or Satchels). The developer is not forced to send these values to the PAC API, but it may help facilitate with building a PAC user interface.
+
+domestic/parcel/size
+
+Returns a list of available parcel box size values that are offered by Australia Post.
+
+postage/letter/domestic/service
+
+Show Domestic Letter Service Options
+
+postage/parcel/domestic/service
+
+Show Domestic Shipping Service Options
+
+postage/letter/international/service
+
+Show International Letter Service Options
+
+postage/parcel/international/service
+
+Show International Shipping Service Options
+
+postage/parcel/domestic/calculate
+
+Calculate Domestic Shipping Total Price
+
+postage/parcel/international/calculate
+
+Calculate International Shipping Total Price
+
+postage/letter/domestic/calculate
+
+Calculate Domestic Letter Total Price
+
+postage/letter/international/calculate
+
+Calculate International Letter Total Price
