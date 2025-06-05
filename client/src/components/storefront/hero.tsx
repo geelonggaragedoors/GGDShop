@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { QuoteRequestDialog } from "@/components/QuoteRequestDialog";
 
 export default function Hero() {
   return (
@@ -28,6 +29,7 @@ export default function Hero() {
                 Shop Now
               </Button>
             </Link>
+            <QuoteRequestDialog />
           </div>
         </div>
       </div>

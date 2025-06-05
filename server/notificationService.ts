@@ -4,6 +4,7 @@ import { db } from './db';
 import { notifications } from '@shared/schema';
 import { eq, desc, and } from 'drizzle-orm';
 import type { InsertNotification, Notification } from '@shared/schema';
+import { storage } from './storage';
 
 interface ConnectedClient {
   ws: WebSocket;
@@ -123,6 +124,21 @@ export class NotificationService {
       data: { productId, productName, currentStock },
       isRead: false
     });
+  }
+
+  async createEnquiryNotification(enquiry: any) {
+    const adminUsers = await storage.getStaffMembers();
+    
+    for (const admin of adminUsers) {
+      await this.createNotification({
+        userId: admin.id,
+        type: 'enquiry',
+        title: 'New Quote Request',
+        message: `${enquiry.name} requested a quote: ${enquiry.subject}`,
+        data: { enquiryId: enquiry.id, customerName: enquiry.name, subject: enquiry.subject },
+        isRead: false
+      });
+    }
   }
 
   private broadcastToUser(userId: string, message: any) {
