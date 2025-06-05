@@ -100,14 +100,17 @@ export default function Orders() {
     {
       header: "Shipping Address",
       accessorKey: "shippingAddress",
-      cell: ({ row }: any) => (
-        <div>
-          <p className="text-sm text-gray-900">{row.original.shippingAddress}</p>
-          <p className="text-sm text-gray-600">
-            {row.original.shippingCity}, {row.original.shippingState} {row.original.shippingPostcode}
-          </p>
-        </div>
-      ),
+      cell: ({ row }: any) => {
+        const addr = row.original.shippingAddress;
+        return (
+          <div>
+            <p className="text-sm text-gray-900">{addr?.address}</p>
+            <p className="text-sm text-gray-600">
+              {addr?.city}, {addr?.state} {addr?.postcode}
+            </p>
+          </div>
+        );
+      },
     },
     {
       header: "Total",
@@ -121,7 +124,7 @@ export default function Orders() {
             Shipping: {formatCurrency(row.original.shippingCost || 0)}
           </p>
           <p className="text-sm text-gray-500">
-            Payment: {row.original.paymentMethod} - {row.original.paymentStatus}
+            Payment: {row.original.billingAddress?.paymentMethod || 'Card'} - {row.original.paymentStatus}
           </p>
         </div>
       ),
