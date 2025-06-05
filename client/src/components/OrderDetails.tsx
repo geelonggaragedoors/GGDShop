@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,11 +33,40 @@ import {
 } from "lucide-react";
 
 interface OrderDetailsProps {
-  order: any;
+  orderId: string;
   onClose?: () => void;
 }
 
-export default function OrderDetails({ order, onClose }: OrderDetailsProps) {
+export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
+  // Fetch detailed order data with product information
+  const { data: order, isLoading: orderLoading } = useQuery({
+    queryKey: [`/api/admin/orders/${orderId}`],
+    enabled: !!orderId,
+  });
+
+  if (orderLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-gray-500">Order not found</p>
+          <Button onClick={onClose} className="mt-4">
+            Back to Orders
+          </Button>
+        </div>
+      </div>
+    );
+  }
   const [staffNotes, setStaffNotes] = useState(order?.staffNotes || "");
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [newNote, setNewNote] = useState("");

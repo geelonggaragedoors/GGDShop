@@ -19,7 +19,7 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(0);
   const [pageSize] = useState(20);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
   const { toast } = useToast();
 
@@ -186,13 +186,13 @@ export default function Orders() {
   const totalPages = ordersData ? Math.ceil(ordersData.total / pageSize) : 0;
 
   // Show order details if one is selected
-  if (isOrderDetailsOpen && selectedOrder) {
+  if (isOrderDetailsOpen && selectedOrderId) {
     return (
       <OrderDetails 
-        order={selectedOrder} 
+        orderId={selectedOrderId} 
         onClose={() => {
           setIsOrderDetailsOpen(false);
-          setSelectedOrder(null);
+          setSelectedOrderId(null);
         }}
       />
     );

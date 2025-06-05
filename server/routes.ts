@@ -482,6 +482,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get order details with items and products
+  app.get('/api/admin/orders/:id', isAuthenticated, async (req, res) => {
+    try {
+      const order = await storage.getOrderById(req.params.id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      res.status(500).json({ message: "Failed to fetch order details" });
+    }
+  });
+
   app.put('/api/admin/orders/:id/status', isAuthenticated, async (req, res) => {
     try {
       const { status } = req.body;
