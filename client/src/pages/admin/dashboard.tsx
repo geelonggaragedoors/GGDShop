@@ -196,7 +196,7 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="space-y-4">
               {stats?.recentOrders?.slice(0, 5).map((order) => (
-                <Link key={order.id} href={`/admin/orders/${order.id}`}>
+                <Link key={order.id} to={`/admin/orders/${order.id}`}>
                   <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 -mx-2">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -242,7 +242,7 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="space-y-4">
               {stats?.topProducts?.slice(0, 5).map((product) => (
-                <Link key={product.id} href={`/products/${product.slug || product.id}`}>
+                <Link key={product.id} to={`/products/${product.slug || product.id}`}>
                   <div className="flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 py-2 -mx-2">
                     <div className="flex items-center space-x-3">
                       <img 
