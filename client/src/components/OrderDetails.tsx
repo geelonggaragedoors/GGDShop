@@ -694,8 +694,18 @@ function CustomerReceipt({ order }: { order: any }) {
     <div className="receipt-content space-y-6">
       {/* Header with Logo */}
       <div className="text-center border-b pb-6">
-        <div className="w-24 h-24 mx-auto mb-4 bg-primary rounded-lg flex items-center justify-center">
-          <Building className="w-12 h-12 text-white" />
+        <div className="flex justify-center mb-4">
+          <img 
+            src="/logo.png"
+            alt="Geelong Garage Doors" 
+            className="h-16 w-auto"
+            onError={(e) => {
+              const fallback = document.createElement('div');
+              fallback.className = 'w-24 h-24 mx-auto mb-4 bg-primary rounded-lg flex items-center justify-center';
+              fallback.innerHTML = '<div class="w-12 h-12 text-white flex items-center justify-center text-xl font-bold">GGD</div>';
+              e.currentTarget.parentNode?.replaceChild(fallback, e.currentTarget);
+            }}
+          />
         </div>
         <h1 className="text-2xl font-bold">Geelong Garage Doors</h1>
         <p className="text-gray-600">Professional Garage Door Solutions</p>
