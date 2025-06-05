@@ -9,6 +9,8 @@ import {
   mediaFiles,
   shippingZones,
   shippingRates,
+  staffInvitations,
+  roles,
   type User,
   type UpsertUser,
   type Category,
@@ -26,6 +28,10 @@ import {
   type MediaFile,
   type ShippingZone,
   type ShippingRate,
+  type StaffInvitation,
+  type InsertStaffInvitation,
+  type Role,
+  type InsertRole,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql } from "drizzle-orm";
@@ -95,6 +101,25 @@ export interface IStorage {
   getShippingZones(): Promise<ShippingZone[]>;
   getShippingRates(zoneId: string): Promise<ShippingRate[]>;
   calculateShipping(postcode: string, weight: number): Promise<number>;
+
+  // Staff operations
+  getStaffMembers(): Promise<User[]>;
+  getStaffMemberById(id: string): Promise<User | undefined>;
+  updateStaffMember(id: string, updates: Partial<User>): Promise<User | undefined>;
+  deactivateStaffMember(id: string): Promise<boolean>;
+
+  // Staff invitation operations
+  createStaffInvitation(invitation: InsertStaffInvitation): Promise<StaffInvitation>;
+  getStaffInvitations(): Promise<StaffInvitation[]>;
+  getStaffInvitationByToken(token: string): Promise<StaffInvitation | undefined>;
+  acceptStaffInvitation(token: string, userId: string): Promise<boolean>;
+  deleteStaffInvitation(id: string): Promise<boolean>;
+
+  // Role operations
+  getRoles(): Promise<Role[]>;
+  createRole(role: InsertRole): Promise<Role>;
+  updateRole(id: string, role: Partial<InsertRole>): Promise<Role | undefined>;
+  deleteRole(id: string): Promise<boolean>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<{

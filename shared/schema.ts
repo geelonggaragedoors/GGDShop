@@ -39,6 +39,31 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Staff invitations table
+export const staffInvitations = pgTable("staff_invitations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: varchar("email").notNull(),
+  role: varchar("role").notNull(), // admin, manager, staff
+  token: varchar("token").notNull().unique(),
+  invitedBy: varchar("invited_by").notNull(),
+  status: varchar("status").default("pending"), // pending, accepted, expired
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  acceptedAt: timestamp("accepted_at"),
+});
+
+// Roles table for permission management
+export const roles = pgTable("roles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name").notNull().unique(),
+  displayName: varchar("display_name").notNull(),
+  description: text("description"),
+  permissions: jsonb("permissions").notNull().default('[]'),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Categories table
 export const categories = pgTable("categories", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -335,6 +360,18 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   createdAt: true,
 });
 
+export const insertStaffInvitationSchema = createInsertSchema(staffInvitations).omit({
+  id: true,
+  createdAt: true,
+  acceptedAt: true,
+});
+
+export const insertRoleSchema = createInsertSchema(roles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -365,3 +402,9 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
 export type EmailSettings = typeof emailSettings.$inferSelect;
 export type InsertEmailSettings = typeof emailSettings.$inferInsert;
+
+export type StaffInvitation = typeof staffInvitations.$inferSelect;
+export type InsertStaffInvitation = z.infer<typeof insertStaffInvitationSchema>;
+
+export type Role = typeof roles.$inferSelect;
+export type InsertRole = z.infer<typeof insertRoleSchema>;
