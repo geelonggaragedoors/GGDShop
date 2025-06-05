@@ -23,21 +23,29 @@ export class AnalyticsService {
 
   // Start or update a user session
   async trackSession(data: Omit<InsertUserSession, 'startTime'>): Promise<void> {
-    await db.insert(userSessions).values({
-      ...data,
-      startTime: new Date(),
-    }).onConflictDoUpdate({
-      target: userSessions.id,
-      set: {
-        endTime: data.endTime,
-        duration: data.duration,
-        pageViews: data.pageViews,
-        events: data.events,
-        exitPage: data.exitPage,
-        isConverted: data.isConverted,
-        revenue: data.revenue,
-      },
-    });
+    try {
+      // First try to insert, if it fails due to conflict, update
+      await db.insert(userSessions).values({
+        ...data,
+        startTime: new Date(),
+      });
+    } catch (error) {
+      // If insert fails due to conflict, update the existing session
+      const updateData: any = {};
+      if (data.endTime) updateData.endTime = data.endTime;
+      if (data.duration !== undefined) updateData.duration = data.duration;
+      if (data.pageViews !== undefined) updateData.pageViews = data.pageViews;
+      if (data.events !== undefined) updateData.events = data.events;
+      if (data.exitPage) updateData.exitPage = data.exitPage;
+      if (data.isConverted !== undefined) updateData.isConverted = data.isConverted;
+      if (data.revenue !== undefined) updateData.revenue = data.revenue;
+      
+      if (Object.keys(updateData).length > 0) {
+        await db.update(userSessions)
+          .set(updateData)
+          .where(eq(userSessions.id, data.id));
+      }
+    }
   }
 
   // Track conversion funnel steps
