@@ -282,7 +282,7 @@ export const events = pgTable("events", {
   id: uuid("id").primaryKey().defaultRandom(),
   sessionId: varchar("session_id").notNull(),
   userId: varchar("user_id"), // null for anonymous users
-  eventType: varchar("event_type").notNull(), // click, scroll, form_submit, add_to_cart, etc.
+  eventName: varchar("event_name").notNull(), // click, scroll, form_submit, add_to_cart, etc.
   eventCategory: varchar("event_category"), // button, link, product, form
   eventLabel: varchar("event_label"), // specific element identifier
   eventValue: integer("event_value"), // numerical value if applicable

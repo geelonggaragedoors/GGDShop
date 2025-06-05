@@ -172,7 +172,7 @@ export class AnalyticsService {
     ));
 
     const topEvents = await db.select({
-      eventType: events.eventType,
+      eventName: events.eventName,
       eventCategory: events.eventCategory,
       eventLabel: events.eventLabel,
       count: count(),
@@ -182,7 +182,7 @@ export class AnalyticsService {
       gte(events.createdAt, startDate),
       lte(events.createdAt, endDate)
     ))
-    .groupBy(events.eventType, events.eventCategory, events.eventLabel)
+    .groupBy(events.eventName, events.eventCategory, events.eventLabel)
     .orderBy(desc(count()))
     .limit(20);
 
@@ -237,13 +237,13 @@ export class AnalyticsService {
     .limit(10);
 
     const recentEvents = await db.select({
-      eventType: events.eventType,
+      eventName: events.eventName,
       path: events.path,
       count: count(),
     })
     .from(events)
     .where(gte(events.createdAt, thirtyMinutesAgo))
-    .groupBy(events.eventType, events.path)
+    .groupBy(events.eventName, events.path)
     .orderBy(desc(count()))
     .limit(10);
 
