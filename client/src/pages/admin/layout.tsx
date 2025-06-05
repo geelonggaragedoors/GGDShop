@@ -15,6 +15,7 @@ import Customers from "./customers";
 import Media from "./media";
 import Staff from "./staff";
 import Reviews from "./reviews";
+import Enquiries from "./enquiries";
 import SettingsPage from "./settings";
 import {
   LayoutDashboard,
@@ -26,6 +27,7 @@ import {
   Images,
   UserCheck,
   Star,
+  MessageSquare,
   Settings as SettingsIcon,
   Store,
   Bell,
@@ -37,6 +39,7 @@ const sidebarItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { id: "products", label: "Products", icon: Package, path: "/admin/products" },
   { id: "orders", label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
+  { id: "enquiries", label: "Quote Requests", icon: MessageSquare, path: "/admin/enquiries" },
   { id: "categories", label: "Categories", icon: Tags, path: "/admin/categories" },
   { id: "brands", label: "Brands", icon: Building, path: "/admin/brands" },
   { id: "customers", label: "Customers", icon: Users, path: "/admin/customers" },
@@ -69,6 +72,8 @@ export default function AdminLayout() {
         return { title: "Products", subtitle: "Manage your garage door inventory" };
       case "orders":
         return { title: "Orders", subtitle: "Track and manage customer orders" };
+      case "enquiries":
+        return { title: "Quote Requests", subtitle: "Manage customer enquiries and quote requests" };
       case "categories":
         return { title: "Categories", subtitle: "Organize your product categories" };
       case "brands":

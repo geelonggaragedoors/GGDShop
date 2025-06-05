@@ -1,5 +1,6 @@
 import { Shield, Clock, Star, Package, ShoppingBag, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { QuoteRequestDialog } from "@/components/QuoteRequestDialog";
 
 const features = [
   {
@@ -67,9 +68,13 @@ export default function WhyChooseUs() {
           <div className="bg-blue-600 text-white py-8 px-6 rounded-lg">
             <h3 className="text-2xl font-bold mb-2">Ready to Upgrade Your Garage Door?</h3>
             <p className="mb-4">Get a free quote today and discover why customers choose us for their garage door needs.</p>
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Get Free Quote
-            </button>
+            <QuoteRequestDialog 
+              trigger={
+                <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                  Get Free Quote
+                </button>
+              }
+            />
           </div>
         </div>
       </div>
