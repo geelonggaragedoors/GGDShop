@@ -100,9 +100,10 @@ export class EmailService {
           </div>
           
           <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 30px; text-align: center; color: #64748b;">
-            <p><strong>Geelong Garage Doors</strong></p>
+            <img src="https://geelonggaragedoors.com.au/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
             <p>Professional garage door solutions across Geelong and surrounding areas</p>
             <p>Phone: (03) 5221 8999 | Email: info@geelonggaragedoors.com.au</p>
+            <p style="font-size: 12px;">ABN: 52 626 829 710</p>
           </div>
         </div>
       </body>
@@ -149,8 +150,9 @@ export class EmailService {
           <p>You can track your order status anytime by visiting our website or contacting us directly.</p>
           
           <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 30px; text-align: center; color: #64748b;">
-            <p><strong>Geelong Garage Doors</strong></p>
+            <img src="https://geelonggaragedoors.com.au/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
             <p>Phone: (03) 5221 8999 | Email: info@geelonggaragedoors.com.au</p>
+            <p style="font-size: 12px;">ABN: 52 626 829 710</p>
           </div>
         </div>
       </body>
@@ -253,8 +255,9 @@ export class EmailService {
           </div>
           
           <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 30px; text-align: center; color: #64748b;">
-            <p><strong>Geelong Garage Doors</strong></p>
+            <img src="https://geelonggaragedoors.com.au/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
             <p>Quote request received via website</p>
+            <p style="font-size: 12px;">ABN: 52 626 829 710</p>
           </div>
         </div>
       </body>

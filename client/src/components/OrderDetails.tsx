@@ -694,7 +694,7 @@ function CustomerReceipt({ order }: { order: any }) {
     <div className="receipt-content space-y-6">
       {/* Header with Logo */}
       <div className="text-center border-b pb-6">
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-2">
           <img 
             src="/logo.png"
             alt="Geelong Garage Doors" 
@@ -707,9 +707,7 @@ function CustomerReceipt({ order }: { order: any }) {
             }}
           />
         </div>
-        <h1 className="text-2xl font-bold">Geelong Garage Doors</h1>
-        <p className="text-gray-600">Professional Garage Door Solutions</p>
-        <p className="text-sm text-gray-500">ABN: 12 345 678 901</p>
+        <p className="text-sm text-gray-500">ABN: 52 626 829 710</p>
       </div>
 
       {/* Order Information */}
