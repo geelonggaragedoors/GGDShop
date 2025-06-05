@@ -148,15 +148,14 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 w-64 h-screen bg-white shadow-lg border-r z-40">
         <div className="p-6 border-b">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex flex-col items-center">
             <img 
               src="/logo.png"
               alt="Geelong Garage Doors" 
-              className="h-10 w-auto"
+              className="h-10 w-auto mb-2"
             />
+            <h2 className="text-lg font-bold text-black">Admin Dashboard</h2>
           </div>
-          <h2 className="text-xl font-bold text-primary">Admin Dashboard</h2>
-          <p className="text-sm text-gray-600">Geelong Garage Doors</p>
         </div>
         
         <nav className="p-4">
