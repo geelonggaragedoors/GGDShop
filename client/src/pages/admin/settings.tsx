@@ -265,7 +265,7 @@ export default function Settings() {
                 <span>Email Configuration</span>
               </CardTitle>
               <CardDescription>
-                Configure email settings for order confirmations and notifications using Resend
+                Configure email settings for order confirmations and notifications. Using Resend API for reliable email delivery.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -412,14 +412,19 @@ export default function Settings() {
               <Form {...notificationForm}>
                 <form onSubmit={notificationForm.handleSubmit(onNotificationSubmit)} className="space-y-6">
                   <div className="space-y-4">
-                    <h4 className="font-medium">Email Notifications</h4>
-                    <div className="space-y-3">
+                    <h4 className="font-medium">Notification Types</h4>
+                    <div className="space-y-4">
                       <FormField
                         control={notificationForm.control}
                         name="orderNotifications"
                         render={({ field }) => (
                           <FormItem className="flex items-center justify-between">
-                            <FormLabel>New Order Notifications</FormLabel>
+                            <div>
+                              <FormLabel>New Order Notifications</FormLabel>
+                              <FormDescription>
+                                Send email notifications when new orders are placed
+                              </FormDescription>
+                            </div>
                             <FormControl>
                               <Switch checked={field.value} onCheckedChange={field.onChange} />
                             </FormControl>
@@ -431,7 +436,12 @@ export default function Settings() {
                         name="lowStockNotifications"
                         render={({ field }) => (
                           <FormItem className="flex items-center justify-between">
-                            <FormLabel>Low Stock Alerts</FormLabel>
+                            <div>
+                              <FormLabel>Low Stock Alerts</FormLabel>
+                              <FormDescription>
+                                Alert when product inventory falls below threshold
+                              </FormDescription>
+                            </div>
                             <FormControl>
                               <Switch checked={field.value} onCheckedChange={field.onChange} />
                             </FormControl>
@@ -443,7 +453,12 @@ export default function Settings() {
                         name="customerSignupNotifications"
                         render={({ field }) => (
                           <FormItem className="flex items-center justify-between">
-                            <FormLabel>Customer Signup Notifications</FormLabel>
+                            <div>
+                              <FormLabel>Customer Signup Notifications</FormLabel>
+                              <FormDescription>
+                                Notify when new customers register
+                              </FormDescription>
+                            </div>
                             <FormControl>
                               <Switch checked={field.value} onCheckedChange={field.onChange} />
                             </FormControl>
@@ -453,64 +468,17 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <div className="space-y-4 p-4 border rounded-lg">
-                    <h4 className="font-medium">SMTP Configuration</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={notificationForm.control}
-                        name="emailHost"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>SMTP Host</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={notificationForm.control}
-                        name="emailPort"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>SMTP Port</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={notificationForm.control}
-                        name="emailUsername"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email Username</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={notificationForm.control}
-                        name="emailPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email Password</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="password" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-green-900 mb-2">Resend Email Service</h4>
+                    <p className="text-sm text-green-700">
+                      Email notifications are powered by Resend for reliable delivery. 
+                      The system automatically handles all three notification types when enabled:
+                    </p>
+                    <ul className="text-sm text-green-700 mt-2 ml-4 list-disc">
+                      <li>Order confirmations and status updates</li>
+                      <li>Low stock alerts when inventory is low</li>
+                      <li>Customer registration notifications</li>
+                    </ul>
                   </div>
 
                   <Button type="submit" disabled={updateSettingsMutation.isPending}>
