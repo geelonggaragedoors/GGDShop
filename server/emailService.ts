@@ -69,7 +69,7 @@ export class EmailService {
           <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Order Details</h3>
             <p><strong>Order Number:</strong> ${order.id}</p>
-            <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+            <p><strong>Order Date:</strong> ${new Date(order.createdAt || new Date()).toLocaleDateString()}</p>
             <p><strong>Status:</strong> ${order.status}</p>
           </div>
           
@@ -89,7 +89,7 @@ export class EmailService {
           
           <div style="text-align: right; margin: 20px 0;">
             <p style="font-size: 18px; font-weight: bold;">
-              Total: $${parseFloat(order.totalAmount).toFixed(2)}
+              Total: $${parseFloat(order.total).toFixed(2)}
             </p>
           </div>
           
@@ -186,9 +186,9 @@ export class EmailService {
             <p><strong>Customer:</strong> ${customer.firstName} ${customer.lastName}</p>
             <p><strong>Email:</strong> ${customer.email}</p>
             <p><strong>Phone:</strong> ${customer.phone || 'Not provided'}</p>
-            <p><strong>Total Amount:</strong> $${parseFloat(order.totalAmount).toFixed(2)}</p>
+            <p><strong>Total Amount:</strong> $${parseFloat(order.total).toFixed(2)}</p>
             <p><strong>Status:</strong> ${order.status}</p>
-            <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+            <p><strong>Date:</strong> ${new Date(order.createdAt || new Date()).toLocaleDateString()}</p>
           </div>
           
           <p><strong>Action Required:</strong> Please review this order in the admin panel and take appropriate action.</p>

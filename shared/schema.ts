@@ -198,6 +198,30 @@ export const mediaFiles = pgTable("media_files", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Notifications table for real-time staff alerts
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull(),
+  type: varchar("type").notNull(), // 'order_new', 'order_updated', 'low_stock', etc.
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  data: jsonb("data"), // Additional data like order ID, product ID, etc.
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Email settings configuration
+export const emailSettings = pgTable("email_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  fromEmail: varchar("from_email").notNull(),
+  adminEmail: varchar("admin_email").notNull(),
+  enableOrderConfirmations: boolean("enable_order_confirmations").default(true),
+  enableStatusUpdates: boolean("enable_status_updates").default(true),
+  enableAdminNotifications: boolean("enable_admin_notifications").default(true),
+  enableLowStockAlerts: boolean("enable_low_stock_alerts").default(true),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
   parent: one(categories, {
@@ -336,3 +360,8 @@ export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type MediaFile = typeof mediaFiles.$inferSelect;
 export type ShippingZone = typeof shippingZones.$inferSelect;
 export type ShippingRate = typeof shippingRates.$inferSelect;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
+export type EmailSettings = typeof emailSettings.$inferSelect;
+export type InsertEmailSettings = typeof emailSettings.$inferInsert;
