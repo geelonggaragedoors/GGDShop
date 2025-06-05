@@ -2,7 +2,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import type { Server } from 'http';
 import { db } from './db';
 import { notifications } from '@shared/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 import type { InsertNotification, Notification } from '@shared/schema';
 
 interface ConnectedClient {
@@ -132,8 +132,10 @@ export class NotificationService {
     return await db
       .select()
       .from(notifications)
-      .where(eq(notifications.userId, userId))
-      .where(eq(notifications.isRead, false))
+      .where(and(
+        eq(notifications.userId, userId),
+        eq(notifications.isRead, false)
+      ))
       .orderBy(desc(notifications.createdAt));
   }
 
@@ -143,17 +145,19 @@ export class NotificationService {
       .set({ isRead: true })
       .where(eq(notifications.id, notificationId));
     
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async markAllAsRead(userId: string): Promise<boolean> {
     const result = await db
       .update(notifications)
       .set({ isRead: true })
-      .where(eq(notifications.userId, userId))
-      .where(eq(notifications.isRead, false));
+      .where(and(
+        eq(notifications.userId, userId),
+        eq(notifications.isRead, false)
+      ));
     
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 }
 
