@@ -130,7 +130,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Tabs */}
-      <div className="fixed top-[2.25rem] left-1/2 transform -translate-x-1/2 z-50 bg-white rounded-full shadow-lg border p-1">
+      <div className="fixed top-[30px] left-1/2 transform -translate-x-1/2 z-50 bg-white rounded-full shadow-lg border p-1">
         <div className="flex space-x-1">
           <Link href="/">
             <Button variant="ghost" size="sm" className="rounded-full px-6">
