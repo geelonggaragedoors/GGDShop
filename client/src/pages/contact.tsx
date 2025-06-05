@@ -159,9 +159,9 @@ export default function Contact() {
               
               if (info.action) {
                 return (
-                  <a key={index} href={info.action} className="block">
-                    <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center cursor-pointer">
-                      <CardContent className="p-6">
+                  <a key={index} href={info.action} className="block h-full">
+                    <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center cursor-pointer h-full">
+                      <CardContent className="p-6 flex flex-col justify-between h-full">
                         <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
                           <IconComponent className="w-8 h-8 text-white" />
                         </div>
@@ -174,8 +174,8 @@ export default function Contact() {
                 );
               } else {
                 return (
-                  <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center">
-                    <CardContent className="p-6">
+                  <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center h-full">
+                    <CardContent className="p-6 flex flex-col justify-between h-full">
                       <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
                         <IconComponent className="w-8 h-8 text-white" />
                       </div>
