@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import NotificationBell from "@/components/NotificationBell";
 import Dashboard from "./dashboard";
+import Analytics from "./analytics";
 import Products from "./products";
 import Categories from "./categories";
 import Brands from "./brands";
@@ -33,10 +34,12 @@ import {
   Bell,
   Plus,
   LogOut,
+  BarChart3,
 } from "lucide-react";
 
 const sidebarItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+  { id: "analytics", label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
   { id: "products", label: "Products", icon: Package, path: "/admin/products" },
   { id: "orders", label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
   { id: "enquiries", label: "Quote Requests", icon: MessageSquare, path: "/admin/enquiries" },
@@ -97,6 +100,8 @@ export default function AdminLayout() {
 
   const renderContent = () => {
     switch (currentPath) {
+      case "analytics":
+        return <Analytics />;
       case "products":
         return <Products />;
       case "orders":
