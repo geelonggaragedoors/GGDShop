@@ -183,12 +183,12 @@ export default function AdminLayout() {
                         {item.label}
                       </span>
                       {(item.id === "products" && counts?.products && counts.products > 0) && (
-                        <Badge className="ml-auto bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 group-hover:scale-110">
+                        <Badge className="ml-auto bg-blue-500 text-white transition-all duration-300 group-hover:bg-blue-600 group-hover:scale-110">
                           {counts.products}
                         </Badge>
                       )}
                       {(item.id === "orders" && counts?.orders && counts.orders > 0) && (
-                        <Badge className="ml-auto bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 group-hover:scale-110">
+                        <Badge className="ml-auto bg-blue-500 text-white transition-all duration-300 group-hover:bg-blue-600 group-hover:scale-110">
                           {counts.orders}
                         </Badge>
                       )}
