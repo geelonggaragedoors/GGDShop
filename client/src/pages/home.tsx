@@ -4,6 +4,9 @@ import StorefrontHeader from "@/components/storefront/header";
 import Hero from "@/components/storefront/hero";
 import Categories from "@/components/storefront/categories";
 import FeaturedProducts from "@/components/storefront/featured-products";
+import BestSellers from "@/components/storefront/best-sellers";
+import CustomerReviews from "@/components/storefront/customer-reviews";
+import WhyChooseUs from "@/components/storefront/why-choose-us";
 import Services from "@/components/storefront/services";
 import StorefrontFooter from "@/components/storefront/footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -90,6 +93,9 @@ export default function Home() {
           <Hero />
           <Categories />
           <FeaturedProducts />
+          <BestSellers />
+          <WhyChooseUs />
+          <CustomerReviews />
           <Services />
           <StorefrontFooter />
         </div>
