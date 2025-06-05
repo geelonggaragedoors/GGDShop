@@ -73,56 +73,62 @@ export default function Categories() {
           {/* Fallback categories if no data */}
           {(!categories || categories.length === 0) && (
             <>
-              <div className="group cursor-pointer category-card">
-                <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
-                  <div className="relative">
-                    <img 
-                      src={categoryImages.residential}
-                      alt="Residential Doors"
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h4 className="text-xl font-semibold mb-1">Residential Doors</h4>
-                      <p className="text-gray-200">Browse our collection</p>
+              <Link href="/products?category=residential-doors">
+                <div className="group cursor-pointer category-card">
+                  <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
+                    <div className="relative">
+                      <img 
+                        src={categoryImages.residential}
+                        alt="Residential Doors"
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                      <div className="absolute bottom-4 left-4 text-white">
+                        <h4 className="text-xl font-semibold mb-1">Residential Doors</h4>
+                        <p className="text-gray-200">Browse our collection</p>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </div>
+                  </Card>
+                </div>
+              </Link>
               
-              <div className="group cursor-pointer category-card">
-                <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
-                  <div className="relative">
-                    <img 
-                      src={categoryImages.commercial}
-                      alt="Commercial Doors"
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h4 className="text-xl font-semibold mb-1">Commercial Doors</h4>
-                      <p className="text-gray-200">Professional solutions</p>
+              <Link href="/products?category=commercial-doors">
+                <div className="group cursor-pointer category-card">
+                  <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
+                    <div className="relative">
+                      <img 
+                        src={categoryImages.commercial}
+                        alt="Commercial Doors"
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                      <div className="absolute bottom-4 left-4 text-white">
+                        <h4 className="text-xl font-semibold mb-1">Commercial Doors</h4>
+                        <p className="text-gray-200">Professional solutions</p>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </div>
+                  </Card>
+                </div>
+              </Link>
               
-              <div className="group cursor-pointer category-card">
-                <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
-                  <div className="relative">
-                    <img 
-                      src={categoryImages.parts}
-                      alt="Parts & Accessories"
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h4 className="text-xl font-semibold mb-1">Parts & Accessories</h4>
-                      <p className="text-gray-200">Quality components</p>
+              <Link href="/products?category=parts-accessories">
+                <div className="group cursor-pointer category-card">
+                  <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
+                    <div className="relative">
+                      <img 
+                        src={categoryImages.parts}
+                        alt="Parts & Accessories"
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                      <div className="absolute bottom-4 left-4 text-white">
+                        <h4 className="text-xl font-semibold mb-1">Parts & Accessories</h4>
+                        <p className="text-gray-200">Quality components</p>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </div>
+                  </Card>
+                </div>
+              </Link>
             </>
           )}
         </div>
