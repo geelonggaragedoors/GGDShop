@@ -188,6 +188,7 @@ export const orders = pgTable("orders", {
   customerEmail: varchar("customer_email").notNull(),
   status: varchar("status").default("pending"), // pending, processing, shipped, delivered, cancelled
   paymentStatus: varchar("payment_status").default("pending"), // pending, paid, failed, refunded
+  shippingStatus: varchar("shipping_status").default("not_shipped"), // not_shipped, preparing, shipped, in_transit, delivered
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }).default("0"),
   taxAmount: decimal("tax_amount", { precision: 10, scale: 2 }).default("0"),
@@ -196,6 +197,19 @@ export const orders = pgTable("orders", {
   shippingAddress: jsonb("shipping_address"),
   billingAddress: jsonb("billing_address"),
   notes: text("notes"),
+  staffNotes: text("staff_notes"), // Internal staff notes
+  paypalOrderId: varchar("paypal_order_id"), // PayPal order ID
+  paypalPaymentId: varchar("paypal_payment_id"), // PayPal payment ID
+  paypalTransactionId: varchar("paypal_transaction_id"), // PayPal transaction ID
+  paypalPayerInfo: jsonb("paypal_payer_info"), // PayPal payer details
+  auspostService: varchar("auspost_service"), // Australia Post service type
+  auspostBoxSize: varchar("auspost_box_size"), // Box size used
+  auspostBoxCost: decimal("auspost_box_cost", { precision: 10, scale: 2 }), // Box cost
+  auspostPostageCost: decimal("auspost_postage_cost", { precision: 10, scale: 2 }), // Postage cost
+  auspostTrackingNumber: varchar("auspost_tracking_number"), // Tracking number
+  auspostLabelUrl: varchar("auspost_label_url"), // Shipping label URL
+  printedAt: timestamp("printed_at"), // When order was printed
+  printedBy: varchar("printed_by"), // Who printed the order
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

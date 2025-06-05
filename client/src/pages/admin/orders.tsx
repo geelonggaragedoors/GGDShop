@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import DataTable from "@/components/ui/data-table";
+import OrderDetails from "@/components/OrderDetails";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
 import { Search, Eye, Edit, Package } from "lucide-react";
@@ -19,6 +20,7 @@ export default function Orders() {
   const [page, setPage] = useState(0);
   const [pageSize] = useState(20);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
   const { toast } = useToast();
 
   const { data: ordersData, isLoading } = useQuery({
@@ -166,55 +168,16 @@ export default function Orders() {
       accessorKey: "actions",
       cell: ({ row }: any) => (
         <div className="flex space-x-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button 
-                size="sm" 
-                variant="ghost"
-                onClick={() => setSelectedOrder(row.original)}
-              >
-                <Eye className="w-4 h-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Order Details - #{selectedOrder?.orderNumber}</DialogTitle>
-              </DialogHeader>
-              {selectedOrder && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-semibold mb-2">Customer Information</h4>
-                      <p>{selectedOrder.customerEmail}</p>
-                      {selectedOrder.shippingAddress && (
-                        <div className="mt-2 text-sm text-gray-600">
-                          <p>Shipping Address:</p>
-                          <p>{selectedOrder.shippingAddress.address1}</p>
-                          {selectedOrder.shippingAddress.address2 && (
-                            <p>{selectedOrder.shippingAddress.address2}</p>
-                          )}
-                          <p>{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.postcode}</p>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Order Summary</h4>
-                      <p>Subtotal: {formatCurrency(selectedOrder.subtotal)}</p>
-                      <p>Shipping: {formatCurrency(selectedOrder.shippingCost || 0)}</p>
-                      <p>Tax: {formatCurrency(selectedOrder.taxAmount || 0)}</p>
-                      <p className="font-semibold">Total: {formatCurrency(selectedOrder.total)}</p>
-                    </div>
-                  </div>
-                  {selectedOrder.notes && (
-                    <div>
-                      <h4 className="font-semibold mb-2">Notes</h4>
-                      <p className="text-gray-600">{selectedOrder.notes}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
+          <Button 
+            size="sm" 
+            variant="ghost"
+            onClick={() => {
+              setSelectedOrder(row.original);
+              setIsOrderDetailsOpen(true);
+            }}
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
         </div>
       ),
     },
