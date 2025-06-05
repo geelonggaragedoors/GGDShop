@@ -21,6 +21,7 @@ import { createRouteHandler } from "uploadthing/express";
 import { ourFileRouter } from "./uploadthing";
 import { emailService } from "./emailService";
 import { notificationService } from "./notificationService";
+import { analyticsService } from "./analyticsService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
@@ -1139,6 +1140,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting role:", error);
       res.status(500).json({ message: "Failed to delete role" });
+    }
+  });
+
+  // Analytics API routes
+  app.post("/api/analytics/page-view", async (req, res) => {
+    try {
+      await analyticsService.trackPageView(req.body);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics page view error:", error);
+      res.status(500).json({ error: "Failed to track page view" });
+    }
+  });
+
+  app.post("/api/analytics/event", async (req, res) => {
+    try {
+      await analyticsService.trackEvent(req.body);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics event error:", error);
+      res.status(500).json({ error: "Failed to track event" });
+    }
+  });
+
+  app.post("/api/analytics/session", async (req, res) => {
+    try {
+      await analyticsService.trackSession(req.body);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics session error:", error);
+      res.status(500).json({ error: "Failed to track session" });
+    }
+  });
+
+  app.post("/api/analytics/session-update", async (req, res) => {
+    try {
+      await analyticsService.trackSession(req.body);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics session update error:", error);
+      res.status(500).json({ error: "Failed to update session" });
+    }
+  });
+
+  app.post("/api/analytics/session-convert", async (req, res) => {
+    try {
+      await analyticsService.trackSession({ ...req.body, isConverted: true });
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics session conversion error:", error);
+      res.status(500).json({ error: "Failed to track conversion" });
+    }
+  });
+
+  app.post("/api/analytics/session-end", async (req, res) => {
+    try {
+      await analyticsService.trackSession(req.body);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics session end error:", error);
+      res.status(500).json({ error: "Failed to end session" });
+    }
+  });
+
+  app.post("/api/analytics/page-view-duration", async (req, res) => {
+    try {
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics page view duration error:", error);
+      res.status(500).json({ error: "Failed to track page view duration" });
+    }
+  });
+
+  app.post("/api/analytics/conversion", async (req, res) => {
+    try {
+      await analyticsService.trackConversion(req.body);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics conversion error:", error);
+      res.status(500).json({ error: "Failed to track conversion" });
+    }
+  });
+
+  app.post("/api/analytics/seo", async (req, res) => {
+    try {
+      await analyticsService.updateSEOMetrics(req.body);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Analytics SEO error:", error);
+      res.status(500).json({ error: "Failed to track SEO metrics" });
+    }
+  });
+
+  app.get("/api/analytics/dashboard", async (req, res) => {
+    try {
+      const { range = "7d" } = req.query;
+      const endDate = new Date();
+      let startDate = new Date();
+      
+      switch (range) {
+        case "1d":
+          startDate.setDate(endDate.getDate() - 1);
+          break;
+        case "7d":
+          startDate.setDate(endDate.getDate() - 7);
+          break;
+        case "30d":
+          startDate.setDate(endDate.getDate() - 30);
+          break;
+        case "90d":
+          startDate.setDate(endDate.getDate() - 90);
+          break;
+        default:
+          startDate.setDate(endDate.getDate() - 7);
+      }
+
+      const data = await analyticsService.getDashboardData(startDate, endDate);
+      res.json(data);
+    } catch (error) {
+      console.error("Analytics dashboard error:", error);
+      res.status(500).json({ error: "Failed to fetch analytics data" });
+    }
+  });
+
+  app.get("/api/analytics/realtime", async (req, res) => {
+    try {
+      const data = await analyticsService.getRealTimeData();
+      res.json(data);
+    } catch (error) {
+      console.error("Analytics realtime error:", error);
+      res.status(500).json({ error: "Failed to fetch realtime data" });
     }
   });
 

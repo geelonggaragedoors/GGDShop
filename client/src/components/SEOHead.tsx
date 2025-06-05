@@ -104,7 +104,7 @@ export default function SEOHead({
       path: window.location.pathname,
       title,
       description,
-      keywords,
+      keywords: keywords || '',
       ogTitle: ogTitle || title,
       ogDescription: ogDescription || description,
       canonicalUrl: canonicalUrl || window.location.href,
