@@ -193,10 +193,7 @@ export default function AdminLayout() {
                 <Plus className="w-4 h-4 mr-2" />
                 Add Product
               </Button>
-              <Button variant="outline" size="sm" className="relative">
-                <Bell className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </Button>
+              <NotificationBell />
             </div>
           </div>
         </header>

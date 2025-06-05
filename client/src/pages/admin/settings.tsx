@@ -97,6 +97,10 @@ export default function Settings() {
     updateSettingsMutation.mutate({ section: 'shipping', data });
   };
 
+  const onEmailSubmit = (data: any) => {
+    updateSettingsMutation.mutate({ section: 'email', data });
+  };
+
   const onNotificationSubmit = (data: any) => {
     updateSettingsMutation.mutate({ section: 'notifications', data });
   };
@@ -252,6 +256,149 @@ export default function Settings() {
         </TabsContent>
 
 
+
+        <TabsContent value="email">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Mail className="w-5 h-5" />
+                <span>Email Configuration</span>
+              </CardTitle>
+              <CardDescription>
+                Configure email settings for order confirmations and notifications using Resend
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...emailForm}>
+                <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={emailForm.control}
+                        name="fromEmail"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>From Email Address</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="orders@yourstore.com" />
+                            </FormControl>
+                            <FormDescription>
+                              Email address used for sending order confirmations
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={emailForm.control}
+                        name="adminEmail"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Admin Email Address</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="admin@yourstore.com" />
+                            </FormControl>
+                            <FormDescription>
+                              Email address for receiving admin notifications
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-medium">Email Notifications</h4>
+                      <div className="space-y-3">
+                        <FormField
+                          control={emailForm.control}
+                          name="enableOrderConfirmations"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center justify-between">
+                              <div>
+                                <FormLabel>Order Confirmations</FormLabel>
+                                <FormDescription>
+                                  Send confirmation emails to customers when orders are placed
+                                </FormDescription>
+                              </div>
+                              <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={emailForm.control}
+                          name="enableStatusUpdates"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center justify-between">
+                              <div>
+                                <FormLabel>Status Updates</FormLabel>
+                                <FormDescription>
+                                  Send emails when order status changes
+                                </FormDescription>
+                              </div>
+                              <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={emailForm.control}
+                          name="enableAdminNotifications"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center justify-between">
+                              <div>
+                                <FormLabel>Admin Notifications</FormLabel>
+                                <FormDescription>
+                                  Send emails to admin when new orders are received
+                                </FormDescription>
+                              </div>
+                              <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={emailForm.control}
+                          name="enableLowStockAlerts"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center justify-between">
+                              <div>
+                                <FormLabel>Low Stock Alerts</FormLabel>
+                                <FormDescription>
+                                  Send emails when product stock is running low
+                                </FormDescription>
+                              </div>
+                              <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h4 className="text-sm font-medium text-blue-900 mb-2">Resend Integration</h4>
+                      <p className="text-sm text-blue-700">
+                        This system uses Resend for reliable email delivery. Your RESEND_API_KEY is configured in the environment variables.
+                        All emails are sent through Resend's transactional email service for optimal deliverability.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Email Settings
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="notifications">
           <Card>

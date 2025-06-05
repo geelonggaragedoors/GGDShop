@@ -18,7 +18,7 @@ export class NotificationService {
     this.wss = new WebSocketServer({ 
       server, 
       path: '/ws/notifications',
-      verifyClient: (info) => {
+      verifyClient: (info: any) => {
         // Add authentication verification here if needed
         return true;
       }
