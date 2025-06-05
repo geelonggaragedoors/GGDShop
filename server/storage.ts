@@ -542,6 +542,91 @@ export class DatabaseStorage implements IStorage {
       topProducts: topProductsWithSales,
     };
   }
+
+  // Staff operations
+  async getStaffMembers(): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.isActive, true)).orderBy(asc(users.firstName));
+  }
+
+  async getStaffMemberById(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async updateStaffMember(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async deactivateStaffMember(id: string): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(users.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Staff invitation operations
+  async createStaffInvitation(invitation: InsertStaffInvitation): Promise<StaffInvitation> {
+    const [staffInvitation] = await db
+      .insert(staffInvitations)
+      .values(invitation)
+      .returning();
+    return staffInvitation;
+  }
+
+  async getStaffInvitations(): Promise<StaffInvitation[]> {
+    return await db.select().from(staffInvitations).orderBy(desc(staffInvitations.createdAt));
+  }
+
+  async getStaffInvitationByToken(token: string): Promise<StaffInvitation | undefined> {
+    const [invitation] = await db.select().from(staffInvitations).where(eq(staffInvitations.token, token));
+    return invitation;
+  }
+
+  async acceptStaffInvitation(token: string, userId: string): Promise<boolean> {
+    const result = await db
+      .update(staffInvitations)
+      .set({ status: 'accepted', acceptedAt: new Date() })
+      .where(and(eq(staffInvitations.token, token), eq(staffInvitations.status, 'pending')));
+    return result.rowCount > 0;
+  }
+
+  async deleteStaffInvitation(id: string): Promise<boolean> {
+    const result = await db.delete(staffInvitations).where(eq(staffInvitations.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Role operations
+  async getRoles(): Promise<Role[]> {
+    return await db.select().from(roles).where(eq(roles.isActive, true)).orderBy(asc(roles.name));
+  }
+
+  async createRole(role: InsertRole): Promise<Role> {
+    const [newRole] = await db
+      .insert(roles)
+      .values(role)
+      .returning();
+    return newRole;
+  }
+
+  async updateRole(id: string, role: Partial<InsertRole>): Promise<Role | undefined> {
+    const [updatedRole] = await db
+      .update(roles)
+      .set({ ...role, updatedAt: new Date() })
+      .where(eq(roles.id, id))
+      .returning();
+    return updatedRole;
+  }
+
+  async deleteRole(id: string): Promise<boolean> {
+    const result = await db.delete(roles).where(eq(roles.id, id));
+    return result.rowCount > 0;
+  }
 }
 
 export const storage = new DatabaseStorage();

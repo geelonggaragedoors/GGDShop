@@ -10,7 +10,9 @@ import {
   insertCategorySchema, 
   insertBrandSchema,
   insertCustomerSchema,
-  insertOrderSchema 
+  insertOrderSchema,
+  insertStaffInvitationSchema,
+  insertRoleSchema
 } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
@@ -982,6 +984,161 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
       res.status(500).json({ message: "Failed to mark all notifications as read" });
+    }
+  });
+
+  // Staff Management Routes
+  app.get('/api/admin/staff', isAuthenticated, async (req, res) => {
+    try {
+      const staff = await storage.getStaffMembers();
+      res.json(staff);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+      res.status(500).json({ message: "Failed to fetch staff members" });
+    }
+  });
+
+  app.get('/api/admin/staff/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const staff = await storage.getStaffMemberById(id);
+      if (!staff) {
+        return res.status(404).json({ message: "Staff member not found" });
+      }
+      res.json(staff);
+    } catch (error) {
+      console.error("Error fetching staff member:", error);
+      res.status(500).json({ message: "Failed to fetch staff member" });
+    }
+  });
+
+  app.put('/api/admin/staff/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const staff = await storage.updateStaffMember(id, updates);
+      if (!staff) {
+        return res.status(404).json({ message: "Staff member not found" });
+      }
+      res.json(staff);
+    } catch (error) {
+      console.error("Error updating staff member:", error);
+      res.status(500).json({ message: "Failed to update staff member" });
+    }
+  });
+
+  app.delete('/api/admin/staff/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deactivateStaffMember(id);
+      res.json({ message: "Staff member deactivated successfully" });
+    } catch (error) {
+      console.error("Error deactivating staff member:", error);
+      res.status(500).json({ message: "Failed to deactivate staff member" });
+    }
+  });
+
+  // Staff Invitation Routes
+  app.get('/api/admin/invitations', isAuthenticated, async (req, res) => {
+    try {
+      const invitations = await storage.getStaffInvitations();
+      res.json(invitations);
+    } catch (error) {
+      console.error("Error fetching invitations:", error);
+      res.status(500).json({ message: "Failed to fetch invitations" });
+    }
+  });
+
+  app.post('/api/admin/invitations', isAuthenticated, async (req: any, res) => {
+    try {
+      const validatedData = insertStaffInvitationSchema.parse(req.body);
+      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
+      
+      const invitation = await storage.createStaffInvitation({
+        ...validatedData,
+        token,
+        invitedBy: req.user.claims.sub,
+        expiresAt
+      });
+
+      // Send invitation email
+      await emailService.sendEmail({
+        to: invitation.email,
+        subject: 'Staff Invitation - Geelong Garage Doors',
+        html: `
+          <h2>You've been invited to join Geelong Garage Doors</h2>
+          <p>You have been invited to join our team as a ${invitation.role}.</p>
+          <p>Please click the link below to accept the invitation:</p>
+          <a href="${req.protocol}://${req.get('host')}/admin/accept-invitation?token=${token}">Accept Invitation</a>
+          <p>This invitation will expire in 7 days.</p>
+        `
+      });
+
+      res.json(invitation);
+    } catch (error) {
+      console.error("Error creating invitation:", error);
+      res.status(500).json({ message: "Failed to create invitation" });
+    }
+  });
+
+  app.delete('/api/admin/invitations/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteStaffInvitation(id);
+      res.json({ message: "Invitation deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting invitation:", error);
+      res.status(500).json({ message: "Failed to delete invitation" });
+    }
+  });
+
+  // Role Management Routes
+  app.get('/api/admin/roles', isAuthenticated, async (req, res) => {
+    try {
+      const roles = await storage.getRoles();
+      res.json(roles);
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      res.status(500).json({ message: "Failed to fetch roles" });
+    }
+  });
+
+  app.post('/api/admin/roles', isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertRoleSchema.parse(req.body);
+      const role = await storage.createRole(validatedData);
+      res.json(role);
+    } catch (error) {
+      console.error("Error creating role:", error);
+      res.status(500).json({ message: "Failed to create role" });
+    }
+  });
+
+  app.put('/api/admin/roles/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const role = await storage.updateRole(id, updates);
+      if (!role) {
+        return res.status(404).json({ message: "Role not found" });
+      }
+      res.json(role);
+    } catch (error) {
+      console.error("Error updating role:", error);
+      res.status(500).json({ message: "Failed to update role" });
+    }
+  });
+
+  app.delete('/api/admin/roles/:id', isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteRole(id);
+      res.json({ message: "Role deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting role:", error);
+      res.status(500).json({ message: "Failed to delete role" });
     }
   });
 
