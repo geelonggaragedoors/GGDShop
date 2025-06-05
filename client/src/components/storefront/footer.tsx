@@ -49,11 +49,15 @@ export default function StorefrontFooter() {
             <ul className="space-y-2 text-sm">
               <li className="flex items-center">
                 <i className="fas fa-phone mr-2"></i>
-                (03) 5221 8999
+                <a href="tel:0352218999" className="hover:text-white transition-colors">
+                  (03) 5221 8999
+                </a>
               </li>
               <li className="flex items-center">
                 <i className="fas fa-envelope mr-2"></i>
-                info@geelonggaragedoors.com.au
+                <a href="mailto:info@geelonggaragedoors.com.au" className="hover:text-white transition-colors">
+                  info@geelonggaragedoors.com.au
+                </a>
               </li>
               <li className="flex items-center">
                 <i className="fas fa-map-marker-alt mr-2"></i>

@@ -42,14 +42,14 @@ export default function StorefrontHeader() {
         {/* Top bar */}
         <div className="flex justify-between items-center py-2 border-b border-gray-100 text-sm text-gray-600">
           <div className="flex items-center space-x-4">
-            <span className="flex items-center">
+            <a href="tel:0352218999" className="flex items-center hover:text-primary transition-colors">
               <Phone className="w-4 h-4 mr-1" />
               (03) 5221 8999
-            </span>
-            <span className="flex items-center">
+            </a>
+            <a href="mailto:info@geelonggaragedoors.com.au" className="flex items-center hover:text-primary transition-colors">
               <Mail className="w-4 h-4 mr-1" />
               info@geelonggaragedoors.com.au
-            </span>
+            </a>
           </div>
           <div className="flex items-center space-x-4">
             {!isAuthenticated && (
@@ -59,7 +59,7 @@ export default function StorefrontHeader() {
                 <a href="/api/login" className="hover:text-primary transition-colors">Create Account</a>
               </div>
             )}
-            <Link href="/track-order" className="hover:text-primary transition-colors">Track Order</Link>
+
           </div>
         </div>
         
@@ -136,6 +136,12 @@ export default function StorefrontHeader() {
                     <Link href="/orders" className="cursor-pointer">
                       <Package className="mr-2 h-4 w-4" />
                       <span>Orders</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/track-order" className="cursor-pointer">
+                      <Package className="mr-2 h-4 w-4" />
+                      <span>Track Order</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
