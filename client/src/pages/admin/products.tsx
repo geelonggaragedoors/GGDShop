@@ -37,14 +37,18 @@ export default function Products() {
   const { toast } = useToast();
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
-    queryKey: ["/api/products", { search, categoryId: selectedCategory, brandId: selectedBrand, limit: pageSize, offset: page * pageSize }],
-    queryFn: () => api.admin.products.getAll({
-      search: search || undefined,
-      categoryId: selectedCategory === "all" ? undefined : selectedCategory || undefined,
-      brandId: selectedBrand === "all" ? undefined : selectedBrand || undefined,
-      limit: pageSize,
-      offset: page * pageSize,
-    }),
+    queryKey: ["/api/admin/products", { search, categoryId: selectedCategory, brandId: selectedBrand, limit: pageSize, offset: page * pageSize }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (selectedCategory && selectedCategory !== 'all') params.append('categoryId', selectedCategory);
+      if (selectedBrand && selectedBrand !== 'all') params.append('brandId', selectedBrand);
+      params.append('limit', pageSize.toString());
+      params.append('offset', (page * pageSize).toString());
+      
+      const response = await fetch(`/api/admin/products?${params}`);
+      return response.json();
+    },
   });
 
   const { data: categories } = useQuery({
@@ -153,6 +157,9 @@ export default function Products() {
       sku: "",
       stockQuantity: 0,
       weight: 0,
+      length: 0,
+      width: 0,
+      height: 0,
       isFeatured: false,
       isActive: true,
     },
@@ -335,6 +342,18 @@ export default function Products() {
           <span className={isLowStock ? "text-red-600 font-medium" : ""}>
             {stock}
           </span>
+        );
+      },
+    },
+    {
+      header: "Publication",
+      accessorKey: "status",
+      cell: ({ row }: any) => {
+        const status = row.original.status || 'draft';
+        return (
+          <Badge variant={status === 'published' ? 'default' : 'secondary'}>
+            {status === 'published' ? 'Published' : 'Draft'}
+          </Badge>
         );
       },
     },

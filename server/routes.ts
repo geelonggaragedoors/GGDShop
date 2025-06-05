@@ -226,13 +226,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate shipping cost and publish product
       try {
         const shippingCost = await calculateShippingCost({
-          weight: productData.weight!,
-          length: productData.length!,
-          width: productData.width!,
-          height: productData.height!
+          weight: Number(productData.weight!),
+          length: Number(productData.length!),
+          width: Number(productData.width!),
+          height: Number(productData.height!)
         });
         
-        productData.shippingCost = shippingCost.toString();
+        (productData as any).shippingCost = shippingCost.toString();
         productData.status = 'published';
         
         const product = await storage.createProduct(productData);
@@ -287,13 +287,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Calculate shipping cost and publish product
         try {
           const shippingCost = await calculateShippingCost({
-            weight: mergedData.weight!,
-            length: mergedData.length!,
-            width: mergedData.width!,
-            height: mergedData.height!
+            weight: Number(mergedData.weight!),
+            length: Number(mergedData.length!),
+            width: Number(mergedData.width!),
+            height: Number(mergedData.height!)
           });
           
-          productData.shippingCost = shippingCost.toString();
+          (productData as any).shippingCost = shippingCost.toString();
           productData.status = 'published';
         } catch (shippingError) {
           console.error("Error calculating shipping:", shippingError);
