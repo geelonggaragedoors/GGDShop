@@ -82,9 +82,30 @@ export default function Orders() {
     {
       header: "Customer",
       accessorKey: "customerEmail",
+      cell: ({ row }: any) => {
+        const shippingAddr = row.original.shippingAddress;
+        return (
+          <div>
+            <p className="font-medium text-gray-900">
+              {shippingAddr?.firstName} {shippingAddr?.lastName}
+            </p>
+            <p className="text-sm text-gray-600">{row.original.customerEmail}</p>
+            {shippingAddr?.phone && (
+              <p className="text-sm text-gray-500">{shippingAddr.phone}</p>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      header: "Shipping Address",
+      accessorKey: "shippingAddress",
       cell: ({ row }: any) => (
         <div>
-          <p className="text-gray-900">{row.original.customerEmail}</p>
+          <p className="text-sm text-gray-900">{row.original.shippingAddress}</p>
+          <p className="text-sm text-gray-600">
+            {row.original.shippingCity}, {row.original.shippingState} {row.original.shippingPostcode}
+          </p>
         </div>
       ),
     },
@@ -98,6 +119,9 @@ export default function Orders() {
           </p>
           <p className="text-sm text-gray-500">
             Shipping: {formatCurrency(row.original.shippingCost || 0)}
+          </p>
+          <p className="text-sm text-gray-500">
+            Payment: {row.original.paymentMethod} - {row.original.paymentStatus}
           </p>
         </div>
       ),

@@ -339,8 +339,12 @@ export class DatabaseStorage implements IStorage {
       .from(orders)
       .where(whereClause);
 
-    // Get orders with pagination
-    let query = db.select().from(orders).where(whereClause).orderBy(desc(orders.createdAt));
+    // Get orders with customer information
+    let query = db
+      .select()
+      .from(orders)
+      .where(whereClause)
+      .orderBy(desc(orders.createdAt));
     
     if (params.limit) {
       query = query.limit(params.limit);
