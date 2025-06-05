@@ -1,0 +1,275 @@
+import { db } from "./db";
+import { pageViews, events, userSessions, conversionFunnels, seoMetrics } from "@shared/schema";
+import type { InsertPageView, InsertEvent, InsertUserSession, InsertConversionFunnel, InsertSEOMetrics } from "@shared/schema";
+import { eq, and, gte, lte, desc, count, sum, avg, sql } from "drizzle-orm";
+import { nanoid } from "nanoid";
+
+export class AnalyticsService {
+  // Track page views
+  async trackPageView(data: Omit<InsertPageView, 'id' | 'createdAt'>): Promise<void> {
+    await db.insert(pageViews).values({
+      ...data,
+      createdAt: new Date(),
+    });
+  }
+
+  // Track events (clicks, form submissions, etc.)
+  async trackEvent(data: Omit<InsertEvent, 'id' | 'createdAt'>): Promise<void> {
+    await db.insert(events).values({
+      ...data,
+      createdAt: new Date(),
+    });
+  }
+
+  // Start or update a user session
+  async trackSession(data: Omit<InsertUserSession, 'startTime'>): Promise<void> {
+    await db.insert(userSessions).values({
+      ...data,
+      startTime: new Date(),
+    }).onConflictDoUpdate({
+      target: userSessions.id,
+      set: {
+        endTime: data.endTime,
+        duration: data.duration,
+        pageViews: data.pageViews,
+        events: data.events,
+        exitPage: data.exitPage,
+        isConverted: data.isConverted,
+        revenue: data.revenue,
+      },
+    });
+  }
+
+  // Track conversion funnel steps
+  async trackConversion(data: Omit<InsertConversionFunnel, 'id' | 'completedAt'>): Promise<void> {
+    await db.insert(conversionFunnels).values({
+      ...data,
+      completedAt: new Date(),
+    });
+  }
+
+  // Update SEO metrics for a page
+  async updateSEOMetrics(data: Omit<InsertSEOMetrics, 'id' | 'updatedAt'>): Promise<void> {
+    await db.insert(seoMetrics).values({
+      ...data,
+      updatedAt: new Date(),
+    }).onConflictDoUpdate({
+      target: seoMetrics.path,
+      set: {
+        title: data.title,
+        description: data.description,
+        keywords: data.keywords,
+        ogTitle: data.ogTitle,
+        ogDescription: data.ogDescription,
+        canonicalUrl: data.canonicalUrl,
+        lastCrawled: data.lastCrawled,
+        pageSpeed: data.pageSpeed,
+        mobileUsability: data.mobileUsability,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  // Get analytics dashboard data
+  async getDashboardData(startDate: Date, endDate: Date) {
+    const pageViewsData = await db.select({
+      count: count(),
+      date: sql<string>`DATE(${pageViews.createdAt})`,
+    })
+    .from(pageViews)
+    .where(and(
+      gte(pageViews.createdAt, startDate),
+      lte(pageViews.createdAt, endDate)
+    ))
+    .groupBy(sql`DATE(${pageViews.createdAt})`)
+    .orderBy(sql`DATE(${pageViews.createdAt})`);
+
+    const topPages = await db.select({
+      path: pageViews.path,
+      title: pageViews.title,
+      views: count(),
+      uniqueUsers: sql<number>`COUNT(DISTINCT ${pageViews.userId})`,
+    })
+    .from(pageViews)
+    .where(and(
+      gte(pageViews.createdAt, startDate),
+      lte(pageViews.createdAt, endDate)
+    ))
+    .groupBy(pageViews.path, pageViews.title)
+    .orderBy(desc(count()))
+    .limit(10);
+
+    const deviceStats = await db.select({
+      device: pageViews.device,
+      count: count(),
+    })
+    .from(pageViews)
+    .where(and(
+      gte(pageViews.createdAt, startDate),
+      lte(pageViews.createdAt, endDate)
+    ))
+    .groupBy(pageViews.device);
+
+    const browserStats = await db.select({
+      browser: pageViews.browser,
+      count: count(),
+    })
+    .from(pageViews)
+    .where(and(
+      gte(pageViews.createdAt, startDate),
+      lte(pageViews.createdAt, endDate)
+    ))
+    .groupBy(pageViews.browser);
+
+    const countryStats = await db.select({
+      country: pageViews.country,
+      count: count(),
+    })
+    .from(pageViews)
+    .where(and(
+      gte(pageViews.createdAt, startDate),
+      lte(pageViews.createdAt, endDate)
+    ))
+    .groupBy(pageViews.country)
+    .orderBy(desc(count()))
+    .limit(10);
+
+    const totalSessions = await db.select({
+      count: count(),
+    }).from(userSessions).where(and(
+      gte(userSessions.startTime, startDate),
+      lte(userSessions.startTime, endDate)
+    ));
+
+    const avgSessionDuration = await db.select({
+      avgDuration: avg(userSessions.duration),
+    }).from(userSessions).where(and(
+      gte(userSessions.startTime, startDate),
+      lte(userSessions.startTime, endDate)
+    ));
+
+    const conversionRate = await db.select({
+      converted: count(),
+    }).from(userSessions).where(and(
+      gte(userSessions.startTime, startDate),
+      lte(userSessions.startTime, endDate),
+      eq(userSessions.isConverted, true)
+    ));
+
+    const totalRevenue = await db.select({
+      revenue: sum(userSessions.revenue),
+    }).from(userSessions).where(and(
+      gte(userSessions.startTime, startDate),
+      lte(userSessions.startTime, endDate)
+    ));
+
+    const topEvents = await db.select({
+      eventType: events.eventType,
+      eventCategory: events.eventCategory,
+      eventLabel: events.eventLabel,
+      count: count(),
+    })
+    .from(events)
+    .where(and(
+      gte(events.createdAt, startDate),
+      lte(events.createdAt, endDate)
+    ))
+    .groupBy(events.eventType, events.eventCategory, events.eventLabel)
+    .orderBy(desc(count()))
+    .limit(20);
+
+    const conversionFunnelData = await db.select({
+      step: conversionFunnels.step,
+      stepOrder: conversionFunnels.stepOrder,
+      count: count(),
+    })
+    .from(conversionFunnels)
+    .where(and(
+      gte(conversionFunnels.completedAt, startDate),
+      lte(conversionFunnels.completedAt, endDate)
+    ))
+    .groupBy(conversionFunnels.step, conversionFunnels.stepOrder)
+    .orderBy(conversionFunnels.stepOrder);
+
+    return {
+      pageViews: pageViewsData,
+      topPages,
+      deviceStats,
+      browserStats,
+      countryStats,
+      totalSessions: totalSessions[0]?.count || 0,
+      avgSessionDuration: Math.round(Number(avgSessionDuration[0]?.avgDuration) || 0),
+      conversionRate: totalSessions[0]?.count ? 
+        ((conversionRate[0]?.converted || 0) / totalSessions[0].count * 100) : 0,
+      totalRevenue: Number(totalRevenue[0]?.revenue) || 0,
+      topEvents,
+      conversionFunnel: conversionFunnelData,
+    };
+  }
+
+  // Get real-time analytics (last 30 minutes)
+  async getRealTimeData() {
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+    const activeUsers = await db.select({
+      count: sql<number>`COUNT(DISTINCT ${pageViews.sessionId})`,
+    })
+    .from(pageViews)
+    .where(gte(pageViews.createdAt, thirtyMinutesAgo));
+
+    const recentPageViews = await db.select({
+      path: pageViews.path,
+      title: pageViews.title,
+      count: count(),
+    })
+    .from(pageViews)
+    .where(gte(pageViews.createdAt, thirtyMinutesAgo))
+    .groupBy(pageViews.path, pageViews.title)
+    .orderBy(desc(count()))
+    .limit(10);
+
+    const recentEvents = await db.select({
+      eventType: events.eventType,
+      path: events.path,
+      count: count(),
+    })
+    .from(events)
+    .where(gte(events.createdAt, thirtyMinutesAgo))
+    .groupBy(events.eventType, events.path)
+    .orderBy(desc(count()))
+    .limit(10);
+
+    return {
+      activeUsers: activeUsers[0]?.count || 0,
+      recentPageViews,
+      recentEvents,
+    };
+  }
+
+  // Generate a new session ID
+  generateSessionId(): string {
+    return nanoid();
+  }
+
+  // Detect device type from user agent
+  getDeviceType(userAgent: string): string {
+    if (/Mobile|Android|iP(hone|od|ad)|BlackBerry|IEMobile/.test(userAgent)) {
+      return 'mobile';
+    } else if (/Tablet|iPad/.test(userAgent)) {
+      return 'tablet';
+    }
+    return 'desktop';
+  }
+
+  // Extract browser from user agent
+  getBrowser(userAgent: string): string {
+    if (userAgent.includes('Chrome')) return 'Chrome';
+    if (userAgent.includes('Firefox')) return 'Firefox';
+    if (userAgent.includes('Safari')) return 'Safari';
+    if (userAgent.includes('Edge')) return 'Edge';
+    if (userAgent.includes('Opera')) return 'Opera';
+    return 'Other';
+  }
+}
+
+export const analyticsService = new AnalyticsService();

@@ -247,6 +247,78 @@ export const emailSettings = pgTable("email_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Analytics tracking tables
+export const pageViews = pgTable("page_views", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionId: varchar("session_id").notNull(),
+  userId: varchar("user_id"), // null for anonymous users
+  path: varchar("path").notNull(),
+  title: varchar("title"),
+  referrer: varchar("referrer"),
+  userAgent: text("user_agent"),
+  ip: varchar("ip"),
+  country: varchar("country"),
+  device: varchar("device"), // mobile, desktop, tablet
+  browser: varchar("browser"),
+  viewDuration: integer("view_duration"), // in seconds
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const events = pgTable("events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionId: varchar("session_id").notNull(),
+  userId: varchar("user_id"), // null for anonymous users
+  eventType: varchar("event_type").notNull(), // click, scroll, form_submit, add_to_cart, etc.
+  eventCategory: varchar("event_category"), // button, link, product, form
+  eventLabel: varchar("event_label"), // specific element identifier
+  eventValue: integer("event_value"), // numerical value if applicable
+  path: varchar("path").notNull(),
+  metadata: jsonb("metadata"), // additional event data
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userSessions = pgTable("user_sessions", {
+  id: varchar("id").primaryKey(),
+  userId: varchar("user_id"), // null for anonymous sessions
+  startTime: timestamp("start_time").defaultNow(),
+  endTime: timestamp("end_time"),
+  duration: integer("duration"), // in seconds
+  pageViews: integer("page_views").default(0),
+  events: integer("events").default(0),
+  referrer: varchar("referrer"),
+  landingPage: varchar("landing_page"),
+  exitPage: varchar("exit_page"),
+  device: varchar("device"),
+  browser: varchar("browser"),
+  country: varchar("country"),
+  isConverted: boolean("is_converted").default(false), // did they make a purchase
+  revenue: decimal("revenue", { precision: 10, scale: 2 }).default('0'),
+});
+
+export const conversionFunnels = pgTable("conversion_funnels", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionId: varchar("session_id").notNull(),
+  step: varchar("step").notNull(), // landing, product_view, add_to_cart, checkout, purchase
+  stepOrder: integer("step_order").notNull(),
+  path: varchar("path").notNull(),
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const seoMetrics = pgTable("seo_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  path: varchar("path").notNull().unique(),
+  title: varchar("title"),
+  description: text("description"),
+  keywords: text("keywords"),
+  ogTitle: varchar("og_title"),
+  ogDescription: text("og_description"),
+  canonicalUrl: varchar("canonical_url"),
+  lastCrawled: timestamp("last_crawled"),
+  pageSpeed: integer("page_speed"), // in milliseconds
+  mobileUsability: boolean("mobile_usability").default(true),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
   parent: one(categories, {
@@ -408,3 +480,19 @@ export type InsertStaffInvitation = z.infer<typeof insertStaffInvitationSchema>;
 
 export type Role = typeof roles.$inferSelect;
 export type InsertRole = z.infer<typeof insertRoleSchema>;
+
+// Analytics types
+export type PageView = typeof pageViews.$inferSelect;
+export type InsertPageView = typeof pageViews.$inferInsert;
+
+export type Event = typeof events.$inferSelect;
+export type InsertEvent = typeof events.$inferInsert;
+
+export type UserSession = typeof userSessions.$inferSelect;
+export type InsertUserSession = typeof userSessions.$inferInsert;
+
+export type ConversionFunnel = typeof conversionFunnels.$inferSelect;
+export type InsertConversionFunnel = typeof conversionFunnels.$inferInsert;
+
+export type SEOMetrics = typeof seoMetrics.$inferSelect;
+export type InsertSEOMetrics = typeof seoMetrics.$inferInsert;
