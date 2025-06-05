@@ -25,13 +25,13 @@ export default function StatsCard({
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`w-12 h-12 ${iconBg} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                <Icon className={`w-6 h-6 ${iconColor}`} />
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`w-10 h-10 ${iconBg} rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <Icon className={`w-5 h-5 ${iconColor}`} />
               </div>
-              <p className="text-sm font-bold text-gray-700 uppercase tracking-wider">{title}</p>
+              <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">{title}</p>
             </div>
-            <p className="text-4xl font-black text-gray-900 mb-2 group-hover:text-gray-800 transition-colors">{value}</p>
+            <p className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors">{value}</p>
             {description && (
               <p className="text-sm text-gray-600 font-semibold">{description}</p>
             )}
