@@ -166,12 +166,12 @@ export default function Contact() {
                     {info.action ? (
                       <a 
                         href={info.action}
-                        className="text-[#2b3990] font-medium hover:underline block mb-2"
+                        className="text-[#2b3990] font-medium hover:underline block mb-2 break-all text-sm md:text-base"
                       >
                         {info.details}
                       </a>
                     ) : (
-                      <p className="text-[#2b3990] font-medium mb-2">{info.details}</p>
+                      <p className="text-[#2b3990] font-medium mb-2 break-all text-sm md:text-base">{info.details}</p>
                     )}
                     <p className="text-gray-600 text-sm">{info.description}</p>
                   </CardContent>
