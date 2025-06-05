@@ -158,8 +158,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Australia Post shipping services (public)
   app.get('/api/shipping/services', getAvailableServices);
 
-  // Shipping calculation (public)
-  app.post('/api/shipping/calculate', async (req, res) => {
+  // Legacy shipping calculation endpoint - redirected to Australia Post integration
+  app.post('/api/shipping/calculate-legacy', async (req, res) => {
     try {
       const { postcode, weight } = req.body;
       if (!postcode || !weight) {
