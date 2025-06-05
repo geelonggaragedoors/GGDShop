@@ -202,7 +202,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{order.orderNumber}</p>
-                      <p className="text-sm text-gray-600">{order.customerEmail}</p>
+                      <p className="text-sm text-gray-600">{order.customerName || order.customerEmail}</p>
                     </div>
                   </div>
                   <div className="text-right">

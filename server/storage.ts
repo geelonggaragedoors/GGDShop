@@ -467,26 +467,63 @@ export class DatabaseStorage implements IStorage {
       .from(customers)
       .where(eq(customers.isActive, true));
 
-    // Get recent orders
+    // Get recent orders with customer information
     const recentOrders = await db
-      .select()
+      .select({
+        id: orders.id,
+        orderNumber: orders.orderNumber,
+        total: orders.total,
+        status: orders.status,
+        createdAt: orders.createdAt,
+        updatedAt: orders.updatedAt,
+        customerId: orders.customerId,
+        customerEmail: orders.customerEmail,
+        paymentStatus: orders.paymentStatus,
+        subtotal: orders.subtotal,
+        shippingCost: orders.shippingCost,
+        shippingAddress: orders.shippingAddress,
+        billingAddress: orders.billingAddress,
+        notes: orders.notes,
+        customerName: sql<string>`CONCAT(${customers.firstName}, ' ', ${customers.lastName})`,
+      })
       .from(orders)
+      .leftJoin(customers, eq(orders.customerId, customers.id))
       .orderBy(desc(orders.createdAt))
       .limit(5);
 
-    // Get top products (simplified - in production would join with order items)
-    const topProducts = await db
-      .select()
+    // Get top products with actual sales data from order items
+    const topProductsData = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        price: products.price,
+        images: products.images,
+        sku: products.sku,
+        sales: sql<number>`COALESCE(SUM(${orderItems.quantity}), 0)::int`,
+        revenue: sql<number>`COALESCE(SUM(${orderItems.quantity} * ${orderItems.price}), 0)::float`,
+      })
       .from(products)
+      .leftJoin(orderItems, eq(products.id, orderItems.productId))
       .where(eq(products.isActive, true))
+      .groupBy(products.id, products.name, products.price, products.images, products.sku)
+      .orderBy(sql`COALESCE(SUM(${orderItems.quantity}), 0) DESC`)
       .limit(5);
 
-    // Add mock sales data for demonstration
-    const topProductsWithSales = topProducts.map(product => ({
-      ...product,
-      sales: Math.floor(Math.random() * 50) + 10,
-      revenue: parseFloat(product.price) * (Math.floor(Math.random() * 50) + 10),
-    }));
+    // Get full product data for the top products
+    const topProductIds = topProductsData.map(p => p.id);
+    const fullProducts = await db
+      .select()
+      .from(products)
+      .where(sql`${products.id} = ANY(${topProductIds})`);
+
+    const topProducts = topProductsData.map(productData => {
+      const fullProduct = fullProducts.find(p => p.id === productData.id);
+      return {
+        ...fullProduct!,
+        sales: productData.sales || 0,
+        revenue: productData.revenue || 0,
+      };
+    });
 
     return {
       totalRevenue: totalRevenue || 0,

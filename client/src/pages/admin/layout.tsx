@@ -151,12 +151,12 @@ export default function AdminLayout() {
                       <Icon className="w-4 h-4 mr-3" />
                       {item.label}
                       {(item.id === "products" && counts?.products && counts.products > 0) && (
-                        <Badge variant="secondary" className="ml-auto">
+                        <Badge className="ml-auto bg-orange-500 text-white hover:bg-orange-600">
                           {counts.products}
                         </Badge>
                       )}
                       {(item.id === "orders" && counts?.orders && counts.orders > 0) && (
-                        <Badge variant="secondary" className="ml-auto">
+                        <Badge className="ml-auto bg-orange-500 text-white hover:bg-orange-600">
                           {counts.orders}
                         </Badge>
                       )}
