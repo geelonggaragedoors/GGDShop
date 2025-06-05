@@ -97,7 +97,16 @@ export default function Checkout() {
             oversizedMessage = shippingData.oversizedMessage;
             break;
           } else {
-            totalShippingCost += shippingData.total * item.quantity;
+            // Use actual Australia Post API response data
+            setShippingCosts({
+              postage: shippingData.postage * item.quantity,
+              boxPrice: shippingData.boxPrice * item.quantity,
+              subtotal: shippingData.subtotal * item.quantity,
+              gst: shippingData.gst * item.quantity,
+              total: shippingData.total * item.quantity,
+              isOversized: false
+            });
+            return; // Exit early since we have real data
           }
         } else {
           console.log('Product missing shipping dimensions:', {
