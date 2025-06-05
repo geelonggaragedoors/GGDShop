@@ -35,12 +35,12 @@ export default function StorefrontFooter() {
           </div>
           
           <div>
-            <h6 className="text-white font-semibold mb-4">Services</h6>
+            <h6 className="text-white font-semibold mb-4">Shop</h6>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">Installation</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Repair & Maintenance</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Emergency Service</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Consultation</a></li>
+              <li><Link href="/products?featured=true" className="hover:text-white transition-colors">Featured Products</Link></li>
+              <li><Link href="/products?sort=newest" className="hover:text-white transition-colors">New Arrivals</Link></li>
+              <li><Link href="/products?sort=popular" className="hover:text-white transition-colors">Best Sellers</Link></li>
+              <li><Link href="/products?sale=true" className="hover:text-white transition-colors">Sale Items</Link></li>
             </ul>
           </div>
           
