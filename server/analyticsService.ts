@@ -15,10 +15,14 @@ export class AnalyticsService {
 
   // Track events (clicks, form submissions, etc.)
   async trackEvent(data: Omit<InsertEvent, 'id' | 'createdAt'>): Promise<void> {
-    await db.insert(events).values({
+    // Ensure eventName is provided, fallback to eventType if missing
+    const eventData = {
       ...data,
+      eventName: data.eventName || data.eventType || 'unknown_event',
       createdAt: new Date(),
-    });
+    };
+    
+    await db.insert(events).values(eventData);
   }
 
   // Start or update a user session
@@ -58,21 +62,30 @@ export class AnalyticsService {
 
   // Update SEO metrics for a page
   async updateSEOMetrics(data: Omit<InsertSEOMetrics, 'id' | 'updatedAt'>): Promise<void> {
-    await db.insert(seoMetrics).values({
+    // Sanitize numeric fields to prevent type conversion errors
+    const sanitizedData = {
       ...data,
+      pageSpeed: typeof data.pageSpeed === 'number' ? data.pageSpeed : 
+                 (data.pageSpeed === 'false' || data.pageSpeed === false ? 0 : 
+                  parseInt(String(data.pageSpeed)) || 0),
+      mobileUsability: typeof data.mobileUsability === 'number' ? data.mobileUsability : 
+                      (data.mobileUsability === 'false' || data.mobileUsability === false ? 0 : 
+                       parseInt(String(data.mobileUsability)) || 0),
       updatedAt: new Date(),
-    }).onConflictDoUpdate({
+    };
+
+    await db.insert(seoMetrics).values(sanitizedData).onConflictDoUpdate({
       target: seoMetrics.path,
       set: {
-        title: data.title,
-        description: data.description,
-        keywords: data.keywords,
-        ogTitle: data.ogTitle,
-        ogDescription: data.ogDescription,
-        canonicalUrl: data.canonicalUrl,
-        lastCrawled: data.lastCrawled,
-        pageSpeed: data.pageSpeed,
-        mobileUsability: data.mobileUsability,
+        title: sanitizedData.title,
+        description: sanitizedData.description,
+        keywords: sanitizedData.keywords,
+        ogTitle: sanitizedData.ogTitle,
+        ogDescription: sanitizedData.ogDescription,
+        canonicalUrl: sanitizedData.canonicalUrl,
+        lastCrawled: sanitizedData.lastCrawled,
+        pageSpeed: sanitizedData.pageSpeed,
+        mobileUsability: sanitizedData.mobileUsability,
         updatedAt: new Date(),
       },
     });
