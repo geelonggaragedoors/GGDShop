@@ -724,9 +724,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { weight, length, width, height, boxSize, toPostcode } = req.body;
       
-      if (!weight || !length || !width || !height || !boxSize || !toPostcode) {
+      if (!weight || !length || !width || !height || !toPostcode) {
         return res.status(400).json({ 
-          message: "Missing required fields: weight, length, width, height, boxSize, toPostcode" 
+          message: "Missing required fields: weight, length, width, height, toPostcode" 
         });
       }
 
@@ -738,7 +738,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         width: parseFloat(width), 
         height: parseFloat(height) 
       };
-      const result = await calculateTotalShippingCost(dimensions, boxSize, toPostcode);
+      
+      // Use default box size if not provided
+      const finalBoxSize = boxSize || 'Bx1';
+      
+      const result = await calculateTotalShippingCost(dimensions, finalBoxSize, toPostcode);
       
       res.json(result);
     } catch (error) {
