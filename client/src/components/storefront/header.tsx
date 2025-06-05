@@ -304,8 +304,6 @@ export default function StorefrontHeader() {
               )}
             </li>
             
-            <li><Link href="/installation" className="text-gray-700 hover:text-primary font-medium transition-colors">Installation</Link></li>
-            <li><Link href="/repair-services" className="text-gray-700 hover:text-primary font-medium transition-colors">Repair Services</Link></li>
             <li><Link href="/contact" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</Link></li>
           </ul>
         </nav>
@@ -376,9 +374,6 @@ export default function StorefrontHeader() {
                     </ul>
                   </li>
                   
-                  {/* Services */}
-                  <li><Link href="/installation" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Installation</Link></li>
-                  <li><Link href="/repair-services" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Repair Services</Link></li>
                   <li><Link href="/contact" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Contact</Link></li>
                 </ul>
               </div>
