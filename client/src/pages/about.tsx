@@ -49,10 +49,10 @@ const values = [
 
 const team = [
   {
-    name: "Steve Ford",
+    name: "Rob Serra",
     role: "Founder & Managing Director",
     experience: "20+ years in garage door industry",
-    description: "Steve founded Geelong Garage Doors with a vision to provide the Geelong region with honest, reliable garage door solutions."
+    description: "Rob founded Geelong Garage Doors with a vision to provide the Geelong region with honest, reliable garage door solutions."
   },
   {
     name: "Technical Team",
