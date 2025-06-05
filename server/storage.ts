@@ -11,6 +11,7 @@ import {
   shippingRates,
   staffInvitations,
   roles,
+  customerReviews,
   type User,
   type UpsertUser,
   type Category,
@@ -32,6 +33,8 @@ import {
   type InsertStaffInvitation,
   type Role,
   type InsertRole,
+  type CustomerReview,
+  type InsertCustomerReview,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql } from "drizzle-orm";
@@ -122,6 +125,20 @@ export interface IStorage {
   createRole(role: InsertRole): Promise<Role>;
   updateRole(id: string, role: Partial<InsertRole>): Promise<Role | undefined>;
   deleteRole(id: string): Promise<boolean>;
+
+  // Customer review operations
+  getCustomerReviews(params?: {
+    isVisible?: boolean;
+    productId?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ reviews: CustomerReview[]; total: number }>;
+  getCustomerReviewById(id: string): Promise<CustomerReview | undefined>;
+  createCustomerReview(review: InsertCustomerReview): Promise<CustomerReview>;
+  updateCustomerReview(id: string, review: Partial<InsertCustomerReview>): Promise<CustomerReview | undefined>;
+  deleteCustomerReview(id: string): Promise<boolean>;
+  addAdminResponse(reviewId: string, response: string, adminId: string): Promise<boolean>;
+  removeMockReviews(): Promise<boolean>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<{
@@ -637,6 +654,84 @@ export class DatabaseStorage implements IStorage {
   async deleteRole(id: string): Promise<boolean> {
     const result = await db.delete(roles).where(eq(roles.id, id));
     return result.rowCount > 0;
+  }
+
+  // Customer review operations
+  async getCustomerReviews(params?: {
+    isVisible?: boolean;
+    productId?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ reviews: CustomerReview[]; total: number }> {
+    const { isVisible, productId, limit = 10, offset = 0 } = params || {};
+
+    let query = db.select().from(customerReviews);
+    let countQuery = db.select({ count: count() }).from(customerReviews);
+
+    const conditions = [];
+    if (isVisible !== undefined) {
+      conditions.push(eq(customerReviews.isVisible, isVisible));
+    }
+    if (productId) {
+      conditions.push(eq(customerReviews.productId, productId));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+      countQuery = countQuery.where(and(...conditions));
+    }
+
+    const [reviews, totalResult] = await Promise.all([
+      query.orderBy(desc(customerReviews.createdAt)).limit(limit).offset(offset),
+      countQuery
+    ]);
+
+    return {
+      reviews,
+      total: totalResult[0]?.count || 0
+    };
+  }
+
+  async getCustomerReviewById(id: string): Promise<CustomerReview | undefined> {
+    const [review] = await db.select().from(customerReviews).where(eq(customerReviews.id, id));
+    return review;
+  }
+
+  async createCustomerReview(review: InsertCustomerReview): Promise<CustomerReview> {
+    const [newReview] = await db.insert(customerReviews).values(review).returning();
+    return newReview;
+  }
+
+  async updateCustomerReview(id: string, review: Partial<InsertCustomerReview>): Promise<CustomerReview | undefined> {
+    const [updatedReview] = await db
+      .update(customerReviews)
+      .set({ ...review, updatedAt: new Date() })
+      .where(eq(customerReviews.id, id))
+      .returning();
+    return updatedReview;
+  }
+
+  async deleteCustomerReview(id: string): Promise<boolean> {
+    const result = await db.delete(customerReviews).where(eq(customerReviews.id, id));
+    return result.rowCount! > 0;
+  }
+
+  async addAdminResponse(reviewId: string, response: string, adminId: string): Promise<boolean> {
+    const result = await db
+      .update(customerReviews)
+      .set({
+        adminResponse: response,
+        adminResponseBy: adminId,
+        adminResponseAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(customerReviews.id, reviewId));
+    return result.rowCount! > 0;
+  }
+
+  async removeMockReviews(): Promise<boolean> {
+    const result = await db.delete(customerReviews).where(eq(customerReviews.isMockData, true));
+    return result.rowCount! > 0;
   }
 }
 

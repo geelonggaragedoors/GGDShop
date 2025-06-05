@@ -12,7 +12,8 @@ import {
   insertCustomerSchema,
   insertOrderSchema,
   insertStaffInvitationSchema,
-  insertRoleSchema
+  insertRoleSchema,
+  insertCustomerReviewSchema
 } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
@@ -1326,6 +1327,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Analytics realtime error:", error);
       res.status(500).json({ error: "Failed to fetch realtime data" });
+    }
+  });
+
+  // Customer Reviews routes
+  app.get('/api/reviews', async (req, res) => {
+    try {
+      const { isVisible, productId, limit, offset } = req.query;
+      const params = {
+        isVisible: isVisible === 'true' ? true : isVisible === 'false' ? false : undefined,
+        productId: productId as string,
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
+      };
+      
+      const result = await storage.getCustomerReviews(params);
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.get('/api/reviews/:id', async (req, res) => {
+    try {
+      const review = await storage.getCustomerReviewById(req.params.id);
+      if (!review) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      res.json(review);
+    } catch (error) {
+      console.error("Error fetching review:", error);
+      res.status(500).json({ message: "Failed to fetch review" });
+    }
+  });
+
+  app.post('/api/reviews', async (req, res) => {
+    try {
+      const validatedData = insertCustomerReviewSchema.parse(req.body);
+      const review = await storage.createCustomerReview(validatedData);
+      
+      // Remove mock reviews when first real review is added
+      if (!validatedData.isMockData) {
+        await storage.removeMockReviews();
+      }
+      
+      res.status(201).json(review);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid review data", errors: error.errors });
+      }
+      console.error("Error creating review:", error);
+      res.status(500).json({ message: "Failed to create review" });
+    }
+  });
+
+  app.put('/api/reviews/:id', isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertCustomerReviewSchema.partial().parse(req.body);
+      const review = await storage.updateCustomerReview(req.params.id, validatedData);
+      
+      if (!review) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      
+      res.json(review);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid review data", errors: error.errors });
+      }
+      console.error("Error updating review:", error);
+      res.status(500).json({ message: "Failed to update review" });
+    }
+  });
+
+  app.delete('/api/reviews/:id', isAuthenticated, async (req, res) => {
+    try {
+      const success = await storage.deleteCustomerReview(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      res.json({ message: "Review deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      res.status(500).json({ message: "Failed to delete review" });
+    }
+  });
+
+  app.post('/api/reviews/:id/response', isAuthenticated, async (req, res) => {
+    try {
+      const { response } = req.body;
+      const adminId = (req as any).user.claims.sub;
+      
+      if (!response) {
+        return res.status(400).json({ message: "Response is required" });
+      }
+      
+      const success = await storage.addAdminResponse(req.params.id, response, adminId);
+      if (!success) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      
+      res.json({ message: "Admin response added successfully" });
+    } catch (error) {
+      console.error("Error adding admin response:", error);
+      res.status(500).json({ message: "Failed to add admin response" });
+    }
+  });
+
+  app.delete('/api/reviews/mock', isAuthenticated, async (req, res) => {
+    try {
+      const success = await storage.removeMockReviews();
+      res.json({ message: "Mock reviews removed successfully", removed: success });
+    } catch (error) {
+      console.error("Error removing mock reviews:", error);
+      res.status(500).json({ message: "Failed to remove mock reviews" });
     }
   });
 
