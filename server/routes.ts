@@ -714,6 +714,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Australia Post shipping routes
+  app.get("/api/shipping/boxes", async (req, res) => {
+    await getAustraliaPostBoxes(req, res);
+  });
+
   // PayPal routes
   app.get("/api/paypal-config", (req, res) => {
     res.json({ clientId: process.env.PAYPAL_CLIENT_ID });

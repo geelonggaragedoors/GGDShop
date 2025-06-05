@@ -954,83 +954,99 @@ export default function Products() {
                           />
                         </div>
 
-                        {/* Australia Post Shipping Dimensions */}
+                        {/* Australia Post Shipping Box Selection */}
                         <div className="border-t pt-4">
-                          <h4 className="text-sm font-medium text-gray-900 mb-3">Australia Post Shipping Dimensions</h4>
-                          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-3">
-                            <div className="text-sm text-blue-800">
-                              <p className="font-medium mb-2">Australia Post Dimension Limits:</p>
-                              <ul className="list-disc list-inside space-y-1 text-xs">
-                                <li>Maximum weight: 22kg (22000 grams)</li>
-                                <li>Maximum length/width/height: 105cm each</li>
-                                <li>Maximum girth: 140cm (length + 2×width + 2×height)</li>
-                              </ul>
-                              <p className="mt-2 text-xs">
-                                <strong>Note:</strong> Product will be saved as draft until valid dimensions are provided. Once complete, shipping cost will be calculated and product published.
-                              </p>
+                          <h4 className="text-sm font-medium text-gray-900 mb-3">Australia Post Standard Box Selection</h4>
+                          <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-3">
+                            <div className="text-sm text-green-800">
+                              <p className="font-medium mb-2">Available Australia Post Boxes:</p>
+                              <p className="text-xs mb-2">Select a standard box size that you'll purchase from the post office. Shipping costs will be calculated automatically.</p>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                                <div><strong>Bx1:</strong> 22×16×7.7cm (Small items)</div>
+                                <div><strong>Bx2:</strong> 31×22.5×10.2cm (Medium items)</div>
+                                <div><strong>Bx3:</strong> 40×20×18cm (Long items)</div>
+                                <div><strong>Bx4:</strong> 43×30.5×14cm (Wide items)</div>
+                                <div><strong>Bx5:</strong> 40.5×30×25.5cm (Large items)</div>
+                                <div><strong>Bx6:</strong> 22×14.5×3.5cm (Flat items)</div>
+                              </div>
                             </div>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <FormField
                               control={form.control}
-                              name="length"
+                              name="weight"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Length (cm)</FormLabel>
+                                  <FormLabel>Product Weight (grams)</FormLabel>
                                   <FormControl>
                                     <Input 
                                       {...field} 
                                       type="number" 
-                                      step="0.1"
-                                      placeholder="e.g., 100"
+                                      step="1"
+                                      placeholder="e.g., 5000"
                                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                     />
                                   </FormControl>
-                                  <FormDescription className="text-xs">Length in centimeters</FormDescription>
+                                  <FormDescription className="text-xs">Weight of the product in grams</FormDescription>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
                             <FormField
                               control={form.control}
-                              name="width"
+                              name="boxSize"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Width (cm)</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      {...field} 
-                                      type="number" 
-                                      step="0.1"
-                                      placeholder="e.g., 50"
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                    />
-                                  </FormControl>
-                                  <FormDescription className="text-xs">Width in centimeters</FormDescription>
+                                  <FormLabel>Australia Post Box Size</FormLabel>
+                                  <Select onValueChange={(value) => {
+                                    field.onChange(value);
+                                    // Auto-fill dimensions based on selected box
+                                    const boxDimensions = {
+                                      'Bx1': { length: 22, width: 16, height: 7.7 },
+                                      'Bx2': { length: 31, width: 22.5, height: 10.2 },
+                                      'Bx3': { length: 40, width: 20, height: 18 },
+                                      'Bx4': { length: 43, width: 30.5, height: 14 },
+                                      'Bx5': { length: 40.5, width: 30, height: 25.5 },
+                                      'Bx6': { length: 22, width: 14.5, height: 3.5 },
+                                      'Bx7': { length: 14.5, width: 12.7, height: 1 },
+                                      'Bx8': { length: 36.3, width: 21.2, height: 6.5 },
+                                    };
+                                    if (boxDimensions[value]) {
+                                      form.setValue('length', boxDimensions[value].length);
+                                      form.setValue('width', boxDimensions[value].width);
+                                      form.setValue('height', boxDimensions[value].height);
+                                    }
+                                  }} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select standard box size" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="Bx1">Bx1 - 22×16×7.7cm (Small)</SelectItem>
+                                      <SelectItem value="Bx2">Bx2 - 31×22.5×10.2cm (Medium)</SelectItem>
+                                      <SelectItem value="Bx3">Bx3 - 40×20×18cm (Long)</SelectItem>
+                                      <SelectItem value="Bx4">Bx4 - 43×30.5×14cm (Wide)</SelectItem>
+                                      <SelectItem value="Bx5">Bx5 - 40.5×30×25.5cm (Large)</SelectItem>
+                                      <SelectItem value="Bx6">Bx6 - 22×14.5×3.5cm (Flat)</SelectItem>
+                                      <SelectItem value="Bx7">Bx7 - 14.5×12.7×1cm (Very Flat)</SelectItem>
+                                      <SelectItem value="Bx8">Bx8 - 36.3×21.2×6.5cm (ToughPak)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription className="text-xs">
+                                    Choose the box you'll purchase from Australia Post
+                                  </FormDescription>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
-                            <FormField
-                              control={form.control}
-                              name="height"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Height (cm)</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      {...field} 
-                                      type="number" 
-                                      step="0.1"
-                                      placeholder="e.g., 15"
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                    />
-                                  </FormControl>
-                                  <FormDescription className="text-xs">Height in centimeters</FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                          </div>
+                          
+                          {/* Hidden dimension fields that get auto-populated */}
+                          <div className="hidden">
+                            <FormField control={form.control} name="length" render={({ field }) => <Input {...field} />} />
+                            <FormField control={form.control} name="width" render={({ field }) => <Input {...field} />} />
+                            <FormField control={form.control} name="height" render={({ field }) => <Input {...field} />} />
                           </div>
                         </div>
 

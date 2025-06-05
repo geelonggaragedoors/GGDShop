@@ -81,6 +81,7 @@ export const products = pgTable("products", {
   length: decimal("length", { precision: 8, scale: 2 }), // in cm
   width: decimal("width", { precision: 8, scale: 2 }), // in cm
   height: decimal("height", { precision: 8, scale: 2 }), // in cm
+  boxSize: varchar("box_size", { length: 10 }), // Australia Post box size (e.g., Bx1, Bx2)
   shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }), // calculated from Australia Post API
   status: varchar("status", { length: 20 }).default("draft"), // draft or published
   images: jsonb("images"), // Array of image URLs
