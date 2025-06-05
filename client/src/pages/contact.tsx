@@ -193,39 +193,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose Geelong Garage Doors?</h2>
-            <p className="text-xl text-gray-600">Professional service you can trust</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Expert Installation</h3>
-              <p className="text-gray-600">Professional installation by certified technicians with years of experience</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Quality Guarantee</h3>
-              <p className="text-gray-600">All our work comes with comprehensive warranties for your peace of mind</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Fast Response</h3>
-              <p className="text-gray-600">Quick quotes and prompt service to get your project completed on time</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Contact Form & Map */}
       <section className="py-16">
         <div className="container mx-auto px-4">
@@ -327,6 +294,44 @@ export default function Contact() {
                   </form>
                 </CardContent>
               </Card>
+
+              {/* Why Choose Us */}
+              <div className="mt-8">
+                <h3 className="text-2xl font-bold mb-6">Why Choose Us?</h3>
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="space-y-6">
+                      <div className="flex items-start">
+                        <div className="w-12 h-12 bg-[#2b3990] rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                          <Award className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-1">Expert Installation</h4>
+                          <p className="text-gray-600 text-sm">Professional installation by certified technicians with years of experience</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-12 h-12 bg-[#2b3990] rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                          <Shield className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-1">Quality Guarantee</h4>
+                          <p className="text-gray-600 text-sm">All our work comes with comprehensive warranties for your peace of mind</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-12 h-12 bg-[#2b3990] rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                          <Clock className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-1">Fast Response</h4>
+                          <p className="text-gray-600 text-sm">Quick quotes and prompt service to get your project completed on time</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             {/* Service Areas & Quick Quote */}
