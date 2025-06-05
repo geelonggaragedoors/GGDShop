@@ -152,19 +152,11 @@ export default function AdminLayout() {
             <img 
               src="/logo.png"
               alt="Geelong Garage Doors" 
-              className="h-8 w-auto"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const textFallback = e.currentTarget.nextElementSibling as HTMLElement;
-                if (textFallback) textFallback.style.display = 'block';
-              }}
+              className="h-10 w-auto"
             />
-            <div className="hidden">
-              <h2 className="text-xl font-bold text-primary">Admin Dashboard</h2>
-              <p className="text-sm text-gray-600">Geelong Garage Doors</p>
-            </div>
           </div>
           <h2 className="text-xl font-bold text-primary">Admin Dashboard</h2>
+          <p className="text-sm text-gray-600">Geelong Garage Doors</p>
         </div>
         
         <nav className="p-4">
