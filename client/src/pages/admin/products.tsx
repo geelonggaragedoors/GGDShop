@@ -34,6 +34,8 @@ export default function Products() {
   const [currentFolder, setCurrentFolder] = useState("root");
   const [showFolderInput, setShowFolderInput] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const { toast } = useToast();
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
@@ -142,6 +144,70 @@ export default function Products() {
       refetchMedia();
       setSelectedImages(prev => [...prev, newFile]);
       toast({ title: "File uploaded successfully" });
+    },
+  });
+
+  const bulkImportMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const text = await file.text();
+      const lines = text.split('\n').filter(line => line.trim());
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      
+      const products = lines.slice(1).map(line => {
+        const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+        const product: any = {};
+        
+        headers.forEach((header, index) => {
+          const value = values[index];
+          if (header === 'price' || header === 'stockQuantity' || header === 'weight' || 
+              header === 'height' || header === 'width' || header === 'length') {
+            product[header] = value ? parseFloat(value) : 0;
+          } else if (header === 'featured' || header === 'active') {
+            product[header] = value === 'true';
+          } else {
+            product[header] = value || '';
+          }
+        });
+        
+        // Generate slug from name
+        if (product.name) {
+          product.slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        }
+        
+        return product;
+      });
+
+      return apiRequest('/api/admin/products/bulk', {
+        method: 'POST',
+        body: JSON.stringify({ products }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      setIsBulkImportOpen(false);
+      toast({ title: "Products imported successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Import failed", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (productIds: string[]) => {
+      return apiRequest('/api/admin/products/bulk-delete', {
+        method: 'POST',
+        body: JSON.stringify({ productIds }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      setSelectedProducts([]);
+      toast({ title: "Products deleted successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
     },
   });
 

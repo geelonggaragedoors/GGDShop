@@ -273,14 +273,14 @@ export default function Dashboard() {
         <CardHeader>
           <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <CardContent className="p-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* Add Product */}
             <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
-                  <Plus className="w-5 h-5 text-primary mr-3" />
-                  <span className="font-medium">Add Product</span>
+                <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full">
+                  <Plus className="w-4 h-4 text-primary mb-1" />
+                  <span className="text-xs font-medium">Add Product</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
@@ -379,9 +379,9 @@ export default function Dashboard() {
             {/* Bulk Import */}
             <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center p-4 h-auto justify-start">
-                  <Upload className="w-5 h-5 text-primary mr-3" />
-                  <span className="font-medium">Bulk Import</span>
+                <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full">
+                  <Upload className="w-4 h-4 text-primary mb-1" />
+                  <span className="text-xs font-medium">Bulk Import</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
@@ -389,10 +389,34 @@ export default function Dashboard() {
                   <DialogTitle>Bulk Import Products</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
-                  <p className="text-sm text-gray-600">Upload a JSON file with product data to import multiple products at once.</p>
+                  <p className="text-sm text-gray-600">Upload a CSV file with product data to import multiple products at once.</p>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => {
+                      // Create CSV template
+                      const csvContent = `name,sku,price,categoryId,stockQuantity,description,weight,height,width,length,images,featured,active,seoTitle,seoDescription
+"Premium Garage Door A1","GD-A1-001",899.99,"category-id-here",10,"High-quality steel garage door with insulation",50,2000,2400,50,"https://example.com/image1.jpg",true,true,"Premium Garage Door A1 - Best Quality","High-quality steel garage door with superior insulation and durability"
+"Standard Garage Door B2","GD-B2-002",599.99,"category-id-here",25,"Standard aluminum garage door",35,2000,2400,40,"https://example.com/image2.jpg",false,true,"Standard Garage Door B2 - Affordable Option","Reliable aluminum garage door perfect for residential use"`;
+                      
+                      const blob = new Blob([csvContent], { type: 'text/csv' });
+                      const url = window.URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = 'product_import_template.csv';
+                      link.click();
+                      window.URL.revokeObjectURL(url);
+                    }}
+                    className="w-full"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download CSV Template
+                  </Button>
+                  
                   <Input
                     type="file"
-                    accept=".json"
+                    accept=".csv"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleBulkImport(file);
@@ -408,15 +432,15 @@ export default function Dashboard() {
             </Dialog>
 
             {/* Export Data */}
-            <Button variant="outline" className="flex items-center p-4 h-auto justify-start" onClick={handleExportData}>
-              <Download className="w-5 h-5 text-primary mr-3" />
-              <span className="font-medium">Export Data</span>
+            <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full" onClick={handleExportData}>
+              <Download className="w-4 h-4 text-primary mb-1" />
+              <span className="text-xs font-medium">Export Data</span>
             </Button>
 
             {/* Settings */}
-            <Button variant="outline" className="flex items-center p-4 h-auto justify-start" onClick={() => setLocation('/admin/settings')}>
-              <Settings className="w-5 h-5 text-primary mr-3" />
-              <span className="font-medium">Settings</span>
+            <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full" onClick={() => setLocation('/admin/settings')}>
+              <Settings className="w-4 h-4 text-primary mb-1" />
+              <span className="text-xs font-medium">Settings</span>
             </Button>
           </div>
         </CardContent>
