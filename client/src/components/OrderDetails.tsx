@@ -169,28 +169,12 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
     setIsAddingNote(false);
   };
 
-  const copyCustomerInfo = async () => {
-    let customerText = `Email: ${order.customerEmail}\n`;
-    
-    if (order.shippingAddress) {
-      customerText += `\nShipping Address:\n`;
-      customerText += `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}\n`;
-      customerText += `${order.shippingAddress.address1}\n`;
-      if (order.shippingAddress.address2) {
-        customerText += `${order.shippingAddress.address2}\n`;
-      }
-      customerText += `${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postcode}\n`;
-      customerText += `${order.shippingAddress.country || 'AU'}`;
-      if (order.shippingAddress.phone) {
-        customerText += `\nPhone: ${order.shippingAddress.phone}`;
-      }
-    }
-
+  const copyToClipboard = async (text: string, type: string) => {
     try {
-      await navigator.clipboard.writeText(customerText);
+      await navigator.clipboard.writeText(text);
       toast({ 
-        title: "Customer information copied",
-        description: "Customer details copied to clipboard" 
+        title: `${type} copied`,
+        description: `${type} copied to clipboard` 
       });
     } catch (error) {
       toast({ 
@@ -198,6 +182,21 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
         description: "Failed to copy to clipboard",
         variant: "destructive" 
       });
+    }
+  };
+
+  const copyEmail = () => copyToClipboard(order.customerEmail, "Email");
+  
+  const copyAddress = () => {
+    if (order.shippingAddress) {
+      const addressText = `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}\n${order.shippingAddress.address1}${order.shippingAddress.address2 ? '\n' + order.shippingAddress.address2 : ''}\n${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postcode}\n${order.shippingAddress.country || 'AU'}`;
+      copyToClipboard(addressText, "Address");
+    }
+  };
+  
+  const copyPhone = () => {
+    if (order.shippingAddress?.phone) {
+      copyToClipboard(order.shippingAddress.phone, "Phone number");
     }
   };
 
@@ -239,11 +238,18 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => window.open('/', '_blank')}
+            onClick={() => {
+              const firstProduct = order.items?.[0]?.product;
+              if (firstProduct?.slug) {
+                window.open(`/product/${firstProduct.slug}`, '_blank');
+              } else {
+                window.open('/', '_blank');
+              }
+            }}
             className="flex items-center gap-2"
           >
             <ExternalLink className="w-4 h-4" />
-            View Storefront
+            View Product
           </Button>
           
           <Button
@@ -491,33 +497,42 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
           {/* Customer Information */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Customer Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  Customer Information
+                  <Mail className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm">{order.customerEmail}</span>
                 </div>
                 <Button
                   size="sm"
-                  variant="outline"
-                  onClick={copyCustomerInfo}
-                  className="flex items-center gap-1"
+                  variant="ghost"
+                  onClick={copyEmail}
+                  className="h-8 w-8 p-0"
                 >
-                  <Copy className="w-4 h-4" />
-                  Copy
+                  <Copy className="w-3 h-3" />
                 </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-gray-500" />
-                <span className="text-sm">{order.customerEmail}</span>
               </div>
               
               {order.shippingAddress && (
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    <span className="font-medium text-sm">Shipping Address</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-500" />
+                      <span className="font-medium text-sm">Shipping Address</span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={copyAddress}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
                   </div>
                   <div className="bg-gray-50 p-3 rounded text-sm">
                     <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
@@ -525,13 +540,24 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                     {order.shippingAddress.address2 && <p>{order.shippingAddress.address2}</p>}
                     <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postcode}</p>
                     <p>{order.shippingAddress.country || 'Australia'}</p>
-                    {order.shippingAddress.phone && (
-                      <p className="flex items-center gap-1 mt-2">
-                        <Phone className="w-3 h-3" />
-                        {order.shippingAddress.phone}
-                      </p>
-                    )}
                   </div>
+                  
+                  {order.shippingAddress.phone && (
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">{order.shippingAddress.phone}</span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={copyPhone}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>

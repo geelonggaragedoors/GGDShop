@@ -210,13 +210,13 @@ export default function Checkout() {
   };
 
   const validateForm = (showToast = false) => {
-    const required = ['firstName', 'lastName', 'email', 'address', 'city', 'postcode', 'state'];
+    const required = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'postcode', 'state'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
     if (missing.length > 0 && showToast) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required shipping details.",
+        description: "Please fill in all required fields including phone number for order follow-up.",
         variant: "destructive"
       });
     }
