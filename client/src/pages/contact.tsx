@@ -156,27 +156,36 @@ export default function Contact() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {contactInfo.map((info, index) => {
               const IconComponent = info.icon;
-              return (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center">
-                  <CardContent className="p-6">
-                    <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
-                      <IconComponent className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">{info.title}</h3>
-                    {info.action ? (
-                      <a 
-                        href={info.action}
-                        className="text-[#2b3990] font-medium hover:underline block mb-2"
-                      >
-                        {info.details}
-                      </a>
-                    ) : (
+              
+              if (info.action) {
+                return (
+                  <a key={index} href={info.action} className="block">
+                    <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
+                          <IconComponent className="w-8 h-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2">{info.title}</h3>
+                        <p className="text-[#2b3990] font-medium mb-2">{info.details}</p>
+                        <p className="text-gray-600 text-xs break-words leading-relaxed overflow-hidden max-w-full">{info.description}</p>
+                      </CardContent>
+                    </Card>
+                  </a>
+                );
+              } else {
+                return (
+                  <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow text-center">
+                    <CardContent className="p-6">
+                      <div className="w-16 h-16 bg-[#2b3990] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <IconComponent className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">{info.title}</h3>
                       <p className="text-[#2b3990] font-medium mb-2">{info.details}</p>
-                    )}
-                    <p className="text-gray-600 text-xs break-words leading-relaxed overflow-hidden">{info.description}</p>
-                  </CardContent>
-                </Card>
-              );
+                      <p className="text-gray-600 text-xs break-words leading-relaxed overflow-hidden max-w-full">{info.description}</p>
+                    </CardContent>
+                  </Card>
+                );
+              }
             })}
           </div>
         </div>
