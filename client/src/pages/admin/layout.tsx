@@ -101,6 +101,8 @@ export default function AdminLayout() {
         return <Products />;
       case "orders":
         return <Orders />;
+      case "enquiries":
+        return <Enquiries />;
       case "categories":
         return <Categories />;
       case "brands":
