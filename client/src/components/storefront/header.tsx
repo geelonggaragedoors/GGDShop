@@ -17,9 +17,9 @@ export default function StorefrontHeader() {
   const { wishlistCount } = useWishlist();
   const { user, isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isShopMegaMenuOpen, setIsShopMegaMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [, setLocation] = useLocation();
 
   const { data: categories } = useQuery({
@@ -231,78 +231,57 @@ export default function StorefrontHeader() {
           <ul className="flex space-x-8 text-sm font-medium">
             <li><Link href="/" className="text-gray-700 hover:text-primary transition-colors">Home</Link></li>
             
-            {/* Shop Mega Menu */}
-            <li className="relative group"
-                onMouseEnter={() => setIsShopMegaMenuOpen(true)}
-                onMouseLeave={() => setIsShopMegaMenuOpen(false)}>
-              <button className="text-gray-700 hover:text-primary font-medium transition-colors flex items-center">
-                Shop
-                <ChevronDown className="w-3 h-3 ml-1" />
-              </button>
+            {/* Main Categories with Dropdown Menus */}
+            {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
+              const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
               
-              {/* Invisible bridge to prevent menu from closing */}
-              {isShopMegaMenuOpen && (
-                <div className="absolute left-0 top-full w-screen max-w-6xl h-2 bg-transparent z-40"></div>
-              )}
-              
-              {/* Mega Menu */}
-              {isShopMegaMenuOpen && (
-                <div className="absolute left-0 top-full pt-2 w-screen max-w-6xl z-50">
-                  <div className="bg-white border border-gray-200 rounded-lg shadow-xl">
-                    <div className="grid grid-cols-4 gap-8 p-8">
-                      {/* Categories Column */}
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
-                        <ul className="space-y-2">
-                          {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => (
-                            <li key={category.id}>
-                              <Link 
-                                href={`/products/${category.slug}`}
-                                className="text-gray-600 hover:text-primary transition-colors text-sm"
-                              >
-                                {category.name}
-                              </Link>
-                            </li>
-                          ))}
-                          <li>
-                            <Link 
-                              href="/products"
-                              className="text-primary font-medium hover:text-primary/80 transition-colors text-sm"
+              return (
+                <li 
+                  key={category.id}
+                  className="relative"
+                  onMouseEnter={() => setHoveredCategory(category.id)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                >
+                  <Link 
+                    href={`/products/${category.slug}`} 
+                    className="text-gray-700 hover:text-primary font-medium transition-colors flex items-center"
+                  >
+                    {category.name}
+                    {subcategories.length > 0 && (
+                      <ChevronDown className="w-3 h-3 ml-1" />
+                    )}
+                  </Link>
+                  
+                  {/* Dropdown Menu for Subcategories */}
+                  {subcategories.length > 0 && hoveredCategory === category.id && (
+                    <div className="absolute left-0 top-full pt-2 z-50">
+                      <div className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-48 py-4">
+                        <div className="px-4 pb-2 border-b border-gray-100">
+                          <h3 className="font-semibold text-gray-900 text-sm">{category.name}</h3>
+                        </div>
+                        <div className="py-2">
+                          <Link
+                            href={`/products/${category.slug}`}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 transition-colors"
+                          >
+                            View All {category.name}
+                          </Link>
+                          {subcategories.map((subcategory: any) => (
+                            <Link
+                              key={subcategory.id}
+                              href={`/products/${subcategory.slug}`}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 transition-colors"
                             >
-                              View All Products →
+                              {subcategory.name}
                             </Link>
-                          </li>
-                        </ul>
+                          ))}
+                        </div>
                       </div>
-                      
-                      {/* Subcategories for each main category */}
-                      {categories?.filter((category: any) => !category.parentId && category.isActive).slice(0, 3).map((category: any) => {
-                        const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
-                        if (subcategories.length === 0) return null;
-                        
-                        return (
-                          <div key={category.id}>
-                            <h3 className="font-semibold text-gray-900 mb-4">{category.name}</h3>
-                            <ul className="space-y-2">
-                              {subcategories.map((subcategory: any) => (
-                                <li key={subcategory.id}>
-                                  <Link 
-                                    href={`/products/${subcategory.slug}`}
-                                    className="text-gray-600 hover:text-primary transition-colors text-sm"
-                                  >
-                                    {subcategory.name}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        );
-                      })}
                     </div>
-                  </div>
-                </div>
-              )}
-            </li>
+                  )}
+                </li>
+              );
+            })}
             
             <li><Link href="/contact" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</Link></li>
           </ul>
