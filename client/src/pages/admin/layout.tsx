@@ -44,7 +44,9 @@ export default function AdminLayout() {
   const [location] = useLocation();
   const { user } = useAuth();
   
-  const currentPath = location.split("/").pop() || "dashboard";
+  // Handle /admin root path by defaulting to dashboard
+  const pathSegments = location.split("/");
+  const currentPath = pathSegments.length > 2 ? pathSegments.pop() : "dashboard";
 
   const getCurrentPageInfo = () => {
     switch (currentPath) {

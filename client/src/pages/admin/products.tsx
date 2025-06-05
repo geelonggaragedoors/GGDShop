@@ -59,7 +59,7 @@ export default function Products() {
 
   const { data: mediaData, refetch: refetchMedia } = useQuery({
     queryKey: ["/api/admin/media", currentFolder],
-    queryFn: () => apiRequest(`/api/admin/media?folder=${currentFolder}`),
+    queryFn: () => fetch(`/api/admin/media?folder=${currentFolder}`).then(res => res.json()),
   });
 
   const createProductMutation = useMutation({
