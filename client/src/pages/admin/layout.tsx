@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import NotificationBell from "@/components/NotificationBell";
 import Dashboard from "./dashboard";
@@ -31,8 +33,8 @@ import {
 
 const sidebarItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
-  { id: "products", label: "Products", icon: Package, path: "/admin/products", badge: "245" },
-  { id: "orders", label: "Orders", icon: ShoppingCart, path: "/admin/orders", badge: "12" },
+  { id: "products", label: "Products", icon: Package, path: "/admin/products" },
+  { id: "orders", label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
   { id: "categories", label: "Categories", icon: Tags, path: "/admin/categories" },
   { id: "brands", label: "Brands", icon: Building, path: "/admin/brands" },
   { id: "customers", label: "Customers", icon: Users, path: "/admin/customers" },
@@ -44,6 +46,13 @@ const sidebarItems = [
 export default function AdminLayout() {
   const [location] = useLocation();
   const { user } = useAuth();
+  
+  // Fetch counts for sidebar badges
+  const { data: counts } = useQuery({
+    queryKey: ["/api/admin/counts"],
+    enabled: !!user,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
   
   // Handle /admin root path by defaulting to dashboard
   const pathSegments = location.split("/");
@@ -141,12 +150,15 @@ export default function AdminLayout() {
                     >
                       <Icon className="w-4 h-4 mr-3" />
                       {item.label}
-                      {item.badge && (
-                        <span className={`ml-auto text-xs px-2 py-1 rounded-full ${
-                          isActive ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
-                        }`}>
-                          {item.badge}
-                        </span>
+                      {(item.id === "products" && counts?.products > 0) && (
+                        <Badge variant="secondary" className="ml-auto">
+                          {counts.products}
+                        </Badge>
+                      )}
+                      {(item.id === "orders" && counts?.orders > 0) && (
+                        <Badge variant="secondary" className="ml-auto">
+                          {counts.orders}
+                        </Badge>
                       )}
                     </Button>
                   </Link>
