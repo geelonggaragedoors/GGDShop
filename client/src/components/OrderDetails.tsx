@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,11 +38,25 @@ interface OrderDetailsProps {
 }
 
 export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
+  // Initialize all hooks first (must be before any conditional returns)
+  const [staffNotes, setStaffNotes] = useState("");
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [newNote, setNewNote] = useState("");
+  const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false);
+  const { toast } = useToast();
+
   // Fetch detailed order data with product information
   const { data: order, isLoading: orderLoading } = useQuery({
     queryKey: [`/api/admin/orders/${orderId}`],
     enabled: !!orderId,
   });
+
+  // Update staffNotes when order data is loaded
+  React.useEffect(() => {
+    if (order?.staffNotes) {
+      setStaffNotes(order.staffNotes);
+    }
+  }, [order?.staffNotes]);
 
   if (orderLoading) {
     return (
@@ -67,11 +81,6 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
       </div>
     );
   }
-  const [staffNotes, setStaffNotes] = useState(order?.staffNotes || "");
-  const [isAddingNote, setIsAddingNote] = useState(false);
-  const [newNote, setNewNote] = useState("");
-  const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   const updateOrderMutation = useMutation({
     mutationFn: async (data: any) => {
