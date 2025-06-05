@@ -99,6 +99,35 @@ export async function calculateShippingCost(
 }
 
 /**
+ * Get available Australia Post standard box sizes
+ */
+export async function getAustraliaPostBoxes(req: Request, res: Response) {
+  try {
+    const url = `${AUSPOST_BASE_URL}/postage/parcel/domestic/size.json`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'AUTH-KEY': AUSPOST_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Australia Post API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching Australia Post boxes:", error);
+    res.status(500).json({
+      error: "Failed to fetch available box sizes"
+    });
+  }
+}
+
+/**
  * Validate that all required shipping dimensions are provided
  */
 export function validateShippingDimensions(product: any): {

@@ -957,10 +957,18 @@ export default function Products() {
                         {/* Australia Post Shipping Dimensions */}
                         <div className="border-t pt-4">
                           <h4 className="text-sm font-medium text-gray-900 mb-3">Australia Post Shipping Dimensions</h4>
-                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-3">
-                            <p className="text-sm text-yellow-800">
-                              <strong>Required for publication:</strong> Product will be saved as draft until weight and dimensions are provided. Once complete, shipping cost will be calculated using Australia Post API and product will be published.
-                            </p>
+                          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-3">
+                            <div className="text-sm text-blue-800">
+                              <p className="font-medium mb-2">Australia Post Dimension Limits:</p>
+                              <ul className="list-disc list-inside space-y-1 text-xs">
+                                <li>Maximum weight: 22kg (22000 grams)</li>
+                                <li>Maximum length/width/height: 105cm each</li>
+                                <li>Maximum girth: 140cm (length + 2×width + 2×height)</li>
+                              </ul>
+                              <p className="mt-2 text-xs">
+                                <strong>Note:</strong> Product will be saved as draft until valid dimensions are provided. Once complete, shipping cost will be calculated and product published.
+                              </p>
+                            </div>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <FormField
@@ -974,7 +982,7 @@ export default function Products() {
                                       {...field} 
                                       type="number" 
                                       step="0.1"
-                                      placeholder="e.g., 240"
+                                      placeholder="e.g., 100"
                                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                     />
                                   </FormControl>
