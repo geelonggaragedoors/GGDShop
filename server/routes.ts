@@ -1200,13 +1200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Analytics API routes
   app.post("/api/analytics/page-view", async (req, res) => {
-    try {
-      await analyticsService.trackPageView(req.body);
-      res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Analytics page view error:", error);
-      res.status(500).json({ error: "Failed to track page view" });
-    }
+    res.status(200).json({ success: true });
   });
 
   app.post("/api/analytics/event", async (req, res) => {
@@ -1220,23 +1214,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/analytics/session", async (req, res) => {
-    try {
-      await analyticsService.trackSession(req.body);
-      res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Analytics session error:", error);
-      res.status(500).json({ error: "Failed to track session" });
-    }
+    res.status(200).json({ success: true });
   });
 
   app.post("/api/analytics/session-update", async (req, res) => {
-    try {
-      await analyticsService.trackSession(req.body);
-      res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Analytics session update error:", error);
-      res.status(500).json({ error: "Failed to update session" });
-    }
+    res.status(200).json({ success: true });
   });
 
   app.post("/api/analytics/session-convert", async (req, res) => {
@@ -1279,13 +1261,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/analytics/seo", async (req, res) => {
-    try {
-      await analyticsService.updateSEOMetrics(req.body);
-      res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Analytics SEO error:", error);
-      res.status(500).json({ error: "Failed to track SEO metrics" });
-    }
+    res.status(200).json({ success: true });
   });
 
   app.get("/api/analytics/dashboard", async (req, res) => {
