@@ -825,6 +825,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Order tracking endpoint (public - no authentication required)
+  app.get("/api/orders/track", async (req, res) => {
+    try {
+      const { orderNumber, email } = req.query;
+
+      if (!orderNumber || !email) {
+        return res.status(400).json({ message: "Order number and email are required" });
+      }
+
+      // Get order by order number and verify email matches
+      const order = await storage.getOrderByNumber(orderNumber as string);
+      
+      if (!order || order.customerEmail?.toLowerCase() !== (email as string).toLowerCase()) {
+        return res.status(404).json({ message: "Order not found or email doesn't match" });
+      }
+
+      // Get order items
+      const orderItems = await storage.getOrderItems(order.id);
+      
+      // Get customer details
+      const customer = await storage.getCustomerById(order.customerId);
+
+      // Format response
+      const trackingData = {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        status: order.status,
+        total: parseFloat(order.total),
+        createdAt: order.createdAt,
+        items: orderItems.map(item => ({
+          id: item.id,
+          productName: item.productName || `Product ${item.productId}`,
+          quantity: item.quantity,
+          price: parseFloat(item.price)
+        })),
+        shippingAddress: order.shippingAddress ? {
+          street: order.shippingAddress.split(',')[0]?.trim() || '',
+          city: order.shippingAddress.split(',')[1]?.trim() || '',
+          state: order.shippingAddress.split(',')[2]?.trim().split(' ')[0] || '',
+          postalCode: order.shippingAddress.split(',')[2]?.trim().split(' ')[1] || ''
+        } : {},
+        customer: {
+          firstName: customer?.firstName || '',
+          lastName: customer?.lastName || '',
+          email: customer?.email || order.customerEmail || ''
+        }
+      };
+
+      res.json(trackingData);
+    } catch (error) {
+      console.error("Error tracking order:", error);
+      res.status(500).json({ message: "Failed to track order" });
+    }
+  });
+
   // Order creation endpoint
   app.post("/api/orders", async (req, res) => {
     try {

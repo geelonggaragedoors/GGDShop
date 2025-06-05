@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
+import TrackOrder from "@/pages/track-order";
 import Checkout from "@/pages/checkout";
 import CheckoutSuccess from "@/pages/checkout-success";
 import AdminLayout from "@/pages/admin/layout";
@@ -20,6 +21,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/track-order" component={TrackOrder} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/product/:slug" component={ProductDetail} />
