@@ -69,12 +69,13 @@ export default function Checkout() {
       let oversizedMessage = '';
       
       for (const item of cartItems) {
-        // In a real implementation, you'd fetch product details including weight, dimensions, and boxSize
-        // For now, we'll use placeholder values - you should fetch these from the product API
+        console.log('Processing cart item:', item);
         const response = await fetch(`/api/products/${item.productId}`);
         const product = await response.json();
+        console.log('Product data:', product);
         
         if (product.weight && product.length && product.width && product.height && product.boxSize) {
+          console.log('Product has shipping dimensions, calculating cost...');
           const shippingResponse = await fetch('/api/shipping/calculate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -89,6 +90,7 @@ export default function Checkout() {
           });
           
           const shippingData = await shippingResponse.json();
+          console.log('Shipping calculation result:', shippingData);
           
           if (shippingData.isOversized) {
             hasOversizedItems = true;
@@ -96,6 +98,36 @@ export default function Checkout() {
             break;
           } else {
             totalShippingCost += shippingData.total * item.quantity;
+          }
+        } else {
+          console.log('Product missing shipping dimensions:', {
+            weight: product.weight,
+            length: product.length,
+            width: product.width,
+            height: product.height,
+            boxSize: product.boxSize
+          });
+          // For products without shipping dimensions, use default small package
+          console.log('Using default shipping dimensions for product without shipping info');
+          const shippingResponse = await fetch('/api/shipping/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              weight: 500, // 500g default
+              length: 22,  // Bx1 dimensions
+              width: 16,
+              height: 7.7,
+              boxSize: 'Bx1',
+              toPostcode: postcode
+            })
+          });
+          
+          if (shippingResponse.ok) {
+            const shippingData = await shippingResponse.json();
+            console.log('Default shipping calculation result:', shippingData);
+            totalShippingCost += shippingData.total * item.quantity;
+          } else {
+            console.error('Shipping calculation failed:', await shippingResponse.text());
           }
         }
       }
