@@ -1307,8 +1307,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
   
-  // Initialize notification service with WebSocket
-  notificationService.initialize(httpServer);
+  // Notification WebSocket server temporarily disabled to prevent conflicts with Vite HMR
+  // notificationService.initialize(httpServer);
   
   return httpServer;
 }
