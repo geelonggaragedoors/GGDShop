@@ -28,6 +28,7 @@ import {
   Ship,
   Eye,
   Edit3,
+  Copy,
   Send
 } from "lucide-react";
 
@@ -125,6 +126,38 @@ export default function OrderDetails({ order, onClose }: OrderDetailsProps) {
     setStaffNotes(updatedNotes);
     setNewNote("");
     setIsAddingNote(false);
+  };
+
+  const copyCustomerInfo = async () => {
+    let customerText = `Email: ${order.customerEmail}\n`;
+    
+    if (order.shippingAddress) {
+      customerText += `\nShipping Address:\n`;
+      customerText += `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}\n`;
+      customerText += `${order.shippingAddress.address1}\n`;
+      if (order.shippingAddress.address2) {
+        customerText += `${order.shippingAddress.address2}\n`;
+      }
+      customerText += `${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postcode}\n`;
+      customerText += `${order.shippingAddress.country || 'AU'}`;
+      if (order.shippingAddress.phone) {
+        customerText += `\nPhone: ${order.shippingAddress.phone}`;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(customerText);
+      toast({ 
+        title: "Customer information copied",
+        description: "Customer details copied to clipboard" 
+      });
+    } catch (error) {
+      toast({ 
+        title: "Error", 
+        description: "Failed to copy to clipboard",
+        variant: "destructive" 
+      });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -417,9 +450,20 @@ export default function OrderDetails({ order, onClose }: OrderDetailsProps) {
           {/* Customer Information */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5" />
-                Customer Information
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  Customer Information
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={copyCustomerInfo}
+                  className="flex items-center gap-1"
+                >
+                  <Copy className="w-4 h-4" />
+                  Copy
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
