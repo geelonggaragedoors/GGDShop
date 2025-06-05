@@ -106,7 +106,7 @@ export default function NotificationBell() {
   // Update notifications from query data
   useEffect(() => {
     if (notificationData) {
-      setNotifications(notificationData);
+      setNotifications(notificationData || []);
     }
   }, [notificationData]);
 

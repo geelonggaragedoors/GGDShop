@@ -17,6 +17,8 @@ import multer from "multer";
 import path from "path";
 import { createRouteHandler } from "uploadthing/express";
 import { ourFileRouter } from "./uploadthing";
+import { emailService } from "./emailService";
+import { notificationService } from "./notificationService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
@@ -924,6 +926,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Notification routes
+  app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const notifications = await notificationService.getUnreadNotifications(userId);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.post("/api/notifications/:id/read", isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await notificationService.markNotificationAsRead(id);
+      
+      if (success) {
+        res.json({ message: "Notification marked as read" });
+      } else {
+        res.status(404).json({ message: "Notification not found" });
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.post("/api/notifications/mark-all-read", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const success = await notificationService.markAllAsRead(userId);
+      res.json({ message: "All notifications marked as read", success });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ message: "Failed to mark all notifications as read" });
+    }
+  });
+
   const httpServer = createServer(app);
+  
+  // Initialize notification service with WebSocket
+  notificationService.initialize(httpServer);
+  
   return httpServer;
 }
