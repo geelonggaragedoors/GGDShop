@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { Link } from "wouter";
 import {
   DollarSign,
   ShoppingCart,
@@ -195,30 +196,32 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="space-y-4">
               {stats?.recentOrders?.slice(0, 5).map((order) => (
-                <div key={order.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <Receipt className="w-5 h-5 text-gray-600" />
+                <Link key={order.id} href={`/admin/orders/${order.id}`}>
+                  <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 -mx-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Receipt className="w-5 h-5 text-gray-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{order.orderNumber}</p>
+                        <p className="text-sm text-gray-600">{order.customerName || order.customerEmail}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{order.orderNumber}</p>
-                      <p className="text-sm text-gray-600">{order.customerName || order.customerEmail}</p>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">${order.total}</p>
+                      <Badge 
+                        variant={
+                          order.status === 'completed' ? 'default' : 
+                          order.status === 'processing' ? 'secondary' : 
+                          'outline'
+                        }
+                        className="text-xs"
+                      >
+                        {order.status}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-gray-900">${order.total}</p>
-                    <Badge 
-                      variant={
-                        order.status === 'completed' ? 'default' : 
-                        order.status === 'processing' ? 'secondary' : 
-                        'outline'
-                      }
-                      className="text-xs"
-                    >
-                      {order.status}
-                    </Badge>
-                  </div>
-                </div>
+                </Link>
               )) || (
                 <p className="text-center text-gray-500 py-8">No orders found</p>
               )}
@@ -239,22 +242,24 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="space-y-4">
               {stats?.topProducts?.slice(0, 5).map((product) => (
-                <div key={product.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <img 
-                      src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=80&h=80&fit=crop&crop=center"} 
-                      alt={product.name}
-                      className="w-12 h-12 object-cover rounded-lg"
-                    />
-                    <div>
-                      <p className="font-medium text-gray-900">{product.name}</p>
-                      <p className="text-sm text-gray-600">{product.sales} sales</p>
+                <Link key={product.id} href={`/products/${product.slug || product.id}`}>
+                  <div className="flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 py-2 -mx-2">
+                    <div className="flex items-center space-x-3">
+                      <img 
+                        src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=80&h=80&fit=crop&crop=center"} 
+                        alt={product.name}
+                        className="w-12 h-12 object-cover rounded-lg"
+                      />
+                      <div>
+                        <p className="font-medium text-gray-900">{product.name}</p>
+                        <p className="text-sm text-gray-600">{product.sales} sales</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">${product.revenue?.toLocaleString()}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-gray-900">${product.revenue?.toLocaleString()}</p>
-                  </div>
-                </div>
+                </Link>
               )) || (
                 <p className="text-center text-gray-500 py-8">No products found</p>
               )}
