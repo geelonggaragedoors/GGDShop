@@ -179,7 +179,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 px-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
@@ -187,32 +187,32 @@ export default function Dashboard() {
           value={`$${stats?.totalRevenue?.toLocaleString() || '0'}`}
           icon={DollarSign}
           description="Total sales revenue"
-          iconColor="text-emerald-600"
-          iconBg="bg-emerald-50"
+          iconColor="text-white"
+          iconBg="bg-gradient-to-br from-emerald-500 to-emerald-600"
         />
         <StatsCard
           title="Total Orders"
           value={stats?.totalOrders || 0}
           icon={ShoppingCart}
           description="Orders this month"
-          iconColor="text-blue-600"
-          iconBg="bg-blue-50"
+          iconColor="text-white"
+          iconBg="bg-gradient-to-br from-blue-500 to-blue-600"
         />
         <StatsCard
           title="Products"
           value={counts?.products || 0}
           icon={Package}
           description="Active products"
-          iconColor="text-purple-600"
-          iconBg="bg-purple-50"
+          iconColor="text-white"
+          iconBg="bg-gradient-to-br from-purple-500 to-purple-600"
         />
         <StatsCard
           title="Customers"
           value={stats?.totalCustomers || 0}
           icon={Users}
           description="Registered customers"
-          iconColor="text-orange-600"
-          iconBg="bg-orange-50"
+          iconColor="text-white"
+          iconBg="bg-gradient-to-br from-orange-500 to-orange-600"
         />
       </div>
 
