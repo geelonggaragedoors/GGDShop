@@ -276,8 +276,9 @@ export default function Checkout() {
     }
   };
 
-  const shippingCost = 15; // Standard shipping only
-  const gst = (cartTotal + shippingCost) * 0.1;
+  // Calculate totals including dynamic Australia Post shipping
+  const shippingCost = shippingCosts?.total || 0;
+  const gst = cartTotal * 0.1; // GST on products (shipping GST already included in shippingCosts)
   const finalTotal = cartTotal + shippingCost + gst;
 
   if (cartItems.length === 0) {
@@ -415,7 +416,14 @@ export default function Checkout() {
                       id="postcode" 
                       placeholder="3220" 
                       value={formData.postcode}
-                      onChange={(e) => handleInputChange('postcode', e.target.value)}
+                      onChange={(e) => {
+                        const postcode = e.target.value;
+                        handleInputChange('postcode', postcode);
+                        // Calculate shipping when postcode is 4 digits
+                        if (postcode.length === 4 && /^\d+$/.test(postcode)) {
+                          calculateShippingCosts(postcode);
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -446,20 +454,86 @@ export default function Checkout() {
                 <CardTitle>Shipping Method</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                {isCalculatingShipping ? (
+                  <div className="flex items-center justify-center p-8">
+                    <div className="text-center">
+                      <div className="animate-spin h-8 w-8 border-b-2 border-blue-600 rounded-full mx-auto mb-2"></div>
+                      <p className="text-sm text-gray-600">Calculating shipping costs...</p>
                     </div>
-                    <Label>
-                      <div>
-                        <div className="font-medium">Standard Shipping</div>
-                        <div className="text-sm text-gray-600">5-7 business days</div>
-                      </div>
-                    </Label>
                   </div>
-                  <span className="font-medium">$15.00</span>
-                </div>
+                ) : shippingCosts?.isOversized ? (
+                  <div className="p-4 border rounded-lg bg-orange-50 border-orange-200">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center mt-0.5">
+                        <span className="text-white text-xs">!</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-orange-800">Custom Shipping Required</div>
+                        <div className="text-sm text-orange-700 mt-1">
+                          {shippingCosts.oversizedMessage}
+                        </div>
+                        <div className="text-sm font-medium text-orange-800 mt-2">
+                          Please call: (03) 5221 8999
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : shippingCosts ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 border rounded-lg bg-green-50 border-green-200">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-600 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                        <Label>
+                          <div>
+                            <div className="font-medium">Australia Post Standard</div>
+                            <div className="text-sm text-gray-600">5-7 business days</div>
+                          </div>
+                        </Label>
+                      </div>
+                      <span className="font-medium">${shippingCosts.total.toFixed(2)}</span>
+                    </div>
+                    
+                    {/* Shipping breakdown */}
+                    <div className="text-xs space-y-1 px-4 py-2 bg-gray-50 rounded border">
+                      <div className="flex justify-between">
+                        <span>Postage:</span>
+                        <span>${shippingCosts.postage.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Box cost:</span>
+                        <span>${shippingCosts.boxPrice.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Subtotal:</span>
+                        <span>${shippingCosts.subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>GST (10%):</span>
+                        <span>${shippingCosts.gst.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between font-medium border-t pt-1">
+                        <span>Total shipping:</span>
+                        <span>${shippingCosts.total.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : formData.postcode ? (
+                  <div className="p-4 border rounded-lg bg-blue-50 border-blue-200">
+                    <div className="text-sm text-blue-800">
+                      <p className="font-medium">Calculate Shipping</p>
+                      <p className="mt-1">Complete your address to calculate accurate shipping costs using Australia Post rates.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <div className="text-sm text-gray-600">
+                      <p className="font-medium">Shipping Calculation</p>
+                      <p className="mt-1">Enter your address to calculate shipping costs. We use Australia Post standard boxes with real-time pricing including GST.</p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

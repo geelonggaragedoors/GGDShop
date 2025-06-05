@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
-import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes } from "./australiaPost";
+import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes, calculateTotalShippingCost } from "./australiaPost";
 import { fileStorage } from "./fileStorage";
 import { 
   insertProductSchema, 
