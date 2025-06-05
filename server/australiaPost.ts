@@ -11,6 +11,39 @@ interface ShippingDimensions {
   height: number; // in cm
 }
 
+interface BoxPricing {
+  [key: string]: {
+    price: number; // Box cost in AUD
+    dimensions: {
+      length: number;
+      width: number;
+      height: number;
+    };
+    name: string;
+  };
+}
+
+// Australia Post box pricing (as of 2024)
+const AUSPOST_BOX_PRICES: BoxPricing = {
+  'Bx1': { price: 3.50, dimensions: { length: 22, width: 16, height: 7.7 }, name: 'Bx1 - 22×16×7.7cm (Small)' },
+  'Bx2': { price: 4.25, dimensions: { length: 31, width: 22.5, height: 10.2 }, name: 'Bx2 - 31×22.5×10.2cm (Medium)' },
+  'Bx3': { price: 5.75, dimensions: { length: 40, width: 20, height: 18 }, name: 'Bx3 - 40×20×18cm (Long)' },
+  'Bx4': { price: 6.25, dimensions: { length: 43, width: 30.5, height: 14 }, name: 'Bx4 - 43×30.5×14cm (Wide)' },
+  'Bx5': { price: 8.50, dimensions: { length: 40.5, width: 30, height: 25.5 }, name: 'Bx5 - 40.5×30×25.5cm (Large)' },
+  'Bx6': { price: 2.75, dimensions: { length: 22, width: 14.5, height: 3.5 }, name: 'Bx6 - 22×14.5×3.5cm (Flat)' },
+  'Bx7': { price: 1.95, dimensions: { length: 14.5, width: 12.7, height: 1 }, name: 'Bx7 - 14.5×12.7×1cm (Very Flat)' },
+  'Bx8': { price: 4.95, dimensions: { length: 36.3, width: 21.2, height: 6.5 }, name: 'Bx8 - 36.3×21.2×6.5cm (ToughPak)' },
+};
+
+// Maximum dimensions for Australia Post parcels
+const MAX_DIMENSIONS = {
+  weight: 22000, // 22kg in grams
+  length: 105,   // 105cm
+  width: 105,    // 105cm
+  height: 105,   // 105cm
+  girth: 140     // 140cm (length + 2×width + 2×height)
+};
+
 interface PostageService {
   code: string;
   name: string;
@@ -22,6 +55,87 @@ interface PostageResponse {
   services: {
     service: PostageService[];
   };
+}
+
+/**
+ * Check if product dimensions exceed Australia Post limits
+ */
+export function isOversizedProduct(dimensions: ShippingDimensions): boolean {
+  const girth = dimensions.length + (2 * dimensions.width) + (2 * dimensions.height);
+  
+  return (
+    dimensions.weight > MAX_DIMENSIONS.weight ||
+    dimensions.length > MAX_DIMENSIONS.length ||
+    dimensions.width > MAX_DIMENSIONS.width ||
+    dimensions.height > MAX_DIMENSIONS.height ||
+    girth > MAX_DIMENSIONS.girth
+  );
+}
+
+/**
+ * Get box price by box size code
+ */
+export function getBoxPrice(boxSize: string): number {
+  return AUSPOST_BOX_PRICES[boxSize]?.price || 0;
+}
+
+/**
+ * Calculate GST (10% inclusive)
+ */
+export function calculateGST(amount: number): number {
+  return amount * 0.1;
+}
+
+/**
+ * Calculate total shipping cost including box price and postage
+ * Returns an object with breakdown of costs
+ */
+export async function calculateTotalShippingCost(
+  dimensions: ShippingDimensions,
+  boxSize: string,
+  toPostcode: string = "3000"
+): Promise<{
+  postage: number;
+  boxPrice: number;
+  subtotal: number;
+  gst: number;
+  total: number;
+  isOversized: boolean;
+  oversizedMessage?: string;
+}> {
+  const boxPrice = getBoxPrice(boxSize);
+  const oversized = isOversizedProduct(dimensions);
+  
+  if (oversized) {
+    return {
+      postage: 0,
+      boxPrice: 0,
+      subtotal: 0,
+      gst: 0,
+      total: 0,
+      isOversized: true,
+      oversizedMessage: "This product exceeds Australia Post size limits. Please call (03) 5221 8999 for a custom shipping quote."
+    };
+  }
+  
+  try {
+    const postage = await calculateShippingCost(dimensions, toPostcode);
+    const subtotal = postage + boxPrice;
+    const gst = calculateGST(subtotal);
+    const total = subtotal + gst;
+    
+    return {
+      postage,
+      boxPrice,
+      subtotal,
+      gst,
+      total,
+      isOversized: false
+    };
+  } catch (error) {
+    console.error("Error calculating shipping cost:", error);
+    throw new Error("Unable to calculate shipping cost");
+  }
 }
 
 /**

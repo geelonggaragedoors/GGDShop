@@ -960,16 +960,19 @@ export default function Products() {
                           <h4 className="text-sm font-medium text-gray-900 mb-3">Australia Post Standard Box Selection</h4>
                           <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-3">
                             <div className="text-sm text-green-800">
-                              <p className="font-medium mb-2">Available Australia Post Boxes:</p>
-                              <p className="text-xs mb-2">Select a standard box size that you'll purchase from the post office. Shipping costs will be calculated automatically.</p>
+                              <p className="font-medium mb-2">Australia Post Box Selection:</p>
+                              <p className="text-xs mb-2">Select a standard box size. Box price and shipping costs will be calculated automatically including 10% GST.</p>
                               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                                <div><strong>Bx1:</strong> 22×16×7.7cm (Small items)</div>
-                                <div><strong>Bx2:</strong> 31×22.5×10.2cm (Medium items)</div>
-                                <div><strong>Bx3:</strong> 40×20×18cm (Long items)</div>
-                                <div><strong>Bx4:</strong> 43×30.5×14cm (Wide items)</div>
-                                <div><strong>Bx5:</strong> 40.5×30×25.5cm (Large items)</div>
-                                <div><strong>Bx6:</strong> 22×14.5×3.5cm (Flat items)</div>
+                                <div><strong>Bx1:</strong> $3.50 - 22×16×7.7cm</div>
+                                <div><strong>Bx2:</strong> $4.25 - 31×22.5×10.2cm</div>
+                                <div><strong>Bx3:</strong> $5.75 - 40×20×18cm</div>
+                                <div><strong>Bx4:</strong> $6.25 - 43×30.5×14cm</div>
+                                <div><strong>Bx5:</strong> $8.50 - 40.5×30×25.5cm</div>
+                                <div><strong>Bx6:</strong> $2.75 - 22×14.5×3.5cm</div>
                               </div>
+                              <p className="text-xs mt-2 font-medium">
+                                If product is too large for standard boxes, customers will be asked to call (03) 5221 8999 for custom shipping quote.
+                              </p>
                             </div>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1018,18 +1021,18 @@ export default function Products() {
                                   <SelectValue placeholder="Select standard box size" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Bx1">Bx1 - 22×16×7.7cm (Small)</SelectItem>
-                                  <SelectItem value="Bx2">Bx2 - 31×22.5×10.2cm (Medium)</SelectItem>
-                                  <SelectItem value="Bx3">Bx3 - 40×20×18cm (Long)</SelectItem>
-                                  <SelectItem value="Bx4">Bx4 - 43×30.5×14cm (Wide)</SelectItem>
-                                  <SelectItem value="Bx5">Bx5 - 40.5×30×25.5cm (Large)</SelectItem>
-                                  <SelectItem value="Bx6">Bx6 - 22×14.5×3.5cm (Flat)</SelectItem>
-                                  <SelectItem value="Bx7">Bx7 - 14.5×12.7×1cm (Very Flat)</SelectItem>
-                                  <SelectItem value="Bx8">Bx8 - 36.3×21.2×6.5cm (ToughPak)</SelectItem>
+                                  <SelectItem value="Bx1">Bx1 - $3.50 - 22×16×7.7cm (Small)</SelectItem>
+                                  <SelectItem value="Bx2">Bx2 - $4.25 - 31×22.5×10.2cm (Medium)</SelectItem>
+                                  <SelectItem value="Bx3">Bx3 - $5.75 - 40×20×18cm (Long)</SelectItem>
+                                  <SelectItem value="Bx4">Bx4 - $6.25 - 43×30.5×14cm (Wide)</SelectItem>
+                                  <SelectItem value="Bx5">Bx5 - $8.50 - 40.5×30×25.5cm (Large)</SelectItem>
+                                  <SelectItem value="Bx6">Bx6 - $2.75 - 22×14.5×3.5cm (Flat)</SelectItem>
+                                  <SelectItem value="Bx7">Bx7 - $1.95 - 14.5×12.7×1cm (Very Flat)</SelectItem>
+                                  <SelectItem value="Bx8">Bx8 - $4.95 - 36.3×21.2×6.5cm (ToughPak)</SelectItem>
                                 </SelectContent>
                               </Select>
                               <p className="text-xs text-muted-foreground mt-1">
-                                Choose the box you'll purchase from Australia Post
+                                Box price will be added to shipping cost automatically
                               </p>
                             </div>
                           </div>

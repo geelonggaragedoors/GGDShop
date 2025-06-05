@@ -25,6 +25,16 @@ export default function Checkout() {
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [shippingCosts, setShippingCosts] = useState<{
+    postage: number;
+    boxPrice: number;
+    subtotal: number;
+    gst: number;
+    total: number;
+    isOversized: boolean;
+    oversizedMessage?: string;
+  } | null>(null);
+  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -47,6 +57,85 @@ export default function Checkout() {
     });
   };
 
+  // Calculate shipping costs for all cart items
+  const calculateShippingCosts = async (postcode: string) => {
+    if (!postcode || cartItems.length === 0) return;
+    
+    setIsCalculatingShipping(true);
+    try {
+      // For each cart item, calculate shipping based on its dimensions and box size
+      let totalShippingCost = 0;
+      let hasOversizedItems = false;
+      let oversizedMessage = '';
+      
+      for (const item of cartItems) {
+        // In a real implementation, you'd fetch product details including weight, dimensions, and boxSize
+        // For now, we'll use placeholder values - you should fetch these from the product API
+        const response = await fetch(`/api/products/${item.productId}`);
+        const product = await response.json();
+        
+        if (product.weight && product.length && product.width && product.height && product.boxSize) {
+          const shippingResponse = await fetch('/api/shipping/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              weight: product.weight,
+              length: product.length,
+              width: product.width,
+              height: product.height,
+              boxSize: product.boxSize,
+              toPostcode: postcode
+            })
+          });
+          
+          const shippingData = await shippingResponse.json();
+          
+          if (shippingData.isOversized) {
+            hasOversizedItems = true;
+            oversizedMessage = shippingData.oversizedMessage;
+            break;
+          } else {
+            totalShippingCost += shippingData.total * item.quantity;
+          }
+        }
+      }
+      
+      if (hasOversizedItems) {
+        setShippingCosts({
+          postage: 0,
+          boxPrice: 0,
+          subtotal: 0,
+          gst: 0,
+          total: 0,
+          isOversized: true,
+          oversizedMessage
+        });
+      } else {
+        // Calculate total GST and breakdown
+        const subtotal = totalShippingCost / 1.1; // Remove GST to get subtotal
+        const gst = totalShippingCost - subtotal;
+        
+        setShippingCosts({
+          postage: subtotal * 0.7, // Approximate split between postage and box costs
+          boxPrice: subtotal * 0.3,
+          subtotal,
+          gst,
+          total: totalShippingCost,
+          isOversized: false
+        });
+      }
+    } catch (error) {
+      console.error('Error calculating shipping:', error);
+      toast({
+        title: "Shipping Calculation Error",
+        description: "Unable to calculate shipping costs. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCalculatingShipping(false);
+    }
+  };
+
   const handleAddressSelect = (addressData: any) => {
     console.log('Address selected:', addressData);
     const { components } = addressData;
@@ -65,6 +154,11 @@ export default function Checkout() {
       state: state.toLowerCase(),
       postcode: postcode
     }));
+    
+    // Calculate shipping costs when postcode is available
+    if (postcode) {
+      calculateShippingCosts(postcode);
+    }
     
     console.log('Auto-populated address fields:', {
       address: streetAddress,

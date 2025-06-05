@@ -719,6 +719,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await getAustraliaPostBoxes(req, res);
   });
 
+  // Calculate shipping cost with box pricing and GST
+  app.post("/api/shipping/calculate", async (req, res) => {
+    try {
+      const { weight, length, width, height, boxSize, toPostcode } = req.body;
+      
+      if (!weight || !length || !width || !height || !boxSize) {
+        return res.status(400).json({ 
+          error: "Missing required dimensions or box size" 
+        });
+      }
+
+      const { calculateTotalShippingCost } = await import("./australiaPost");
+      
+      const dimensions = { weight, length, width, height };
+      const result = await calculateTotalShippingCost(dimensions, boxSize, toPostcode);
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Shipping calculation error:", error);
+      res.status(500).json({ 
+        error: "Failed to calculate shipping cost" 
+      });
+    }
+  });
+
   // PayPal routes
   app.get("/api/paypal-config", (req, res) => {
     res.json({ clientId: process.env.PAYPAL_CLIENT_ID });
