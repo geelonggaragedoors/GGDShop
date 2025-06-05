@@ -342,36 +342,10 @@ export default function ProductDetail() {
                       <h4 className="font-semibold">Customer Reviews</h4>
                       <Button variant="outline">Write a Review</Button>
                     </div>
-                    <div className="space-y-4">
-                      {/* Sample reviews */}
-                      <div className="border-b border-gray-200 pb-4">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                            ))}
-                          </div>
-                          <span className="font-medium">John D.</span>
-                          <span className="text-sm text-gray-500">Verified Purchase</span>
-                        </div>
-                        <p className="text-gray-700">
-                          "Excellent quality product. Installation was straightforward and the finish looks great."
-                        </p>
-                      </div>
-                      <div className="border-b border-gray-200 pb-4">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star key={i} className={`w-4 h-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
-                            ))}
-                          </div>
-                          <span className="font-medium">Sarah M.</span>
-                          <span className="text-sm text-gray-500">Verified Purchase</span>
-                        </div>
-                        <p className="text-gray-700">
-                          "Good value for money. Works perfectly with my existing garage door system."
-                        </p>
-                      </div>
+                    <div className="text-center py-8">
+                      <Star className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                      <p className="text-gray-500">No reviews yet</p>
+                      <p className="text-sm text-gray-400">Be the first to review this product</p>
                     </div>
                   </div>
                 </CardContent>
