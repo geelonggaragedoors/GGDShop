@@ -160,6 +160,7 @@ export default function Products() {
       length: 0,
       width: 0,
       height: 0,
+      boxSize: "",
       isFeatured: false,
       isActive: true,
     },
@@ -992,54 +993,45 @@ export default function Products() {
                                 </FormItem>
                               )}
                             />
-                            <FormField
-                              control={form.control}
-                              name="boxSize"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Australia Post Box Size</FormLabel>
-                                  <Select onValueChange={(value) => {
-                                    field.onChange(value);
-                                    // Auto-fill dimensions based on selected box
-                                    const boxDimensions = {
-                                      'Bx1': { length: 22, width: 16, height: 7.7 },
-                                      'Bx2': { length: 31, width: 22.5, height: 10.2 },
-                                      'Bx3': { length: 40, width: 20, height: 18 },
-                                      'Bx4': { length: 43, width: 30.5, height: 14 },
-                                      'Bx5': { length: 40.5, width: 30, height: 25.5 },
-                                      'Bx6': { length: 22, width: 14.5, height: 3.5 },
-                                      'Bx7': { length: 14.5, width: 12.7, height: 1 },
-                                      'Bx8': { length: 36.3, width: 21.2, height: 6.5 },
-                                    };
-                                    if (boxDimensions[value]) {
-                                      form.setValue('length', boxDimensions[value].length);
-                                      form.setValue('width', boxDimensions[value].width);
-                                      form.setValue('height', boxDimensions[value].height);
-                                    }
-                                  }} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select standard box size" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="Bx1">Bx1 - 22×16×7.7cm (Small)</SelectItem>
-                                      <SelectItem value="Bx2">Bx2 - 31×22.5×10.2cm (Medium)</SelectItem>
-                                      <SelectItem value="Bx3">Bx3 - 40×20×18cm (Long)</SelectItem>
-                                      <SelectItem value="Bx4">Bx4 - 43×30.5×14cm (Wide)</SelectItem>
-                                      <SelectItem value="Bx5">Bx5 - 40.5×30×25.5cm (Large)</SelectItem>
-                                      <SelectItem value="Bx6">Bx6 - 22×14.5×3.5cm (Flat)</SelectItem>
-                                      <SelectItem value="Bx7">Bx7 - 14.5×12.7×1cm (Very Flat)</SelectItem>
-                                      <SelectItem value="Bx8">Bx8 - 36.3×21.2×6.5cm (ToughPak)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormDescription className="text-xs">
-                                    Choose the box you'll purchase from Australia Post
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                            <div>
+                              <FormLabel>Australia Post Box Size</FormLabel>
+                              <Select onValueChange={(value) => {
+                                form.setValue('boxSize', value);
+                                // Auto-fill dimensions based on selected box
+                                const boxDimensions: Record<string, { length: number; width: number; height: number }> = {
+                                  'Bx1': { length: 22, width: 16, height: 7.7 },
+                                  'Bx2': { length: 31, width: 22.5, height: 10.2 },
+                                  'Bx3': { length: 40, width: 20, height: 18 },
+                                  'Bx4': { length: 43, width: 30.5, height: 14 },
+                                  'Bx5': { length: 40.5, width: 30, height: 25.5 },
+                                  'Bx6': { length: 22, width: 14.5, height: 3.5 },
+                                  'Bx7': { length: 14.5, width: 12.7, height: 1 },
+                                  'Bx8': { length: 36.3, width: 21.2, height: 6.5 },
+                                };
+                                if (boxDimensions[value]) {
+                                  form.setValue('length', boxDimensions[value].length);
+                                  form.setValue('width', boxDimensions[value].width);
+                                  form.setValue('height', boxDimensions[value].height);
+                                }
+                              }} value={form.getValues('boxSize') || ''}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select standard box size" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Bx1">Bx1 - 22×16×7.7cm (Small)</SelectItem>
+                                  <SelectItem value="Bx2">Bx2 - 31×22.5×10.2cm (Medium)</SelectItem>
+                                  <SelectItem value="Bx3">Bx3 - 40×20×18cm (Long)</SelectItem>
+                                  <SelectItem value="Bx4">Bx4 - 43×30.5×14cm (Wide)</SelectItem>
+                                  <SelectItem value="Bx5">Bx5 - 40.5×30×25.5cm (Large)</SelectItem>
+                                  <SelectItem value="Bx6">Bx6 - 22×14.5×3.5cm (Flat)</SelectItem>
+                                  <SelectItem value="Bx7">Bx7 - 14.5×12.7×1cm (Very Flat)</SelectItem>
+                                  <SelectItem value="Bx8">Bx8 - 36.3×21.2×6.5cm (ToughPak)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Choose the box you'll purchase from Australia Post
+                              </p>
+                            </div>
                           </div>
                           
                           {/* Hidden dimension fields that get auto-populated */}
