@@ -5,12 +5,22 @@ import { eq, and, gte, lte, desc, count, sum, avg, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 export class AnalyticsService {
-  // Track page views
+  // Track page views with deduplication
   async trackPageView(data: Omit<InsertPageView, 'id' | 'createdAt'>): Promise<void> {
-    await db.insert(pageViews).values({
-      ...data,
-      createdAt: new Date(),
-    });
+    // Check for recent duplicate page view (within 5 seconds for same session and path)
+    const recentView = await db.select()
+      .from(pageViews)
+      .where(eq(pageViews.sessionId, data.sessionId))
+      .where(eq(pageViews.path, data.path))
+      .where(gte(pageViews.createdAt, new Date(Date.now() - 5000)))
+      .limit(1);
+
+    if (recentView.length === 0) {
+      await db.insert(pageViews).values({
+        ...data,
+        createdAt: new Date(),
+      });
+    }
   }
 
   // Track events (clicks, form submissions, etc.)

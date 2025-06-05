@@ -121,8 +121,13 @@ class ClientAnalytics {
     const currentPath = path || window.location.pathname;
     const pageTitle = title || document.title;
     
+    // Prevent duplicate tracking for the same path within 5 seconds
+    if (this.lastPath === currentPath && (Date.now() - this.pageStartTime) < 5000) {
+      return;
+    }
+    
     // Track view duration for previous page
-    if (this.lastPath && this.pageStartTime) {
+    if (this.lastPath && this.pageStartTime && this.lastPath !== currentPath) {
       const viewDuration = Math.round((Date.now() - this.pageStartTime) / 1000);
       this.sendData('page-view-duration', {
         sessionId: this.sessionId,
@@ -131,8 +136,11 @@ class ClientAnalytics {
       });
     }
 
-    // Track new page view
-    this.pageViews++;
+    // Only increment page views for new paths
+    if (this.lastPath !== currentPath) {
+      this.pageViews++;
+    }
+    
     this.lastPath = currentPath;
     this.pageStartTime = Date.now();
 
