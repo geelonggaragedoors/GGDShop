@@ -168,12 +168,20 @@ export default function AdminLayout() {
                   <Link href={item.path}>
                     <Button
                       variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start admin-nav-transition ${
-                        isActive ? "bg-primary text-primary-foreground" : "text-gray-700 hover:bg-gray-100"
+                      className={`w-full justify-start transition-all duration-300 group ${
+                        isActive 
+                          ? "bg-primary text-primary-foreground shadow-lg" 
+                          : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-[1.02] hover:border-blue-200 border border-transparent"
                       }`}
                     >
-                      <Icon className="w-4 h-4 mr-3" />
-                      {item.label}
+                      <Icon className={`w-4 h-4 mr-3 transition-all duration-300 ${
+                        isActive 
+                          ? "" 
+                          : "group-hover:scale-110 group-hover:text-blue-600"
+                      }`} />
+                      <span className="transition-all duration-300 group-hover:font-semibold">
+                        {item.label}
+                      </span>
                       {(item.id === "products" && counts?.products && counts.products > 0) && (
                         <Badge className="ml-auto bg-orange-500 text-white hover:bg-orange-600">
                           {counts.products}
