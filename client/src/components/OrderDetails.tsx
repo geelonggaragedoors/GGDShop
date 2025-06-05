@@ -51,6 +51,74 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
     enabled: !!orderId,
   });
 
+  // All mutations must be declared before conditional returns
+  const updateOrderMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error("Failed to update order");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/orders/${orderId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      toast({ title: "Order updated successfully" });
+    },
+    onError: () => {
+      toast({ 
+        title: "Error", 
+        description: "Failed to update order",
+        variant: "destructive" 
+      });
+    },
+  });
+
+  const sendEmailMutation = useMutation({
+    mutationFn: async (type: 'receipt' | 'status_update') => {
+      const response = await fetch(`/api/admin/orders/${orderId}/email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type }),
+      });
+      if (!response.ok) throw new Error("Failed to send email");
+      return response.json();
+    },
+    onSuccess: (data, type) => {
+      toast({ 
+        title: `${type === 'receipt' ? 'Receipt' : 'Status update'} sent`,
+        description: `Email sent to ${order?.customerEmail || 'customer'}` 
+      });
+    },
+    onError: () => {
+      toast({ 
+        title: "Error", 
+        description: "Failed to send email",
+        variant: "destructive" 
+      });
+    },
+  });
+
+  const printOrderMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/admin/orders/${orderId}/print`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ printedBy: "Current User" }),
+      });
+      if (!response.ok) throw new Error("Failed to mark as printed");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/orders/${orderId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      toast({ title: "Order marked as printed" });
+      window.print();
+    },
+  });
+
   // Update staffNotes when order data is loaded
   React.useEffect(() => {
     if (order?.staffNotes) {
@@ -81,71 +149,6 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
       </div>
     );
   }
-
-  const updateOrderMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch(`/api/admin/orders/${order.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error("Failed to update order");
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
-      toast({ title: "Order updated successfully" });
-    },
-    onError: () => {
-      toast({ 
-        title: "Error", 
-        description: "Failed to update order",
-        variant: "destructive" 
-      });
-    },
-  });
-
-  const sendEmailMutation = useMutation({
-    mutationFn: async (type: 'receipt' | 'status_update') => {
-      const response = await fetch(`/api/admin/orders/${order.id}/email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type }),
-      });
-      if (!response.ok) throw new Error("Failed to send email");
-      return response.json();
-    },
-    onSuccess: (data, type) => {
-      toast({ 
-        title: `${type === 'receipt' ? 'Receipt' : 'Status update'} sent`,
-        description: `Email sent to ${order.customerEmail}` 
-      });
-    },
-    onError: () => {
-      toast({ 
-        title: "Error", 
-        description: "Failed to send email",
-        variant: "destructive" 
-      });
-    },
-  });
-
-  const printOrderMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`/api/admin/orders/${order.id}/print`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ printedBy: "Current User" }),
-      });
-      if (!response.ok) throw new Error("Failed to mark as printed");
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
-      toast({ title: "Order marked as printed" });
-      window.print();
-    },
-  });
 
   const handleStatusUpdate = (field: string, value: string) => {
     const oldStatus = order[field];
