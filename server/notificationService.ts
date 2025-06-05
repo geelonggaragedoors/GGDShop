@@ -15,13 +15,18 @@ export class NotificationService {
   private clients: Map<string, ConnectedClient[]> = new Map();
 
   initialize(server: Server) {
+    // Only initialize WebSocket in production to avoid Vite HMR conflicts
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Notification WebSocket disabled in development to avoid Vite HMR conflicts');
+      return;
+    }
+
     this.wss = new WebSocketServer({ 
       server, 
       path: '/ws/notifications',
-      port: undefined, // Use the main server port
       verifyClient: (info: any) => {
-        // Avoid conflicts with Vite HMR by checking the path
-        if (info.req.url?.includes('__vite_hmr')) {
+        // Reject Vite HMR connections
+        if (info.req.url?.includes('__vite_hmr') || info.req.headers['sec-websocket-protocol']?.includes('vite-hmr')) {
           return false;
         }
         return true;
