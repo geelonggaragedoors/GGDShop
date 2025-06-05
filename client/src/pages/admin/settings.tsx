@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
-import { Save, Store, Truck, Mail, Shield, Globe } from "lucide-react";
+import { Save, Store, Mail, Shield, Globe, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
@@ -43,6 +43,17 @@ export default function Settings() {
       contactPhone: "(03) 5221 8999",
       address: "Geelong, VIC 3220",
       website: "https://geelonggaragedoors.com.au",
+    },
+  });
+
+  const emailForm = useForm({
+    defaultValues: {
+      fromEmail: "orders@geelonggaragedoors.com.au",
+      adminEmail: "info@geelonggaragedoors.com.au",
+      enableOrderConfirmations: true,
+      enableStatusUpdates: true,
+      enableAdminNotifications: true,
+      enableLowStockAlerts: true,
     },
   });
 
@@ -120,8 +131,12 @@ export default function Settings() {
           </TabsTrigger>
 
           <TabsTrigger value="notifications" className="flex items-center space-x-2">
-            <Mail className="w-4 h-4" />
+            <Bell className="w-4 h-4" />
             <span>Notifications</span>
+          </TabsTrigger>
+          <TabsTrigger value="email" className="flex items-center space-x-2">
+            <Mail className="w-4 h-4" />
+            <span>Email</span>
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center space-x-2">
             <Shield className="w-4 h-4" />
