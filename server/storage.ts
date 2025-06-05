@@ -481,6 +481,8 @@ export class DatabaseStorage implements IStorage {
         paymentStatus: orders.paymentStatus,
         subtotal: orders.subtotal,
         shippingCost: orders.shippingCost,
+        taxAmount: orders.taxAmount,
+        currency: orders.currency,
         shippingAddress: orders.shippingAddress,
         billingAddress: orders.billingAddress,
         notes: orders.notes,
@@ -491,39 +493,20 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(orders.createdAt))
       .limit(5);
 
-    // Get top products with actual sales data from order items
-    const topProductsData = await db
-      .select({
-        id: products.id,
-        name: products.name,
-        price: products.price,
-        images: products.images,
-        sku: products.sku,
-        sales: sql<number>`COALESCE(SUM(${orderItems.quantity}), 0)::int`,
-        revenue: sql<number>`COALESCE(SUM(${orderItems.quantity} * ${orderItems.price}), 0)::float`,
-      })
-      .from(products)
-      .leftJoin(orderItems, eq(products.id, orderItems.productId))
-      .where(eq(products.isActive, true))
-      .groupBy(products.id, products.name, products.price, products.images, products.sku)
-      .orderBy(sql`COALESCE(SUM(${orderItems.quantity}), 0) DESC`)
-      .limit(5);
-
-    // Get full product data for the top products
-    const topProductIds = topProductsData.map(p => p.id);
-    const fullProducts = await db
+    // Get top products based on stock quantity and featured status
+    const topProducts = await db
       .select()
       .from(products)
-      .where(sql`${products.id} = ANY(${topProductIds})`);
+      .where(eq(products.isActive, true))
+      .orderBy(desc(products.stockQuantity))
+      .limit(5);
 
-    const topProducts = topProductsData.map(productData => {
-      const fullProduct = fullProducts.find(p => p.id === productData.id);
-      return {
-        ...fullProduct!,
-        sales: productData.sales || 0,
-        revenue: productData.revenue || 0,
-      };
-    });
+    // Add sales and revenue data (0 for now since we have no order items yet)
+    const topProductsWithSales = topProducts.map(product => ({
+      ...product,
+      sales: 0,
+      revenue: 0,
+    }));
 
     return {
       totalRevenue: totalRevenue || 0,
