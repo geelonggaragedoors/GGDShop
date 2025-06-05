@@ -14,6 +14,7 @@ import Orders from "./orders";
 import Customers from "./customers";
 import Media from "./media";
 import Staff from "./staff";
+import Reviews from "./reviews";
 import SettingsPage from "./settings";
 import {
   LayoutDashboard,
@@ -24,6 +25,7 @@ import {
   Users,
   Images,
   UserCheck,
+  Star,
   Settings as SettingsIcon,
   Store,
   Bell,
@@ -38,6 +40,7 @@ const sidebarItems = [
   { id: "categories", label: "Categories", icon: Tags, path: "/admin/categories" },
   { id: "brands", label: "Brands", icon: Building, path: "/admin/brands" },
   { id: "customers", label: "Customers", icon: Users, path: "/admin/customers" },
+  { id: "reviews", label: "Reviews", icon: Star, path: "/admin/reviews" },
   { id: "media", label: "Media Library", icon: Images, path: "/admin/media" },
   { id: "staff", label: "Staff & Roles", icon: UserCheck, path: "/admin/staff" },
   { id: "settings", label: "Settings", icon: SettingsIcon, path: "/admin/settings" },
@@ -72,6 +75,8 @@ export default function AdminLayout() {
         return { title: "Brands", subtitle: "Manage product brands and manufacturers" };
       case "customers":
         return { title: "Customers", subtitle: "Customer relationship management" };
+      case "reviews":
+        return { title: "Customer Reviews", subtitle: "Manage customer feedback and testimonials" };
       case "media":
         return { title: "Media Library", subtitle: "Manage images and files" };
       case "staff":
@@ -97,6 +102,8 @@ export default function AdminLayout() {
         return <Brands />;
       case "customers":
         return <Customers />;
+      case "reviews":
+        return <Reviews />;
       case "media":
         return <Media />;
       case "staff":
