@@ -353,11 +353,37 @@ export default function Products() {
     setSelectedImages([]);
   };
 
+  const handleSelectProduct = (productId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedProducts(prev => [...prev, productId]);
+    } else {
+      setSelectedProducts(prev => prev.filter(id => id !== productId));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedProducts(productsData?.products?.map((p: any) => p.id) || []);
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
   const columns = [
     {
-      header: "",
+      header: ({ table }: any) => (
+        <Checkbox
+          checked={selectedProducts.length === productsData?.products?.length && productsData?.products?.length > 0}
+          onCheckedChange={handleSelectAll}
+        />
+      ),
       accessorKey: "select",
-      cell: () => <Checkbox />,
+      cell: ({ row }: any) => (
+        <Checkbox
+          checked={selectedProducts.includes(row.original.id)}
+          onCheckedChange={(checked) => handleSelectProduct(row.original.id, checked)}
+        />
+      ),
     },
     {
       header: "Product",
@@ -1329,20 +1355,132 @@ export default function Products() {
         </CardContent>
       </Card>
 
+      {/* Bulk Actions Bar */}
+      {selectedProducts.length > 0 && (
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium text-blue-900">
+                  {selectedProducts.length} product{selectedProducts.length !== 1 ? 's' : ''} selected
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedProducts([])}
+                  className="text-blue-700 border-blue-300 hover:bg-blue-100"
+                >
+                  Clear Selection
+                </Button>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm(`Delete ${selectedProducts.length} selected products?`)) {
+                      bulkDeleteMutation.mutate(selectedProducts);
+                    }
+                  }}
+                  disabled={bulkDeleteMutation.isPending}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Selected
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Bulk Import Dialog */}
+      <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Bulk Import Products</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">Upload a CSV file with product data to import multiple products at once.</p>
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => {
+                // Create CSV template
+                const csvContent = `name,sku,price,categoryId,stockQuantity,description,weight,height,width,length,images,featured,active,seoTitle,seoDescription
+"Premium Garage Door A1","GD-A1-001",899.99,"category-id-here",10,"High-quality steel garage door with insulation",50,2000,2400,50,"https://example.com/image1.jpg",true,true,"Premium Garage Door A1 - Best Quality","High-quality steel garage door with superior insulation and durability"
+"Standard Garage Door B2","GD-B2-002",599.99,"category-id-here",25,"Standard aluminum garage door",35,2000,2400,40,"https://example.com/image2.jpg",false,true,"Standard Garage Door B2 - Affordable Option","Reliable aluminum garage door perfect for residential use"`;
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'product_import_template.csv';
+                link.click();
+                window.URL.revokeObjectURL(url);
+              }}
+              className="w-full"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Download CSV Template
+            </Button>
+            
+            <Input
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  bulkImportMutation.mutate(file);
+                }
+              }}
+            />
+            <div className="flex space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsBulkImportOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Products Table */}
       <Card>
-        <DataTable
-          columns={columns}
-          data={productsData?.products || []}
-          loading={productsLoading}
-          pagination={{
-            pageIndex: page,
-            pageSize,
-            totalPages,
-            totalItems: productsData?.total || 0,
-            onPageChange: setPage,
-          }}
-        />
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Products</CardTitle>
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsBulkImportOpen(true)}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Bulk Import
+              </Button>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Product
+                </Button>
+              </DialogTrigger>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            columns={columns}
+            data={productsData?.products || []}
+            loading={productsLoading}
+            pagination={{
+              pageIndex: page,
+              pageSize,
+              totalPages,
+              totalItems: productsData?.total || 0,
+              onPageChange: setPage,
+            }}
+          />
+        </CardContent>
       </Card>
     </div>
   );

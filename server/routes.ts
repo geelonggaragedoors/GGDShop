@@ -342,6 +342,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk import products
+  app.post('/api/admin/products/bulk', isAuthenticated, async (req, res) => {
+    try {
+      const { products } = req.body;
+      
+      if (!Array.isArray(products) || products.length === 0) {
+        return res.status(400).json({ message: "Invalid products data" });
+      }
+
+      const createdProducts = [];
+      const errors = [];
+
+      for (let i = 0; i < products.length; i++) {
+        try {
+          const productData = products[i];
+          
+          // Validate required fields
+          if (!productData.name || !productData.sku || !productData.price || !productData.categoryId) {
+            errors.push(`Row ${i + 2}: Missing required fields (name, sku, price, categoryId)`);
+            continue;
+          }
+
+          // Convert string values to appropriate types
+          const processedProduct = {
+            ...productData,
+            price: parseFloat(productData.price.toString()),
+            stockQuantity: parseInt(productData.stockQuantity?.toString() || '0'),
+            weight: parseFloat(productData.weight?.toString() || '0'),
+            height: parseFloat(productData.height?.toString() || '0'),
+            width: parseFloat(productData.width?.toString() || '0'),
+            length: parseFloat(productData.length?.toString() || '0'),
+            featured: productData.featured === true || productData.featured === 'true',
+            active: productData.active === true || productData.active === 'true',
+            status: 'draft' // Start as draft until validation
+          };
+
+          // Validate shipping dimensions if provided
+          const validation = validateShippingDimensions(processedProduct);
+          
+          if (validation.isValid) {
+            try {
+              const shippingCost = await calculateShippingCost({
+                weight: Number(processedProduct.weight),
+                length: Number(processedProduct.length),
+                width: Number(processedProduct.width),
+                height: Number(processedProduct.height)
+              });
+              processedProduct.shippingCost = shippingCost.toString();
+              processedProduct.status = 'published';
+            } catch (shippingError) {
+              console.error("Error calculating shipping for bulk import:", shippingError);
+              processedProduct.status = 'draft';
+            }
+          }
+
+          const product = await storage.createProduct(processedProduct);
+          createdProducts.push(product);
+        } catch (error) {
+          console.error(`Error creating product at row ${i + 2}:`, error);
+          errors.push(`Row ${i + 2}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+
+      res.json({
+        success: true,
+        created: createdProducts.length,
+        errors: errors.length,
+        errorDetails: errors
+      });
+    } catch (error) {
+      console.error("Bulk import error:", error);
+      res.status(500).json({ message: "Failed to import products" });
+    }
+  });
+
+  // Bulk delete products
+  app.post('/api/admin/products/bulk-delete', isAuthenticated, async (req, res) => {
+    try {
+      const { productIds } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Invalid product IDs" });
+      }
+
+      const results = [];
+      for (const productId of productIds) {
+        try {
+          const success = await storage.deleteProduct(productId);
+          results.push({ id: productId, success });
+        } catch (error) {
+          console.error(`Error deleting product ${productId}:`, error);
+          results.push({ id: productId, success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+        }
+      }
+
+      const successCount = results.filter(r => r.success).length;
+      res.json({
+        success: true,
+        deleted: successCount,
+        total: productIds.length,
+        results
+      });
+    } catch (error) {
+      console.error("Bulk delete error:", error);
+      res.status(500).json({ message: "Failed to delete products" });
+    }
+  });
+
   app.delete('/api/admin/products/:id', isAuthenticated, async (req, res) => {
     try {
       const success = await storage.deleteProduct(req.params.id);
