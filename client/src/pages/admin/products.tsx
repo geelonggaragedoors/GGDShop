@@ -934,20 +934,97 @@ export default function Products() {
                             name="weight"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Weight (kg)</FormLabel>
+                                <FormLabel>Weight (grams)</FormLabel>
                                 <FormControl>
                                   <Input 
                                     {...field} 
                                     type="number" 
-                                    step="0.1"
-                                    placeholder="e.g., 45.5"
+                                    step="1"
+                                    placeholder="e.g., 25000"
                                     onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                   />
                                 </FormControl>
+                                <FormDescription className="text-xs">Product weight in grams for shipping</FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
+                        </div>
+
+                        {/* Australia Post Shipping Dimensions */}
+                        <div className="border-t pt-4">
+                          <h4 className="text-sm font-medium text-gray-900 mb-3">Australia Post Shipping Dimensions</h4>
+                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-3">
+                            <p className="text-sm text-yellow-800">
+                              <strong>Required for publication:</strong> Product will be saved as draft until weight and dimensions are provided. Once complete, shipping cost will be calculated using Australia Post API and product will be published.
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <FormField
+                              control={form.control}
+                              name="length"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Length (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      type="number" 
+                                      step="0.1"
+                                      placeholder="e.g., 240"
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    />
+                                  </FormControl>
+                                  <FormDescription className="text-xs">Length in centimeters</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="width"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Width (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      type="number" 
+                                      step="0.1"
+                                      placeholder="e.g., 50"
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    />
+                                  </FormControl>
+                                  <FormDescription className="text-xs">Width in centimeters</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="height"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Height (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      type="number" 
+                                      step="0.1"
+                                      placeholder="e.g., 15"
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    />
+                                  </FormControl>
+                                  <FormDescription className="text-xs">Height in centimeters</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Product Status Toggles */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <FormField
                             control={form.control}
                             name="isFeatured"
