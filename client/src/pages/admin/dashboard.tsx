@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,36 +28,37 @@ import {
   Settings,
   Receipt,
   TrendingUp,
+  ImageIcon,
 } from "lucide-react";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
-  const { toast } = useToast();
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats } = useQuery({
     queryKey: ["/api/admin/dashboard"],
-    queryFn: api.admin.dashboard.getStats,
+  });
+
+  const { data: counts } = useQuery({
+    queryKey: ["/api/admin/counts"],
   });
 
   const { data: categories } = useQuery({
     queryKey: ["/api/categories"],
-    queryFn: api.categories.getAll,
   });
 
   const { data: brands } = useQuery({
     queryKey: ["/api/brands"],
-    queryFn: api.brands.getAll,
   });
 
   const createProductMutation = useMutation({
-    mutationFn: api.admin.products.create,
+    mutationFn: (data: any) => api.admin.products.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       setIsAddProductOpen(false);
-      form.reset();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/counts"] });
       toast({ title: "Product created successfully" });
     },
     onError: (error: any) => {
@@ -118,74 +119,99 @@ export default function Dashboard() {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const data = JSON.parse(e.target?.result as string);
-        toast({ title: "Bulk import completed", description: `Imported ${data.length || 0} items` });
-        setIsBulkImportOpen(false);
+        const csvContent = e.target?.result as string;
+        const lines = csvContent.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        
+        const products = [];
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+          const product: any = {};
+          
+          headers.forEach((header, index) => {
+            const value = values[index];
+            if (value !== undefined && value !== '') {
+              if (header === 'price' || header === 'stockQuantity' || header === 'weight' || 
+                  header === 'height' || header === 'width' || header === 'length') {
+                product[header] = parseFloat(value) || 0;
+              } else if (header === 'featured' || header === 'active') {
+                product[header] = value.toLowerCase() === 'true';
+              } else {
+                product[header] = value;
+              }
+            }
+          });
+          
+          if (product.name && product.sku && product.price && product.categoryId) {
+            products.push(product);
+          }
+        }
+        
+        if (products.length > 0) {
+          // Call bulk import API
+          fetch('/api/admin/products/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ products }),
+          }).then(res => res.json()).then(result => {
+            if (result.success) {
+              toast({ 
+                title: "Bulk import completed", 
+                description: `${result.created} products imported, ${result.errors} errors` 
+              });
+              queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+              setIsBulkImportOpen(false);
+            } else {
+              toast({ title: "Error", description: "Failed to import products", variant: "destructive" });
+            }
+          });
+        } else {
+          toast({ title: "Error", description: "No valid products found in CSV", variant: "destructive" });
+        }
       } catch (error) {
-        toast({ title: "Error", description: "Invalid file format", variant: "destructive" });
+        toast({ title: "Error", description: "Failed to parse CSV file", variant: "destructive" });
       }
     };
     reader.readAsText(file);
   };
 
-  if (isLoading) {
-    return (
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white p-6 rounded-xl shadow-sm border animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-              <div className="h-8 bg-gray-200 rounded w-20 mb-1"></div>
-              <div className="h-3 bg-gray-200 rounded w-32"></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-6">
+    <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Revenue"
           value={`$${stats?.totalRevenue?.toLocaleString() || '0'}`}
-          trend="+12.5% from last month"
           icon={DollarSign}
-          iconColor="text-green-600"
-          iconBg="bg-green-100"
+          description="Total sales revenue"
         />
         <StatsCard
           title="Total Orders"
-          value={stats?.totalOrders?.toString() || '0'}
-          trend="+8.2% from last month"
+          value={stats?.totalOrders || 0}
           icon={ShoppingCart}
-          iconColor="text-primary"
-          iconBg="bg-blue-100"
+          description="Orders this month"
         />
         <StatsCard
-          title="Active Products"
-          value={stats?.activeProducts?.toString() || '0'}
-          trend="3 out of stock"
+          title="Products"
+          value={counts?.products || 0}
           icon={Package}
-          iconColor="text-purple-600"
-          iconBg="bg-purple-100"
+          description="Active products"
         />
         <StatsCard
-          title="Total Customers"
-          value={stats?.totalCustomers?.toString() || '0'}
-          trend="+15.3% from last month"
+          title="Customers"
+          value={stats?.totalCustomers || 0}
           icon={Users}
-          iconColor="text-orange-600"
-          iconBg="bg-orange-100"
+          description="Registered customers"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Recent Orders */}
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <CardHeader className="border-b">
+          <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold">Recent Orders</CardTitle>
               <Button variant="link" size="sm" className="text-primary">
@@ -195,7 +221,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-4">
-              {stats?.recentOrders?.slice(0, 5).map((order) => (
+              {stats?.recentOrders?.slice(0, 5).map((order: any) => (
                 <Link key={order.id} to={`/admin/orders/${order.id}`}>
                   <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 -mx-2">
                     <div className="flex items-center space-x-3">
@@ -209,14 +235,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-gray-900">${order.total}</p>
-                      <Badge 
-                        variant={
-                          order.status === 'completed' ? 'default' : 
-                          order.status === 'processing' ? 'secondary' : 
-                          'outline'
-                        }
-                        className="text-xs"
-                      >
+                      <Badge variant={order.status === 'completed' ? 'default' : 'secondary'}>
                         {order.status}
                       </Badge>
                     </div>
@@ -229,19 +248,16 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Top Products */}
         <Card>
-          <CardHeader className="border-b">
+          <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold">Top Products</CardTitle>
-              <Button variant="link" size="sm" className="text-primary">
-                View All
-              </Button>
+              <TrendingUp className="w-5 h-5 text-primary" />
             </div>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-4">
-              {stats?.topProducts?.slice(0, 5).map((product) => (
+              {stats?.topProducts?.slice(0, 5).map((product: any) => (
                 <Link key={product.id} to={`/products/${product.slug || product.id}`}>
                   <div className="flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors rounded-lg px-2 py-2 -mx-2">
                     <div className="flex items-center space-x-3">
@@ -276,160 +292,24 @@ export default function Dashboard() {
         <CardContent className="p-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* Add Product */}
-            <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full">
-                  <Plus className="w-4 h-4 text-primary mb-1" />
-                  <span className="text-xs font-medium">Add Product</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Add New Product</DialogTitle>
-                </DialogHeader>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="price"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Price</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" step="0.01" onChange={(e) => field.onChange(parseFloat(e.target.value))} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="categoryId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {categories?.map((category: any) => (
-                                <SelectItem key={category.id} value={category.id}>
-                                  {category.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="images"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Images</FormLabel>
-                          <FormControl>
-                            <div className="space-y-2">
-                              <Button 
-                                type="button" 
-                                variant="outline" 
-                                onClick={() => setLocation('/admin/media')}
-                                className="w-full"
-                              >
-                                <Image className="w-4 h-4 mr-2" />
-                                Select from Media Library
-                              </Button>
-                              <Input {...field} placeholder="Or paste image URL" />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="flex space-x-2 pt-4">
-                      <Button type="submit" disabled={createProductMutation.isPending}>
-                        Add Product
-                      </Button>
-                      <Button type="button" variant="outline" onClick={() => setIsAddProductOpen(false)}>
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
+            <Button 
+              variant="outline" 
+              className="flex flex-col items-center justify-center p-3 h-16 w-full"
+              onClick={() => setIsAddProductOpen(true)}
+            >
+              <Plus className="w-4 h-4 text-primary mb-1" />
+              <span className="text-xs font-medium">Add Product</span>
+            </Button>
 
             {/* Bulk Import */}
-            <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full">
-                  <Upload className="w-4 h-4 text-primary mb-1" />
-                  <span className="text-xs font-medium">Bulk Import</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Bulk Import Products</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <p className="text-sm text-gray-600">Upload a CSV file with product data to import multiple products at once.</p>
-                  
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => {
-                      // Create CSV template
-                      const csvContent = `name,sku,price,categoryId,stockQuantity,description,weight,height,width,length,images,featured,active,seoTitle,seoDescription
-"Premium Garage Door A1","GD-A1-001",899.99,"category-id-here",10,"High-quality steel garage door with insulation",50,2000,2400,50,"https://example.com/image1.jpg",true,true,"Premium Garage Door A1 - Best Quality","High-quality steel garage door with superior insulation and durability"
-"Standard Garage Door B2","GD-B2-002",599.99,"category-id-here",25,"Standard aluminum garage door",35,2000,2400,40,"https://example.com/image2.jpg",false,true,"Standard Garage Door B2 - Affordable Option","Reliable aluminum garage door perfect for residential use"`;
-                      
-                      const blob = new Blob([csvContent], { type: 'text/csv' });
-                      const url = window.URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.download = 'product_import_template.csv';
-                      link.click();
-                      window.URL.revokeObjectURL(url);
-                    }}
-                    className="w-full"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download CSV Template
-                  </Button>
-                  
-                  <Input
-                    type="file"
-                    accept=".csv"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleBulkImport(file);
-                    }}
-                  />
-                  <div className="flex space-x-2 pt-4">
-                    <Button type="button" variant="outline" onClick={() => setIsBulkImportOpen(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button 
+              variant="outline" 
+              className="flex flex-col items-center justify-center p-3 h-16 w-full"
+              onClick={() => setIsBulkImportOpen(true)}
+            >
+              <Upload className="w-4 h-4 text-primary mb-1" />
+              <span className="text-xs font-medium">Bulk Import</span>
+            </Button>
 
             {/* Export Data */}
             <Button variant="outline" className="flex flex-col items-center justify-center p-3 h-16 w-full" onClick={handleExportData}>
@@ -445,6 +325,139 @@ export default function Dashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add Product Dialog */}
+      <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Product</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="0.01" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories?.map((category: any) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex space-x-2 pt-4">
+                <Button type="submit" disabled={createProductMutation.isPending}>
+                  Add Product
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setIsAddProductOpen(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Import Dialog */}
+      <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Bulk Import Products</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">Upload a CSV file with product data to import multiple products at once.</p>
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => {
+                // Create CSV template
+                const csvContent = `name,sku,price,categoryId,stockQuantity,description,weight,height,width,length,images,featured,active,seoTitle,seoDescription
+"Premium Garage Door A1","GD-A1-001",899.99,"category-id-here",10,"High-quality steel garage door with insulation",50,2000,2400,50,"https://example.com/image1.jpg",true,true,"Premium Garage Door A1 - Best Quality","High-quality steel garage door with superior insulation and durability"
+"Standard Garage Door B2","GD-B2-002",599.99,"category-id-here",25,"Standard aluminum garage door",35,2000,2400,40,"https://example.com/image2.jpg",false,true,"Standard Garage Door B2 - Affordable Option","Reliable aluminum garage door perfect for residential use"`;
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'product_import_template.csv';
+                link.click();
+                window.URL.revokeObjectURL(url);
+              }}
+              className="w-full"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download CSV Template
+            </Button>
+            
+            <Input
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleBulkImport(file);
+              }}
+            />
+            <div className="flex space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsBulkImportOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
