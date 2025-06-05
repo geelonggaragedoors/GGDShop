@@ -65,6 +65,7 @@ export interface IStorage {
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: string): Promise<boolean>;
   updateProductStock(id: string, quantity: number): Promise<boolean>;
+  updateProductStatusAndShipping(id: string, shippingCost: number): Promise<Product | undefined>;
 
   // Customer operations
   getCustomers(): Promise<Customer[]>;
@@ -193,6 +194,7 @@ export class DatabaseStorage implements IStorage {
     search?: string;
     featured?: boolean;
     active?: boolean;
+    includeUnpublished?: boolean; // for admin panel
     limit?: number;
     offset?: number;
   } = {}): Promise<{ products: Product[]; total: number }> {
@@ -200,6 +202,11 @@ export class DatabaseStorage implements IStorage {
     
     if (params.active !== false) {
       conditions.push(eq(products.isActive, true));
+    }
+    
+    // Only show published products on frontend, all products in admin
+    if (!params.includeUnpublished) {
+      conditions.push(eq(products.status, 'published'));
     }
     
     if (params.categoryId) {

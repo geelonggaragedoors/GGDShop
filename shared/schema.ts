@@ -77,8 +77,12 @@ export const products = pgTable("products", {
   specifications: jsonb("specifications"), // JSON object for product specs
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   compareAtPrice: decimal("compare_at_price", { precision: 10, scale: 2 }),
-  weight: decimal("weight", { precision: 8, scale: 2 }), // in kg for shipping
-  dimensions: jsonb("dimensions"), // {length, width, height}
+  weight: decimal("weight", { precision: 8, scale: 2 }), // in grams for shipping
+  length: decimal("length", { precision: 8, scale: 2 }), // in cm
+  width: decimal("width", { precision: 8, scale: 2 }), // in cm
+  height: decimal("height", { precision: 8, scale: 2 }), // in cm
+  shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }), // calculated from Australia Post API
+  status: varchar("status", { length: 20 }).default("draft"), // draft or published
   images: jsonb("images"), // Array of image URLs
   categoryId: uuid("category_id").notNull(),
   brandId: uuid("brand_id"),
@@ -278,9 +282,13 @@ export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  shippingCost: true, // calculated by API
 }).extend({
   price: z.number().min(0, "Price must be a positive number"),
   weight: z.number().min(0, "Weight must be a positive number").optional(),
+  length: z.number().min(0, "Length must be a positive number").optional(),
+  width: z.number().min(0, "Width must be a positive number").optional(),
+  height: z.number().min(0, "Height must be a positive number").optional(),
   stockQuantity: z.number().int().min(0, "Stock quantity must be a non-negative integer"),
 });
 
