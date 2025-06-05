@@ -18,8 +18,12 @@ export class NotificationService {
     this.wss = new WebSocketServer({ 
       server, 
       path: '/ws/notifications',
+      port: undefined, // Use the main server port
       verifyClient: (info: any) => {
-        // Add authentication verification here if needed
+        // Avoid conflicts with Vite HMR by checking the path
+        if (info.req.url?.includes('__vite_hmr')) {
+          return false;
+        }
         return true;
       }
     });

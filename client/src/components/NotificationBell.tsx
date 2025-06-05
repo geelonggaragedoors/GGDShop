@@ -54,18 +54,59 @@ export default function NotificationBell() {
     },
   });
 
-  // WebSocket connection for real-time notifications (temporarily disabled to fix connection issues)
+  // WebSocket connection for real-time notifications
   useEffect(() => {
     if (!user) return;
 
-    // Temporarily disabled WebSocket to prevent connection conflicts with Vite HMR
-    // Will re-enable after fixing the connection issues
+    // Only connect WebSocket in production to avoid conflicts with Vite HMR
+    if (import.meta.env.DEV) {
+      console.log("Using polling for notifications in development (WebSocket disabled to avoid Vite conflicts)");
+      return;
+    }
+
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${protocol}//${window.location.host}/ws/notifications`;
     
-    // const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    // const wsUrl = `${protocol}//${window.location.host}/ws/notifications`;
+    const websocket = new WebSocket(wsUrl);
     
-    // Only use polling for now
-    console.log("Using polling for notifications (WebSocket temporarily disabled)");
+    websocket.onopen = () => {
+      console.log("Connected to notification WebSocket");
+      websocket.send(JSON.stringify({ type: "auth", userId: user.id }));
+    };
+
+    websocket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        
+        if (message.type === "notification") {
+          setNotifications(prev => [message.data, ...prev]);
+          
+          // Show browser notification if permission granted
+          if (Notification.permission === "granted") {
+            new Notification(message.data.title, {
+              body: message.data.message,
+              icon: "/favicon.ico",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error processing notification:", error);
+      }
+    };
+
+    websocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    websocket.onclose = () => {
+      console.log("Notification WebSocket disconnected");
+    };
+
+    setWs(websocket);
+
+    return () => {
+      websocket.close();
+    };
   }, [user]);
 
   // Update notifications from query data
