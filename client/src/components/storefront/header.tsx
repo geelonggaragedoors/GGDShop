@@ -228,7 +228,7 @@ export default function StorefrontHeader() {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:block py-3 border-t border-gray-100">
-          <ul className="flex space-x-8 text-sm font-medium">
+          <ul className="flex space-x-8 text-sm font-bold">
             <li><Link href="/" className="text-gray-700 hover:text-primary transition-colors">Home</Link></li>
             
             {/* Main Categories with Dropdown Menus */}
@@ -244,7 +244,7 @@ export default function StorefrontHeader() {
                 >
                   <Link 
                     href={`/products/${category.slug}`} 
-                    className="text-gray-700 hover:text-primary font-medium transition-colors flex items-center"
+                    className="text-gray-700 hover:text-primary font-bold transition-colors flex items-center"
                   >
                     {category.name}
                     {subcategories.length > 0 && (
@@ -283,7 +283,7 @@ export default function StorefrontHeader() {
               );
             })}
             
-            <li><Link href="/contact" className="text-gray-700 hover:text-primary font-medium transition-colors">Contact</Link></li>
+            <li><Link href="/contact" className="text-gray-700 hover:text-primary font-bold transition-colors">Contact</Link></li>
           </ul>
         </nav>
 
