@@ -1,4 +1,4 @@
-import { Shield, Clock, Star, Truck, Wrench, Award } from "lucide-react";
+import { Shield, Clock, Star, Package, ShoppingBag, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
@@ -8,24 +8,24 @@ const features = [
     description: "All our garage doors come with comprehensive warranties and are built to last with premium materials."
   },
   {
-    icon: Clock,
-    title: "Fast Installation",
-    description: "Professional installation typically completed within 2-4 hours with minimal disruption to your day."
+    icon: Package,
+    title: "Wide Product Range",
+    description: "Extensive selection of garage doors from leading brands to suit every home style and budget."
   },
   {
     icon: Star,
-    title: "Expert Service",
-    description: "Over 20 years of experience serving Geelong and surrounding areas with exceptional customer service."
+    title: "Expert Advice",
+    description: "Over 20 years of experience helping customers choose the perfect garage door for their needs."
   },
   {
-    icon: Truck,
-    title: "Free Delivery",
-    description: "Free delivery on all orders over $500 within the greater Geelong region and competitive rates beyond."
+    icon: ShoppingBag,
+    title: "Easy Online Shopping",
+    description: "Browse our complete catalog online with detailed specifications and secure checkout process."
   },
   {
-    icon: Wrench,
-    title: "Maintenance Support",
-    description: "Ongoing maintenance and repair services to keep your garage door operating smoothly for years to come."
+    icon: Clock,
+    title: "Fast Processing",
+    description: "Quick order processing and efficient handling to get your garage door project started promptly."
   },
   {
     icon: Award,
