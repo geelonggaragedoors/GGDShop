@@ -68,49 +68,6 @@ export default function FeaturedProducts() {
 
   const products = productsData?.products || [];
 
-  // Fallback products if no featured products exist
-  const fallbackProducts = [
-    {
-      id: "1",
-      name: "Premium Steel Residential Door",
-      shortDescription: "Insulated steel construction with window panels",
-      price: "890",
-      compareAtPrice: "950",
-      images: ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300"],
-      isFeatured: true,
-      stockQuantity: 15
-    },
-    {
-      id: "2",
-      name: "Commercial Roller Door",
-      shortDescription: "Heavy-duty commercial grade roller door system",
-      price: "2450",
-      images: ["https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300"],
-      isFeatured: true,
-      stockQuantity: 8
-    },
-    {
-      id: "3",
-      name: "Smart Garage Door Opener",
-      shortDescription: "WiFi enabled with smartphone app control",
-      price: "325",
-      images: ["https://pixabay.com/get/g3bc5d651923a89c2751f3482dac1960f41d12521da69907d08aea7fd179cfa8ebb92a1b99d3a29338d144c5e4700b46b4f82d6bff6e1b6ad3f62f090b4f4681a_1280.jpg"],
-      isFeatured: true,
-      stockQuantity: 28
-    },
-    {
-      id: "4",
-      name: "Professional Hardware Kit",
-      shortDescription: "Complete installation hardware set with springs",
-      price: "155",
-      images: ["https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300"],
-      isFeatured: true,
-      stockQuantity: 42
-    }
-  ];
-
-  const displayProducts = products.length > 0 ? products : fallbackProducts;
-
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -119,9 +76,14 @@ export default function FeaturedProducts() {
           <a href="#" className="text-primary font-semibold hover:underline">View All Products</a>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayProducts.map((product, index) => (
-            <Card key={product.id || index} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group product-card border-0">
+        {products.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No featured products available</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product, index) => (
+              <Card key={product.id || index} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group product-card border-0">
               <div className="relative">
                 <img 
                   src={getOptimizedImageUrl(
@@ -188,7 +150,8 @@ export default function FeaturedProducts() {
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
