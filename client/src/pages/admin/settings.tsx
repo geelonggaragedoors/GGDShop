@@ -118,10 +118,7 @@ export default function Settings() {
             <Store className="w-4 h-4" />
             <span>Store</span>
           </TabsTrigger>
-          <TabsTrigger value="shipping" className="flex items-center space-x-2">
-            <Truck className="w-4 h-4" />
-            <span>Shipping</span>
-          </TabsTrigger>
+
           <TabsTrigger value="notifications" className="flex items-center space-x-2">
             <Mail className="w-4 h-4" />
             <span>Notifications</span>
@@ -239,117 +236,7 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="shipping">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Truck className="w-5 h-5" />
-                <span>Shipping Configuration</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...shippingForm}>
-                <form onSubmit={shippingForm.handleSubmit(onShippingSubmit)} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={shippingForm.control}
-                      name="defaultShippingRate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Default Shipping Rate ($)</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" step="0.01" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={shippingForm.control}
-                      name="freeShippingThreshold"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Free Shipping Threshold ($)</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" step="0.01" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
 
-                  <div className="space-y-4 p-4 border rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">Australia Post Integration</h4>
-                        <p className="text-sm text-gray-600">Enable real-time shipping calculations</p>
-                      </div>
-                      <FormField
-                        control={shippingForm.control}
-                        name="enableAustraliaPost"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <FormField
-                      control={shippingForm.control}
-                      name="australiaPostApiKey"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Australia Post API Key</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="password" placeholder="Enter your Australia Post API key" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={shippingForm.control}
-                      name="localDeliveryRadius"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Local Delivery Radius (km)</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={shippingForm.control}
-                      name="localDeliveryRate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Local Delivery Rate ($)</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" step="0.01" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <Button type="submit" disabled={updateSettingsMutation.isPending}>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Shipping Settings
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="notifications">
           <Card>
