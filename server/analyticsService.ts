@@ -36,15 +36,32 @@ export class AnalyticsService {
   }
 
   // Start or update a user session
-  async trackSession(data: Omit<InsertUserSession, 'startTime'>): Promise<void> {
+  async trackSession(data: any): Promise<void> {
     try {
-      // First try to insert, if it fails due to conflict, update
-      await db.insert(userSessions).values({
-        ...data,
+      // Map 'id' to 'sessionId' if present
+      const sessionData = {
+        sessionId: data.sessionId || data.id,
+        userId: data.userId,
+        endTime: data.endTime,
+        duration: data.duration,
+        pageViews: data.pageViews || 0,
+        events: data.events || 0,
+        referrer: data.referrer,
+        landingPage: data.landingPage,
+        exitPage: data.exitPage,
+        device: data.device,
+        browser: data.browser,
+        country: data.country,
+        isConverted: data.isConverted || false,
+        revenue: data.revenue || '0',
         startTime: new Date(),
-      });
+      };
+
+      // First try to insert
+      await db.insert(userSessions).values(sessionData);
     } catch (error) {
       // If insert fails due to conflict, update the existing session
+      const sessionId = data.sessionId || data.id;
       const updateData: any = {};
       if (data.endTime) updateData.endTime = data.endTime;
       if (data.duration !== undefined) updateData.duration = data.duration;
@@ -57,7 +74,7 @@ export class AnalyticsService {
       if (Object.keys(updateData).length > 0) {
         await db.update(userSessions)
           .set(updateData)
-          .where(eq(userSessions.sessionId, data.sessionId));
+          .where(eq(userSessions.sessionId, sessionId));
       }
     }
   }
