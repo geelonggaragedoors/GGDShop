@@ -32,8 +32,8 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email",
-    details: "info@geelonggaragedoors.com.au",
-    description: "Send us your enquiry anytime",
+    details: "Send us an email",
+    description: "info@geelonggaragedoors.com.au",
     action: "mailto:info@geelonggaragedoors.com.au"
   },
   {
@@ -166,12 +166,12 @@ export default function Contact() {
                     {info.action ? (
                       <a 
                         href={info.action}
-                        className="text-[#2b3990] font-medium hover:underline block mb-2 break-all text-sm md:text-base"
+                        className="text-[#2b3990] font-medium hover:underline block mb-2"
                       >
                         {info.details}
                       </a>
                     ) : (
-                      <p className="text-[#2b3990] font-medium mb-2 break-all text-sm md:text-base">{info.details}</p>
+                      <p className="text-[#2b3990] font-medium mb-2">{info.details}</p>
                     )}
                     <p className="text-gray-600 text-sm">{info.description}</p>
                   </CardContent>
