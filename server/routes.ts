@@ -13,7 +13,8 @@ import {
   insertOrderSchema,
   insertStaffInvitationSchema,
   insertRoleSchema,
-  insertCustomerReviewSchema
+  insertCustomerReviewSchema,
+  insertEnquirySchema
 } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
@@ -1442,6 +1443,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error removing mock reviews:", error);
       res.status(500).json({ message: "Failed to remove mock reviews" });
+    }
+  });
+
+  // Enquiry routes
+  app.get('/api/enquiries', isAuthenticated, async (req, res) => {
+    try {
+      const { status, priority, limit, offset } = req.query;
+      const result = await storage.getEnquiries({
+        status: status as string,
+        priority: priority as string,
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
+      });
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching enquiries:", error);
+      res.status(500).json({ message: "Failed to fetch enquiries" });
+    }
+  });
+
+  app.get('/api/enquiries/:id', isAuthenticated, async (req, res) => {
+    try {
+      const enquiry = await storage.getEnquiryById(req.params.id);
+      if (!enquiry) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+      res.json(enquiry);
+    } catch (error) {
+      console.error("Error fetching enquiry:", error);
+      res.status(500).json({ message: "Failed to fetch enquiry" });
+    }
+  });
+
+  app.post('/api/enquiries', async (req, res) => {
+    try {
+      const validated = insertEnquirySchema.parse(req.body);
+      const enquiry = await storage.createEnquiry(validated);
+      
+      // Send email notification to admin
+      try {
+        await emailService.sendEnquiryNotification(enquiry);
+      } catch (emailError) {
+        console.error("Failed to send enquiry email:", emailError);
+        // Don't fail the request if email fails
+      }
+      
+      // Create admin notification
+      try {
+        await notificationService.createEnquiryNotification(enquiry);
+      } catch (notificationError) {
+        console.error("Failed to create enquiry notification:", notificationError);
+        // Don't fail the request if notification fails
+      }
+      
+      res.status(201).json(enquiry);
+    } catch (error) {
+      console.error("Error creating enquiry:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid enquiry data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create enquiry" });
+    }
+  });
+
+  app.patch('/api/enquiries/:id/status', isAuthenticated, async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!status) {
+        return res.status(400).json({ message: "Status is required" });
+      }
+      
+      const success = await storage.updateEnquiryStatus(req.params.id, status);
+      if (!success) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+      
+      res.json({ message: "Enquiry status updated successfully" });
+    } catch (error) {
+      console.error("Error updating enquiry status:", error);
+      res.status(500).json({ message: "Failed to update enquiry status" });
+    }
+  });
+
+  app.delete('/api/enquiries/:id', isAuthenticated, async (req, res) => {
+    try {
+      const success = await storage.deleteEnquiry(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Enquiry not found" });
+      }
+      res.json({ message: "Enquiry deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting enquiry:", error);
+      res.status(500).json({ message: "Failed to delete enquiry" });
     }
   });
 

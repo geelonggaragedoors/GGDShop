@@ -36,6 +36,8 @@ import {
   type InsertRole,
   type CustomerReview,
   type InsertCustomerReview,
+  type Enquiry,
+  type InsertEnquiry,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql } from "drizzle-orm";
@@ -140,6 +142,18 @@ export interface IStorage {
   deleteCustomerReview(id: string): Promise<boolean>;
   addAdminResponse(reviewId: string, response: string, adminId: string): Promise<boolean>;
   removeMockReviews(): Promise<boolean>;
+
+  // Enquiry operations
+  getEnquiries(params?: {
+    status?: string;
+    priority?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ enquiries: Enquiry[]; total: number }>;
+  getEnquiryById(id: string): Promise<Enquiry | undefined>;
+  createEnquiry(enquiry: InsertEnquiry): Promise<Enquiry>;
+  updateEnquiryStatus(id: string, status: string): Promise<boolean>;
+  deleteEnquiry(id: string): Promise<boolean>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<{
@@ -732,6 +746,66 @@ export class DatabaseStorage implements IStorage {
 
   async removeMockReviews(): Promise<boolean> {
     const result = await db.delete(customerReviews).where(eq(customerReviews.isMockData, true));
+    return result.rowCount! > 0;
+  }
+
+  // Enquiry operations
+  async getEnquiries(params?: {
+    status?: string;
+    priority?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ enquiries: Enquiry[]; total: number }> {
+    const { status, priority, limit = 50, offset = 0 } = params || {};
+
+    let query = db.select().from(enquiries);
+    let countQuery = db.select({ count: count() }).from(enquiries);
+
+    const conditions = [];
+    if (status) {
+      conditions.push(eq(enquiries.status, status));
+    }
+    if (priority) {
+      conditions.push(eq(enquiries.priority, priority));
+    }
+
+    if (conditions.length > 0) {
+      const whereCondition = conditions.length === 1 ? conditions[0] : and(...conditions);
+      query = query.where(whereCondition);
+      countQuery = countQuery.where(whereCondition);
+    }
+
+    const [enquiriesResult, totalResult] = await Promise.all([
+      query.orderBy(desc(enquiries.createdAt)).limit(limit).offset(offset),
+      countQuery
+    ]);
+
+    return {
+      enquiries: enquiriesResult,
+      total: totalResult[0].count
+    };
+  }
+
+  async getEnquiryById(id: string): Promise<Enquiry | undefined> {
+    const [enquiry] = await db.select().from(enquiries).where(eq(enquiries.id, id));
+    return enquiry;
+  }
+
+  async createEnquiry(enquiry: InsertEnquiry): Promise<Enquiry> {
+    const [newEnquiry] = await db.insert(enquiries).values(enquiry).returning();
+    return newEnquiry;
+  }
+
+  async updateEnquiryStatus(id: string, status: string): Promise<boolean> {
+    const result = await db
+      .update(enquiries)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(enquiries.id, id));
+    return result.rowCount! > 0;
+  }
+
+  async deleteEnquiry(id: string): Promise<boolean> {
+    const result = await db.delete(enquiries).where(eq(enquiries.id, id));
     return result.rowCount! > 0;
   }
 }

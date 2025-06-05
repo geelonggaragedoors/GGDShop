@@ -210,6 +210,63 @@ export class EmailService {
       html,
     });
   }
+
+  async sendEnquiryNotification(enquiry: any): Promise<void> {
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Enquiry - ${enquiry.subject}</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: #f8fafc; padding: 30px; border-radius: 10px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #1f2937; margin: 0;">New Quote Request</h1>
+            <p style="color: #6b7280; margin: 5px 0;">From ${enquiry.name}</p>
+          </div>
+          
+          <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #374151; margin-top: 0;">${enquiry.subject}</h2>
+            
+            <div style="margin: 20px 0;">
+              <h3 style="color: #4b5563; margin-bottom: 10px;">Contact Information</h3>
+              <p><strong>Name:</strong> ${enquiry.name}</p>
+              <p><strong>Email:</strong> ${enquiry.email}</p>
+              ${enquiry.phone ? `<p><strong>Phone:</strong> ${enquiry.phone}</p>` : ''}
+            </div>
+            
+            <div style="margin: 20px 0;">
+              <h3 style="color: #4b5563; margin-bottom: 10px;">Message</h3>
+              <div style="background: #f9fafb; padding: 15px; border-radius: 5px; border-left: 4px solid #3b82f6;">
+                ${enquiry.message.replace(/\n/g, '<br>')}
+              </div>
+            </div>
+            
+            <div style="background: #e0f2fe; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <h3 style="margin-top: 0; color: #0369a1;">Next Steps</h3>
+              <p>Please respond to this customer as soon as possible. You can reply directly to this email or contact them using the information above.</p>
+              <p><strong>Priority:</strong> ${enquiry.priority || 'Medium'}</p>
+              <p><strong>Source:</strong> ${enquiry.source || 'Website'}</p>
+            </div>
+          </div>
+          
+          <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 30px; text-align: center; color: #64748b;">
+            <p><strong>Geelong Garage Doors</strong></p>
+            <p>Quote request received via website</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await this.sendEmail({
+      to: this.adminEmail,
+      subject: `New Quote Request: ${enquiry.subject}`,
+      html,
+    });
+  }
 }
 
 export const emailService = new EmailService();
