@@ -1416,7 +1416,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/analytics/session", async (req, res) => {
     try {
-      console.log("Session tracking data:", req.body);
       await analyticsService.trackSession(req.body);
       res.status(200).json({ success: true });
     } catch (error) {
