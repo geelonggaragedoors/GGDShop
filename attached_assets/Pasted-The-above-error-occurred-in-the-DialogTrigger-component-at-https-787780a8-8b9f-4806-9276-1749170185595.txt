@@ -1,0 +1,60 @@
+The above error occurred in the <DialogTrigger> component:
+
+    at https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=22ceb6c2:91:13
+    at div
+    at div
+    at div
+    at _c3 (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/card.tsx:45:12)
+    at div
+    at _c (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at Products (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/products.tsx:41:31)
+    at main
+    at div
+    at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:70:22)
+    at AdminRoute (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=ZxXvK0-44CIQaHDi23I73:42:36)
+    at component
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22ceb6c2:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22ceb6c2:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=ZxXvK0-44CIQaHDi23I73:40:42)
+    at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+    at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=22ceb6c2:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=22ceb6c2:64:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=22ceb6c2:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+at https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=22ceb6c2:91:13
+at div
+at div
+at div
+at _c3 (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/card.tsx:45:12)
+at div
+at _c (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/card.tsx:20:11)
+at div
+at Products (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/products.tsx:41:31)
+at main
+at div
+at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:70:22)
+at AdminRoute (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=ZxXvK0-44CIQaHDi23I73:42:36)
+at component
+at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22ceb6c2:323:16)
+at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22ceb6c2:379:17)
+at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=ZxXvK0-44CIQaHDi23I73:40:42)
+at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=22ceb6c2:38:15)
+at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=22ceb6c2:64:5)
+at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=22ceb6c2:2805:3)
+at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+at t.value (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+`DialogTrigger` must be used within `Dialog`

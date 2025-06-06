@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Column {
-  header: string;
+  header: string | React.ReactNode;
   accessorKey: string;
   cell?: ({ row }: { row: { original: any } }) => React.ReactNode;
 }
@@ -30,7 +30,7 @@ export default function DataTable({ columns, data, loading, pagination }: DataTa
             <TableRow className="bg-gray-50">
               {columns.map((column) => (
                 <TableHead key={column.accessorKey} className="font-medium text-gray-900">
-                  {column.header}
+                  {typeof column.header === 'string' ? column.header : column.header}
                 </TableHead>
               ))}
             </TableRow>
@@ -58,7 +58,7 @@ export default function DataTable({ columns, data, loading, pagination }: DataTa
           <TableRow className="bg-gray-50">
             {columns.map((column) => (
               <TableHead key={column.accessorKey} className="font-medium text-gray-900">
-                {column.header}
+                {typeof column.header === 'string' ? column.header : column.header}
               </TableHead>
             ))}
           </TableRow>

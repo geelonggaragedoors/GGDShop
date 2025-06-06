@@ -371,7 +371,7 @@ export default function Products() {
 
   const columns = [
     {
-      header: ({ table }: any) => (
+      header: (
         <Checkbox
           checked={selectedProducts.length === productsData?.products?.length && productsData?.products?.length > 0}
           onCheckedChange={handleSelectAll}
@@ -1458,12 +1458,13 @@ export default function Products() {
                 <Upload className="w-4 h-4 mr-2" />
                 Bulk Import
               </Button>
-              <DialogTrigger asChild>
-                <Button size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Product
-                </Button>
-              </DialogTrigger>
+              <Button 
+                size="sm"
+                onClick={() => setIsAddProductOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Product
+              </Button>
             </div>
           </div>
         </CardHeader>
