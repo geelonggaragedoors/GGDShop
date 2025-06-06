@@ -58,12 +58,6 @@ export default function NotificationBell() {
   useEffect(() => {
     if (!user) return;
 
-    // Only connect WebSocket in production to avoid conflicts with Vite HMR
-    if (import.meta.env.DEV) {
-      console.log("Using polling for notifications in development (WebSocket disabled to avoid Vite conflicts)");
-      return;
-    }
-
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws/notifications`;
     
