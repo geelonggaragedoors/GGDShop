@@ -82,6 +82,8 @@ export default function NotificationBell() {
               icon: "/favicon.ico",
             });
           }
+        } else if (message.type === "auth_success") {
+          console.log("WebSocket authentication successful");
         }
       } catch (error) {
         console.error("Error processing notification:", error);
@@ -89,11 +91,15 @@ export default function NotificationBell() {
     };
 
     websocket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      console.error("WebSocket connection error:", error);
     };
 
-    websocket.onclose = () => {
-      console.log("Notification WebSocket disconnected");
+    websocket.onclose = (event) => {
+      if (event.code !== 1000) {
+        console.warn("WebSocket closed unexpectedly:", event.code, event.reason);
+      } else {
+        console.log("WebSocket connection closed");
+      }
     };
 
     setWs(websocket);
