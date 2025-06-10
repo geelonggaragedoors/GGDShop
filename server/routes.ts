@@ -730,6 +730,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customer registration (public)
+  app.post('/api/customers', async (req, res) => {
+    try {
+      const { firstName, lastName, email, password } = req.body;
+      
+      if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      
+      // Check if customer already exists
+      const existingCustomer = await storage.getCustomerByEmail(email);
+      if (existingCustomer) {
+        return res.status(400).json({ message: "Customer with this email already exists" });
+      }
+      
+      // Hash password for customer
+      const passwordHash = await authService.hashPassword(password);
+      
+      // Create customer
+      const customerData = {
+        firstName,
+        lastName,
+        email,
+        passwordHash,
+        isActive: true,
+      };
+      
+      const customer = await storage.createCustomer(customerData);
+      
+      // Remove password hash from response
+      const { passwordHash: _, ...customerResponse } = customer;
+      
+      res.status(201).json({
+        customer: customerResponse,
+        message: "Account created successfully"
+      });
+      
+    } catch (error) {
+      console.error("Error creating customer:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
   // Admin customer management
   app.get('/api/admin/customers', hybridAuth, async (req, res) => {
     try {

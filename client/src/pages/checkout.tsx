@@ -374,10 +374,10 @@ export default function Checkout() {
                     <div className="space-y-4 pt-4 border-t">
                       <div className="grid grid-cols-2 gap-4">
                         <Button variant="outline" asChild>
-                          <a href="/api/login">Sign In</a>
+                          <a href="/login">Sign In</a>
                         </Button>
                         <Button asChild>
-                          <a href="/api/login">Create Account</a>
+                          <a href="/signup">Create Account</a>
                         </Button>
                       </div>
                     </div>

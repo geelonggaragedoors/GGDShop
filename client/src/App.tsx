@@ -18,6 +18,7 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import AdminLayout from "@/pages/admin/layout";
 import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 import SetupPassword from "@/pages/SetupPassword";
 import NotFound from "@/pages/not-found";
 
@@ -53,6 +54,7 @@ function Router() {
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/products/:categorySlug?" component={Products} />
       <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route path="/setup-password" component={SetupPassword} />
       <Route path="/admin" component={() => <AdminRoute component={AdminLayout} />} />
       <Route path="/admin/:path*" component={() => <AdminRoute component={AdminLayout} />} />

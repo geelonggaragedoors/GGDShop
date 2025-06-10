@@ -205,14 +205,14 @@ export default function SimpleHeader() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Button variant="ghost" size="sm" asChild>
-                  <a href="/api/login" className="flex items-center space-x-1">
+                  <a href="/login" className="flex items-center space-x-1">
                     <User className="w-4 h-4" />
                     <span className="text-sm">Sign In</span>
                   </a>
                 </Button>
                 <span className="text-gray-300">|</span>
                 <Button variant="ghost" size="sm" asChild>
-                  <a href="/api/login" className="text-sm">Create Account</a>
+                  <a href="/signup" className="text-sm">Create Account</a>
                 </Button>
               </div>
             )}

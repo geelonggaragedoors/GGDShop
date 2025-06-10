@@ -170,20 +170,31 @@ export default function Login() {
             </form>
           </Form>
 
-          <div className="mt-6 text-center">
-            <Button
-              variant="link"
-              className="text-sm text-blue-600 hover:text-blue-500"
-              onClick={() => {
-                // TODO: Add forgot password functionality
-                toast({
-                  title: "Contact Administrator",
-                  description: "Please contact your administrator for password reset assistance.",
-                });
-              }}
-            >
-              Forgot your password?
-            </Button>
+          <div className="mt-6 space-y-4">
+            <div className="text-center">
+              <Button
+                variant="link"
+                className="text-sm text-blue-600 hover:text-blue-500"
+                onClick={() => setLocation("/signup")}
+              >
+                Don't have an account? Create one
+              </Button>
+            </div>
+            
+            <div className="text-center">
+              <Button
+                variant="link"
+                className="text-sm text-gray-600 hover:text-gray-500"
+                onClick={() => {
+                  toast({
+                    title: "Contact Administrator",
+                    description: "Please contact your administrator for password reset assistance.",
+                  });
+                }}
+              >
+                Forgot your password?
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
