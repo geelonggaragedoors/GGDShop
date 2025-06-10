@@ -77,9 +77,11 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-              <LogIn className="w-6 h-6 text-white" />
-            </div>
+            <img 
+              src="/assets/logo-pdfs.png" 
+              alt="Geelong Garage Doors" 
+              className="h-16 w-auto"
+            />
           </div>
           <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
           <CardDescription className="text-center">
