@@ -136,6 +136,7 @@ export const products = pgTable("products", {
 export const customers = pgTable("customers", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: varchar("email").notNull().unique(),
+  passwordHash: varchar("password_hash"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   phone: varchar("phone"),

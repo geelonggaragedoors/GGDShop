@@ -50,11 +50,20 @@ export default function Login() {
       return response.json();
     },
     onSuccess: (data) => {
+      const user = data.user;
+      const isStaffOrAdmin = user.role && ['admin', 'manager', 'staff'].includes(user.role);
+      
       toast({
         title: "Login Successful",
-        description: "Welcome back to Geelong Garage Doors!",
+        description: `Welcome back to Geelong Garage Doors!`,
       });
-      setLocation("/admin");
+      
+      // Route based on user type
+      if (isStaffOrAdmin) {
+        setLocation("/admin");
+      } else {
+        setLocation("/"); // Customers go to main storefront
+      }
     },
     onError: (error: any) => {
       const errorMessage = error.message || "Login failed. Please try again.";

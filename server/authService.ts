@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { db } from './db';
-import { users } from '@shared/schema';
+import { users, customers } from '@shared/schema';
 import { eq, and, lt, gte } from 'drizzle-orm';
 import { emailService } from './emailService';
 
@@ -71,44 +71,70 @@ export class AuthService {
     return { user: newUser, emailVerificationToken };
   }
 
-  // Login user with email/password
+  // Login user with email/password - supports both staff/admin and customers
   async loginUser(credentials: LoginCredentials): Promise<any> {
     const { email, password } = credentials;
 
-    // Find user by email
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    if (!user) {
-      throw new Error('Invalid email or password');
+    // First check staff/admin users table
+    const [staffUser] = await db.select().from(users).where(eq(users.email, email));
+    
+    if (staffUser) {
+      // Handle staff/admin login
+      // Check if account is locked
+      if (staffUser.lockedUntil && new Date() < staffUser.lockedUntil) {
+        throw new Error('Account is temporarily locked due to too many failed login attempts');
+      }
+
+      // Check if account is active
+      if (!staffUser.isActive) {
+        throw new Error('Account is deactivated');
+      }
+
+      // Verify password
+      const isValidPassword = await this.verifyPassword(password, staffUser.passwordHash || '');
+      if (!isValidPassword) {
+        await this.handleFailedLogin(staffUser.id);
+        throw new Error('Invalid email or password');
+      }
+
+      // Reset failed login attempts and update last login
+      await db.update(users)
+        .set({
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+          lastLoginAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, staffUser.id));
+
+      return staffUser;
     }
 
-    // Check if account is locked
-    if (user.lockedUntil && new Date() < user.lockedUntil) {
-      throw new Error('Account is temporarily locked due to too many failed login attempts');
+    // Check customers table
+    const [customer] = await db.select().from(customers).where(eq(customers.email, email));
+    
+    if (customer) {
+      // Handle customer login
+      // Check if account is active
+      if (!customer.isActive) {
+        throw new Error('Account is deactivated');
+      }
+
+      // Verify password
+      const isValidPassword = await this.verifyPassword(password, customer.passwordHash || '');
+      if (!isValidPassword) {
+        throw new Error('Invalid email or password');
+      }
+
+      // Add role for consistent handling
+      return {
+        ...customer,
+        role: 'customer'
+      };
     }
 
-    // Check if account is active
-    if (!user.isActive) {
-      throw new Error('Account is deactivated');
-    }
-
-    // Verify password
-    const isValidPassword = await this.verifyPassword(password, user.passwordHash || '');
-    if (!isValidPassword) {
-      await this.handleFailedLogin(user.id);
-      throw new Error('Invalid email or password');
-    }
-
-    // Reset failed login attempts and update last login
-    await db.update(users)
-      .set({
-        failedLoginAttempts: 0,
-        lockedUntil: null,
-        lastLoginAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, user.id));
-
-    return user;
+    // No user found
+    throw new Error('Invalid email or password');
   }
 
   // Handle failed login attempt
