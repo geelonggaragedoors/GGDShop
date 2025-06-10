@@ -1,5 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { authService } from './authService';
+import { db } from './db';
+import { users } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 const router = Router();
@@ -26,6 +29,11 @@ const resetPasswordSchema = z.object({
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
   newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+});
+
+const setupPasswordSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 // Enhanced middleware for authentication
@@ -170,6 +178,34 @@ router.get('/profile', requireAuth, async (req: Request, res: Response) => {
     
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+// Setup password for existing admin user
+router.post('/setup-password', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = setupPasswordSchema.parse(req.body);
+    
+    // Only allow for the specific admin email
+    if (email !== 'stevejford1@gmail.com') {
+      return res.status(403).json({ error: 'Password setup not allowed for this email' });
+    }
+    
+    const passwordHash = await authService.hashPassword(password);
+    
+    // Update the user with the new password
+    await db.update(users)
+      .set({
+        passwordHash,
+        emailVerified: true,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.email, email));
+    
+    res.json({ message: 'Password setup successfully' });
+    
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
 });
 

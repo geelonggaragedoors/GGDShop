@@ -53,6 +53,7 @@ function Router() {
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/products/:categorySlug?" component={Products} />
       <Route path="/login" component={Login} />
+      <Route path="/setup-password" component={SetupPassword} />
       <Route path="/admin" component={() => <AdminRoute component={AdminLayout} />} />
       <Route path="/admin/:path*" component={() => <AdminRoute component={AdminLayout} />} />
       <Route component={NotFound} />
