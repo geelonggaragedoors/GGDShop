@@ -17,6 +17,8 @@ import Contact from "@/pages/contact";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import AdminLayout from "@/pages/admin/layout";
+import Login from "@/pages/Login";
+import SetupPassword from "@/pages/SetupPassword";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -30,8 +32,8 @@ function Router() {
     }
     
     if (!isAuthenticated) {
-      // Redirect to login for admin routes
-      window.location.href = '/api/login';
+      // Redirect to login page for admin routes
+      window.location.href = '/login';
       return null;
     }
     
@@ -50,6 +52,7 @@ function Router() {
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/products/:categorySlug?" component={Products} />
+      <Route path="/login" component={Login} />
       <Route path="/admin" component={() => <AdminRoute component={AdminLayout} />} />
       <Route path="/admin/:path*" component={() => <AdminRoute component={AdminLayout} />} />
       <Route component={NotFound} />

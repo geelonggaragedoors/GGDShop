@@ -37,6 +37,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.use("/api/uploadthing", uploadRouter);
 
+  // Enhanced authentication routes
+  app.use('/api/auth', authRoutes);
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
