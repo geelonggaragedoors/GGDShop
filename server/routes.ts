@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, hybridAuth } from "./replitAuth";
 import { authRoutes } from "./authRoutes";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes, calculateTotalShippingCost } from "./australiaPost";
@@ -40,12 +40,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced authentication routes
   app.use('/api/auth', authRoutes);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Hybrid authentication middleware - supports both password and Replit Auth
+  const hybridAuth = async (req: any, res: any, next: any) => {
+    // Check if user is authenticated via session (password auth)
+    if (req.hybridAuth() && req.user) {
+      // Check if it's a password-authenticated user (has email directly)
+      if (req.user.email) {
+        return next();
+      }
+      // Check if it's a Replit Auth user (has claims)
+      if (req.user.claims && req.user.claims.sub) {
+        return next();
+      }
+    }
+    
+    // Not authenticated
+    return res.status(401).json({ message: "Unauthorized" });
+  };
+
+  // Auth routes with hybrid authentication
+  app.get('/api/auth/user', hybridAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      let user;
+      
+      // Handle password-authenticated user
+      if (req.user.email) {
+        user = req.user;
+      } 
+      // Handle Replit Auth user
+      else if (req.user.claims && req.user.claims.sub) {
+        const userId = req.user.claims.sub;
+        user = await storage.getUser(userId);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove sensitive fields
+      const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = user;
+      res.json(userResponse);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -185,7 +219,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Counts endpoint for sidebar badges
-  app.get("/api/admin/counts", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/counts", hybridAuth, async (req, res) => {
     try {
       const [productsResult, ordersResult] = await Promise.all([
         storage.getProducts({ includeUnpublished: true, limit: 1 }), // Get total count for admin
@@ -205,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Protected admin routes
-  app.get('/api/admin/dashboard', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/dashboard', hybridAuth, async (req, res) => {
     try {
       const stats = await storage.getDashboardStats();
       res.json(stats);
@@ -216,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin product management
-  app.get('/api/admin/products', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/products', hybridAuth, async (req, res) => {
     try {
       const { categoryId, brandId, search, featured, active, limit, offset } = req.query;
       const params = {
@@ -237,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch products" });
     }
   });
-  app.post('/api/admin/products', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/products', hybridAuth, async (req, res) => {
     try {
       const productData = insertProductSchema.parse(req.body);
       
@@ -287,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/products/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/products/:id', hybridAuth, async (req, res) => {
     try {
       const productData = insertProductSchema.partial().parse(req.body);
       
@@ -347,7 +381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bulk import products
-  app.post('/api/admin/products/bulk', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/products/bulk', hybridAuth, async (req, res) => {
     try {
       const { products } = req.body;
       
@@ -422,7 +456,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bulk delete products
-  app.post('/api/admin/products/bulk-delete', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/products/bulk-delete', hybridAuth, async (req, res) => {
     try {
       const { productIds } = req.body;
       
@@ -454,7 +488,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/products/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/products/:id', hybridAuth, async (req, res) => {
     try {
       const success = await storage.deleteProduct(req.params.id);
       if (!success) {
@@ -468,7 +502,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin category management
-  app.get('/api/admin/categories', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/categories', hybridAuth, async (req, res) => {
     try {
       const categories = await storage.getCategories();
       res.json(categories);
@@ -478,7 +512,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/categories', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/categories', hybridAuth, async (req, res) => {
     try {
       const categoryData = insertCategorySchema.parse(req.body);
       const category = await storage.createCategory(categoryData);
@@ -492,7 +526,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/categories/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/categories/:id', hybridAuth, async (req, res) => {
     try {
       const categoryData = insertCategorySchema.partial().parse(req.body);
       const category = await storage.updateCategory(req.params.id, categoryData);
@@ -509,7 +543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/categories/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/categories/:id', hybridAuth, async (req, res) => {
     try {
       const success = await storage.deleteCategory(req.params.id);
       if (!success) {
@@ -523,7 +557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin brand management
-  app.get('/api/admin/brands', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/brands', hybridAuth, async (req, res) => {
     try {
       const brands = await storage.getBrands();
       res.json(brands);
@@ -533,7 +567,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/brands', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/brands', hybridAuth, async (req, res) => {
     try {
       const brandData = insertBrandSchema.parse(req.body);
       const brand = await storage.createBrand(brandData);
@@ -547,7 +581,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/brands/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/brands/:id', hybridAuth, async (req, res) => {
     try {
       const brandData = insertBrandSchema.partial().parse(req.body);
       const brand = await storage.updateBrand(req.params.id, brandData);
@@ -564,7 +598,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/brands/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/brands/:id', hybridAuth, async (req, res) => {
     try {
       const success = await storage.deleteBrand(req.params.id);
       if (!success) {
@@ -578,7 +612,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin order management
-  app.get('/api/admin/orders', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/orders', hybridAuth, async (req, res) => {
     try {
       const { status, limit = '50', offset = '0' } = req.query;
       const params = {
@@ -595,7 +629,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get order details with items and products
-  app.get('/api/admin/orders/:id', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/orders/:id', hybridAuth, async (req, res) => {
     try {
       const order = await storage.getOrderById(req.params.id);
       if (!order) {
@@ -608,7 +642,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/orders/:id/status', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/orders/:id/status', hybridAuth, async (req, res) => {
     try {
       const { status } = req.body;
       if (!status) {
@@ -626,7 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update order details (comprehensive PATCH endpoint)
-  app.patch('/api/admin/orders/:id', isAuthenticated, async (req, res) => {
+  app.patch('/api/admin/orders/:id', hybridAuth, async (req, res) => {
     try {
       const orderId = req.params.id;
       const updateData = req.body;
@@ -644,7 +678,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mark order as printed
-  app.post('/api/admin/orders/:id/print', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/orders/:id/print', hybridAuth, async (req, res) => {
     try {
       const orderId = req.params.id;
       const { printedBy } = req.body;
@@ -666,7 +700,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Send order email
-  app.post('/api/admin/orders/:id/email', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/orders/:id/email', hybridAuth, async (req, res) => {
     try {
       const orderId = req.params.id;
       const { type } = req.body;
@@ -697,7 +731,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin customer management
-  app.get('/api/admin/customers', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/customers', hybridAuth, async (req, res) => {
     try {
       const customers = await storage.getCustomers();
       res.json(customers);
@@ -752,7 +786,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Media routes
-  app.get("/api/admin/media", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/media", hybridAuth, async (req, res) => {
     try {
       const folder = req.query.folder as string || "root";
       
@@ -768,7 +802,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/media", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/media", hybridAuth, async (req, res) => {
     try {
       const mediaFile = {
         id: Math.random().toString(36).substr(2, 9),
@@ -787,7 +821,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/media/folders", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/media/folders", hybridAuth, async (req, res) => {
     try {
       const folder = {
         id: Math.random().toString(36).substr(2, 9),
@@ -807,7 +841,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/media/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/media/:id", hybridAuth, async (req, res) => {
     try {
       const fileIndex = mediaStorage.files.findIndex(f => f.id === req.params.id);
       if (fileIndex > -1) {
@@ -829,7 +863,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Staff routes
-  app.get("/api/admin/staff", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/staff", hybridAuth, async (req, res) => {
     try {
       const staff = [
         {
@@ -849,7 +883,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/staff", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/staff", hybridAuth, async (req, res) => {
     try {
       res.json({ message: "Staff member added successfully", ...req.body, id: Math.random().toString() });
     } catch (error) {
@@ -858,7 +892,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/staff/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/staff/:id", hybridAuth, async (req, res) => {
     try {
       res.json({ message: "Staff member updated successfully", ...req.body });
     } catch (error) {
@@ -867,7 +901,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/staff/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/staff/:id", hybridAuth, async (req, res) => {
     try {
       res.json({ message: "Staff member deleted successfully" });
     } catch (error) {
@@ -877,7 +911,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Settings routes
-  app.get("/api/admin/settings", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/settings", hybridAuth, async (req, res) => {
     try {
       const settings = {
         store: {
@@ -919,7 +953,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/settings", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/settings", hybridAuth, async (req, res) => {
     try {
       res.json({ message: "Settings updated successfully", ...req.body });
     } catch (error) {
@@ -1204,7 +1238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Notification routes
-  app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
+  app.get("/api/notifications", hybridAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const notifications = await notificationService.getUnreadNotifications(userId);
@@ -1215,7 +1249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/notifications/:id/read", isAuthenticated, async (req, res) => {
+  app.post("/api/notifications/:id/read", hybridAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const success = await notificationService.markNotificationAsRead(id);
@@ -1231,7 +1265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/notifications/mark-all-read", isAuthenticated, async (req: any, res) => {
+  app.post("/api/notifications/mark-all-read", hybridAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const success = await notificationService.markAllAsRead(userId);
@@ -1243,7 +1277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Staff Management Routes
-  app.get('/api/admin/staff', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/staff', hybridAuth, async (req, res) => {
     try {
       const staff = await storage.getStaffMembers();
       res.json(staff);
@@ -1253,7 +1287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/staff/:id', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/staff/:id', hybridAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const staff = await storage.getStaffMemberById(id);
@@ -1267,7 +1301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/staff/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/staff/:id', hybridAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -1282,7 +1316,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/staff/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/staff/:id', hybridAuth, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.deactivateStaffMember(id);
@@ -1294,7 +1328,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Staff Invitation Routes
-  app.get('/api/admin/invitations', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/invitations', hybridAuth, async (req, res) => {
     try {
       const invitations = await storage.getStaffInvitations();
       res.json(invitations);
@@ -1304,7 +1338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/invitations', isAuthenticated, async (req: any, res) => {
+  app.post('/api/admin/invitations', hybridAuth, async (req: any, res) => {
     try {
       const validatedData = insertStaffInvitationSchema.parse(req.body);
       const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -1338,7 +1372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/invitations/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/invitations/:id', hybridAuth, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.deleteStaffInvitation(id);
@@ -1350,7 +1384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Role Management Routes
-  app.get('/api/admin/roles', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/roles', hybridAuth, async (req, res) => {
     try {
       const roles = await storage.getRoles();
       res.json(roles);
@@ -1360,7 +1394,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/roles', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/roles', hybridAuth, async (req, res) => {
     try {
       const validatedData = insertRoleSchema.parse(req.body);
       const role = await storage.createRole(validatedData);
@@ -1371,7 +1405,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/roles/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/roles/:id', hybridAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -1386,7 +1420,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/roles/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/roles/:id', hybridAuth, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.deleteRole(id);
@@ -1580,7 +1614,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/reviews/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/reviews/:id', hybridAuth, async (req, res) => {
     try {
       const validatedData = insertCustomerReviewSchema.partial().parse(req.body);
       const review = await storage.updateCustomerReview(req.params.id, validatedData);
@@ -1599,7 +1633,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/reviews/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/reviews/:id', hybridAuth, async (req, res) => {
     try {
       const success = await storage.deleteCustomerReview(req.params.id);
       if (!success) {
@@ -1612,7 +1646,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/reviews/:id/response', isAuthenticated, async (req, res) => {
+  app.post('/api/reviews/:id/response', hybridAuth, async (req, res) => {
     try {
       const { response } = req.body;
       const adminId = (req as any).user.claims.sub;
@@ -1633,7 +1667,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/reviews/mock', isAuthenticated, async (req, res) => {
+  app.delete('/api/reviews/mock', hybridAuth, async (req, res) => {
     try {
       const success = await storage.removeMockReviews();
       res.json({ message: "Mock reviews removed successfully", removed: success });
@@ -1644,7 +1678,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enquiry routes
-  app.get('/api/enquiries', isAuthenticated, async (req, res) => {
+  app.get('/api/enquiries', hybridAuth, async (req, res) => {
     try {
       const { status, priority, limit, offset } = req.query;
       const result = await storage.getEnquiries({
@@ -1660,7 +1694,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/enquiries/:id', isAuthenticated, async (req, res) => {
+  app.get('/api/enquiries/:id', hybridAuth, async (req, res) => {
     try {
       const enquiry = await storage.getEnquiryById(req.params.id);
       if (!enquiry) {
@@ -1704,7 +1738,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/enquiries/:id/status', isAuthenticated, async (req, res) => {
+  app.patch('/api/enquiries/:id/status', hybridAuth, async (req, res) => {
     try {
       const { status } = req.body;
       if (!status) {
@@ -1723,7 +1757,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/enquiries/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/enquiries/:id', hybridAuth, async (req, res) => {
     try {
       const success = await storage.deleteEnquiry(req.params.id);
       if (!success) {

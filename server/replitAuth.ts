@@ -101,16 +101,9 @@ export async function setupAuth(app: Express) {
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
-  app.get("/api/login", (req, res, next) => {
-    // Get the first domain from REPLIT_DOMAINS as fallback for localhost
-    const domains = process.env.REPLIT_DOMAINS!.split(",");
-    const hostname = req.hostname;
-    const strategyName = domains.includes(hostname) ? hostname : domains[0];
-    
-    passport.authenticate(`replitauth:${strategyName}`, {
-      prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
-    })(req, res, next);
+  // Redirect old Replit Auth login to new password login
+  app.get("/api/login", (req, res) => {
+    res.redirect("/login");
   });
 
   app.get("/api/callback", (req, res, next) => {
