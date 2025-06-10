@@ -25,6 +25,7 @@ import { ourFileRouter } from "./uploadthing";
 import { emailService } from "./emailService";
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
+import { authService } from "./authService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
