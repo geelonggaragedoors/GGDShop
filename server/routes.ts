@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, hybridAuth } from "./replitAuth";
+import { setupAuth } from "./replitAuth";
 import { authRoutes } from "./authRoutes";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes, calculateTotalShippingCost } from "./australiaPost";
@@ -43,7 +43,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Hybrid authentication middleware - supports both password and Replit Auth
   const hybridAuth = async (req: any, res: any, next: any) => {
     // Check if user is authenticated via session (password auth)
-    if (req.hybridAuth() && req.user) {
+    if (req.isAuthenticated() && req.user) {
       // Check if it's a password-authenticated user (has email directly)
       if (req.user.email) {
         return next();
