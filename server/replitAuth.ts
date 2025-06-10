@@ -36,9 +36,11 @@ export function getSession() {
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    name: 'ggd.sid',
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Allow in development
+      sameSite: 'lax',
       maxAge: sessionTtl,
     },
   });
@@ -98,8 +100,32 @@ export async function setupAuth(app: Express) {
     passport.use(strategy);
   }
 
-  passport.serializeUser((user: Express.User, cb) => cb(null, user));
-  passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+  // Enhanced serialization for both password auth and Replit Auth users
+  passport.serializeUser((user: any, cb) => {
+    // For password-authenticated users, serialize the full user object
+    if (user.email && user.id) {
+      return cb(null, { type: 'password', user: user });
+    }
+    // For Replit Auth users, keep existing behavior
+    return cb(null, { type: 'replit', user: user });
+  });
+
+  passport.deserializeUser(async (data: any, cb) => {
+    try {
+      if (data.type === 'password') {
+        // Return the stored user object for password auth
+        return cb(null, data.user);
+      } else if (data.type === 'replit') {
+        // Keep existing Replit Auth behavior
+        return cb(null, data.user);
+      } else {
+        // Legacy format - assume it's the user object directly
+        return cb(null, data);
+      }
+    } catch (error) {
+      return cb(error, null);
+    }
+  });
 
   // Redirect old Replit Auth login to new password login
   app.get("/api/login", (req, res) => {

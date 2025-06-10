@@ -66,16 +66,25 @@ router.post('/login', async (req: Request, res: Response) => {
     
     const user = await authService.loginUser({ email, password });
     
-    // Set user in session (compatible with existing Replit Auth)
+    // Set user in session with proper serialization
     req.login(user, (err) => {
       if (err) {
+        console.error('Session creation error:', err);
         return res.status(500).json({ error: 'Session creation failed' });
       }
       
-      const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = user;
-      res.json({ 
-        user: userResponse,
-        message: 'Login successful' 
+      // Force session save to ensure persistence
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error('Session save error:', saveErr);
+          return res.status(500).json({ error: 'Session save failed' });
+        }
+        
+        const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = user;
+        res.json({ 
+          user: userResponse,
+          message: 'Login successful' 
+        });
       });
     });
     
