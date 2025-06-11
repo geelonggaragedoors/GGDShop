@@ -66,11 +66,13 @@ export default function StorefrontHeader() {
         {/* Main header */}
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center">
-            <img 
-              src="/assets/logo-pdfs.png" 
-              alt="Geelong Garage Doors" 
-              className="h-8 sm:h-10 md:h-12 w-auto"
-            />
+            <Link href="/">
+              <img 
+                src="/assets/logo-pdfs.png" 
+                alt="Geelong Garage Doors" 
+                className="h-8 sm:h-10 md:h-12 w-auto cursor-pointer hover:opacity-90 transition-opacity"
+              />
+            </Link>
           </div>
           
           {/* Search bar - Hidden on mobile */}
