@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { QuoteRequestDialog } from "@/components/QuoteRequestDialog";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { HeroContactForm } from "@/components/storefront/HeroContactForm";
 
 export default function Hero() {
   const { data: heroSettings, isLoading } = useQuery({
@@ -63,20 +64,28 @@ export default function Hero() {
       
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 h-full flex items-center">
-        <div className="max-w-2xl">
-          <h2 className="text-5xl font-bold mb-4">
-            {heroSettings?.title}
-          </h2>
-          <p className="text-xl mb-6 text-gray-100">
-            {heroSettings?.subtitle}
-          </p>
-          <div className="flex space-x-4">
-            <Link href="/products">
-              <Button size="lg" className="bg-[#2b3990] hover:bg-[#1e2871] text-white font-bold text-[16px] transition-colors duration-200">
-                Shop Now
-              </Button>
-            </Link>
-            <QuoteRequestDialog />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+          {/* Left side - Hero content */}
+          <div className="max-w-2xl">
+            <h2 className="text-5xl font-bold mb-4">
+              {heroSettings?.title}
+            </h2>
+            <p className="text-xl mb-6 text-gray-100">
+              {heroSettings?.subtitle}
+            </p>
+            <div className="flex space-x-4">
+              <Link href="/products">
+                <Button size="lg" className="bg-[#2b3990] hover:bg-[#1e2871] text-white font-bold text-[16px] transition-colors duration-200">
+                  Shop Now
+                </Button>
+              </Link>
+              <QuoteRequestDialog />
+            </div>
+          </div>
+          
+          {/* Right side - Contact form */}
+          <div className="lg:flex lg:justify-end">
+            <HeroContactForm />
           </div>
         </div>
       </div>

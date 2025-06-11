@@ -1547,6 +1547,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Hero Contact Form Route
+  app.post("/api/contact/hero-form", async (req, res) => {
+    try {
+      const { name, email, makeModel, message, imageUrl } = req.body;
+      
+      // Validate required fields
+      if (!name || !email || !makeModel) {
+        return res.status(400).json({ error: "Name, email, and make/model are required" });
+      }
+      
+      // Construct email HTML
+      const emailHtml = `
+        <h2>New Part Inquiry from Website Hero Form</h2>
+        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3>Customer Details:</h3>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Make/Model:</strong> ${makeModel}</p>
+          ${message ? `<p><strong>Additional Details:</strong> ${message}</p>` : ''}
+        </div>
+        
+        ${imageUrl ? `
+        <div style="margin: 20px 0;">
+          <h3>Attached Image:</h3>
+          <img src="${imageUrl}" alt="Part image" style="max-width: 400px; border: 1px solid #ddd; border-radius: 4px;">
+          <p><a href="${imageUrl}" target="_blank">View full image</a></p>
+        </div>
+        ` : ''}
+        
+        <hr style="margin: 20px 0;">
+        <p style="color: #666; font-size: 14px;">
+          This inquiry was submitted through the hero form on geelonggaragedoors.com.au
+        </p>
+      `;
+      
+      // Send email to admin
+      await emailService.sendEmail({
+        to: 'admin@geelonggaragedoors.com.au',
+        subject: `Part Inquiry - ${makeModel} from ${name}`,
+        html: emailHtml,
+      });
+      
+      res.json({ message: "Your inquiry has been sent successfully" });
+      
+    } catch (error) {
+      console.error("Error processing hero contact form:", error);
+      res.status(500).json({ error: "Failed to send inquiry" });
+    }
+  });
+
   // Site Settings Routes
   app.get('/api/site-settings', async (req, res) => {
     try {
