@@ -67,29 +67,25 @@ export function HeroContactForm() {
   };
 
   return (
-    <Card className="w-full max-w-sm bg-white/95 backdrop-blur-sm shadow-xl">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg text-[#2b3990] text-center">
+    <Card className="w-full max-w-xs bg-white/95 backdrop-blur-sm shadow-xl">
+      <CardHeader className="pb-2 pt-3">
+        <CardTitle className="text-sm text-[#2b3990] text-center leading-tight">
           Need Help Finding a Part?
         </CardTitle>
-        <p className="text-xs text-gray-600 text-center">
-          Send us your details and we'll help identify what you need
-        </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium">Your Name</FormLabel>
+                <FormItem className="space-y-1">
                   <FormControl>
                     <Input
-                      placeholder="Enter your name"
+                      placeholder="Your name"
                       {...field}
-                      className="text-xs h-8"
+                      className="text-xs h-7 border-gray-300"
                     />
                   </FormControl>
                   <FormMessage />
@@ -101,14 +97,13 @@ export function HeroContactForm() {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium">Email</FormLabel>
+                <FormItem className="space-y-1">
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="your.email@example.com"
+                      placeholder="Email address"
                       {...field}
-                      className="text-xs h-8"
+                      className="text-xs h-7 border-gray-300"
                     />
                   </FormControl>
                   <FormMessage />
@@ -120,13 +115,12 @@ export function HeroContactForm() {
               control={form.control}
               name="makeModel"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium">Make/Model</FormLabel>
+                <FormItem className="space-y-1">
                   <FormControl>
                     <Input
-                      placeholder="e.g. B&D Panel Lift"
+                      placeholder="Make/Model of part"
                       {...field}
-                      className="text-xs h-8"
+                      className="text-xs h-7 border-gray-300"
                     />
                   </FormControl>
                   <FormMessage />
@@ -134,83 +128,80 @@ export function HeroContactForm() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium">Additional Details (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Any additional info..."
-                      rows={2}
-                      {...field}
-                      className="text-xs resize-none h-12"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Image Upload */}
+            {/* Combined message and image upload */}
             <div className="space-y-1">
-              <FormLabel className="text-xs font-medium">Upload Image (Optional)</FormLabel>
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormControl>
+                      <Textarea
+                        placeholder="Additional details (optional)..."
+                        rows={2}
+                        {...field}
+                        className="text-xs resize-none h-10 border-gray-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Compact Image Upload */}
               {uploadedImage ? (
-                <div className="space-y-1">
+                <div className="flex items-center gap-2">
                   <img 
                     src={uploadedImage} 
-                    alt="Uploaded part" 
-                    className="w-full h-16 object-cover rounded border"
+                    alt="Part" 
+                    className="w-8 h-8 object-cover rounded border"
                   />
+                  <span className="text-xs text-gray-600 flex-1">Image attached</span>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     onClick={() => setUploadedImage("")}
-                    className="w-full text-xs h-6"
+                    className="text-xs h-6 px-2"
                   >
-                    Remove
+                    ×
                   </Button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded p-2 text-center">
-                  <Upload className="h-4 w-4 text-gray-400 mx-auto mb-1" />
-                  <UploadButton
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
-                      if (res && res.length > 0) {
-                        setUploadedImage(res[0].url);
-                        toast({
-                          title: "Image uploaded",
-                          description: "Your image has been attached successfully",
-                        });
-                      }
-                    }}
-                    onUploadError={(error: Error) => {
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res) => {
+                    if (res && res.length > 0) {
+                      setUploadedImage(res[0].url);
                       toast({
-                        title: "Upload failed",
-                        description: error.message,
-                        variant: "destructive",
+                        title: "Image uploaded",
+                        description: "Your image has been attached successfully",
                       });
-                    }}
-                    className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2870] ut-button:text-xs ut-button:py-1 ut-button:px-2 ut-allowed-content:text-xs ut-allowed-content:text-gray-600"
-                  />
-                </div>
+                    }
+                  }}
+                  onUploadError={(error: Error) => {
+                    toast({
+                      title: "Upload failed",
+                      description: error.message,
+                      variant: "destructive",
+                    });
+                  }}
+                  className="ut-button:bg-gray-100 ut-button:hover:bg-gray-200 ut-button:text-gray-700 ut-button:text-xs ut-button:h-6 ut-button:w-full ut-allowed-content:hidden"
+                />
               )}
             </div>
 
             <Button
               type="submit"
               disabled={submitMutation.isPending}
-              className="w-full bg-[#2b3990] hover:bg-[#1e2871] text-white font-medium text-xs h-8"
+              className="w-full bg-[#2b3990] hover:bg-[#1e2871] text-white font-medium text-xs h-7"
             >
               {submitMutation.isPending ? (
                 "Sending..."
               ) : (
                 <>
                   <Send className="h-3 w-3 mr-1" />
-                  Send Message
+                  Send
                 </>
               )}
             </Button>
