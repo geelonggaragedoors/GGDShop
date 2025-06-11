@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { UploadButton } from "@/lib/uploadthing";
 import { Upload, Send } from "lucide-react";
@@ -17,6 +18,7 @@ const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   make: z.string().min(1, "Please specify the make"),
+  makeOther: z.string().optional(),
   model: z.string().min(1, "Please specify the model"),
   message: z.string().optional(),
   imageUrl: z.string().optional(),
@@ -27,6 +29,12 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 export function HeroContactForm() {
   const { toast } = useToast();
   const [uploadedImage, setUploadedImage] = useState<string>("");
+  const [selectedMake, setSelectedMake] = useState<string>("");
+
+  // Fetch brands from admin system
+  const { data: brands = [] } = useQuery<Array<{ id: string; name: string }>>({
+    queryKey: ["/api/brands"],
+  });
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
@@ -34,6 +42,7 @@ export function HeroContactForm() {
       name: "",
       email: "",
       make: "",
+      makeOther: "",
       model: "",
       message: "",
       imageUrl: "",
@@ -124,11 +133,28 @@ export function HeroContactForm() {
                 render={({ field }) => (
                   <FormItem className="space-y-1">
                     <FormControl>
-                      <Input
-                        placeholder="Make (e.g. B&D)"
-                        {...field}
-                        className="text-xs h-7 border-gray-300"
-                      />
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setSelectedMake(value);
+                          if (value !== "Other") {
+                            form.setValue("makeOther", "");
+                          }
+                        }}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="text-xs h-7 border-gray-300">
+                          <SelectValue placeholder="Select make" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {brands.map((brand) => (
+                            <SelectItem key={brand.id} value={brand.name}>
+                              {brand.name}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -152,6 +178,26 @@ export function HeroContactForm() {
                 )}
               />
             </div>
+
+            {/* Show text input when "Other" is selected for make */}
+            {selectedMake === "Other" && (
+              <FormField
+                control={form.control}
+                name="makeOther"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormControl>
+                      <Input
+                        placeholder="Please specify the make"
+                        {...field}
+                        className="text-xs h-7 border-gray-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Combined message and image upload */}
             <div className="space-y-1">
