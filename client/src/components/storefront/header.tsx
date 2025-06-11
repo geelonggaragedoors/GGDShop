@@ -176,7 +176,7 @@ export default function StorefrontHeader() {
                 </Button>
                 <span className="text-gray-300">|</span>
                 <Button variant="ghost" size="sm" asChild>
-                  <a href="/api/login" className="text-sm">Create Account</a>
+                  <Link href="/signup" className="text-sm">Create Account</Link>
                 </Button>
               </div>
             )}
