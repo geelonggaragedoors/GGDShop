@@ -150,44 +150,53 @@ export function HeroContactForm() {
               
               {/* Compact Image Upload */}
               {uploadedImage ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded">
                   <img 
                     src={uploadedImage} 
                     alt="Part" 
                     className="w-8 h-8 object-cover rounded border"
                   />
-                  <span className="text-xs text-gray-600 flex-1">Image attached</span>
+                  <span className="text-xs text-green-700 flex-1">Image attached</span>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => setUploadedImage("")}
-                    className="text-xs h-6 px-2"
+                    className="text-xs h-6 px-2 text-green-700 hover:text-red-600"
                   >
                     ×
                   </Button>
                 </div>
               ) : (
-                <UploadButton
-                  endpoint="imageUploader"
-                  onClientUploadComplete={(res) => {
-                    if (res && res.length > 0) {
-                      setUploadedImage(res[0].url);
-                      toast({
-                        title: "Image uploaded",
-                        description: "Your image has been attached successfully",
-                      });
-                    }
-                  }}
-                  onUploadError={(error: Error) => {
-                    toast({
-                      title: "Upload failed",
-                      description: error.message,
-                      variant: "destructive",
-                    });
-                  }}
-                  className="ut-button:bg-gray-100 ut-button:hover:bg-gray-200 ut-button:text-gray-700 ut-button:text-xs ut-button:h-6 ut-button:w-full ut-allowed-content:hidden"
-                />
+                <div className="border-2 border-dashed border-gray-300 rounded p-2 bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div className="text-center">
+                    <Upload className="h-4 w-4 text-gray-400 mx-auto mb-1" />
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res) => {
+                        if (res && res.length > 0) {
+                          setUploadedImage(res[0].url);
+                          toast({
+                            title: "Image uploaded",
+                            description: "Your image has been attached successfully",
+                          });
+                        }
+                      }}
+                      onUploadError={(error: Error) => {
+                        toast({
+                          title: "Upload failed",
+                          description: error.message,
+                          variant: "destructive",
+                        });
+                      }}
+                      className="ut-button:bg-transparent ut-button:hover:bg-transparent ut-button:text-[#2b3990] ut-button:text-xs ut-button:h-auto ut-button:p-0 ut-button:border-none ut-button:shadow-none ut-allowed-content:text-xs ut-allowed-content:text-gray-500 ut-allowed-content:mt-1"
+                      content={{
+                        button: "Upload image",
+                        allowedContent: "One image only (4MB max)"
+                      }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
 
