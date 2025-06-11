@@ -95,9 +95,11 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <StorefrontHeader />
+      <div className="flex items-center justify-center p-4 pt-20">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
             <img 
               src="/assets/logo-pdfs.png" 
@@ -306,7 +308,9 @@ export default function Signup() {
             </ul>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
+      <StorefrontFooter />
     </div>
   );
 }
