@@ -171,30 +171,32 @@ export function HeroContactForm() {
                 <div className="border-2 border-dashed border-gray-300 rounded p-2 bg-gray-50 hover:bg-gray-100 transition-colors">
                   <div className="text-center">
                     <Upload className="h-4 w-4 text-gray-400 mx-auto mb-1" />
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res) => {
-                        if (res && res.length > 0) {
-                          setUploadedImage(res[0].url);
+                    <div className="space-y-1">
+                      <UploadButton
+                        endpoint="imageUploader"
+                        onClientUploadComplete={(res) => {
+                          if (res && res.length > 0) {
+                            setUploadedImage(res[0].url);
+                            toast({
+                              title: "Image uploaded",
+                              description: "Your image has been attached successfully",
+                            });
+                          }
+                        }}
+                        onUploadError={(error: Error) => {
                           toast({
-                            title: "Image uploaded",
-                            description: "Your image has been attached successfully",
+                            title: "Upload failed",
+                            description: error.message,
+                            variant: "destructive",
                           });
-                        }
-                      }}
-                      onUploadError={(error: Error) => {
-                        toast({
-                          title: "Upload failed",
-                          description: error.message,
-                          variant: "destructive",
-                        });
-                      }}
-                      className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2871] ut-button:text-white ut-button:text-xs ut-button:h-6 ut-button:px-3 ut-button:rounded ut-allowed-content:text-xs ut-allowed-content:text-gray-500 ut-allowed-content:mt-1"
-                      content={{
-                        button: "Upload image",
-                        allowedContent: "One image only (4MB max)"
-                      }}
-                    />
+                        }}
+                        className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2871] ut-button:!text-white ut-button:text-xs ut-button:h-6 ut-button:px-3 ut-button:rounded ut-button:font-medium ut-allowed-content:hidden"
+                        content={{
+                          button: "📷 Upload Image"
+                        }}
+                      />
+                      <p className="text-xs text-gray-500">One image only (4MB max)</p>
+                    </div>
                   </div>
                 </div>
               )}
