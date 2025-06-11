@@ -11,6 +11,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Eye, EyeOff, UserPlus, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import StorefrontHeader from "@/components/storefront/header";
+import StorefrontFooter from "@/components/storefront/footer";
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
