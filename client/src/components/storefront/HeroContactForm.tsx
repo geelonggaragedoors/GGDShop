@@ -16,7 +16,8 @@ import { Upload, Send } from "lucide-react";
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  makeModel: z.string().min(1, "Please specify the make or model"),
+  make: z.string().min(1, "Please specify the make"),
+  model: z.string().min(1, "Please specify the model"),
   message: z.string().optional(),
   imageUrl: z.string().optional(),
 });
@@ -32,7 +33,8 @@ export function HeroContactForm() {
     defaultValues: {
       name: "",
       email: "",
-      makeModel: "",
+      make: "",
+      model: "",
       message: "",
       imageUrl: "",
     },
@@ -76,57 +78,80 @@ export function HeroContactForm() {
       <CardContent className="pt-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="space-y-1">
-                  <FormControl>
-                    <Input
-                      placeholder="Your name"
-                      {...field}
-                      className="text-xs h-7 border-gray-300"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Name and Email side by side */}
+            <div className="grid grid-cols-2 gap-2">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormControl>
+                      <Input
+                        placeholder="Your name"
+                        {...field}
+                        className="text-xs h-7 border-gray-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="space-y-1">
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Email address"
-                      {...field}
-                      className="text-xs h-7 border-gray-300"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Email address"
+                        {...field}
+                        className="text-xs h-7 border-gray-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="makeModel"
-              render={({ field }) => (
-                <FormItem className="space-y-1">
-                  <FormControl>
-                    <Input
-                      placeholder="Make/Model of part"
-                      {...field}
-                      className="text-xs h-7 border-gray-300"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Make and Model as separate fields */}
+            <div className="grid grid-cols-2 gap-2">
+              <FormField
+                control={form.control}
+                name="make"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormControl>
+                      <Input
+                        placeholder="Make (e.g. B&D)"
+                        {...field}
+                        className="text-xs h-7 border-gray-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="model"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <FormControl>
+                      <Input
+                        placeholder="Model (e.g. Panel Lift)"
+                        {...field}
+                        className="text-xs h-7 border-gray-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Combined message and image upload */}
             <div className="space-y-1">

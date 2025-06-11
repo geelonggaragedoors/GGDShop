@@ -1550,11 +1550,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Hero Contact Form Route
   app.post("/api/contact/hero-form", async (req, res) => {
     try {
-      const { name, email, makeModel, message, imageUrl } = req.body;
+      const { name, email, make, model, message, imageUrl } = req.body;
       
       // Validate required fields
-      if (!name || !email || !makeModel) {
-        return res.status(400).json({ error: "Name, email, and make/model are required" });
+      if (!name || !email || !make || !model) {
+        return res.status(400).json({ error: "Name, email, make, and model are required" });
       }
       
       // Construct email HTML
@@ -1564,7 +1564,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <h3>Customer Details:</h3>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Make/Model:</strong> ${makeModel}</p>
+          <p><strong>Make:</strong> ${make}</p>
+          <p><strong>Model:</strong> ${model}</p>
           ${message ? `<p><strong>Additional Details:</strong> ${message}</p>` : ''}
         </div>
         
@@ -1585,7 +1586,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send email to admin
       await emailService.sendEmail({
         to: 'admin@geelonggaragedoors.com.au',
-        subject: `Part Inquiry - ${makeModel} from ${name}`,
+        subject: `Part Inquiry - ${make} ${model} from ${name}`,
         html: emailHtml,
       });
       
