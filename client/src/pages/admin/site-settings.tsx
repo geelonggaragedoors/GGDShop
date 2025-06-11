@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, Upload, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
@@ -203,6 +204,24 @@ export default function SiteSettings() {
                     </div>
                   )}
                 </div>
+              ) : setting.type === 'select' ? (
+                <Select 
+                  value={formData[setting.key] || ''} 
+                  onValueChange={(value) => handleInputChange(setting.key, value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={setting.description || 'Select an option'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {setting.key === 'hero_image_position' && (
+                      <>
+                        <SelectItem value="top">Top - Show upper portion of image</SelectItem>
+                        <SelectItem value="center">Center - Show middle portion of image</SelectItem>
+                        <SelectItem value="bottom">Bottom - Show lower portion of image</SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
               ) : (
                 <Input
                   id={setting.key}
