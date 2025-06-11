@@ -11,20 +11,20 @@ export default function Hero() {
       const imageRes = await fetch('/api/site-settings/hero_image_url');
       const titleRes = await fetch('/api/site-settings/hero_title');
       const subtitleRes = await fetch('/api/site-settings/hero_subtitle');
-      const positionRes = await fetch('/api/site-settings/hero_image_position');
+      const customPositionRes = await fetch('/api/site-settings/hero_image_position_custom');
       
-      const [imageData, titleData, subtitleData, positionData] = await Promise.all([
+      const [imageData, titleData, subtitleData, customPositionData] = await Promise.all([
         imageRes.json(),
         titleRes.json(),
         subtitleRes.json(),
-        positionRes.json()
+        customPositionRes.json()
       ]);
 
       return {
         imageUrl: imageData.value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=800',
         title: titleData.value || 'Professional Garage Door Solutions',
         subtitle: subtitleData.value || 'Quality residential and commercial garage doors, parts, and expert installation services across Geelong and surrounding areas.',
-        imagePosition: positionData.value || 'center'
+        imagePosition: customPositionData.value || '50% 50%'
       };
     }
   });
@@ -54,9 +54,10 @@ export default function Hero() {
       {/* Background Image */}
       <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
       <div 
-        className={`absolute inset-0 bg-cover bg-${heroSettings?.imagePosition || 'center'}`}
+        className="absolute inset-0 bg-cover"
         style={{
-          backgroundImage: `url('${heroSettings?.imageUrl}')`
+          backgroundImage: `url('${heroSettings?.imageUrl}')`,
+          backgroundPosition: heroSettings?.imagePosition || '50% 50%'
         }}
       ></div>
       

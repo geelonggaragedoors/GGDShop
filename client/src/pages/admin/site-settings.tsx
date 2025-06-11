@@ -26,6 +26,7 @@ export default function SiteSettings() {
   const queryClient = useQueryClient();
   const [isDirty, setIsDirty] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [imagePosition, setImagePosition] = useState({ x: 50, y: 50 }); // Percentage-based positioning
 
   const { data: settings, isLoading } = useQuery<SiteSetting[]>({
     queryKey: ['/api/site-settings']
@@ -38,6 +39,13 @@ export default function SiteSettings() {
         initialData[setting.key] = setting.value || '';
       });
       setFormData(initialData);
+      
+      // Initialize image position from custom position setting
+      const customPosition = settings.find(s => s.key === 'hero_image_position_custom')?.value;
+      if (customPosition) {
+        const [x, y] = customPosition.split(' ').map(pos => parseFloat(pos.replace('%', '')));
+        setImagePosition({ x: x || 50, y: y || 50 });
+      }
     }
   }, [settings]);
 
@@ -73,6 +81,13 @@ export default function SiteSettings() {
 
   const handleSave = () => {
     updateMutation.mutate(formData);
+  };
+
+  const handleImagePositionChange = (x: number, y: number) => {
+    setImagePosition({ x, y });
+    // Convert percentage to CSS background-position value
+    const positionValue = `${x}% ${y}%`;
+    handleInputChange('hero_image_position_custom', positionValue);
   };
 
 
@@ -191,16 +206,160 @@ export default function SiteSettings() {
                   </div>
                   
                   {formData[setting.key] && (
-                    <div className="mt-2">
-                      <img
-                        src={formData[setting.key]}
-                        alt="Preview"
-                        className="w-full max-w-md h-32 object-cover rounded-md border"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                        }}
-                      />
+                    <div className="mt-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium">Image Preview & Positioning</Label>
+                        <span className="text-xs text-gray-500">
+                          Drag the image to position it
+                        </span>
+                      </div>
+                      
+                      {/* Interactive Image Preview */}
+                      <div className="relative w-full max-w-2xl">
+                        {/* Hero Section Preview */}
+                        <div 
+                          className="relative h-48 rounded-lg overflow-hidden border-2 border-gray-300 cursor-move"
+                          style={{
+                            backgroundImage: `url('${formData[setting.key]}')`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: formData['hero_image_position_custom'] || '50% 50%',
+                            backgroundRepeat: 'no-repeat'
+                          }}
+                          onMouseDown={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const startX = e.clientX;
+                            const startY = e.clientY;
+                            
+                            const handleMouseMove = (moveEvent: MouseEvent) => {
+                              const deltaX = moveEvent.clientX - startX;
+                              const deltaY = moveEvent.clientY - startY;
+                              
+                              const newX = Math.max(0, Math.min(100, imagePosition.x + (deltaX / rect.width) * 100));
+                              const newY = Math.max(0, Math.min(100, imagePosition.y + (deltaY / rect.height) * 100));
+                              
+                              handleImagePositionChange(newX, newY);
+                            };
+                            
+                            const handleMouseUp = () => {
+                              document.removeEventListener('mousemove', handleMouseMove);
+                              document.removeEventListener('mouseup', handleMouseUp);
+                            };
+                            
+                            document.addEventListener('mousemove', handleMouseMove);
+                            document.addEventListener('mouseup', handleMouseUp);
+                          }}
+                        >
+                          {/* Dark overlay like the actual hero */}
+                          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                          
+                          {/* Preview content */}
+                          <div className="relative z-10 p-6 text-white h-full flex items-center">
+                            <div>
+                              <h3 className="text-2xl font-bold mb-2">
+                                {formData['hero_title'] || 'Hero Title'}
+                              </h3>
+                              <p className="text-sm opacity-90">
+                                {formData['hero_subtitle'] || 'Hero subtitle text'}
+                              </p>
+                              <div className="mt-3 flex space-x-2">
+                                <div className="px-3 py-1 bg-blue-600 rounded text-xs">Shop Now</div>
+                                <div className="px-3 py-1 border border-white rounded text-xs">Get Quote</div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Position indicator */}
+                          <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                            {Math.round(imagePosition.x)}%, {Math.round(imagePosition.y)}%
+                          </div>
+                        </div>
+                        
+                        {/* Position Controls */}
+                        <div className="mt-3 grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-xs text-gray-600">Horizontal Position</Label>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={imagePosition.x}
+                              onChange={(e) => handleImagePositionChange(Number(e.target.value), imagePosition.y)}
+                              className="w-full mt-1"
+                            />
+                            <div className="flex justify-between text-xs text-gray-400 mt-1">
+                              <span>Left</span>
+                              <span>Center</span>
+                              <span>Right</span>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <Label className="text-xs text-gray-600">Vertical Position</Label>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={imagePosition.y}
+                              onChange={(e) => handleImagePositionChange(imagePosition.x, Number(e.target.value))}
+                              className="w-full mt-1"
+                            />
+                            <div className="flex justify-between text-xs text-gray-400 mt-1">
+                              <span>Top</span>
+                              <span>Center</span>
+                              <span>Bottom</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Quick Preset Buttons */}
+                        <div className="mt-3 flex gap-2 flex-wrap">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleImagePositionChange(50, 0)}
+                            className="text-xs"
+                          >
+                            Top Center
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleImagePositionChange(50, 50)}
+                            className="text-xs"
+                          >
+                            Center
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleImagePositionChange(50, 100)}
+                            className="text-xs"
+                          >
+                            Bottom Center
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleImagePositionChange(0, 50)}
+                            className="text-xs"
+                          >
+                            Left Center
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleImagePositionChange(100, 50)}
+                            className="text-xs"
+                          >
+                            Right Center
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
