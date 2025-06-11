@@ -172,29 +172,38 @@ export function HeroContactForm() {
                   <div className="text-center">
                     <Upload className="h-4 w-4 text-gray-400 mx-auto mb-1" />
                     <div className="space-y-1">
-                      <UploadButton
-                        endpoint="imageUploader"
-                        onClientUploadComplete={(res) => {
-                          if (res && res.length > 0) {
-                            setUploadedImage(res[0].url);
+                      <div 
+                        className="upload-button-override"
+                        style={{
+                          '--ut-button-color': 'white',
+                          '--ut-button-bg': '#2b3990',
+                          '--ut-button-hover-bg': '#1e2871'
+                        } as React.CSSProperties}
+                      >
+                        <UploadButton
+                          endpoint="imageUploader"
+                          onClientUploadComplete={(res) => {
+                            if (res && res.length > 0) {
+                              setUploadedImage(res[0].url);
+                              toast({
+                                title: "Image uploaded",
+                                description: "Your image has been attached successfully",
+                              });
+                            }
+                          }}
+                          onUploadError={(error: Error) => {
                             toast({
-                              title: "Image uploaded",
-                              description: "Your image has been attached successfully",
+                              title: "Upload failed",
+                              description: error.message,
+                              variant: "destructive",
                             });
-                          }
-                        }}
-                        onUploadError={(error: Error) => {
-                          toast({
-                            title: "Upload failed",
-                            description: error.message,
-                            variant: "destructive",
-                          });
-                        }}
-                        className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2871] ut-button:!text-white ut-button:text-xs ut-button:h-6 ut-button:px-3 ut-button:rounded ut-button:font-medium ut-allowed-content:hidden"
-                        content={{
-                          button: "📷 Upload Image"
-                        }}
-                      />
+                          }}
+                          className="ut-button:text-xs ut-button:h-6 ut-button:px-3 ut-button:rounded ut-button:font-medium ut-allowed-content:hidden"
+                          content={{
+                            button: "📷 Upload Image"
+                          }}
+                        />
+                      </div>
                       <p className="text-xs text-gray-500">One image only (4MB max)</p>
                     </div>
                   </div>
