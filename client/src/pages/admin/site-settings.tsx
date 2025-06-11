@@ -117,7 +117,7 @@ export default function SiteSettings() {
           <CardTitle className="text-xl text-[#2b3990]">Hero Section</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {heroSettings.map((setting) => (
+          {heroSettings.map((setting: SiteSetting) => (
             <div key={setting.key} className="space-y-2">
               <Label htmlFor={setting.key} className="text-sm font-medium">
                 {setting.description || setting.key}
