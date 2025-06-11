@@ -734,10 +734,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Customer registration (public)
   app.post('/api/customers', async (req, res) => {
     try {
-      const { firstName, lastName, email, password } = req.body;
+      const { firstName, lastName, email, phone, company, password } = req.body;
       
-      if (!firstName || !lastName || !email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
+      if (!firstName || !lastName || !email || !phone || !password) {
+        return res.status(400).json({ message: "First name, last name, email, phone, and password are required" });
       }
       
       // Check if customer already exists
@@ -754,6 +754,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName,
         lastName,
         email,
+        phone,
+        company: company || null,
         passwordHash,
         isActive: true,
       };

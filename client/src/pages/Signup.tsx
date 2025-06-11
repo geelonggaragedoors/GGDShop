@@ -18,6 +18,8 @@ const signupSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(10, "Phone number is required (minimum 10 digits)").regex(/^[\d\s\+\-\(\)]+$/, "Invalid phone number format"),
+  company: z.string().optional(),
   password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string().min(8, "Please confirm your password"),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -41,6 +43,8 @@ export default function Signup() {
       firstName: "",
       lastName: "",
       email: "",
+      phone: "",
+      company: "",
       password: "",
       confirmPassword: "",
     },
@@ -55,6 +59,8 @@ export default function Signup() {
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
+          phone: data.phone,
+          company: data.company || null,
           password: data.password,
         }),
       });
@@ -178,6 +184,43 @@ export default function Signup() {
                         {...field}
                         type="email"
                         placeholder="john@example.com"
+                        disabled={signupMutation.isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="tel"
+                        placeholder="(03) 5221 8999"
+                        disabled={signupMutation.isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="company"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Your Company Name"
                         disabled={signupMutation.isPending}
                       />
                     </FormControl>
