@@ -1550,7 +1550,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Hero Contact Form Route
   app.post("/api/contact/hero-form", async (req, res) => {
     try {
-      const { name, email, make, makeOther, model, message, imageUrl } = req.body;
+      const { name, email, make, makeOther, model, message, imageUrls } = req.body;
       
       // Determine the actual make value to use
       const actualMake = make === "Other" ? makeOther : make;
@@ -1559,6 +1559,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!name || !email || !actualMake || !model) {
         return res.status(400).json({ error: "Name, email, make, and model are required" });
       }
+      
+      // Generate images HTML if any images are provided
+      const imagesHtml = imageUrls && imageUrls.length > 0 ? `
+        <div style="margin: 20px 0;">
+          <h3>Attached Images:</h3>
+          ${imageUrls.map((imageUrl: string, index: number) => `
+            <div style="margin-bottom: 15px;">
+              <p><strong>Image ${index + 1}:</strong></p>
+              <img src="${imageUrl}" alt="Part image ${index + 1}" style="max-width: 400px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 5px;">
+              <br><a href="${imageUrl}" target="_blank">View full image ${index + 1}</a>
+            </div>
+          `).join('')}
+        </div>
+      ` : '';
       
       // Construct email HTML
       const emailHtml = `
@@ -1572,13 +1586,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ${message ? `<p><strong>Additional Details:</strong> ${message}</p>` : ''}
         </div>
         
-        ${imageUrl ? `
-        <div style="margin: 20px 0;">
-          <h3>Attached Image:</h3>
-          <img src="${imageUrl}" alt="Part image" style="max-width: 400px; border: 1px solid #ddd; border-radius: 4px;">
-          <p><a href="${imageUrl}" target="_blank">View full image</a></p>
-        </div>
-        ` : ''}
+        ${imagesHtml}
         
         <hr style="margin: 20px 0;">
         <p style="color: #666; font-size: 14px;">

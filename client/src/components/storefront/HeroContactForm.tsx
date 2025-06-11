@@ -21,14 +21,14 @@ const contactFormSchema = z.object({
   makeOther: z.string().optional(),
   model: z.string().min(1, "Please specify the model"),
   message: z.string().optional(),
-  imageUrl: z.string().optional(),
+  imageUrls: z.array(z.string()).optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
 export function HeroContactForm() {
   const { toast } = useToast();
-  const [uploadedImage, setUploadedImage] = useState<string>("");
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [selectedMake, setSelectedMake] = useState<string>("");
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
@@ -46,7 +46,7 @@ export function HeroContactForm() {
       makeOther: "",
       model: "",
       message: "",
-      imageUrl: "",
+      imageUrls: [],
     },
   });
 
@@ -54,7 +54,7 @@ export function HeroContactForm() {
     mutationFn: async (data: ContactFormData) => {
       return await apiRequest("POST", "/api/contact/hero-form", {
         ...data,
-        imageUrl: uploadedImage,
+        imageUrls: uploadedImages,
       });
     },
     onSuccess: () => {
@@ -63,7 +63,7 @@ export function HeroContactForm() {
         description: "We'll get back to you as soon as possible.",
       });
       form.reset();
-      setUploadedImage("");
+      setUploadedImages([]);
     },
     onError: (error: Error) => {
       toast({
@@ -220,33 +220,42 @@ export function HeroContactForm() {
                 )}
               />
               
-              {/* Compact Image Upload */}
-              {uploadedImage ? (
-                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded">
-                  <img 
-                    src={uploadedImage} 
-                    alt="Part" 
-                    className="w-8 h-8 object-cover rounded border"
-                  />
-                  <span className="text-xs text-green-700 flex-1">Image attached</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setUploadedImage("");
-                      form.setValue("imageUrl", "");
-                    }}
-                    className="text-xs h-6 px-2 text-green-700 hover:text-red-600"
-                  >
-                    ×
-                  </Button>
+              {/* Multiple Image Upload */}
+              {uploadedImages.length > 0 ? (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {uploadedImages.map((imageUrl, index) => (
+                      <div key={index} className="relative">
+                        <img 
+                          src={imageUrl} 
+                          alt={`Part ${index + 1}`} 
+                          className="w-12 h-12 object-cover rounded border"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newImages = uploadedImages.filter((_, i) => i !== index);
+                            setUploadedImages(newImages);
+                            form.setValue("imageUrls", newImages);
+                          }}
+                          className="absolute -top-1 -right-1 h-4 w-4 rounded-full p-0 bg-red-500 hover:bg-red-600 text-white text-xs"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-green-600">{uploadedImages.length} image(s) attached</p>
                 </div>
-              ) : isUploading ? (
+              ) : null}
+              
+              {isUploading ? (
                 <div className="border-2 border-dashed border-blue-300 rounded p-4 bg-blue-50">
                   <div className="text-center">
                     <Loader2 className="h-6 w-6 text-blue-500 mx-auto mb-2 animate-spin" />
-                    <p className="text-xs text-blue-600">Uploading image...</p>
+                    <p className="text-xs text-blue-600">Uploading images...</p>
                   </div>
                 </div>
               ) : (
@@ -266,16 +275,18 @@ export function HeroContactForm() {
                           endpoint="imageUploader"
                           onBeforeUploadBegin={(files) => {
                             setIsUploading(true);
-                            return files.slice(0, 1); // Only allow one file
+                            return files; // Allow multiple files
                           }}
                           onClientUploadComplete={(res) => {
                             setIsUploading(false);
                             if (res && res.length > 0) {
-                              setUploadedImage(res[0].url);
-                              form.setValue("imageUrl", res[0].url);
+                              const newUrls = res.map(file => file.url);
+                              const allImages = [...uploadedImages, ...newUrls];
+                              setUploadedImages(allImages);
+                              form.setValue("imageUrls", allImages);
                               toast({
-                                title: "Image uploaded",
-                                description: "Your image has been attached successfully",
+                                title: "Images uploaded",
+                                description: `${res.length} image(s) attached successfully`,
                               });
                             }
                           }}
@@ -289,11 +300,11 @@ export function HeroContactForm() {
                           }}
                           className="ut-button:text-xs ut-button:h-6 ut-button:px-3 ut-button:rounded ut-button:font-medium ut-allowed-content:hidden"
                           content={{
-                            button: "📷 Upload Image"
+                            button: "📷 Upload Images"
                           }}
                         />
                       </div>
-                      <p className="text-xs text-gray-500">One image only (4MB max)</p>
+                      <p className="text-xs text-gray-500">Multiple images allowed (4MB max each)</p>
                     </div>
                   </div>
                 </div>
