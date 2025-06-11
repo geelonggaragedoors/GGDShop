@@ -1547,6 +1547,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Site Settings Routes
+  app.get('/api/site-settings', async (req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching site settings:", error);
+      res.status(500).json({ message: "Failed to fetch site settings" });
+    }
+  });
+
+  app.get('/api/site-settings/:key', async (req, res) => {
+    try {
+      const { key } = req.params;
+      const setting = await storage.getSiteSettingByKey(key);
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json(setting);
+    } catch (error) {
+      console.error("Error fetching site setting:", error);
+      res.status(500).json({ message: "Failed to fetch site setting" });
+    }
+  });
+
+  app.put('/api/admin/site-settings/:key', hybridAuth, async (req, res) => {
+    try {
+      const { key } = req.params;
+      const { value } = req.body;
+      const updated = await storage.updateSiteSetting(key, value);
+      if (!updated) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json({ message: "Setting updated successfully" });
+    } catch (error) {
+      console.error("Error updating site setting:", error);
+      res.status(500).json({ message: "Failed to update site setting" });
+    }
+  });
+
   app.post("/api/analytics/conversion", async (req, res) => {
     try {
       await analyticsService.trackConversion(req.body);

@@ -592,3 +592,17 @@ export type InsertConversionFunnel = typeof conversionFunnels.$inferInsert;
 
 export type SEOMetrics = typeof seoMetrics.$inferSelect;
 export type InsertSEOMetrics = typeof seoMetrics.$inferInsert;
+
+// Site Settings table
+export const siteSettings = pgTable("site_settings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  key: varchar("key", { length: 255 }).notNull().unique(),
+  value: text("value"),
+  description: text("description"),
+  type: varchar("type", { length: 50 }).default("text"), // text, image, textarea, boolean
+  category: varchar("category", { length: 100 }).default("general"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type SiteSetting = typeof siteSettings.$inferSelect;
+export type InsertSiteSetting = typeof siteSettings.$inferInsert;

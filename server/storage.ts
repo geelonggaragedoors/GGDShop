@@ -13,6 +13,7 @@ import {
   roles,
   customerReviews,
   enquiries,
+  siteSettings,
   type User,
   type UpsertUser,
   type Category,
@@ -38,6 +39,8 @@ import {
   type InsertCustomerReview,
   type Enquiry,
   type InsertEnquiry,
+  type SiteSetting,
+  type InsertSiteSetting,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql } from "drizzle-orm";
@@ -155,6 +158,12 @@ export interface IStorage {
   createEnquiry(enquiry: InsertEnquiry): Promise<Enquiry>;
   updateEnquiryStatus(id: string, status: string): Promise<boolean>;
   deleteEnquiry(id: string): Promise<boolean>;
+
+  // Site Settings operations
+  getSiteSettings(): Promise<SiteSetting[]>;
+  getSiteSettingByKey(key: string): Promise<SiteSetting | undefined>;
+  updateSiteSetting(key: string, value: string): Promise<boolean>;
+  createSiteSetting(setting: InsertSiteSetting): Promise<SiteSetting>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<{
@@ -852,6 +861,29 @@ export class DatabaseStorage implements IStorage {
   async deleteEnquiry(id: string): Promise<boolean> {
     const result = await db.delete(enquiries).where(eq(enquiries.id, id));
     return result.rowCount! > 0;
+  }
+
+  // Site Settings operations
+  async getSiteSettings(): Promise<SiteSetting[]> {
+    return await db.select().from(siteSettings);
+  }
+
+  async getSiteSettingByKey(key: string): Promise<SiteSetting | undefined> {
+    const [setting] = await db.select().from(siteSettings).where(eq(siteSettings.key, key));
+    return setting;
+  }
+
+  async updateSiteSetting(key: string, value: string): Promise<boolean> {
+    const result = await db
+      .update(siteSettings)
+      .set({ value, updatedAt: new Date() })
+      .where(eq(siteSettings.key, key));
+    return result.rowCount! > 0;
+  }
+
+  async createSiteSetting(setting: InsertSiteSetting): Promise<SiteSetting> {
+    const [newSetting] = await db.insert(siteSettings).values(setting).returning();
+    return newSetting;
   }
 }
 
