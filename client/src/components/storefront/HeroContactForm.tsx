@@ -69,7 +69,7 @@ export function HeroContactForm() {
   };
 
   return (
-    <Card className="w-full max-w-xs bg-white/95 backdrop-blur-sm shadow-xl">
+    <Card className="w-full max-w-lg bg-white/95 backdrop-blur-sm shadow-xl">
       <CardHeader className="pb-2 pt-3">
         <CardTitle className="text-sm text-[#2b3990] text-center leading-tight">
           Need Help Finding a Part?
