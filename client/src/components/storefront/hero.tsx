@@ -63,10 +63,10 @@ export default function Hero() {
       ></div>
       
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 h-full flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+      <div className="relative z-20 container mx-auto px-4 h-full flex items-center justify-between">
+        <div className="flex w-full items-center justify-between">
           {/* Left side - Hero content */}
-          <div className="max-w-2xl">
+          <div className="flex-1 max-w-2xl">
             <h2 className="text-5xl font-bold mb-4">
               {heroSettings?.title}
             </h2>
@@ -84,10 +84,15 @@ export default function Hero() {
           </div>
           
           {/* Right side - Contact form */}
-          <div className="lg:flex lg:justify-end">
+          <div className="hidden lg:block ml-8">
             <HeroContactForm />
           </div>
         </div>
+      </div>
+      
+      {/* Mobile form - below hero on mobile */}
+      <div className="lg:hidden relative z-20 container mx-auto px-4 py-8">
+        <HeroContactForm />
       </div>
     </section>
   );

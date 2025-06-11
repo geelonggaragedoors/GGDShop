@@ -67,29 +67,29 @@ export function HeroContactForm() {
   };
 
   return (
-    <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-xl">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-xl text-[#2b3990] text-center">
+    <Card className="w-full max-w-sm bg-white/95 backdrop-blur-sm shadow-xl">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg text-[#2b3990] text-center">
           Need Help Finding a Part?
         </CardTitle>
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-xs text-gray-600 text-center">
           Send us your details and we'll help identify what you need
         </p>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Your Name</FormLabel>
+                  <FormLabel className="text-xs font-medium">Your Name</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter your full name"
+                      placeholder="Enter your name"
                       {...field}
-                      className="text-sm"
+                      className="text-xs h-8"
                     />
                   </FormControl>
                   <FormMessage />
@@ -102,13 +102,13 @@ export function HeroContactForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Email Address</FormLabel>
+                  <FormLabel className="text-xs font-medium">Email</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
                       placeholder="your.email@example.com"
                       {...field}
-                      className="text-sm"
+                      className="text-xs h-8"
                     />
                   </FormControl>
                   <FormMessage />
@@ -121,12 +121,12 @@ export function HeroContactForm() {
               name="makeModel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Make/Model of Part</FormLabel>
+                  <FormLabel className="text-xs font-medium">Make/Model</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g. B&D Panel Lift, Merlin Remote"
+                      placeholder="e.g. B&D Panel Lift"
                       {...field}
-                      className="text-sm"
+                      className="text-xs h-8"
                     />
                   </FormControl>
                   <FormMessage />
@@ -139,13 +139,13 @@ export function HeroContactForm() {
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Additional Details (Optional)</FormLabel>
+                  <FormLabel className="text-xs font-medium">Additional Details (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Any additional information that might help..."
-                      rows={3}
+                      placeholder="Any additional info..."
+                      rows={2}
                       {...field}
-                      className="text-sm resize-none"
+                      className="text-xs resize-none h-12"
                     />
                   </FormControl>
                   <FormMessage />
@@ -154,28 +154,28 @@ export function HeroContactForm() {
             />
 
             {/* Image Upload */}
-            <div className="space-y-2">
-              <FormLabel className="text-sm font-medium">Upload Image (Optional)</FormLabel>
+            <div className="space-y-1">
+              <FormLabel className="text-xs font-medium">Upload Image (Optional)</FormLabel>
               {uploadedImage ? (
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <img 
                     src={uploadedImage} 
                     alt="Uploaded part" 
-                    className="w-full h-24 object-cover rounded-md border"
+                    className="w-full h-16 object-cover rounded border"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => setUploadedImage("")}
-                    className="w-full text-xs"
+                    className="w-full text-xs h-6"
                   >
-                    Remove Image
+                    Remove
                   </Button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 text-center">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                <div className="border-2 border-dashed border-gray-300 rounded p-2 text-center">
+                  <Upload className="h-4 w-4 text-gray-400 mx-auto mb-1" />
                   <UploadButton
                     endpoint="imageUploader"
                     onClientUploadComplete={(res) => {
@@ -194,11 +194,8 @@ export function HeroContactForm() {
                         variant: "destructive",
                       });
                     }}
-                    className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2870] ut-button:text-xs ut-allowed-content:text-xs ut-allowed-content:text-gray-600"
+                    className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2870] ut-button:text-xs ut-button:py-1 ut-button:px-2 ut-allowed-content:text-xs ut-allowed-content:text-gray-600"
                   />
-                  <p className="text-xs text-gray-400 mt-1">
-                    Help us identify your part
-                  </p>
                 </div>
               )}
             </div>
@@ -206,13 +203,13 @@ export function HeroContactForm() {
             <Button
               type="submit"
               disabled={submitMutation.isPending}
-              className="w-full bg-[#2b3990] hover:bg-[#1e2871] text-white font-medium"
+              className="w-full bg-[#2b3990] hover:bg-[#1e2871] text-white font-medium text-xs h-8"
             >
               {submitMutation.isPending ? (
                 "Sending..."
               ) : (
                 <>
-                  <Send className="h-4 w-4 mr-2" />
+                  <Send className="h-3 w-3 mr-1" />
                   Send Message
                 </>
               )}
