@@ -189,7 +189,7 @@ export function HeroContactForm() {
                           variant: "destructive",
                         });
                       }}
-                      className="ut-button:bg-transparent ut-button:hover:bg-transparent ut-button:text-[#2b3990] ut-button:text-xs ut-button:h-auto ut-button:p-0 ut-button:border-none ut-button:shadow-none ut-allowed-content:text-xs ut-allowed-content:text-gray-500 ut-allowed-content:mt-1"
+                      className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2871] ut-button:text-white ut-button:text-xs ut-button:h-6 ut-button:px-3 ut-button:rounded ut-allowed-content:text-xs ut-allowed-content:text-gray-500 ut-allowed-content:mt-1"
                       content={{
                         button: "Upload image",
                         allowedContent: "One image only (4MB max)"
