@@ -6,8 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Upload, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { UploadButton } from "@/lib/uploadthing";
 
 interface SiteSetting {
   id: string;
@@ -73,6 +74,8 @@ export default function SiteSettings() {
     updateMutation.mutate(formData);
   };
 
+
+
   if (isLoading) {
     return (
       <div className="p-6">
@@ -132,14 +135,60 @@ export default function SiteSettings() {
                   className="resize-none"
                 />
               ) : setting.type === 'image' ? (
-                <div className="space-y-2">
-                  <Input
-                    id={setting.key}
-                    type="url"
-                    value={formData[setting.key] || ''}
-                    onChange={(e) => handleInputChange(setting.key, e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                  />
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      id={setting.key}
+                      type="url"
+                      value={formData[setting.key] || ''}
+                      onChange={(e) => handleInputChange(setting.key, e.target.value)}
+                      placeholder="https://example.com/image.jpg or upload below"
+                      className="flex-1"
+                    />
+                    {formData[setting.key] && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleInputChange(setting.key, '')}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <div className="flex flex-col items-center">
+                      <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600 mb-3">
+                        Upload a new hero image
+                      </p>
+                      <UploadButton
+                        endpoint="imageUploader"
+                        onClientUploadComplete={(res) => {
+                          if (res && res.length > 0) {
+                            handleInputChange(setting.key, res[0].url);
+                            toast({
+                              title: "Image uploaded",
+                              description: "Hero image has been uploaded successfully",
+                            });
+                          }
+                        }}
+                        onUploadError={(error: Error) => {
+                          toast({
+                            title: "Upload failed",
+                            description: error.message,
+                            variant: "destructive",
+                          });
+                        }}
+                        className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2870] ut-allowed-content:text-gray-600"
+                      />
+                      <p className="text-xs text-gray-400 mt-2">
+                        PNG, JPG, GIF up to 4MB
+                      </p>
+                    </div>
+                  </div>
+                  
                   {formData[setting.key] && (
                     <div className="mt-2">
                       <img
