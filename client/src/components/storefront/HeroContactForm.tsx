@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { UploadButton } from "@/lib/uploadthing";
-import { Upload, Send } from "lucide-react";
+import { Upload, Send, Loader2 } from "lucide-react";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -30,6 +30,7 @@ export function HeroContactForm() {
   const { toast } = useToast();
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const [selectedMake, setSelectedMake] = useState<string>("");
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   // Fetch brands from admin system
   const { data: brands = [] } = useQuery<Array<{ id: string; name: string }>>({
@@ -232,11 +233,21 @@ export function HeroContactForm() {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => setUploadedImage("")}
+                    onClick={() => {
+                      setUploadedImage("");
+                      form.setValue("imageUrl", "");
+                    }}
                     className="text-xs h-6 px-2 text-green-700 hover:text-red-600"
                   >
                     ×
                   </Button>
+                </div>
+              ) : isUploading ? (
+                <div className="border-2 border-dashed border-blue-300 rounded p-4 bg-blue-50">
+                  <div className="text-center">
+                    <Loader2 className="h-6 w-6 text-blue-500 mx-auto mb-2 animate-spin" />
+                    <p className="text-xs text-blue-600">Uploading image...</p>
+                  </div>
                 </div>
               ) : (
                 <div className="border-2 border-dashed border-gray-300 rounded p-2 bg-gray-50 hover:bg-gray-100 transition-colors">
@@ -253,9 +264,15 @@ export function HeroContactForm() {
                       >
                         <UploadButton
                           endpoint="imageUploader"
+                          onBeforeUploadBegin={(files) => {
+                            setIsUploading(true);
+                            return files.slice(0, 1); // Only allow one file
+                          }}
                           onClientUploadComplete={(res) => {
+                            setIsUploading(false);
                             if (res && res.length > 0) {
                               setUploadedImage(res[0].url);
+                              form.setValue("imageUrl", res[0].url);
                               toast({
                                 title: "Image uploaded",
                                 description: "Your image has been attached successfully",
@@ -263,6 +280,7 @@ export function HeroContactForm() {
                             }
                           }}
                           onUploadError={(error: Error) => {
+                            setIsUploading(false);
                             toast({
                               title: "Upload failed",
                               description: error.message,
