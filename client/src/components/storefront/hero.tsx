@@ -51,55 +51,44 @@ export default function Hero() {
   }
 
   return (
-    <>
-      <section className="relative h-96 hero-gradient text-white overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
-        <div 
-          className="absolute inset-0 bg-cover"
-          style={{
-            backgroundImage: `url('${heroSettings?.imageUrl}')`,
-            backgroundPosition: heroSettings?.imagePosition || '50% 50%'
-          }}
-        ></div>
-        
-        {/* Content */}
-        <div className="relative z-20 container mx-auto px-4 h-full">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between h-full">
-            {/* Hero content */}
-            <div className="flex-1 max-w-2xl pt-16 lg:pt-0">
-              <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-                {heroSettings?.title}
-              </h2>
-              <p className="text-lg lg:text-xl mb-6 text-gray-100">
-                {heroSettings?.subtitle}
-              </p>
-              <div className="flex space-x-4 mb-8 lg:mb-0">
-                <Link href="/products">
-                  <Button size="lg" className="bg-[#2b3990] hover:bg-[#1e2871] text-white font-bold text-[16px] transition-colors duration-200">
-                    Shop Now
-                  </Button>
-                </Link>
-                <QuoteRequestDialog />
-              </div>
-            </div>
-            
-            {/* Contact form - desktop only */}
-            <div className="hidden lg:block ml-8 self-center">
-              <HeroContactForm />
+    <section className="relative h-96 hero-gradient text-white overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
+      <div 
+        className="absolute inset-0 bg-cover"
+        style={{
+          backgroundImage: `url('${heroSettings?.imageUrl}')`,
+          backgroundPosition: heroSettings?.imagePosition || '50% 50%'
+        }}
+      ></div>
+      
+      {/* Content */}
+      <div className="relative z-20 container mx-auto px-4 h-full">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between h-full">
+          {/* Hero content - desktop only */}
+          <div className="hidden lg:block flex-1 max-w-2xl">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+              {heroSettings?.title}
+            </h2>
+            <p className="text-lg lg:text-xl mb-6 text-gray-100">
+              {heroSettings?.subtitle}
+            </p>
+            <div className="flex space-x-4 mb-8 lg:mb-0">
+              <Link href="/products">
+                <Button size="lg" className="bg-[#2b3990] hover:bg-[#1e2871] text-white font-bold text-[16px] transition-colors duration-200">
+                  Shop Now
+                </Button>
+              </Link>
+              <QuoteRequestDialog />
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Mobile form section - appears below hero */}
-      <section className="lg:hidden bg-gray-50 py-6">
-        <div className="container mx-auto px-4">
-          <div className="max-w-sm mx-auto">
+          
+          {/* Contact form - mobile centered, desktop right */}
+          <div className="flex-1 lg:flex-none lg:ml-8 flex items-center justify-center h-full">
             <HeroContactForm />
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

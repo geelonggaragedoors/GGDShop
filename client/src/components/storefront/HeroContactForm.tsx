@@ -21,7 +21,16 @@ const contactFormSchema = z.object({
   makeOther: z.string().optional(),
   model: z.string().min(1, "Please specify the model"),
   message: z.string().optional(),
-  imageUrls: z.array(z.string()).optional(),
+  imageUrls: z.array(z.string()).min(1, "Please upload at least one image"),
+}).refine((data) => {
+  // If "Other" is selected for make, makeOther must be provided
+  if (data.make === "Other" && (!data.makeOther || data.makeOther.trim() === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please specify the make when 'Other' is selected",
+  path: ["makeOther"],
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
