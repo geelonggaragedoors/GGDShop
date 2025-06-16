@@ -642,9 +642,7 @@ export class DatabaseStorage implements IStorage {
 
   // Staff operations
   async getStaffMembers(): Promise<User[]> {
-    const staff = await db.select().from(users).where(eq(users.isActive, true)).orderBy(asc(users.firstName));
-    console.log('Staff members from DB:', staff.map(s => ({ id: s.id, email: s.email })));
-    return staff;
+    return await db.select().from(users).where(eq(users.isActive, true)).orderBy(asc(users.firstName));
   }
 
   async getStaffMemberById(id: string): Promise<User | undefined> {

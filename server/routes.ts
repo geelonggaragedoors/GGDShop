@@ -908,53 +908,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Staff routes
-  app.get("/api/admin/staff", hybridAuth, async (req, res) => {
-    try {
-      const staff = [
-        {
-          id: "1",
-          firstName: "Admin",
-          lastName: "User",
-          email: "admin@geelonggaragedoors.com.au",
-          role: "admin",
-          isActive: true,
-          createdAt: new Date().toISOString(),
-        }
-      ];
-      res.json(staff);
-    } catch (error) {
-      console.error("Error fetching staff:", error);
-      res.status(500).json({ message: "Failed to fetch staff" });
-    }
-  });
 
-  app.post("/api/admin/staff", hybridAuth, async (req, res) => {
-    try {
-      res.json({ message: "Staff member added successfully", ...req.body, id: Math.random().toString() });
-    } catch (error) {
-      console.error("Error creating staff member:", error);
-      res.status(500).json({ message: "Failed to create staff member" });
-    }
-  });
 
-  app.put("/api/admin/staff/:id", hybridAuth, async (req, res) => {
-    try {
-      res.json({ message: "Staff member updated successfully", ...req.body });
-    } catch (error) {
-      console.error("Error updating staff member:", error);
-      res.status(500).json({ message: "Failed to update staff member" });
-    }
-  });
 
-  app.delete("/api/admin/staff/:id", hybridAuth, async (req, res) => {
-    try {
-      res.json({ message: "Staff member deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting staff member:", error);
-      res.status(500).json({ message: "Failed to delete staff member" });
-    }
-  });
 
   // Settings routes
   app.get("/api/admin/settings", hybridAuth, async (req, res) => {
