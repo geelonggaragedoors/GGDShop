@@ -353,7 +353,7 @@ function EmailManagement() {
                   <Label htmlFor="fromName">From Name</Label>
                   <Input
                     id="fromName"
-                    value={emailSettings?.fromName || ""}
+                    value={localSettings?.fromName || ""}
                     onChange={(e) => handleSettingsUpdate("fromName", e.target.value)}
                     placeholder="Your Store Name"
                   />
@@ -365,7 +365,7 @@ function EmailManagement() {
                   <Label htmlFor="replyToEmail">Reply-To Email</Label>
                   <Input
                     id="replyToEmail"
-                    value={emailSettings?.replyToEmail || ""}
+                    value={localSettings?.replyToEmail || ""}
                     onChange={(e) => handleSettingsUpdate("replyToEmail", e.target.value)}
                     placeholder="support@yourstore.com"
                   />
@@ -374,7 +374,7 @@ function EmailManagement() {
                   <Label htmlFor="adminEmail">Admin Email</Label>
                   <Input
                     id="adminEmail"
-                    value={emailSettings?.adminEmail || ""}
+                    value={localSettings?.adminEmail || ""}
                     onChange={(e) => handleSettingsUpdate("adminEmail", e.target.value)}
                     placeholder="admin@yourstore.com"
                   />
@@ -387,6 +387,15 @@ function EmailManagement() {
                   This system uses Resend for reliable email delivery. Your RESEND_API_KEY is configured in environment variables.
                 </p>
               </div>
+
+              <Button 
+                onClick={saveSettings}
+                disabled={updateSettingsMutation.isPending}
+                className="w-full"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {updateSettingsMutation.isPending ? "Saving..." : "Save Email Configuration"}
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
