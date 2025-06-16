@@ -1373,7 +1373,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Reset staff password
+  // Reset staff password via email
   app.post('/api/admin/staff/:id/reset-password', hybridAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
@@ -1393,6 +1393,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error resetting staff password:", error);
       res.status(500).json({ message: error instanceof Error ? error.message : "Failed to reset password" });
+    }
+  });
+
+  // Generate temporary password directly
+  app.post('/api/admin/staff/:id/reset-password-direct', hybridAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Get admin ID from authenticated user
+      let adminId: string;
+      if (req.user?.claims?.sub) {
+        adminId = req.user.claims.sub;
+      } else if (req.user?.id) {
+        adminId = req.user.id;
+      } else {
+        return res.status(401).json({ message: "Unauthorized - admin authentication required" });
+      }
+      
+      const tempPassword = await authService.adminDirectPasswordReset(id, adminId);
+      res.json({ tempPassword, message: "Temporary password generated successfully" });
+    } catch (error) {
+      console.error("Error generating temporary password:", error);
+      res.status(500).json({ message: error instanceof Error ? error.message : "Failed to generate temporary password" });
     }
   });
 

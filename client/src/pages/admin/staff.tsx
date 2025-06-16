@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
-import { Plus, UserPlus, Mail, Edit, Trash2, Users, Shield, Settings, KeyRound } from "lucide-react";
+import { Plus, UserPlus, Mail, Edit, Trash2, Users, Shield, Settings, KeyRound, MoreVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User, StaffInvitation, Role } from "@shared/schema";
 
@@ -41,7 +42,9 @@ export default function Staff() {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const [editStaffDialogOpen, setEditStaffDialogOpen] = useState(false);
+  const [passwordResetDialogOpen, setPasswordResetDialogOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<User | null>(null);
+  const [resetPasswordStaff, setResetPasswordStaff] = useState<User | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -193,6 +196,29 @@ export default function Staff() {
       toast({
         title: "Error",
         description: "Failed to send password reset email",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const directResetPasswordMutation = useMutation({
+    mutationFn: async (staffId: string) => {
+      const response = await fetch(`/api/admin/staff/${staffId}/reset-password-direct`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) throw new Error("Failed to generate temporary password");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setPasswordResetDialogOpen(true);
+      // Store temp password for display
+      (window as any).tempPassword = data.tempPassword;
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to generate temporary password",
         variant: "destructive",
       });
     },
@@ -459,15 +485,37 @@ export default function Staff() {
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => resetPasswordMutation.mutate(staff.id)}
-                            disabled={resetPasswordMutation.isPending}
-                            title="Reset Password"
-                          >
-                            <KeyRound className="w-4 h-4" />
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={resetPasswordMutation.isPending || directResetPasswordMutation.isPending}
+                                title="Reset Password"
+                              >
+                                <KeyRound className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem 
+                                onClick={() => resetPasswordMutation.mutate(staff.id)}
+                                disabled={resetPasswordMutation.isPending}
+                              >
+                                <Mail className="w-4 h-4 mr-2" />
+                                Send Reset Email
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => {
+                                  setResetPasswordStaff(staff);
+                                  directResetPasswordMutation.mutate(staff.id);
+                                }}
+                                disabled={directResetPasswordMutation.isPending}
+                              >
+                                <KeyRound className="w-4 h-4 mr-2" />
+                                Generate Temp Password
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                           <Button
                             variant="outline"
                             size="sm"

@@ -329,6 +329,39 @@ export class AuthService {
     });
   }
 
+  // Admin direct password reset - generates temporary password
+  async adminDirectPasswordReset(staffId: string, adminId: string): Promise<string> {
+    // Verify admin permissions
+    const [admin] = await db.select().from(users).where(eq(users.id, adminId));
+    if (!admin || !this.hasPermission(admin.role || '', 'admin')) {
+      throw new Error('Insufficient permissions');
+    }
+
+    // Get staff member
+    const [staff] = await db.select().from(users).where(eq(users.id, staffId));
+    if (!staff) {
+      throw new Error('Staff member not found');
+    }
+
+    // Generate temporary password (8 characters: uppercase, lowercase, numbers)
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    let tempPassword = '';
+    for (let i = 0; i < 8; i++) {
+      tempPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    // Hash and update password
+    const passwordHash = await this.hashPassword(tempPassword);
+    await db.update(users)
+      .set({
+        passwordHash,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, staffId));
+
+    return tempPassword;
+  }
+
   // Check if user has permission for specific action
   hasPermission(userRole: string, requiredRole: string): boolean {
     const roleHierarchy = {
