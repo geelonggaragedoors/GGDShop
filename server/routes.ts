@@ -1373,6 +1373,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reset staff password
+  app.post('/api/admin/staff/:id/reset-password', hybridAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const adminId = req.user.claims.sub;
+      
+      await authService.adminResetStaffPassword(id, adminId);
+      res.json({ message: "Password reset email sent successfully" });
+    } catch (error) {
+      console.error("Error resetting staff password:", error);
+      res.status(500).json({ message: error instanceof Error ? error.message : "Failed to reset password" });
+    }
+  });
+
   // Staff Invitation Routes
   app.get('/api/admin/invitations', hybridAuth, async (req, res) => {
     try {

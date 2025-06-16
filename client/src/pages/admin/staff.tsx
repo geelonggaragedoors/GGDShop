@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
-import { Plus, UserPlus, Mail, Edit, Trash2, Users, Shield, Settings } from "lucide-react";
+import { Plus, UserPlus, Mail, Edit, Trash2, Users, Shield, Settings, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User, StaffInvitation, Role } from "@shared/schema";
 
@@ -160,6 +160,27 @@ export default function Staff() {
       toast({
         title: "Error",
         description: "Failed to update staff member",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (staffId: string) => {
+      return apiRequest(`/api/admin/staff/${staffId}/reset-password`, {
+        method: "POST",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Password reset email sent successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to send password reset email",
         variant: "destructive",
       });
     },

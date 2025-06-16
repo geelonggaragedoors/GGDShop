@@ -282,6 +282,53 @@ export class AuthService {
       .where(eq(users.id, userId));
   }
 
+  // Admin reset staff password - sends reset email
+  async adminResetStaffPassword(staffId: string, adminId: string): Promise<void> {
+    // Verify admin permissions
+    const [admin] = await db.select().from(users).where(eq(users.id, adminId));
+    if (!admin || !this.hasPermission(admin.role || '', 'admin')) {
+      throw new Error('Insufficient permissions');
+    }
+
+    // Get staff member
+    const [staff] = await db.select().from(users).where(eq(users.id, staffId));
+    if (!staff) {
+      throw new Error('Staff member not found');
+    }
+
+    // Generate reset token
+    const resetToken = this.generateToken();
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiry
+
+    // Update user with reset token
+    await db.update(users)
+      .set({
+        resetPasswordToken: resetToken,
+        resetPasswordExpires: expiresAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, staffId));
+
+    // Send reset email
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+    
+    await emailService.sendEmail({
+      to: staff.email!,
+      subject: 'Password Reset - Geelong Garage Doors',
+      html: `
+        <h2>Password Reset Request</h2>
+        <p>Hello ${staff.firstName},</p>
+        <p>Your password has been reset by an administrator. Please click the link below to set a new password:</p>
+        <p><a href="${resetUrl}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Set New Password</a></p>
+        <p>This link will expire in 24 hours.</p>
+        <p>If you didn't request this reset, please contact your administrator immediately.</p>
+        <br>
+        <p>Best regards,<br>Geelong Garage Doors Team</p>
+      `,
+    });
+  }
+
   // Check if user has permission for specific action
   hasPermission(userRole: string, requiredRole: string): boolean {
     const roleHierarchy = {
