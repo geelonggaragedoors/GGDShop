@@ -46,15 +46,15 @@ export default function Staff() {
   const queryClient = useQueryClient();
 
   // Fetch data
-  const { data: staffMembers = [], isLoading: staffLoading } = useQuery({
+  const { data: staffMembers = [], isLoading: staffLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/staff"],
   });
 
-  const { data: invitations = [], isLoading: invitationsLoading } = useQuery({
+  const { data: invitations = [], isLoading: invitationsLoading } = useQuery<StaffInvitation[]>({
     queryKey: ["/api/admin/invitations"],
   });
 
-  const { data: roles = [], isLoading: rolesLoading } = useQuery({
+  const { data: roles = [], isLoading: rolesLoading } = useQuery<Role[]>({
     queryKey: ["/api/admin/roles"],
   });
 
@@ -91,10 +91,13 @@ export default function Staff() {
   // Mutations
   const inviteStaffMutation = useMutation({
     mutationFn: async (data: z.infer<typeof inviteStaffSchema>) => {
-      return apiRequest("/api/admin/invitations", {
+      const response = await fetch("/api/admin/invitations", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error("Failed to send invitation");
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -116,10 +119,13 @@ export default function Staff() {
 
   const createRoleMutation = useMutation({
     mutationFn: async (data: z.infer<typeof createRoleSchema>) => {
-      return apiRequest("/api/admin/roles", {
+      const response = await fetch("/api/admin/roles", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error("Failed to create role");
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -141,10 +147,13 @@ export default function Staff() {
 
   const updateStaffMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: z.infer<typeof updateStaffSchema> }) => {
-      return apiRequest(`/api/admin/staff/${id}`, {
+      const response = await fetch(`/api/admin/staff/${id}`, {
         method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error("Failed to update staff member");
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -167,9 +176,12 @@ export default function Staff() {
 
   const resetPasswordMutation = useMutation({
     mutationFn: async (staffId: string) => {
-      return apiRequest(`/api/admin/staff/${staffId}/reset-password`, {
+      const response = await fetch(`/api/admin/staff/${staffId}/reset-password`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
+      if (!response.ok) throw new Error("Failed to send password reset email");
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -188,9 +200,12 @@ export default function Staff() {
 
   const deleteInvitationMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/admin/invitations/${id}`, {
+      const response = await fetch(`/api/admin/invitations/${id}`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
       });
+      if (!response.ok) throw new Error("Failed to delete invitation");
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -210,9 +225,12 @@ export default function Staff() {
 
   const deactivateStaffMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/admin/staff/${id}`, {
+      const response = await fetch(`/api/admin/staff/${id}`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
       });
+      if (!response.ok) throw new Error("Failed to deactivate staff member");
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -440,6 +458,15 @@ export default function Staff() {
                             onClick={() => handleEditStaff(staff)}
                           >
                             <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => resetPasswordMutation.mutate(staff.id)}
+                            disabled={resetPasswordMutation.isPending}
+                            title="Reset Password"
+                          >
+                            <KeyRound className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="outline"
