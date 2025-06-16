@@ -274,6 +274,7 @@ function EmailManagement() {
   };
 
   const handleTemplateUpdate = (templateId: string, updates: Partial<EmailTemplate>) => {
+    if (!emailSettings?.templates) return;
     const updatedTemplates = emailSettings.templates.map((template: EmailTemplate) =>
       template.id === templateId ? { ...template, ...updates } : template
     );
@@ -292,10 +293,14 @@ function EmailManagement() {
     testEmailMutation.mutate({ templateId: selectedTemplate, email: testEmail });
   };
 
-  const selectedTemplateData = emailSettings?.templates.find((t: EmailTemplate) => t.id === selectedTemplate);
+  const selectedTemplateData = emailSettings?.templates?.find((t: EmailTemplate) => t.id === selectedTemplate);
 
   if (isLoading) {
     return <div className="p-6">Loading email settings...</div>;
+  }
+
+  if (!emailSettings || !emailSettings.templates) {
+    return <div className="p-6">No email settings found. Please check your configuration.</div>;
   }
 
   return (
@@ -392,7 +397,7 @@ function EmailManagement() {
                         <SelectValue placeholder="Select template" />
                       </SelectTrigger>
                       <SelectContent>
-                        {emailSettings?.templates.map((template: EmailTemplate) => (
+                        {emailSettings?.templates?.map((template: EmailTemplate) => (
                           <SelectItem key={template.id} value={template.id}>
                             <div className="flex items-center space-x-2">
                               <span>{template.name}</span>
@@ -408,7 +413,7 @@ function EmailManagement() {
                     </Select>
                   </div>
 
-                  {selectedTemplateData && (
+                  {selectedTemplateData && emailSettings?.templates && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <Label>Template Active</Label>
@@ -433,7 +438,7 @@ function EmailManagement() {
                       <div className="space-y-2">
                         <Label>Available Variables</Label>
                         <div className="flex flex-wrap gap-2">
-                          {selectedTemplateData.variables.map((variable) => (
+                          {selectedTemplateData?.variables?.map((variable: string) => (
                             <Badge key={variable} variant="secondary">
                               {"{" + variable + "}"}
                             </Badge>
@@ -503,7 +508,7 @@ function EmailManagement() {
                       <SelectValue placeholder="Select template" />
                     </SelectTrigger>
                     <SelectContent>
-                      {emailSettings?.templates.map((template: EmailTemplate) => (
+                      {emailSettings?.templates?.map((template: EmailTemplate) => (
                         <SelectItem key={template.id} value={template.id}>
                           {template.name}
                         </SelectItem>
