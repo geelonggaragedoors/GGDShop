@@ -676,12 +676,19 @@ export class DatabaseStorage implements IStorage {
   // Email management operations
   async getEmailSettings(): Promise<any> {
     const [settings] = await db.select().from(emailSettingsConfig).where(eq(emailSettingsConfig.id, "default"));
-    return settings || {
+    const templates = await this.getEmailTemplates();
+    
+    const baseSettings = settings || {
       fromEmail: "orders@geelonggaragedoors.com.au",
       fromName: "Geelong Garage Doors",
       replyToEmail: "info@geelonggaragedoors.com.au",
       adminEmail: "admin@geelonggaragedoors.com.au",
       testEmail: ""
+    };
+    
+    return {
+      ...baseSettings,
+      templates: templates
     };
   }
 
