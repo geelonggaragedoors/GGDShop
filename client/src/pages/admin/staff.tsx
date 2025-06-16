@@ -815,6 +815,51 @@ export default function Staff() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Password Reset Dialog */}
+      <Dialog open={passwordResetDialogOpen} onOpenChange={setPasswordResetDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Temporary Password Generated</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p>A temporary password has been generated for <strong>{resetPasswordStaff?.firstName} {resetPasswordStaff?.lastName}</strong>:</p>
+            <div className="bg-gray-50 p-4 rounded-lg border">
+              <p className="text-lg font-mono font-bold text-center">
+                {(window as any).tempPassword || "Loading..."}
+              </p>
+            </div>
+            <div className="text-sm text-gray-600 space-y-2">
+              <p>• Please share this password securely with the staff member</p>
+              <p>• They should change this password immediately after logging in</p>
+              <p>• This password will not be shown again</p>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button 
+                onClick={() => {
+                  navigator.clipboard.writeText((window as any).tempPassword || '');
+                  toast({
+                    title: "Copied",
+                    description: "Password copied to clipboard",
+                  });
+                }}
+                variant="outline"
+              >
+                Copy Password
+              </Button>
+              <Button 
+                onClick={() => {
+                  setPasswordResetDialogOpen(false);
+                  setResetPasswordStaff(null);
+                  (window as any).tempPassword = null;
+                }}
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
