@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -205,6 +205,7 @@ function EmailManagement() {
   const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<string>("order_confirmation");
   const [testEmail, setTestEmail] = useState("");
+  const [localSettings, setLocalSettings] = useState<any>(null);
 
   const { data: emailSettings, isLoading } = useQuery({
     queryKey: ["/api/admin/email-settings"],
@@ -223,6 +224,13 @@ function EmailManagement() {
       return response.json();
     }
   });
+
+  // Update local state when emailSettings changes
+  useEffect(() => {
+    if (emailSettings && !localSettings) {
+      setLocalSettings(emailSettings);
+    }
+  }, [emailSettings, localSettings]);
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (settings: Partial<EmailSettings>) => {
@@ -266,11 +274,18 @@ function EmailManagement() {
   });
 
   const handleSettingsUpdate = (field: string, value: any) => {
+    // Update local state immediately for responsive UI
     const updatedSettings = {
-      ...emailSettings,
+      ...localSettings,
       [field]: value
     };
-    updateSettingsMutation.mutate(updatedSettings);
+    setLocalSettings(updatedSettings);
+  };
+
+  const saveSettings = () => {
+    if (localSettings) {
+      updateSettingsMutation.mutate(localSettings);
+    }
   };
 
   const handleTemplateUpdate = (templateId: string, updates: Partial<EmailTemplate>) => {
@@ -329,7 +344,7 @@ function EmailManagement() {
                   <Label htmlFor="fromEmail">From Email</Label>
                   <Input
                     id="fromEmail"
-                    value={emailSettings?.fromEmail || ""}
+                    value={localSettings?.fromEmail || ""}
                     onChange={(e) => handleSettingsUpdate("fromEmail", e.target.value)}
                     placeholder="orders@yourstore.com"
                   />
