@@ -1377,7 +1377,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/staff/:id/reset-password', hybridAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const adminId = req.user.claims.sub;
+      
+      // Get admin ID from authenticated user
+      let adminId: string;
+      if (req.user?.claims?.sub) {
+        adminId = req.user.claims.sub;
+      } else if (req.user?.id) {
+        adminId = req.user.id;
+      } else {
+        return res.status(401).json({ message: "Unauthorized - admin authentication required" });
+      }
       
       await authService.adminResetStaffPassword(id, adminId);
       res.json({ message: "Password reset email sent successfully" });
