@@ -463,7 +463,7 @@ export default function EmailSettings() {
                     <div>
                       <Label>Available Variables</Label>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {selectedTemplateData.variables.map((variable) => (
+                        {selectedTemplateData.variables.map((variable: string) => (
                           <Badge key={variable} variant="outline">
                             {"{" + variable + "}"}
                           </Badge>

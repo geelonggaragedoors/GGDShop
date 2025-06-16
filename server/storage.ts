@@ -14,6 +14,8 @@ import {
   customerReviews,
   enquiries,
   siteSettings,
+  emailTemplates,
+  emailSettingsConfig,
   type User,
   type UpsertUser,
   type Category,
@@ -41,6 +43,10 @@ import {
   type InsertEnquiry,
   type SiteSetting,
   type InsertSiteSetting,
+  type EmailTemplate,
+  type InsertEmailTemplate,
+  type EmailSettingConfig,
+  type InsertEmailSettingConfig,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql } from "drizzle-orm";
@@ -664,7 +670,54 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ isActive: false, updatedAt: new Date() })
       .where(eq(users.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Email management operations
+  async getEmailSettings(): Promise<any> {
+    const [settings] = await db.select().from(emailSettingsConfig).where(eq(emailSettingsConfig.id, "default"));
+    return settings || {
+      fromEmail: "orders@geelonggaragedoors.com.au",
+      fromName: "Geelong Garage Doors",
+      replyToEmail: "info@geelonggaragedoors.com.au",
+      adminEmail: "admin@geelonggaragedoors.com.au",
+      testEmail: ""
+    };
+  }
+
+  async updateEmailSettings(settings: any): Promise<any> {
+    const [updated] = await db
+      .insert(emailSettingsConfig)
+      .values({ id: "default", ...settings, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: emailSettingsConfig.id,
+        set: { ...settings, updatedAt: new Date() }
+      })
+      .returning();
+    return updated;
+  }
+
+  async getEmailTemplates(): Promise<any[]> {
+    return await db.select().from(emailTemplates).orderBy(asc(emailTemplates.name));
+  }
+
+  async getEmailTemplate(id: string): Promise<any | undefined> {
+    const [template] = await db.select().from(emailTemplates).where(eq(emailTemplates.id, id));
+    return template;
+  }
+
+  async createEmailTemplate(template: any): Promise<any> {
+    const [created] = await db.insert(emailTemplates).values(template).returning();
+    return created;
+  }
+
+  async updateEmailTemplate(id: string, updates: any): Promise<any> {
+    const [updated] = await db
+      .update(emailTemplates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(emailTemplates.id, id))
+      .returning();
+    return updated;
   }
 
   // Staff invitation operations
