@@ -606,3 +606,35 @@ export const siteSettings = pgTable("site_settings", {
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type InsertSiteSetting = typeof siteSettings.$inferInsert;
+
+// Email templates table
+export const emailTemplates = pgTable("email_templates", {
+  id: varchar("id", { length: 50 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  subject: varchar("subject", { length: 500 }).notNull(),
+  htmlContent: text("html_content").notNull(),
+  textContent: text("text_content").notNull(),
+  isActive: boolean("is_active").default(true),
+  variables: text("variables").array().default([]),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type InsertEmailTemplate = typeof emailTemplates.$inferInsert;
+
+// Email settings configuration table
+export const emailSettingsConfig = pgTable("email_settings_config", {
+  id: varchar("id", { length: 50 }).primaryKey().default("default"),
+  fromEmail: varchar("from_email", { length: 255 }).notNull(),
+  fromName: varchar("from_name", { length: 255 }).notNull(),
+  replyToEmail: varchar("reply_to_email", { length: 255 }),
+  adminEmail: varchar("admin_email", { length: 255 }).notNull(),
+  testEmail: varchar("test_email", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type EmailSettingConfig = typeof emailSettingsConfig.$inferSelect;
+export type InsertEmailSettingConfig = typeof emailSettingsConfig.$inferInsert;
