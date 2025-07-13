@@ -200,8 +200,14 @@ export class AuthService {
 
     console.log('Reset token saved to database');
 
-    // Send reset email
-    const resetUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+    // Send reset email - use deployed domain if available
+    const isProduction = process.env.NODE_ENV === 'production' || 
+      process.env.REPLIT_DEPLOYMENT === 'true' || 
+      process.env.RAILWAY_ENVIRONMENT === 'production';
+    
+    const baseUrl = process.env.BASE_URL || 
+      (isProduction ? 'https://geelonggaragedoors.com' : 'http://localhost:5000');
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
     
     console.log('Sending password reset email to:', email);
     console.log('Reset URL:', resetUrl);
