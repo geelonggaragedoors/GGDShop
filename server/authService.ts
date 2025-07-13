@@ -176,11 +176,16 @@ export class AuthService {
 
   // Send password reset email
   async sendPasswordResetEmail(email: string): Promise<void> {
+    console.log('Password reset requested for:', email);
+    
     const [user] = await db.select().from(users).where(eq(users.email, email));
     if (!user) {
+      console.log('No user found for email:', email);
       // Don't reveal if email exists for security
       return;
     }
+
+    console.log('Found user:', user.firstName, user.lastName);
 
     const resetToken = this.generateToken();
     const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
@@ -193,23 +198,42 @@ export class AuthService {
       })
       .where(eq(users.id, user.id));
 
+    console.log('Reset token saved to database');
+
     // Send reset email
     const resetUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
     
-    await emailService.sendEmail({
-      to: email,
-      subject: 'Password Reset Request - Geelong Garage Doors',
-      html: `
-        <h2>Password Reset Request</h2>
-        <p>Hello ${user.firstName},</p>
-        <p>You requested to reset your password. Click the link below to set a new password:</p>
-        <p><a href="${resetUrl}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Reset Password</a></p>
-        <p>This link will expire in 1 hour.</p>
-        <p>If you didn't request this, please ignore this email.</p>
-        <br>
-        <p>Best regards,<br>Geelong Garage Doors Team</p>
-      `,
-    });
+    console.log('Sending password reset email to:', email);
+    console.log('Reset URL:', resetUrl);
+    
+    try {
+      const result = await emailService.sendEmail({
+        to: email,
+        subject: 'Password Reset Request - Geelong Garage Doors',
+        html: `
+          <h2>Password Reset Request</h2>
+          <p>Hello ${user.firstName},</p>
+          <p>You requested to reset your password. Click the link below to set a new password:</p>
+          <p><a href="${resetUrl}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Reset Password</a></p>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <br>
+          <p>Best regards,<br>Geelong Garage Doors Team</p>
+        `,
+      });
+      
+      console.log('Email send result:', result);
+      
+      if (!result.success) {
+        console.error('Failed to send password reset email:', result.error);
+        throw new Error('Failed to send password reset email');
+      }
+      
+      console.log('Password reset email sent successfully');
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      throw error;
+    }
   }
 
   // Reset password with token
