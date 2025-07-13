@@ -200,12 +200,7 @@ export default function Login() {
               <Button
                 variant="link"
                 className="text-sm text-gray-600 hover:text-gray-500"
-                onClick={() => {
-                  toast({
-                    title: "Contact Administrator",
-                    description: "Please contact your administrator for password reset assistance.",
-                  });
-                }}
+                onClick={() => setLocation("/forgot-password")}
               >
                 Forgot your password?
               </Button>
