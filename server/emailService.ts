@@ -27,7 +27,7 @@ export class EmailService {
       });
 
       const result = await resend.emails.send({
-        from: data.from || 'onboarding@resend.dev', // Use default Resend domain for testing
+        from: 'onboarding@resend.dev', // Use default Resend domain for testing
         to: data.to,
         subject: data.subject,
         html: data.html,
