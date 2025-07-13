@@ -679,10 +679,10 @@ export class DatabaseStorage implements IStorage {
     const templates = await this.getEmailTemplates();
     
     const baseSettings = settings || {
-      fromEmail: "orders@geelonggaragedoors.com.au",
+      fromEmail: "orders@geelonggaragedoors.com",
       fromName: "Geelong Garage Doors",
-      replyToEmail: "info@geelonggaragedoors.com.au",
-      adminEmail: "admin@geelonggaragedoors.com.au",
+      replyToEmail: "info@geelonggaragedoors.com",
+      adminEmail: "admin@geelonggaragedoors.com",
       testEmail: ""
     };
     

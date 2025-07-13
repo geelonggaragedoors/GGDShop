@@ -15,19 +15,19 @@ export interface EmailData {
 }
 
 export class EmailService {
-  private fromEmail = 'orders@geelonggaragedoors.com.au';
-  private adminEmail = 'info@geelonggaragedoors.com.au';
+  private fromEmail = 'orders@geelonggaragedoors.com';
+  private adminEmail = 'info@geelonggaragedoors.com';
 
   async sendEmail(data: EmailData): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
       console.log('Attempting to send email:', {
-        from: data.from || 'noreply@geelonggaragedoors.com.au',
+        from: data.from || 'noreply@geelonggaragedoors.com',
         to: data.to,
         subject: data.subject
       });
 
       const { data: result, error } = await resend.emails.send({
-        from: data.from || 'noreply@geelonggaragedoors.com.au',
+        from: data.from || 'noreply@geelonggaragedoors.com',
         to: [data.to], // Resend expects array of recipients
         subject: data.subject,
         html: data.html,
@@ -116,9 +116,9 @@ export class EmailService {
           </div>
           
           <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 30px; text-align: center; color: #64748b;">
-            <img src="https://geelonggaragedoors.com.au/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
+            <img src="https://geelonggaragedoors.com/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
             <p>Professional garage door solutions across Geelong and surrounding areas</p>
-            <p>Phone: (03) 5221 8999 | Email: info@geelonggaragedoors.com.au</p>
+            <p>Phone: (03) 5221 8999 | Email: info@geelonggaragedoors.com</p>
             <p style="font-size: 12px;">ABN: 52 626 829 710</p>
           </div>
         </div>
@@ -166,8 +166,8 @@ export class EmailService {
           <p>You can track your order status anytime by visiting our website or contacting us directly.</p>
           
           <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 30px; text-align: center; color: #64748b;">
-            <img src="https://geelonggaragedoors.com.au/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
-            <p>Phone: (03) 5221 8999 | Email: info@geelonggaragedoors.com.au</p>
+            <img src="https://geelonggaragedoors.com/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
+            <p>Phone: (03) 5221 8999 | Email: info@geelonggaragedoors.com</p>
             <p style="font-size: 12px;">ABN: 52 626 829 710</p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export class EmailService {
           <p><strong>Action Required:</strong> Please review this order in the admin panel and take appropriate action.</p>
           
           <div style="text-align: center; margin: 20px 0;">
-            <a href="https://geelonggaragedoors.com.au/admin/orders" 
+            <a href="https://geelonggaragedoors.com/admin/orders" 
                style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
               View Order in Admin Panel
             </a>
@@ -271,7 +271,7 @@ export class EmailService {
           </div>
           
           <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 30px; text-align: center; color: #64748b;">
-            <img src="https://geelonggaragedoors.com.au/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
+            <img src="https://geelonggaragedoors.com/logo.png" alt="Geelong Garage Doors" style="height: 40px; margin-bottom: 10px;" />
             <p>Quote request received via website</p>
             <p style="font-size: 12px;">ABN: 52 626 829 710</p>
           </div>

@@ -796,8 +796,8 @@ function CustomerReceipt({ order }: { order: any }) {
       {/* Footer */}
       <div className="text-center text-sm text-gray-600 border-t pt-4">
         <p>Thank you for your business!</p>
-        <p>For support, contact us at info@geelonggaragedoors.com.au</p>
-        <p>Visit us at www.geelonggaragedoors.com.au</p>
+        <p>For support, contact us at info@geelonggaragedoors.com</p>
+        <p>Visit us at www.geelonggaragedoors.com</p>
       </div>
     </div>
   );

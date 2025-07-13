@@ -7,6 +7,7 @@ This is a full-stack e-commerce platform built for Geelong Garage Doors, featuri
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Email domain: Using geelonggaragedoors.com (verified in Resend) instead of .com.au
 
 ## System Architecture
 
