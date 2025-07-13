@@ -27,7 +27,7 @@ export class EmailService {
       });
 
       const { data: result, error } = await resend.emails.send({
-        from: data.from || 'onboarding@resend.dev', // Use verified Resend domain until custom domain is verified
+        from: data.from || 'noreply@geelonggaragedoors.com.au',
         to: [data.to], // Resend expects array of recipients
         subject: data.subject,
         html: data.html,

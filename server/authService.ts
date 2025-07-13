@@ -209,7 +209,7 @@ export class AuthService {
     try {
       const result = await emailService.sendEmail({
         to: email,
-        from: 'onboarding@resend.dev', // Use verified Resend domain until custom domain is verified
+        from: 'noreply@geelonggaragedoors.com.au',
         subject: 'Password Reset Request - Geelong Garage Doors',
         html: `
           <h2>Password Reset Request</h2>
