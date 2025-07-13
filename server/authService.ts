@@ -207,17 +207,14 @@ export class AuthService {
     console.log('Reset URL:', resetUrl);
     
     try {
-      // For testing mode, send to the verified email address
-      const testingEmail = 'stevejford007@gmail.com';
-      const targetEmail = email === 'stevejford1@gmail.com' ? testingEmail : email;
-      
       const result = await emailService.sendEmail({
-        to: targetEmail,
+        to: email,
+        from: 'noreply@geelonggaragedoors.com.au',
         subject: 'Password Reset Request - Geelong Garage Doors',
         html: `
           <h2>Password Reset Request</h2>
           <p>Hello ${user.firstName || 'User'},</p>
-          <p>You requested to reset your password for ${email}. Click the link below to set a new password:</p>
+          <p>You requested to reset your password. Click the link below to set a new password:</p>
           <p><a href="${resetUrl}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Reset Password</a></p>
           <p>This link will expire in 1 hour.</p>
           <p>If you didn't request this, please ignore this email.</p>
@@ -230,16 +227,13 @@ export class AuthService {
       
       if (!result.success) {
         console.error('Failed to send password reset email:', result.error);
-        // Don't throw error to prevent 500 - just log it for now
-        console.log('Password reset email failed, but continuing...');
-        return;
+        throw new Error('Failed to send password reset email');
       }
       
       console.log('Password reset email sent successfully');
     } catch (error) {
       console.error('Error sending password reset email:', error);
-      // Don't throw error to prevent 500 - just log it for now  
-      console.log('Password reset email failed, but continuing...');
+      throw error;
     }
   }
 

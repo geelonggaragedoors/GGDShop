@@ -27,7 +27,7 @@ export class EmailService {
       });
 
       const result = await resend.emails.send({
-        from: 'onboarding@resend.dev', // Use default Resend domain for testing
+        from: data.from || 'noreply@geelonggaragedoors.com.au',
         to: data.to,
         subject: data.subject,
         html: data.html,
