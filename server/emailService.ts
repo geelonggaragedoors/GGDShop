@@ -21,31 +21,31 @@ export class EmailService {
   async sendEmail(data: EmailData): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
       console.log('Attempting to send email:', {
-        from: data.from || this.fromEmail,
+        from: data.from || 'noreply@geelonggaragedoors.com.au',
         to: data.to,
         subject: data.subject
       });
 
-      const result = await resend.emails.send({
-        from: data.from || 'noreply@geelonggaragedoors.com.au',
-        to: data.to,
+      const { data: result, error } = await resend.emails.send({
+        from: data.from || 'onboarding@resend.dev', // Use verified Resend domain until custom domain is verified
+        to: [data.to], // Resend expects array of recipients
         subject: data.subject,
         html: data.html,
       });
 
-      console.log('Resend API response:', result);
+      console.log('Resend API response:', { result, error });
 
-      if (result.error) {
-        console.error('Resend API error:', result.error);
+      if (error) {
+        console.error('Resend API error:', error);
         return {
           success: false,
-          error: result.error.message || 'Email sending failed',
+          error: error.message || 'Email sending failed',
         };
       }
 
       return {
         success: true,
-        messageId: result.data?.id,
+        messageId: result?.id,
       };
     } catch (error) {
       console.error('Email sending failed:', error);
