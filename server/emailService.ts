@@ -20,12 +20,28 @@ export class EmailService {
 
   async sendEmail(data: EmailData): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      const result = await resend.emails.send({
+      console.log('Attempting to send email:', {
         from: data.from || this.fromEmail,
+        to: data.to,
+        subject: data.subject
+      });
+
+      const result = await resend.emails.send({
+        from: data.from || 'onboarding@resend.dev', // Use default Resend domain for testing
         to: data.to,
         subject: data.subject,
         html: data.html,
       });
+
+      console.log('Resend API response:', result);
+
+      if (result.error) {
+        console.error('Resend API error:', result.error);
+        return {
+          success: false,
+          error: result.error.message || 'Email sending failed',
+        };
+      }
 
       return {
         success: true,
