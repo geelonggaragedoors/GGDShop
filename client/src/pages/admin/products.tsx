@@ -209,6 +209,7 @@ export default function Products() {
       boxSize: "",
       isFeatured: false,
       isActive: true,
+      alwaysInStock: true,
     },
   });
 
@@ -282,6 +283,7 @@ export default function Products() {
       height: typeof product.height === 'string' ? parseFloat(product.height) : (product.height || 0),
       isFeatured: product.isFeatured || false,
       isActive: product.isActive !== false,
+      alwaysInStock: product.alwaysInStock || false,
     });
     
     // Pre-populate selected images if they exist
@@ -385,6 +387,18 @@ export default function Products() {
       cell: ({ row }: any) => {
         const stock = row.original.stockQuantity;
         const isLowStock = stock <= row.original.lowStockThreshold;
+        const alwaysInStock = row.original.alwaysInStock;
+        
+        if (alwaysInStock) {
+          return (
+            <div className="flex items-center space-x-1">
+              <Badge variant="default" className="bg-green-100 text-green-800">
+                Always In Stock
+              </Badge>
+            </div>
+          );
+        }
+        
         return (
           <span className={isLowStock ? "text-red-600 font-medium" : ""}>
             {stock}
@@ -655,7 +669,7 @@ export default function Products() {
                         </div>
 
                         {/* Weight and Toggles Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                           <FormField
                             control={form.control}
                             name="weight"
@@ -700,6 +714,18 @@ export default function Products() {
                                   <Switch checked={field.value} onCheckedChange={field.onChange} />
                                 </FormControl>
                                 <FormLabel className="text-sm">Active</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="alwaysInStock"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="text-sm">Always In Stock</FormLabel>
                               </FormItem>
                             )}
                           />
@@ -1090,7 +1116,7 @@ export default function Products() {
                         </div>
 
                         {/* Product Status Toggles */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <FormField
                             control={form.control}
                             name="isFeatured"
@@ -1112,6 +1138,18 @@ export default function Products() {
                                   <Switch checked={field.value} onCheckedChange={field.onChange} />
                                 </FormControl>
                                 <FormLabel className="text-sm">Active</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="alwaysInStock"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="text-sm">Always In Stock</FormLabel>
                               </FormItem>
                             )}
                           />

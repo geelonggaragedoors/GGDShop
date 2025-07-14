@@ -124,6 +124,7 @@ export const products = pgTable("products", {
   lowStockThreshold: integer("low_stock_threshold").default(5),
   trackInventory: boolean("track_inventory").default(true),
   allowBackorder: boolean("allow_backorder").default(false),
+  alwaysInStock: boolean("always_in_stock").default(false),
   isFeatured: boolean("is_featured").default(false),
   isActive: boolean("is_active").default(true),
   seoTitle: varchar("seo_title"),
