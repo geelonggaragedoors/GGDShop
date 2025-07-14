@@ -1,0 +1,162 @@
+content.js:208 {}
+index-C-XWUWj4.js:48  GET https://geelonggaragedoors.com/api/notifications 500 (Internal Server Error)
+(anonymous) @ index-C-XWUWj4.js:48
+i @ index-C-XWUWj4.js:48
+v @ index-C-XWUWj4.js:48
+start @ index-C-XWUWj4.js:48
+fetch @ index-C-XWUWj4.js:48
+Af @ index-C-XWUWj4.js:48
+onSubscribe @ index-C-XWUWj4.js:48
+subscribe @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+MD @ index-C-XWUWj4.js:38
+ix @ index-C-XWUWj4.js:40
+Kc @ index-C-XWUWj4.js:40
+DG @ index-C-XWUWj4.js:40
+nl @ index-C-XWUWj4.js:40
+bC @ index-C-XWUWj4.js:40
+zo @ index-C-XWUWj4.js:38
+(anonymous) @ index-C-XWUWj4.js:40
+setTimeout
+s @ index-C-XWUWj4.js:48
+o @ index-C-XWUWj4.js:48
+batch @ index-C-XWUWj4.js:48
+Ga @ index-C-XWUWj4.js:48
+setData @ index-C-XWUWj4.js:48
+onSuccess @ index-C-XWUWj4.js:48
+f @ index-C-XWUWj4.js:48
+Promise.then
+v @ index-C-XWUWj4.js:48
+start @ index-C-XWUWj4.js:48
+fetch @ index-C-XWUWj4.js:48
+Af @ index-C-XWUWj4.js:48
+onSubscribe @ index-C-XWUWj4.js:48
+subscribe @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+MD @ index-C-XWUWj4.js:38
+ix @ index-C-XWUWj4.js:40
+Kc @ index-C-XWUWj4.js:40
+bC @ index-C-XWUWj4.js:40
+zo @ index-C-XWUWj4.js:38
+DG @ index-C-XWUWj4.js:40
+nl @ index-C-XWUWj4.js:40
+d3 @ index-C-XWUWj4.js:40
+j @ index-C-XWUWj4.js:25
+O @ index-C-XWUWj4.js:25
+index-C-XWUWj4.js:519 Connected to notification WebSocket
+index-C-XWUWj4.js:519 WebSocket authentication successful
+index-C-XWUWj4.js:507 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ index-C-XWUWj4.js:507
+ix @ index-C-XWUWj4.js:40
+Kc @ index-C-XWUWj4.js:40
+DG @ index-C-XWUWj4.js:40
+nl @ index-C-XWUWj4.js:40
+bC @ index-C-XWUWj4.js:40
+zo @ index-C-XWUWj4.js:38
+(anonymous) @ index-C-XWUWj4.js:40
+index-C-XWUWj4.js:600 Create Product button clicked!
+index-C-XWUWj4.js:600 Form state: {defaultValues: {…}, …}
+index-C-XWUWj4.js:600 Form errors: {}
+index-C-XWUWj4.js:600 Form is valid: false
+index-C-XWUWj4.js:600 Form values: {name: 'TEST', slug: '', description: '', price: 33, categoryId: '', …}
+index-C-XWUWj4.js:600 Manual validation result: false
+index-C-XWUWj4.js:600 Validation errors after trigger: {categoryId: {…}, brandId: {…}}
+index-C-XWUWj4.js:600 Create Product button clicked!
+index-C-XWUWj4.js:600 Form state: {defaultValues: {…}, …}
+index-C-XWUWj4.js:600 Form errors: {}
+index-C-XWUWj4.js:600 Form is valid: true
+index-C-XWUWj4.js:600 Form values: {name: 'TEST', slug: '', description: '', price: 33, categoryId: '04b504e5-ba0d-425c-bdee-b03477d0c893', …}
+index-C-XWUWj4.js:600 Manual validation result: true
+index-C-XWUWj4.js:600 Validation errors after trigger: {}
+index-C-XWUWj4.js:600 onSubmit called with data: {name: 'TEST', slug: '', sku: '', description: '', price: 33, …}
+index-C-XWUWj4.js:600 Form errors: {}
+index-C-XWUWj4.js:600 Form is valid: true
+index-C-XWUWj4.js:600 Selected images: []
+index-C-XWUWj4.js:600 Editing product: null
+index-C-XWUWj4.js:600 Final product data to submit: {name: 'TEST', slug: 'test', sku: '', description: '', price: 33, …}
+index-C-XWUWj4.js:600 About to call mutation...
+index-C-XWUWj4.js:48  POST https://geelonggaragedoors.com/api/admin/products 500 (Internal Server Error)
+Ct @ index-C-XWUWj4.js:48
+create @ index-C-XWUWj4.js:503
+fn @ index-C-XWUWj4.js:48
+v @ index-C-XWUWj4.js:48
+start @ index-C-XWUWj4.js:48
+execute @ index-C-XWUWj4.js:48
+await in execute
+mutate @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+ce @ index-C-XWUWj4.js:600
+(anonymous) @ index-C-XWUWj4.js:507
+await in (anonymous)
+rH @ index-C-XWUWj4.js:37
+sH @ index-C-XWUWj4.js:37
+aH @ index-C-XWUWj4.js:37
+W2 @ index-C-XWUWj4.js:37
+vD @ index-C-XWUWj4.js:37
+(anonymous) @ index-C-XWUWj4.js:37
+PS @ index-C-XWUWj4.js:40
+z4 @ index-C-XWUWj4.js:37
+ib @ index-C-XWUWj4.js:37
+JN @ index-C-XWUWj4.js:37
+wH @ index-C-XWUWj4.js:37
+index-C-XWUWj4.js:48  GET https://geelonggaragedoors.com/api/notifications 500 (Internal Server Error)
+(anonymous) @ index-C-XWUWj4.js:48
+i @ index-C-XWUWj4.js:48
+v @ index-C-XWUWj4.js:48
+start @ index-C-XWUWj4.js:48
+fetch @ index-C-XWUWj4.js:48
+Af @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+setInterval
+bj @ index-C-XWUWj4.js:48
+wj @ index-C-XWUWj4.js:48
+onQueryUpdate @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+batch @ index-C-XWUWj4.js:48
+Ga @ index-C-XWUWj4.js:48
+l @ index-C-XWUWj4.js:48
+h @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+Promise.catch
+v @ index-C-XWUWj4.js:48
+start @ index-C-XWUWj4.js:48
+fetch @ index-C-XWUWj4.js:48
+Af @ index-C-XWUWj4.js:48
+onSubscribe @ index-C-XWUWj4.js:48
+subscribe @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+MD @ index-C-XWUWj4.js:38
+ix @ index-C-XWUWj4.js:40
+Kc @ index-C-XWUWj4.js:40
+DG @ index-C-XWUWj4.js:40
+nl @ index-C-XWUWj4.js:40
+bC @ index-C-XWUWj4.js:40
+zo @ index-C-XWUWj4.js:38
+(anonymous) @ index-C-XWUWj4.js:40
+setTimeout
+s @ index-C-XWUWj4.js:48
+o @ index-C-XWUWj4.js:48
+batch @ index-C-XWUWj4.js:48
+Ga @ index-C-XWUWj4.js:48
+setData @ index-C-XWUWj4.js:48
+onSuccess @ index-C-XWUWj4.js:48
+f @ index-C-XWUWj4.js:48
+Promise.then
+v @ index-C-XWUWj4.js:48
+start @ index-C-XWUWj4.js:48
+fetch @ index-C-XWUWj4.js:48
+Af @ index-C-XWUWj4.js:48
+onSubscribe @ index-C-XWUWj4.js:48
+subscribe @ index-C-XWUWj4.js:48
+(anonymous) @ index-C-XWUWj4.js:48
+MD @ index-C-XWUWj4.js:38
+ix @ index-C-XWUWj4.js:40
+Kc @ index-C-XWUWj4.js:40
+bC @ index-C-XWUWj4.js:40
+zo @ index-C-XWUWj4.js:38
+DG @ index-C-XWUWj4.js:40
+nl @ index-C-XWUWj4.js:40
+d3 @ index-C-XWUWj4.js:40
+j @ index-C-XWUWj4.js:25
+O @ index-C-XWUWj4.js:25

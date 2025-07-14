@@ -358,6 +358,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .substring(0, 6)
           .toUpperCase();
         req.body.sku = `${namePrefix}${timestamp}`;
+        console.log("Generated SKU:", req.body.sku);
       }
       
       const productData = insertProductSchema.parse(req.body);
@@ -1351,10 +1352,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (!userId) {
+        console.error("No user ID found for notifications request");
         return res.status(401).json({ message: "User ID not found" });
       }
       
+      console.log("Fetching notifications for user:", userId);
       const notifications = await notificationService.getUnreadNotifications(userId);
+      console.log("Retrieved notifications:", notifications.length);
       res.json(notifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
