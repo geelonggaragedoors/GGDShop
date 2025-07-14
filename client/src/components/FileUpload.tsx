@@ -74,6 +74,7 @@ export function FileUpload({
         if (!response.ok) throw new Error('Upload failed');
         
         const result = await response.json();
+        console.log('Upload result:', result);
         onUpload(result.files);
       } else {
         formData.append('file', fileArray[0]);
