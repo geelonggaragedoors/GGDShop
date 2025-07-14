@@ -1327,7 +1327,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Notification routes
   app.get("/api/notifications", hybridAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      let userId;
+      
+      // Handle password-authenticated user
+      if (req.user.email) {
+        userId = req.user.id;
+      } 
+      // Handle Replit Auth user
+      else if (req.user.claims && req.user.claims.sub) {
+        userId = req.user.claims.sub;
+      }
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID not found" });
+      }
+      
       const notifications = await notificationService.getUnreadNotifications(userId);
       res.json(notifications);
     } catch (error) {
@@ -1354,7 +1368,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/notifications/mark-all-read", hybridAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      let userId;
+      
+      // Handle password-authenticated user
+      if (req.user.email) {
+        userId = req.user.id;
+      } 
+      // Handle Replit Auth user
+      else if (req.user.claims && req.user.claims.sub) {
+        userId = req.user.claims.sub;
+      }
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID not found" });
+      }
+      
       const success = await notificationService.markAllAsRead(userId);
       res.json({ message: "All notifications marked as read", success });
     } catch (error) {
