@@ -217,9 +217,15 @@ export default function Brands() {
               <h2 className="text-xl font-semibold text-gray-900">Brands Management</h2>
               <p className="text-gray-600">Manage product brands and manufacturers</p>
             </div>
-            <Dialog open={isCreateOpen || !!editingBrand} onOpenChange={closeDialog}>
+            <Dialog open={isCreateOpen || !!editingBrand} onOpenChange={(open) => {
+              if (!open) {
+                closeDialog();
+              } else if (!editingBrand) {
+                setIsCreateOpen(true);
+              }
+            }}>
               <DialogTrigger asChild>
-                <Button onClick={() => setIsCreateOpen(true)}>
+                <Button>
                   <Plus className="w-4 h-4 mr-2" />
                   Add Brand
                 </Button>
