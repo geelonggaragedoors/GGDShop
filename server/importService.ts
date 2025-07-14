@@ -179,7 +179,10 @@ export class ImportService {
         parse(csvContent, {
           columns: true,
           skip_empty_lines: true,
-          trim: true
+          trim: true,
+          relax_column_count: true, // Allow inconsistent column counts
+          relax_quotes: true, // Allow malformed quotes
+          skip_records_with_error: true // Skip problematic rows instead of failing
         }, async (err, records: WooCommerceProduct[]) => {
           if (err) {
             results.success = false;
