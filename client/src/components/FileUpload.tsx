@@ -179,7 +179,11 @@ export function FileUpload({
                     src={file.url}
                     alt={file.originalName}
                     className="w-full h-full object-cover"
+                    onLoad={() => {
+                      console.log('Image loaded successfully:', file.url);
+                    }}
                     onError={(e) => {
+                      console.error('Image failed to load:', file.url, e);
                       // Fallback for non-image files
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';

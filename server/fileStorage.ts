@@ -9,7 +9,8 @@ export class FileStorageService {
 
   constructor() {
     this.uploadDir = path.join(process.cwd(), 'uploads');
-    this.baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+    // Use relative URLs for better compatibility
+    this.baseUrl = '';
     this.ensureUploadDir();
   }
 
@@ -28,7 +29,7 @@ export class FileStorageService {
     
     return {
       filename,
-      url: `${this.baseUrl}/uploads/${filename}`
+      url: `/uploads/${filename}`
     };
   }
 
