@@ -69,7 +69,17 @@ export default function Products() {
   });
 
   const createProductMutation = useMutation({
-    mutationFn: api.admin.products.create,
+    mutationFn: async (data: any) => {
+      console.log("Creating product with data:", data);
+      try {
+        const response = await api.admin.products.create(data);
+        console.log("Product creation response:", response);
+        return response;
+      } catch (error) {
+        console.error("Product creation failed:", error);
+        throw error;
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
@@ -79,7 +89,8 @@ export default function Products() {
       toast({ title: "Product created successfully" });
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      console.error("Mutation error:", error);
+      toast({ title: "FAILED TO CREATE PRODUCT", description: error.message, variant: "destructive" });
     },
   });
 
