@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import NotificationBell from "@/components/NotificationBell";
+import AdminSwitcher from "@/components/AdminSwitcher";
 import Dashboard from "./dashboard";
 import Analytics from "./analytics";
 import Products from "./products";
@@ -134,21 +135,8 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Tabs */}
-      <div className="fixed top-[30px] left-1/2 transform -translate-x-1/2 z-50 bg-white rounded-full shadow-lg border p-1">
-        <div className="flex space-x-1">
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="rounded-full px-6">
-              <Store className="w-4 h-4 mr-2" />
-              Storefront
-            </Button>
-          </Link>
-          <Button variant="default" size="sm" className="rounded-full px-6">
-            <SettingsIcon className="w-4 h-4 mr-2" />
-            Admin Dashboard
-          </Button>
-        </div>
-      </div>
+      {/* Admin Switcher */}
+      <AdminSwitcher />
 
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 w-64 h-screen bg-white shadow-lg border-r z-40">

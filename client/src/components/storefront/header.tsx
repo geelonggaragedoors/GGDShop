@@ -11,6 +11,7 @@ import { api } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/hooks/useAuth";
+import AdminSwitcher from "@/components/AdminSwitcher";
 
 export default function StorefrontHeader() {
   const { cartCount, cartTotal } = useCart();
@@ -37,8 +38,12 @@ export default function StorefrontHeader() {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4">
+    <>
+      {/* Admin Switcher - Only visible to admin users */}
+      <AdminSwitcher />
+      
+      <header className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4">
         {/* Top bar */}
         <div className="flex justify-between items-center py-2 border-b border-gray-100 text-sm text-gray-600">
           <div className="flex items-center space-x-4">
@@ -369,5 +374,6 @@ export default function StorefrontHeader() {
         )}
       </div>
     </header>
+    </>
   );
 }
