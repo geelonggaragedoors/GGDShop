@@ -36,12 +36,15 @@ export default function Brands() {
   const createMutation = useMutation({
     mutationFn: api.admin.brands.create,
     onSuccess: () => {
+      console.log('Brand created successfully');
       queryClient.invalidateQueries({ queryKey: ["/api/admin/brands"] });
       queryClient.invalidateQueries({ queryKey: ["/api/brands"] });
       setIsCreateOpen(false);
+      form.reset();
       toast({ title: "Brand created successfully" });
     },
     onError: (error: any) => {
+      console.log('Brand creation error:', error);
       toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
@@ -84,9 +87,12 @@ export default function Brands() {
   });
 
   const onSubmit = (data: any) => {
+    console.log('Brand form data:', data);
     if (editingBrand) {
+      console.log('Updating brand:', editingBrand.id);
       updateMutation.mutate({ id: editingBrand.id, data });
     } else {
+      console.log('Creating new brand with data:', data);
       createMutation.mutate(data);
     }
   };

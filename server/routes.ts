@@ -573,11 +573,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/brands', hybridAuth, async (req, res) => {
     try {
+      console.log('Brand creation request body:', req.body);
       const brandData = insertBrandSchema.parse(req.body);
+      console.log('Brand data after parsing:', brandData);
       const brand = await storage.createBrand(brandData);
+      console.log('Brand created successfully:', brand);
       res.status(201).json(brand);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.log('Brand Zod validation errors:', error.errors);
         return res.status(400).json({ message: "Invalid brand data", errors: error.errors });
       }
       console.error("Error creating brand:", error);
