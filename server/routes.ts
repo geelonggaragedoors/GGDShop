@@ -348,6 +348,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/products', hybridAuth, async (req, res) => {
     try {
       console.log("Creating product with data:", req.body);
+      
+      // Handle empty SKU values - generate automatic SKU
+      if (!req.body.sku || req.body.sku === "") {
+        // Generate SKU from product name and timestamp
+        const timestamp = Date.now().toString().slice(-6);
+        const namePrefix = req.body.name
+          .replace(/[^a-zA-Z0-9]/g, '')
+          .substring(0, 6)
+          .toUpperCase();
+        req.body.sku = `${namePrefix}${timestamp}`;
+      }
+      
       const productData = insertProductSchema.parse(req.body);
       console.log("Parsed product data:", productData);
       

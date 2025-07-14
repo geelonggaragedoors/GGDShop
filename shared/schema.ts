@@ -104,7 +104,7 @@ export const products = pgTable("products", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
-  sku: varchar("sku", { length: 100 }).notNull().unique(),
+  sku: varchar("sku", { length: 100 }).unique(),
   shortDescription: text("short_description"),
   description: text("description"),
   specifications: jsonb("specifications"), // JSON object for product specs
@@ -484,6 +484,7 @@ export const insertProductSchema = createInsertSchema(products).omit({
   height: z.number().min(0, "Height must be a positive number").optional(),
   boxSize: z.string().optional(),
   stockQuantity: z.number().int().min(0, "Stock quantity must be a non-negative integer"),
+  sku: z.string().optional(),
 });
 
 export const insertCustomerSchema = createInsertSchema(customers).omit({
