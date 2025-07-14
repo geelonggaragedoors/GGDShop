@@ -7,6 +7,7 @@ export function getOptimizedImageUrl(src: string, options: {
   const { width = 800, height, quality = 80, format = 'webp' } = options;
   
   // For local uploaded images (starts with /uploads/), return as-is
+  // The browser will resolve relative URLs correctly
   if (src.startsWith('/uploads/')) {
     return src;
   }
