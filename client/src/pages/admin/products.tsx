@@ -19,6 +19,7 @@ import { insertProductSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
+import { ProductImport } from "@/components/admin/ProductImport";
 
 export default function Products() {
   const [search, setSearch] = useState("");
@@ -36,6 +37,7 @@ export default function Products() {
   const [newFolderName, setNewFolderName] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const { toast } = useToast();
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
@@ -457,10 +459,20 @@ export default function Products() {
               <p className="text-gray-600">Manage your garage door inventory</p>
             </div>
             <div className="flex space-x-3">
-              <Button variant="outline">
-                <Upload className="w-4 h-4 mr-2" />
-                Import CSV
-              </Button>
+              <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Import CSV
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle>Import Products from WooCommerce</DialogTitle>
+                  </DialogHeader>
+                  <ProductImport />
+                </DialogContent>
+              </Dialog>
               <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
                 <DialogTrigger asChild>
                   <Button>

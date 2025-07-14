@@ -42,6 +42,7 @@ import { emailService } from "./emailService";
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
 import { authService } from "./authService";
+import { importService } from "./importService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
@@ -1557,6 +1558,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting invitation:", error);
       res.status(500).json({ message: "Failed to delete invitation" });
+    }
+  });
+
+  // CSV Import Route
+  app.post('/api/admin/import/woocommerce', hybridAuth, upload.single('csv'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No CSV file uploaded" });
+      }
+
+      // Save uploaded file temporarily
+      const tempPath = path.join(process.cwd(), 'temp', `import-${Date.now()}.csv`);
+      
+      // Ensure temp directory exists
+      const tempDir = path.dirname(tempPath);
+      if (!require('fs').existsSync(tempDir)) {
+        require('fs').mkdirSync(tempDir, { recursive: true });
+      }
+      
+      // Write file to temp location
+      require('fs').writeFileSync(tempPath, req.file.buffer);
+      
+      // Process import
+      const results = await importService.importFromWooCommerce(tempPath);
+      
+      // Clean up temp file
+      require('fs').unlinkSync(tempPath);
+      
+      res.json(results);
+    } catch (error) {
+      console.error("Error importing CSV:", error);
+      res.status(500).json({ 
+        message: "Failed to import CSV",
+        error: error.message 
+      });
     }
   });
 
