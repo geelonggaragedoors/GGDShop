@@ -515,11 +515,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/categories', hybridAuth, async (req, res) => {
     try {
+      console.log('Category creation request body:', req.body);
       const categoryData = insertCategorySchema.parse(req.body);
+      console.log('Category data after parsing:', categoryData);
       const category = await storage.createCategory(categoryData);
       res.status(201).json(category);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.log('Zod validation errors:', error.errors);
         return res.status(400).json({ message: "Invalid category data", errors: error.errors });
       }
       console.error("Error creating category:", error);

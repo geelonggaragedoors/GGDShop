@@ -21,6 +21,7 @@ import { z } from "zod";
 
 const formSchema = insertCategorySchema.extend({
   slug: z.string().min(1, "Slug is required"),
+  parentId: z.string().optional().nullable().or(z.literal("none")),
 });
 
 export default function Categories() {
@@ -100,11 +101,15 @@ export default function Categories() {
   });
 
   const onSubmit = (data: any) => {
+    console.log('Form data before processing:', data);
+    
     // Convert "none" to null for parentId
     const submissionData = {
       ...data,
       parentId: data.parentId === "none" ? null : data.parentId || null
     };
+    
+    console.log('Submission data after processing:', submissionData);
     
     if (editingCategory) {
       updateMutation.mutate({ id: editingCategory.id, data: submissionData });
