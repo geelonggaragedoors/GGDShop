@@ -38,6 +38,22 @@ const upload = multer({
     }
   },
 });
+
+// Configure multer for CSV imports
+const csvUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit for CSV files
+  },
+  fileFilter: (req, file, cb) => {
+    // Allow only CSV files
+    if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed!'), false);
+    }
+  },
+});
 import { emailService } from "./emailService";
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
@@ -1562,7 +1578,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // CSV Import Route
-  app.post('/api/admin/import/woocommerce', hybridAuth, upload.single('csv'), async (req, res) => {
+  app.post('/api/admin/import/woocommerce', hybridAuth, csvUpload.single('csv'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No CSV file uploaded" });
