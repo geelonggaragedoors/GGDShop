@@ -58,6 +58,7 @@ export interface IStorage {
 
   // Category operations
   getCategories(): Promise<Category[]>;
+  getCategoriesWithProductCount(): Promise<Array<Category & { productCount: number }>>;
   getCategoryById(id: string): Promise<Category | undefined>;
   createCategory(category: InsertCategory): Promise<Category>;
   updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category | undefined>;
@@ -209,6 +210,30 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(categories).where(eq(categories.isActive, true)).orderBy(asc(categories.sortOrder));
   }
 
+  // Admin category operations with product counts
+  async getCategoriesWithProductCount(): Promise<Array<Category & { productCount: number }>> {
+    const result = await db
+      .select({
+        id: categories.id,
+        name: categories.name,
+        slug: categories.slug,
+        description: categories.description,
+        image: categories.image,
+        parentId: categories.parentId,
+        sortOrder: categories.sortOrder,
+        isActive: categories.isActive,
+        createdAt: categories.createdAt,
+        updatedAt: categories.updatedAt,
+        productCount: count(products.id),
+      })
+      .from(categories)
+      .leftJoin(products, eq(categories.id, products.categoryId))
+      .groupBy(categories.id)
+      .orderBy(asc(categories.sortOrder));
+    
+    return result;
+  }
+
   async getCategoryById(id: string): Promise<Category | undefined> {
     const [category] = await db.select().from(categories).where(eq(categories.id, id));
     return category;
@@ -229,6 +254,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCategory(id: string): Promise<boolean> {
+    // Check if category has products
+    const productCount = await db
+      .select({ count: count() })
+      .from(products)
+      .where(eq(products.categoryId, id));
+    
+    if (productCount[0]?.count > 0) {
+      throw new Error(`Cannot delete category. It contains ${productCount[0].count} product(s). Please move or delete all products first.`);
+    }
+    
+    // Check if category has subcategories
+    const subcategoryCount = await db
+      .select({ count: count() })
+      .from(categories)
+      .where(eq(categories.parentId, id));
+    
+    if (subcategoryCount[0]?.count > 0) {
+      throw new Error(`Cannot delete category. It has ${subcategoryCount[0].count} subcategory(ies). Please move or delete all subcategories first.`);
+    }
+    
     const result = await db.delete(categories).where(eq(categories.id, id));
     return result.rowCount! > 0;
   }

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -186,6 +187,17 @@ export default function Categories() {
       ),
     },
     {
+      header: "Products",
+      accessorKey: "productCount",
+      cell: ({ row }: any) => (
+        <div className="flex items-center">
+          <Badge variant="outline" className="text-sm">
+            {row.original.productCount || 0}
+          </Badge>
+        </div>
+      ),
+    },
+    {
       header: "Sort Order",
       accessorKey: "sortOrder",
       cell: ({ row }: any) => (
@@ -209,14 +221,43 @@ export default function Categories() {
           <Button size="sm" variant="ghost" onClick={() => openEditDialog(row.original)}>
             <Edit className="w-4 h-4" />
           </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            className="text-red-600 hover:text-red-700"
-            onClick={() => deleteMutation.mutate(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {row.original.productCount > 0 ? (
+                    <div className="space-y-2">
+                      <p>This category contains <strong>{row.original.productCount} product(s)</strong>.</p>
+                      <p className="text-amber-600">You must remove or move all products from this category before it can be deleted.</p>
+                    </div>
+                  ) : (
+                    <p>Are you sure you want to delete the category <strong>"{row.original.name}"</strong>? This action cannot be undone.</p>
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                {row.original.productCount === 0 && (
+                  <AlertDialogAction 
+                    onClick={() => deleteMutation.mutate(row.original.id)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                )}
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       ),
     },

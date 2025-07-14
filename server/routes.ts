@@ -615,7 +615,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin category management
   app.get('/api/admin/categories', hybridAuth, async (req, res) => {
     try {
-      const categories = await storage.getCategories();
+      const categories = await storage.getCategoriesWithProductCount();
       res.json(categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -666,6 +666,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Category deleted successfully" });
     } catch (error) {
       console.error("Error deleting category:", error);
+      // Return the specific error message if it's a constraint violation
+      if (error.message.includes("Cannot delete category")) {
+        return res.status(400).json({ message: error.message });
+      }
       res.status(500).json({ message: "Failed to delete category" });
     }
   });
