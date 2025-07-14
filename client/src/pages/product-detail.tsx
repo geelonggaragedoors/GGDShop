@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getOptimizedImageUrl } from "@/lib/image-optimizer";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
+import CustomerReviews from "@/components/storefront/customer-reviews";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -31,6 +32,11 @@ export default function ProductDetail() {
   const { data: similarProducts } = useQuery({
     queryKey: [`/api/products`, { categoryId: product?.categoryId, limit: 4 }],
     enabled: !!product?.categoryId,
+  });
+
+  const { data: reviewsData } = useQuery({
+    queryKey: [`/api/reviews`, { productId: product?.id, isVisible: true }],
+    enabled: !!product?.id,
   });
 
   const handleAddToCart = () => {
@@ -164,17 +170,19 @@ export default function ProductDetail() {
             </div>
 
             {/* Rating */}
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-                  />
-                ))}
+            {reviewsData && reviewsData.total > 0 && (
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${i < 5 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-gray-600">({reviewsData.total} review{reviewsData.total > 1 ? 's' : ''})</span>
               </div>
-              <span className="text-sm text-gray-600">(24 reviews)</span>
-            </div>
+            )}
 
             {/* Price */}
             <div className="flex items-baseline space-x-2">
@@ -280,7 +288,7 @@ export default function ProductDetail() {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews (24)</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews ({reviewsData?.total || 0})</TabsTrigger>
             </TabsList>
             
             <TabsContent value="description" className="mt-6">
@@ -338,21 +346,7 @@ export default function ProductDetail() {
             </TabsContent>
             
             <TabsContent value="reviews" className="mt-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold">Customer Reviews</h4>
-                      <Button variant="outline">Write a Review</Button>
-                    </div>
-                    <div className="text-center py-8">
-                      <Star className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">No reviews yet</p>
-                      <p className="text-sm text-gray-400">Be the first to review this product</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <CustomerReviews productId={product.id} showAll={true} />
             </TabsContent>
           </Tabs>
         </div>

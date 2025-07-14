@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, User } from "lucide-react";
 import { CustomerReview } from "@shared/schema";
+import { useState } from "react";
 
 interface CustomerReviewsProps {
   productId?: string;
@@ -9,9 +10,10 @@ interface CustomerReviewsProps {
   showAll?: boolean;
 }
 
-export default function CustomerReviews({ productId, limit = 6, showAll = false }: CustomerReviewsProps) {
+export default function CustomerReviews({ productId, limit = 6, showAll: showAllProp = false }: CustomerReviewsProps) {
+  const [showAll, setShowAll] = useState(showAllProp);
   const { data, isLoading } = useQuery<{ reviews: CustomerReview[]; total: number }>({
-    queryKey: ['/api/reviews', { isVisible: true, productId, limit, offset: 0 }],
+    queryKey: ['/api/reviews', { isVisible: true, productId, limit: showAll ? undefined : limit, offset: 0, showAll }],
     retry: false,
   });
 
@@ -134,7 +136,10 @@ export default function CustomerReviews({ productId, limit = 6, showAll = false 
 
           {!showAll && reviews.length > limit && (
             <div className="text-center">
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+              <button 
+                onClick={() => setShowAll(true)}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 View All Reviews ({data?.total})
               </button>
             </div>
