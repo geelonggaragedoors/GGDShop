@@ -195,10 +195,7 @@ export default function Products() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (productIds: string[]) => {
-      return apiRequest('/api/admin/products/bulk-delete', {
-        method: 'POST',
-        body: JSON.stringify({ productIds }),
-      });
+      return apiRequest('POST', '/api/admin/products/bulk-delete', { productIds });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
