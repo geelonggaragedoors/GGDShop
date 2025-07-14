@@ -264,6 +264,7 @@ export class ImportService {
                 images: imageUrls,
                 isActive: record.Published === '1',
                 isFeatured: record['Is featured?'] === '1',
+                status: 'published', // Set as published so they show on frontend
                 boxSize: '' // Will be calculated later based on dimensions
               };
 
