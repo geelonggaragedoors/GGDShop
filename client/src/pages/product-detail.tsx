@@ -11,6 +11,7 @@ import { api } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
+import { getOptimizedImageUrl } from "@/lib/image-optimizer";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 
@@ -93,7 +94,9 @@ export default function ProductDetail() {
   }
 
   const images = product.images || [];
-  const currentImage = images[selectedImage] || images[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800";
+  const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800";
+  const rawImage = images[selectedImage] || images[0] || defaultImage;
+  const currentImage = getOptimizedImageUrl(rawImage, { width: 800, height: 800, quality: 90 });
   
   const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, product.stockQuantity));
   const decrementQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
@@ -141,7 +144,7 @@ export default function ProductDetail() {
                     }`}
                   >
                     <img
-                      src={image}
+                      src={getOptimizedImageUrl(image, { width: 150, height: 150, quality: 85 })}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />

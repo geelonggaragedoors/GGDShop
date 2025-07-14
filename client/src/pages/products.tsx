@@ -80,10 +80,9 @@ export default function Products() {
   };
 
   const getProductImage = (product: any) => {
-    if (product.images && product.images.length > 0) {
-      return product.images[0];
-    }
-    return "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600";
+    const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600";
+    const imageUrl = product.images && product.images.length > 0 ? product.images[0] : defaultImage;
+    return getOptimizedImageUrl(imageUrl, { width: 400, height: 300, quality: 85 });
   };
 
   const handleAddToCart = (product: any, e: React.MouseEvent) => {
