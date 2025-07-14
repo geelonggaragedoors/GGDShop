@@ -347,14 +347,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   app.post('/api/admin/products', hybridAuth, async (req, res) => {
     try {
+      console.log("Creating product with data:", req.body);
       const productData = insertProductSchema.parse(req.body);
+      console.log("Parsed product data:", productData);
       
       // Validate shipping dimensions
       const validation = validateShippingDimensions(productData);
+      console.log("Shipping validation result:", validation);
       
       if (!validation.isValid) {
         // Save as draft if shipping info is missing
         productData.status = 'draft';
+        console.log("Creating product as draft due to missing shipping info");
         const product = await storage.createProduct(productData);
         return res.status(201).json({
           ...product,
@@ -388,6 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation error:", error.errors);
         return res.status(400).json({ message: "Invalid product data", errors: error.errors });
       }
       console.error("Error creating product:", error);
