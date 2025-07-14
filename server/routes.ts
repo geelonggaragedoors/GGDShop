@@ -22,6 +22,22 @@ import multer from "multer";
 import path from "path";
 import { createRouteHandler } from "uploadthing/express";
 import { ourFileRouter } from "./uploadthing";
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Allow only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  },
+});
 import { emailService } from "./emailService";
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
@@ -30,16 +46,6 @@ import { authService } from "./authService";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   await setupAuth(app);
-
-  // UploadThing routes
-  const uploadRouter = createRouteHandler({
-    router: ourFileRouter,
-  });
-
-  app.use("/api/uploadthing", uploadRouter);
-
-  // Enhanced authentication routes
-  app.use('/api/auth', authRoutes);
 
   // Hybrid authentication middleware - supports both password and Replit Auth
   const hybridAuth = async (req: any, res: any, next: any) => {
@@ -58,6 +64,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Not authenticated
     return res.status(401).json({ message: "Unauthorized" });
   };
+
+  // UploadThing routes
+  const uploadRouter = createRouteHandler({
+    router: ourFileRouter,
+  });
+
+  app.use("/api/uploadthing", uploadRouter);
+
+  // Local file upload endpoint
+  app.post('/api/upload', hybridAuth, upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      const result = await fileStorage.saveFile(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype
+      );
+
+      res.json({ 
+        success: true, 
+        file: {
+          url: result.url,
+          filename: result.filename,
+          originalName: req.file.originalname,
+          size: req.file.size,
+          mimeType: req.file.mimetype
+        }
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      res.status(500).json({ error: 'Failed to upload file' });
+    }
+  });
+
+  // Multiple files upload endpoint
+  app.post('/api/upload-multiple', hybridAuth, upload.array('files', 10), async (req, res) => {
+    try {
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: 'No files provided' });
+      }
+
+      const files = req.files as Express.Multer.File[];
+      const results = await Promise.all(
+        files.map(file => fileStorage.saveFile(file.buffer, file.originalname, file.mimetype))
+      );
+
+      res.json({ 
+        success: true, 
+        files: results.map((result, index) => ({
+          url: result.url,
+          filename: result.filename,
+          originalName: files[index].originalname,
+          size: files[index].size,
+          mimeType: files[index].mimetype
+        }))
+      });
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      res.status(500).json({ error: 'Failed to upload files' });
+    }
+  });
+
+  // Enhanced authentication routes
+  app.use('/api/auth', authRoutes);
 
   // Auth routes with hybrid authentication
   app.get('/api/auth/user', hybridAuth, async (req: any, res) => {

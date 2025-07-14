@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X } from "lucide-react";
-import { UploadButton } from "@/lib/uploadthing";
+import { FileUpload } from "@/components/FileUpload";
 
 export default function Products() {
   const [search, setSearch] = useState("");
@@ -30,7 +30,7 @@ export default function Products() {
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [selectedImages, setSelectedImages] = useState<any[]>([]);
-  const [isDragOver, setIsDragOver] = useState(false);
+
   const [currentFolder, setCurrentFolder] = useState("root");
   const [showFolderInput, setShowFolderInput] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
@@ -116,36 +116,7 @@ export default function Products() {
     },
   });
 
-  const uploadFileMutation = useMutation({
-    mutationFn: async (file: File) => {
-      // Convert file to base64 for storage
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      });
 
-      const response = await fetch("/api/admin/media", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filename: `${Date.now()}-${file.name}`,
-          originalName: file.name,
-          mimeType: file.type,
-          size: file.size,
-          url: base64, // Store base64 instead of blob URL
-          folder: currentFolder,
-          alt: "",
-        }),
-      });
-      return response.json();
-    },
-    onSuccess: (newFile) => {
-      refetchMedia();
-      setSelectedImages(prev => [...prev, newFile]);
-      toast({ title: "File uploaded successfully" });
-    },
-  });
 
   const bulkImportMutation = useMutation({
     mutationFn: async (file: File) => {
@@ -255,36 +226,7 @@ export default function Products() {
     }
   };
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    files.forEach(file => {
-      if (file.type.startsWith('image/')) {
-        uploadFileMutation.mutate(file);
-      }
-    });
-  }, [uploadFileMutation]);
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    files.forEach(file => {
-      if (file.type.startsWith('image/')) {
-        uploadFileMutation.mutate(file);
-      }
-    });
-  };
 
   const createFolder = () => {
     if (newFolderName.trim()) {
@@ -746,44 +688,34 @@ export default function Products() {
                           {selectedImages.length} image{selectedImages.length !== 1 ? 's' : ''} selected
                         </div>
 
-                        {/* UploadThing Upload Zone */}
-                        <div className="border-2 border-dashed rounded-lg p-4 text-center">
-                          <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-                          <p className="text-xs text-gray-600 mb-3">
-                            Upload product images
-                          </p>
-                          <UploadButton
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(res) => {
-                              if (res && res.length > 0) {
-                                const newImages = res.map(file => ({
-                                  id: file.key || Math.random().toString(),
-                                  url: file.url,
-                                  originalName: file.name,
-                                  alt: file.name
-                                }));
-                                setSelectedImages(prev => [...prev, ...newImages]);
-                                toast({
-                                  title: "Upload successful",
-                                  description: `${res.length} image(s) uploaded successfully`,
-                                });
-                              }
-                            }}
-                            onUploadError={(error: Error) => {
-                              console.error("Upload error:", error);
-                              toast({
-                                title: "Upload failed",
-                                description: error.message,
-                                variant: "destructive",
-                              });
-                            }}
-                            appearance={{
-                              button: "ut-ready:bg-blue-500 ut-ready:bg-opacity-100 ut-uploading:cursor-not-allowed ut-uploading:bg-blue-500/50 bg-blue-500 text-white px-3 py-1 text-xs rounded hover:bg-blue-600",
-                              container: "flex flex-col items-center",
-                              allowedContent: "text-xs text-gray-500 mt-1"
-                            }}
-                          />
-                        </div>
+                        {/* Local File Upload Zone */}
+                        <FileUpload
+                          multiple
+                          onUpload={(files) => {
+                            const newImages = files.map(file => ({
+                              id: file.filename,
+                              url: file.url,
+                              originalName: file.originalName,
+                              alt: file.originalName,
+                              filename: file.filename
+                            }));
+                            setSelectedImages(prev => [...prev, ...newImages]);
+                            toast({
+                              title: "Upload successful",
+                              description: `${files.length} image(s) uploaded successfully`,
+                            });
+                          }}
+                          onRemove={(url) => {
+                            setSelectedImages(prev => prev.filter(img => img.url !== url));
+                          }}
+                          currentFiles={selectedImages.map(img => ({
+                            url: img.url,
+                            filename: img.filename || img.originalName,
+                            originalName: img.originalName,
+                            size: 0,
+                            mimeType: 'image/*'
+                          }))}
+                        />
 
                         {/* Selected Images Preview */}
                         {selectedImages.length > 0 && (
@@ -1195,45 +1127,34 @@ export default function Products() {
 
 
 
-                        {/* UploadThing Upload Zone */}
-                        <div className="border-2 border-dashed rounded-lg p-4 text-center">
-                          <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-                          <p className="text-xs text-gray-600 mb-3">
-                            Upload additional product images
-                          </p>
-                          <UploadButton
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(res) => {
-                              if (res && res.length > 0) {
-                                const newImages = res.map(file => ({
-                                  id: file.key || Math.random().toString(),
-                                  url: file.url,
-                                  originalName: file.name,
-                                  alt: file.name,
-                                  filename: file.name
-                                }));
-                                setSelectedImages(prev => [...prev, ...newImages]);
-                                toast({
-                                  title: "Upload successful",
-                                  description: `${res.length} image(s) uploaded successfully`,
-                                });
-                              }
-                            }}
-                            onUploadError={(error: Error) => {
-                              console.error("Upload error:", error);
-                              toast({
-                                title: "Upload failed",
-                                description: error.message,
-                                variant: "destructive",
-                              });
-                            }}
-                            appearance={{
-                              button: "ut-ready:bg-blue-500 ut-ready:bg-opacity-100 ut-uploading:cursor-not-allowed ut-uploading:bg-blue-500/50 bg-blue-500 text-white px-3 py-1 text-xs rounded hover:bg-blue-600",
-                              container: "flex flex-col items-center",
-                              allowedContent: "text-xs text-gray-500 mt-1"
-                            }}
-                          />
-                        </div>
+                        {/* Local File Upload Zone */}
+                        <FileUpload
+                          multiple
+                          onUpload={(files) => {
+                            const newImages = files.map(file => ({
+                              id: file.filename,
+                              url: file.url,
+                              originalName: file.originalName,
+                              alt: file.originalName,
+                              filename: file.filename
+                            }));
+                            setSelectedImages(prev => [...prev, ...newImages]);
+                            toast({
+                              title: "Upload successful",
+                              description: `${files.length} image(s) uploaded successfully`,
+                            });
+                          }}
+                          onRemove={(url) => {
+                            setSelectedImages(prev => prev.filter(img => img.url !== url));
+                          }}
+                          currentFiles={selectedImages.map(img => ({
+                            url: img.url,
+                            filename: img.filename || img.originalName,
+                            originalName: img.originalName,
+                            size: 0,
+                            mimeType: 'image/*'
+                          }))}
+                        />
 
                         {/* Selected Images Display */}
                         {selectedImages.length > 0 && (

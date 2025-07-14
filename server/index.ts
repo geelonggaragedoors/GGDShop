@@ -36,6 +36,9 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 // Serve static files from public directory
 app.use(express.static('public'));
 
+// Serve uploaded files from uploads directory
+app.use('/uploads', express.static('uploads'));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
