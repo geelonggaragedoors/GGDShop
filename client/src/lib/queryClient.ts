@@ -12,6 +12,7 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  console.log('apiRequest called with:', { method, url, data });
   const res = await fetch(url, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},

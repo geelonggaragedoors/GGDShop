@@ -177,10 +177,7 @@ export default function Products() {
         return product;
       });
 
-      return apiRequest('/api/admin/products/bulk', {
-        method: 'POST',
-        body: JSON.stringify({ products }),
-      });
+      return apiRequest('POST', '/api/admin/products/bulk', { products });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
@@ -195,6 +192,8 @@ export default function Products() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (productIds: string[]) => {
+      console.log('Bulk delete mutation called with:', productIds);
+      console.log('API call arguments:', 'POST', '/api/admin/products/bulk-delete', { productIds });
       return apiRequest('POST', '/api/admin/products/bulk-delete', { productIds });
     },
     onSuccess: () => {
