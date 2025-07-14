@@ -22,6 +22,8 @@ import multer from "multer";
 import path from "path";
 import { createRouteHandler } from "uploadthing/express";
 import { ourFileRouter } from "./uploadthing";
+import { importService } from "./importService";
+import fs from "fs";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -1589,18 +1591,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Ensure temp directory exists
       const tempDir = path.dirname(tempPath);
-      if (!require('fs').existsSync(tempDir)) {
-        require('fs').mkdirSync(tempDir, { recursive: true });
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
       }
       
       // Write file to temp location
-      require('fs').writeFileSync(tempPath, req.file.buffer);
+      fs.writeFileSync(tempPath, req.file.buffer);
       
       // Process import
       const results = await importService.importFromWooCommerce(tempPath);
       
       // Clean up temp file
-      require('fs').unlinkSync(tempPath);
+      fs.unlinkSync(tempPath);
       
       res.json(results);
     } catch (error) {
