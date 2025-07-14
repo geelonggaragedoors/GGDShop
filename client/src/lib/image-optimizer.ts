@@ -6,6 +6,11 @@ export function getOptimizedImageUrl(src: string, options: {
 } = {}): string {
   const { width = 800, height, quality = 80, format = 'webp' } = options;
   
+  // For local uploaded images (starts with /uploads/), return as-is
+  if (src.startsWith('/uploads/')) {
+    return src;
+  }
+  
   // If it's already an optimized URL or external service, return as-is
   if (src.includes('unsplash.com') || src.includes('uploadthing.com')) {
     // For Unsplash, add optimization parameters
@@ -30,6 +35,11 @@ export function getOptimizedImageUrl(src: string, options: {
 }
 
 export function generateSrcSet(src: string, sizes: number[] = [400, 800, 1200]): string {
+  // For local uploaded images, just return the single source
+  if (src.startsWith('/uploads/')) {
+    return src;
+  }
+  
   return sizes
     .map(size => `${getOptimizedImageUrl(src, { width: size })} ${size}w`)
     .join(', ');
