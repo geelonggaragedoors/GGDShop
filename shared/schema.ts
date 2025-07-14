@@ -461,6 +461,8 @@ export const insertCategorySchema = createInsertSchema(categories).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  parentId: z.string().uuid().optional().or(z.null()),
 });
 
 export const insertBrandSchema = createInsertSchema(brands).omit({

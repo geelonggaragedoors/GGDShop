@@ -192,8 +192,6 @@ export default function Products() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (productIds: string[]) => {
-      console.log('Bulk delete mutation called with:', productIds);
-      console.log('API call arguments:', 'POST', '/api/admin/products/bulk-delete', { productIds });
       return apiRequest('POST', '/api/admin/products/bulk-delete', { productIds });
     },
     onSuccess: () => {
