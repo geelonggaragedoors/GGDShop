@@ -81,8 +81,9 @@ export default function Products() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/counts"] });
       setIsAddProductOpen(false);
       form.reset();
       setSelectedImages([]);
@@ -97,8 +98,9 @@ export default function Products() {
   const updateProductMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => api.admin.products.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/counts"] });
       setIsEditProductOpen(false);
       setEditingProduct(null);
       form.reset();
@@ -708,7 +710,8 @@ export default function Products() {
                               url: file.url,
                               originalName: file.originalName,
                               alt: file.originalName,
-                              filename: file.filename
+                              filename: file.filename,
+                              size: file.size
                             }));
                             setSelectedImages(prev => [...prev, ...newImages]);
                             toast({
@@ -722,8 +725,8 @@ export default function Products() {
                           currentFiles={selectedImages.map(img => ({
                             url: img.url,
                             filename: img.filename || img.originalName,
-                            originalName: img.originalName,
-                            size: 0,
+                            originalName: img.originalName || img.filename,
+                            size: img.size || 0,
                             mimeType: 'image/*'
                           }))}
                         />
@@ -1147,7 +1150,8 @@ export default function Products() {
                               url: file.url,
                               originalName: file.originalName,
                               alt: file.originalName,
-                              filename: file.filename
+                              filename: file.filename,
+                              size: file.size
                             }));
                             setSelectedImages(prev => [...prev, ...newImages]);
                             toast({
@@ -1161,8 +1165,8 @@ export default function Products() {
                           currentFiles={selectedImages.map(img => ({
                             url: img.url,
                             filename: img.filename || img.originalName,
-                            originalName: img.originalName,
-                            size: 0,
+                            originalName: img.originalName || img.filename,
+                            size: img.size || 0,
                             mimeType: 'image/*'
                           }))}
                         />

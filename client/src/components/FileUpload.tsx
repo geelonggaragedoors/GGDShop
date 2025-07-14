@@ -171,24 +171,40 @@ export function FileUpload({
       {currentFiles.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-gray-700">Uploaded Files:</h4>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {currentFiles.map((file, index) => (
-              <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <ImageIcon className="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{file.originalName}</p>
-                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-                  </div>
+              <div key={index} className="relative group">
+                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                  <img
+                    src={file.url}
+                    alt={file.originalName}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback for non-image files
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.parentElement!.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center">
+                          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      `;
+                    }}
+                  />
+                </div>
+                <div className="mt-1 text-center">
+                  <p className="text-xs text-gray-600 truncate">{file.originalName}</p>
+                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                 </div>
                 {onRemove && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onRemove(file.url)}
-                    className="text-red-500 hover:text-red-700"
+                    className="absolute top-1 right-1 text-red-500 hover:text-red-700 bg-white hover:bg-red-50 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3 h-3" />
                   </Button>
                 )}
               </div>
