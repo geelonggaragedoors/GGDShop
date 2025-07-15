@@ -124,13 +124,19 @@ export default function BestSellers() {
                 </div>
 
                 {product.stockQuantity !== undefined && (
-                  <div className="mt-3 text-xs text-gray-500">
+                  <div className="mt-3">
                     {product.alwaysInStock ? (
-                      <span className="text-green-600">Always In Stock</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        In Stock
+                      </span>
                     ) : product.stockQuantity > 0 ? (
-                      <span className="text-green-600">In Stock ({product.stockQuantity} available)</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        In Stock ({product.stockQuantity} available)
+                      </span>
                     ) : (
-                      <span className="text-red-600">Out of Stock</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Out of Stock
+                      </span>
                     )}
                   </div>
                 )}

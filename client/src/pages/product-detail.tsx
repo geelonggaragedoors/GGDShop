@@ -195,26 +195,22 @@ export default function ProductDetail() {
             </div>
 
             {/* Stock Status */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center">
               {product.alwaysInStock ? (
-                <>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-green-700 font-medium">
-                    Always in stock
-                  </span>
-                </>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  In Stock
+                </span>
               ) : product.stockQuantity > 0 ? (
-                <>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-green-700 font-medium">
-                    {product.stockQuantity} in stock
-                  </span>
-                </>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  {product.stockQuantity} in stock
+                </span>
               ) : (
-                <>
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-sm text-red-700 font-medium">Out of stock</span>
-                </>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                  Out of stock
+                </span>
               )}
             </div>
 

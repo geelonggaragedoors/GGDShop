@@ -351,17 +351,17 @@ export default function Products() {
                               <span className="text-xs sm:text-sm text-gray-500 ml-1">inc. GST</span>
                             </div>
                             {product.alwaysInStock ? (
-                              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs sm:text-sm w-fit">
-                                Always In Stock
-                              </Badge>
-                            ) : product.stockQuantity > 0 ? (
-                              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs sm:text-sm w-fit">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 In Stock
-                              </Badge>
+                              </span>
+                            ) : product.stockQuantity > 0 ? (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                In Stock
+                              </span>
                             ) : (
-                              <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50 text-xs sm:text-sm w-fit">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                 Out of Stock
-                              </Badge>
+                              </span>
                             )}
                           </div>
 
@@ -409,17 +409,17 @@ export default function Products() {
                                   <span className="text-sm text-gray-500 ml-1">inc. GST</span>
                                 </div>
                                 {product.alwaysInStock ? (
-                                  <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 w-fit">
-                                    Always In Stock
-                                  </Badge>
-                                ) : product.stockQuantity > 0 ? (
-                                  <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 w-fit">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                     In Stock
-                                  </Badge>
+                                  </span>
+                                ) : product.stockQuantity > 0 ? (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    In Stock
+                                  </span>
                                 ) : (
-                                  <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50 w-fit">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                     Out of Stock
-                                  </Badge>
+                                  </span>
                                 )}
                               </div>
                               <Button 
