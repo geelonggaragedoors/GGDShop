@@ -204,6 +204,19 @@ export default function Products() {
     },
   });
 
+  const toggleFreePostageMutation = useMutation({
+    mutationFn: async ({ id, freePostage }: { id: string; freePostage: boolean }) => {
+      return apiRequest('PATCH', `/api/admin/products/${id}/free-postage`, { freePostage });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({ title: "Free postage updated successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
   const form = useForm({
     resolver: zodResolver(insertProductSchema),
     defaultValues: {
@@ -223,6 +236,7 @@ export default function Products() {
       isFeatured: false,
       isActive: true,
       alwaysInStock: true,
+      freePostage: false,
     },
   });
 
@@ -297,6 +311,7 @@ export default function Products() {
       isFeatured: product.isFeatured || false,
       isActive: product.isActive !== false,
       alwaysInStock: product.alwaysInStock || false,
+      freePostage: product.freePostage || false,
     });
     
     // Pre-populate selected images if they exist
@@ -454,6 +469,18 @@ export default function Products() {
       },
     },
     {
+      header: "Shipping",
+      accessorKey: "freePostage",
+      cell: ({ row }: any) => {
+        const freePostage = row.original.freePostage;
+        return (
+          <Badge variant={freePostage ? "default" : "outline"}>
+            {freePostage ? "Free" : "Calculated"}
+          </Badge>
+        );
+      },
+    },
+    {
       header: "Actions",
       accessorKey: "actions",
       cell: ({ row }: any) => {
@@ -481,6 +508,19 @@ export default function Products() {
               disabled={togglePublishMutation.isPending}
             >
               {isPublished ? '📝' : '🚀'}
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className={`p-1 ${product.freePostage ? 'text-blue-600 hover:text-blue-700' : 'text-gray-600 hover:text-gray-700'}`}
+              onClick={() => toggleFreePostageMutation.mutate({ 
+                id: product.id, 
+                freePostage: !product.freePostage 
+              })}
+              disabled={toggleFreePostageMutation.isPending}
+              title={product.freePostage ? 'Remove free postage' : 'Add free postage'}
+            >
+              {product.freePostage ? '🚚' : '💰'}
             </Button>
             <Button size="sm" variant="ghost" className="p-1 text-red-600 hover:text-red-700">
               <Trash2 className="w-4 h-4" />
@@ -757,6 +797,18 @@ export default function Products() {
                                   <Switch checked={field.value} onCheckedChange={field.onChange} />
                                 </FormControl>
                                 <FormLabel className="text-sm">Always In Stock</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="freePostage"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel className="text-sm">Free Postage</FormLabel>
                               </FormItem>
                             )}
                           />

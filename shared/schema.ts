@@ -117,6 +117,7 @@ export const products = pgTable("products", {
   height: decimal("height", { precision: 8, scale: 2 }), // in cm
   boxSize: varchar("box_size", { length: 10 }), // Australia Post box size (e.g., Bx1, Bx2)
   shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }), // calculated from Australia Post API
+  freePostage: boolean("free_postage").default(false), // Override shipping cost to be free
   status: varchar("status", { length: 20 }).default("draft"), // draft or published
   images: jsonb("images"), // Array of image URLs
   categoryId: uuid("category_id").notNull(),

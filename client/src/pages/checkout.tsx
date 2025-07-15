@@ -74,6 +74,13 @@ export default function Checkout() {
         const product = await response.json();
         console.log('Product data:', product);
         
+        // Check if product has free postage
+        if (product.freePostage) {
+          console.log('Product has free postage, skipping shipping calculation');
+          // Product has free postage, continue to next item
+          continue;
+        }
+        
         if (product.weight && product.length && product.width && product.height && product.boxSize) {
           console.log('Product has shipping dimensions, calculating cost...');
           const shippingResponse = await fetch('/api/shipping/calculate', {
@@ -97,16 +104,8 @@ export default function Checkout() {
             oversizedMessage = shippingData.oversizedMessage;
             break;
           } else {
-            // Use actual Australia Post API response data
-            setShippingCosts({
-              postage: shippingData.postage * item.quantity,
-              boxPrice: shippingData.boxPrice * item.quantity,
-              subtotal: shippingData.subtotal * item.quantity,
-              gst: shippingData.gst * item.quantity,
-              total: shippingData.total * item.quantity,
-              isOversized: false
-            });
-            return; // Exit early since we have real data
+            // Add to total shipping cost
+            totalShippingCost += shippingData.total * item.quantity;
           }
         } else {
           console.log('Product missing shipping dimensions:', {

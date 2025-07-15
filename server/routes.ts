@@ -650,6 +650,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update product free postage
+  app.patch('/api/admin/products/:id/free-postage', hybridAuth, async (req, res) => {
+    try {
+      const { freePostage } = req.body;
+      
+      if (typeof freePostage !== 'boolean') {
+        return res.status(400).json({ message: "Invalid freePostage value. Must be boolean" });
+      }
+
+      const product = await storage.updateProduct(req.params.id, { freePostage });
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      res.json({ message: `Free postage ${freePostage ? 'enabled' : 'disabled'} successfully`, product });
+    } catch (error) {
+      console.error("Error updating product free postage:", error);
+      res.status(500).json({ message: "Failed to update product free postage" });
+    }
+  });
+
   // Admin category management
   app.get('/api/admin/categories', hybridAuth, async (req, res) => {
     try {
