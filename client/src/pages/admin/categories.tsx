@@ -23,6 +23,7 @@ import { z } from "zod";
 const formSchema = insertCategorySchema.extend({
   slug: z.string().min(1, "Slug is required"),
   parentId: z.string().optional().nullable().or(z.literal("none")),
+  image: z.string().optional().or(z.literal("")),
 });
 
 export default function Categories() {
@@ -542,8 +543,7 @@ export default function Categories() {
                               
                               <Input
                                 {...field}
-                                placeholder="https://example.com/image.jpg"
-                                type="url"
+                                placeholder="https://example.com/image.jpg (optional)"
                                 className="text-sm"
                               />
                             </div>
