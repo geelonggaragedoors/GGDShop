@@ -273,12 +273,6 @@ export default function StorefrontHeader() {
                           <h3 className="font-semibold text-gray-900 text-sm">{category.name}</h3>
                         </div>
                         <div className="py-2">
-                          <Link
-                            href={`/products/${category.slug}`}
-                            className="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 transition-colors"
-                          >
-                            View All {category.name}
-                          </Link>
                           {subcategories.map((subcategory: any) => (
                             <Link
                               key={subcategory.id}
