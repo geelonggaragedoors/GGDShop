@@ -132,7 +132,7 @@ export default function FeaturedProducts() {
                 <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                   {product.shortDescription || product.description || "Quality garage door product"}
                 </p>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center">
                     <span className="text-lg font-bold text-primary">
                       ${product.price}
@@ -143,9 +143,16 @@ export default function FeaturedProducts() {
                       </span>
                     )}
                   </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <a href={`/product/${product.slug}`} className="w-full">
+                    <Button variant="outline" size="sm" className="w-full text-sm">
+                      View Details
+                    </Button>
+                  </a>
                   <Button 
                     size="sm" 
-                    className="text-sm"
+                    className="w-full text-sm"
                     onClick={() => handleAddToCart(product)}
                   >
                     Add to Cart

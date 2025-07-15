@@ -1,15 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Star, ShoppingCart } from "lucide-react";
 import { Product } from "@shared/schema";
 import { Link } from "wouter";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { formatPrice } from "@/lib/utils";
 
 export default function BestSellers() {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  
   const { data: productsData, isLoading } = useQuery<{ products: Product[]; total: number }>({
     queryKey: ['/api/products', { featured: true, active: true, limit: 6 }],
     retry: false,
   });
+
+  const handleAddToCart = (product: any) => {
+    addToCart(product, 1);
+    toast({
+      title: "Added to cart",
+      description: `${product.name} added to your cart.`,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -114,13 +129,27 @@ export default function BestSellers() {
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.shortDescription}</p>
                 )}
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-blue-600">
                     {formatPrice(product.price)}
                   </div>
-                  <Link href={`/product/${product.slug}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                    View Details
+                </div>
+                
+                <div className="flex flex-col gap-2">
+                  <Link href={`/product/${product.slug}`} className="w-full">
+                    <Button variant="outline" size="sm" className="w-full text-sm">
+                      View Details
+                    </Button>
                   </Link>
+                  <Button 
+                    size="sm" 
+                    className="w-full text-sm bg-blue-600 hover:bg-blue-700"
+                    onClick={() => handleAddToCart(product)}
+                    disabled={!product.alwaysInStock && product.stockQuantity === 0}
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    {(!product.alwaysInStock && product.stockQuantity === 0) ? 'Out of Stock' : 'Add to Cart'}
+                  </Button>
                 </div>
 
                 {product.stockQuantity !== undefined && (

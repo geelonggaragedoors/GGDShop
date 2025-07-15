@@ -307,8 +307,7 @@ export default function Products() {
                 {products.map((product: any) => (
                   <div key={product.id} className="group">
                     {viewMode === "grid" ? (
-                      <Link href={`/product/${product.slug}`}>
-                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                         <div className="relative aspect-square overflow-hidden bg-gray-50">
                           <img
                             src={getProductImage(product)}
@@ -365,17 +364,26 @@ export default function Products() {
                             )}
                           </div>
 
-                          <Button 
-                            className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 sm:py-3 text-sm"
-                            disabled={!product.alwaysInStock && product.stockQuantity === 0}
-                            onClick={(e) => handleAddToCart(product, e)}
-                          >
-                            <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                            {(!product.alwaysInStock && product.stockQuantity === 0) ? 'Out of Stock' : 'Add to Cart'}
-                          </Button>
+                          <div className="flex flex-col gap-2">
+                            <Link href={`/product/${product.slug}`}>
+                              <Button 
+                                variant="outline" 
+                                className="w-full font-medium py-2 sm:py-3 text-sm"
+                              >
+                                View Details
+                              </Button>
+                            </Link>
+                            <Button 
+                              className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 sm:py-3 text-sm"
+                              disabled={!product.alwaysInStock && product.stockQuantity === 0}
+                              onClick={(e) => handleAddToCart(product, e)}
+                            >
+                              <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                              {(!product.alwaysInStock && product.stockQuantity === 0) ? 'Out of Stock' : 'Add to Cart'}
+                            </Button>
+                          </div>
                         </div>
                         </div>
-                      </Link>
                     ) : (
                       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow">
                         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-6">
@@ -422,13 +430,24 @@ export default function Products() {
                                   </span>
                                 )}
                               </div>
-                              <Button 
-                                className="bg-primary hover:bg-primary/90 text-white font-medium px-4 sm:px-6 w-full sm:w-auto"
-                                disabled={!product.alwaysInStock && product.stockQuantity === 0}
-                              >
-                                <ShoppingCart className="w-4 h-4 mr-2" />
-                                {(!product.alwaysInStock && product.stockQuantity === 0) ? 'Out of Stock' : 'Add to Cart'}
-                              </Button>
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <Link href={`/product/${product.slug}`}>
+                                  <Button 
+                                    variant="outline" 
+                                    className="font-medium px-4 sm:px-6 w-full sm:w-auto"
+                                  >
+                                    View Details
+                                  </Button>
+                                </Link>
+                                <Button 
+                                  className="bg-primary hover:bg-primary/90 text-white font-medium px-4 sm:px-6 w-full sm:w-auto"
+                                  disabled={!product.alwaysInStock && product.stockQuantity === 0}
+                                  onClick={(e) => handleAddToCart(product, e)}
+                                >
+                                  <ShoppingCart className="w-4 h-4 mr-2" />
+                                  {(!product.alwaysInStock && product.stockQuantity === 0) ? 'Out of Stock' : 'Add to Cart'}
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
