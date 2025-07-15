@@ -2,15 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star, ShoppingCart, Heart } from "lucide-react";
 import { Product } from "@shared/schema";
 import { Link } from "wouter";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/utils";
 
 export default function BestSellers() {
   const { addToCart } = useCart();
+  const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
   const { toast } = useToast();
   
   const { data: productsData, isLoading } = useQuery<{ products: Product[]; total: number }>({
@@ -24,6 +26,24 @@ export default function BestSellers() {
       title: "Added to cart",
       description: `${product.name} added to your cart.`,
     });
+  };
+
+  const handleWishlistToggle = (product: any) => {
+    const isInWishlist = wishlistItems.some((item: any) => item.productId === product.id);
+    
+    if (isInWishlist) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removed from favorites",
+        description: `${product.name} removed from your favorites.`,
+      });
+    } else {
+      addToWishlist(product);
+      toast({
+        title: "Added to favorites",
+        description: `${product.name} added to your favorites.`,
+      });
+    }
   };
 
   if (isLoading) {
@@ -105,13 +125,26 @@ export default function BestSellers() {
                   <Badge className="bg-red-500 text-white">Best Seller</Badge>
                 </div>
                 
-                {!product.alwaysInStock && product.stockQuantity && product.stockQuantity < 5 && (
-                  <div className="absolute top-4 right-4">
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button
+                    onClick={() => handleWishlistToggle(product)}
+                    className="p-2 rounded-full bg-white/80 hover:bg-white transition-colors shadow-sm"
+                  >
+                    <Heart 
+                      className={`w-5 h-5 transition-colors ${
+                        wishlistItems.some((item: any) => item.productId === product.id)
+                          ? 'text-red-500 fill-red-500'
+                          : 'text-gray-400 hover:text-red-500'
+                      }`}
+                    />
+                  </button>
+                  
+                  {!product.alwaysInStock && product.stockQuantity && product.stockQuantity < 5 && (
                     <Badge variant="outline" className="bg-white text-orange-600 border-orange-600">
                       Low Stock
                     </Badge>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               <CardContent className="p-6">
