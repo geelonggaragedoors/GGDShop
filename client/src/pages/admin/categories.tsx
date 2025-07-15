@@ -360,7 +360,7 @@ export default function Categories() {
             <Dialog open={isCreateOpen || !!editingCategory} onOpenChange={(open) => {
               if (!open) closeDialog();
             }}>
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
                     {editingCategory ? "Edit Category" : "Create New Category"}
@@ -368,60 +368,84 @@ export default function Categories() {
                 </DialogHeader>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              onChange={(e) => handleNameChange(e.target.value)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="slug"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Slug</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="parentId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Parent Category</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                    {/* Basic Information Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Name</FormLabel>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select parent category (optional)" />
-                              </SelectTrigger>
+                              <Input 
+                                {...field} 
+                                onChange={(e) => handleNameChange(e.target.value)}
+                              />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="none">None (Main Category)</SelectItem>
-                              {categories?.filter((c: any) => !c.parentId && (!editingCategory || c.id !== editingCategory.id)).map((category: any) => (
-                                <SelectItem key={category.id} value={category.id}>
-                                  {category.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="slug"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Slug</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="parentId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Parent Category</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select parent category (optional)" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="none">None (Main Category)</SelectItem>
+                                {categories?.filter((c: any) => !c.parentId && (!editingCategory || c.id !== editingCategory.id)).map((category: any) => (
+                                  <SelectItem key={category.id} value={category.id}>
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="sortOrder"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Sort Order</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                type="number" 
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <FormField
                       control={form.control}
                       name="description"
@@ -429,7 +453,7 @@ export default function Categories() {
                         <FormItem>
                           <FormLabel>Description</FormLabel>
                           <FormControl>
-                            <Textarea {...field} rows={3} />
+                            <Textarea {...field} rows={2} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -442,27 +466,47 @@ export default function Categories() {
                         <FormItem>
                           <FormLabel>Category Image</FormLabel>
                           <FormControl>
-                            <div className="space-y-4">
+                            <div className="space-y-3">
+                              {/* Current Image Preview */}
+                              {(previewUrl || field.value) && (
+                                <div className="relative w-full h-24">
+                                  <img
+                                    src={previewUrl || field.value}
+                                    alt="Category preview"
+                                    className="w-full h-24 object-cover rounded-lg border"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="absolute top-1 right-1 h-6 w-6 p-0"
+                                    onClick={() => {
+                                      clearFileSelection();
+                                      field.onChange("");
+                                    }}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              )}
+                              
                               {/* File Upload Section */}
-                              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                              <div className="border-2 border-dashed border-gray-300 rounded-lg p-3">
                                 <div className="text-center">
-                                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                                  <div className="mt-4">
+                                  <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                                  <div className="mt-2">
                                     <Button
                                       type="button"
                                       variant="outline"
+                                      size="sm"
                                       onClick={() => fileInputRef.current?.click()}
-                                      className="mb-2"
                                     >
-                                      Choose Image File
+                                      Choose File
                                     </Button>
-                                    <p className="text-sm text-gray-500">
-                                      or drag and drop
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      PNG, JPG, GIF up to 10MB
                                     </p>
                                   </div>
-                                  <p className="text-xs text-gray-500 mt-2">
-                                    PNG, JPG, GIF up to 10MB
-                                  </p>
                                 </div>
                                 <input
                                   ref={fileInputRef}
@@ -472,29 +516,6 @@ export default function Categories() {
                                   className="hidden"
                                 />
                               </div>
-                              
-                              {/* Preview Section */}
-                              {(previewUrl || field.value) && (
-                                <div className="relative">
-                                  <img
-                                    src={previewUrl || field.value}
-                                    alt="Category preview"
-                                    className="w-full h-32 object-cover rounded-lg border"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className="absolute top-2 right-2"
-                                    onClick={() => {
-                                      clearFileSelection();
-                                      field.onChange("");
-                                    }}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              )}
                               
                               {/* URL Input Alternative */}
                               <div className="relative">
@@ -512,6 +533,7 @@ export default function Categories() {
                                 {...field}
                                 placeholder="https://example.com/image.jpg"
                                 type="url"
+                                className="text-sm"
                               />
                             </div>
                           </FormControl>
@@ -521,26 +543,9 @@ export default function Categories() {
                     />
                     <FormField
                       control={form.control}
-                      name="sortOrder"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Sort Order</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              type="number" 
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
                       name="isActive"
                       render={({ field }) => (
-                        <FormItem className="flex items-center justify-between">
+                        <FormItem className="flex items-center justify-between py-2">
                           <FormLabel>Active</FormLabel>
                           <FormControl>
                             <Switch checked={field.value} onCheckedChange={field.onChange} />
