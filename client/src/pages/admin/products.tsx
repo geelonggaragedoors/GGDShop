@@ -424,17 +424,18 @@ export default function Products() {
       cell: ({ row }: any) => {
         const isActive = row.original.isActive;
         const stock = row.original.stockQuantity;
+        const alwaysInStock = row.original.alwaysInStock;
         const isLowStock = stock <= row.original.lowStockThreshold;
         
         return (
           <Badge 
             variant={
               !isActive ? "secondary" : 
-              isLowStock ? "destructive" : 
-              "default"
+              (alwaysInStock || !isLowStock) ? "default" : 
+              "destructive"
             }
           >
-            {!isActive ? "Inactive" : isLowStock ? "Low Stock" : "Active"}
+            {!isActive ? "Inactive" : (alwaysInStock || !isLowStock) ? "Active" : "Low Stock"}
           </Badge>
         );
       },
