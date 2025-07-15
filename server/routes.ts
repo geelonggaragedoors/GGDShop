@@ -148,6 +148,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Category image upload endpoint
+  app.post('/api/upload/category-image', hybridAuth, upload.single('image'), async (req, res) => {
+    try {
+      const file = req.file as Express.Multer.File;
+      
+      if (!file) {
+        return res.status(400).json({ error: 'No image file provided' });
+      }
+      
+      const result = await fileStorage.saveFile(file.buffer, file.originalname, file.mimetype);
+      res.json({ url: result.url, filename: result.filename });
+    } catch (error) {
+      console.error('Error uploading category image:', error);
+      res.status(500).json({ error: 'Failed to upload category image' });
+    }
+  });
+
   // Enhanced authentication routes
   app.use('/api/auth', authRoutes);
 

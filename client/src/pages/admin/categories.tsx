@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCategorySchema } from "@shared/schema";
-import { Plus, Edit, Trash2, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
@@ -29,6 +29,10 @@ export default function Categories() {
   const [search, setSearch] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const { data: categories, isLoading } = useQuery({
@@ -101,12 +105,44 @@ export default function Categories() {
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log('Form data before processing:', data);
+    
+    let imageUrl = data.image;
+    
+    // If there's a selected file, upload it first
+    if (selectedFile) {
+      try {
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+        
+        const response = await fetch('/api/upload/category-image', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+        
+        const result = await response.json();
+        imageUrl = result.url;
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+        setIsUploading(false);
+        return;
+      }
+    }
     
     // Convert "none" to null for parentId
     const submissionData = {
       ...data,
+      image: imageUrl,
       parentId: data.parentId === "none" ? null : data.parentId || null
     };
     
@@ -117,6 +153,8 @@ export default function Categories() {
     } else {
       createMutation.mutate(submissionData);
     }
+    
+    setIsUploading(false);
   };
 
   const generateSlug = (name: string) => {
@@ -143,9 +181,32 @@ export default function Categories() {
     });
   };
 
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearFileSelection = () => {
+    setSelectedFile(null);
+    setPreviewUrl("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const closeDialog = () => {
     setIsCreateOpen(false);
     setEditingCategory(null);
+    setSelectedFile(null);
+    setPreviewUrl("");
+    setIsUploading(false);
     form.reset();
   };
 
@@ -379,13 +440,80 @@ export default function Categories() {
                       name="image"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Image URL</FormLabel>
+                          <FormLabel>Category Image</FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="https://example.com/image.jpg"
-                              type="url"
-                            />
+                            <div className="space-y-4">
+                              {/* File Upload Section */}
+                              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                                <div className="text-center">
+                                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                                  <div className="mt-4">
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      onClick={() => fileInputRef.current?.click()}
+                                      className="mb-2"
+                                    >
+                                      Choose Image File
+                                    </Button>
+                                    <p className="text-sm text-gray-500">
+                                      or drag and drop
+                                    </p>
+                                  </div>
+                                  <p className="text-xs text-gray-500 mt-2">
+                                    PNG, JPG, GIF up to 10MB
+                                  </p>
+                                </div>
+                                <input
+                                  ref={fileInputRef}
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleFileSelect}
+                                  className="hidden"
+                                />
+                              </div>
+                              
+                              {/* Preview Section */}
+                              {(previewUrl || field.value) && (
+                                <div className="relative">
+                                  <img
+                                    src={previewUrl || field.value}
+                                    alt="Category preview"
+                                    className="w-full h-32 object-cover rounded-lg border"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="absolute top-2 right-2"
+                                    onClick={() => {
+                                      clearFileSelection();
+                                      field.onChange("");
+                                    }}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              )}
+                              
+                              {/* URL Input Alternative */}
+                              <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                  <span className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                  <span className="bg-background px-2 text-muted-foreground">
+                                    Or use URL
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <Input
+                                {...field}
+                                placeholder="https://example.com/image.jpg"
+                                type="url"
+                              />
+                            </div>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -421,8 +549,8 @@ export default function Categories() {
                       )}
                     />
                     <div className="flex space-x-2 pt-4">
-                      <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                        {editingCategory ? "Update" : "Create"}
+                      <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending || isUploading}>
+                        {isUploading ? "Uploading..." : editingCategory ? "Update" : "Create"}
                       </Button>
                       <Button type="button" variant="outline" onClick={closeDialog}>
                         Cancel
