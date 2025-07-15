@@ -394,6 +394,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
 export const customersRelations = relations(customers, ({ many }) => ({
   addresses: many(customerAddresses),
   orders: many(orders),
+  transactions: many(customerTransactions),
 }));
 
 export const customerAddressesRelations = relations(customerAddresses, ({ one }) => ({
@@ -444,6 +445,8 @@ export const customerReviewsRelations = relations(customerReviews, ({ one }) => 
   }),
 }));
 
+
+
 // Enquiries table
 export const enquiries = pgTable("enquiries", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -455,6 +458,24 @@ export const enquiries = pgTable("enquiries", {
   status: varchar("status", { length: 50 }).notNull().default("new"), // new, contacted, quoted, closed
   priority: varchar("priority", { length: 20 }).notNull().default("medium"), // low, medium, high, urgent
   source: varchar("source", { length: 100 }).default("website"), // website, phone, email, referral
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Customer transaction history table
+export const customerTransactions = pgTable("customer_transactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  customerId: uuid("customer_id").notNull(),
+  orderId: uuid("order_id").notNull(),
+  transactionType: varchar("transaction_type", { length: 50 }).notNull(), // invoice, receipt, refund, credit
+  documentType: varchar("document_type", { length: 50 }).notNull(), // invoice, receipt, credit_note, refund_receipt
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("completed"), // completed, pending, failed, cancelled
+  paymentMethod: varchar("payment_method", { length: 50 }).notNull(), // paypal, card, bank_transfer, cash
+  transactionReference: varchar("transaction_reference", { length: 255 }), // PayPal transaction ID, etc.
+  documentUrl: varchar("document_url", { length: 500 }), // URL to PDF invoice/receipt
+  emailSent: boolean("email_sent").default(false),
+  emailSentAt: timestamp("email_sent_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -523,9 +544,13 @@ export const insertCustomerReviewSchema = createInsertSchema(customerReviews).om
   id: true,
   createdAt: true,
   updatedAt: true,
-  adminResponseAt: true,
-}).extend({
-  rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating must be at most 5"),
+});
+
+export const insertCustomerTransactionSchema = createInsertSchema(customerTransactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  emailSentAt: true,
 });
 
 export const insertEnquirySchema = createInsertSchema(enquiries).omit({
@@ -582,6 +607,9 @@ export type InsertCustomerReview = z.infer<typeof insertCustomerReviewSchema>;
 
 export type Enquiry = typeof enquiries.$inferSelect;
 export type InsertEnquiry = z.infer<typeof insertEnquirySchema>;
+
+export type CustomerTransaction = typeof customerTransactions.$inferSelect;
+export type InsertCustomerTransaction = z.infer<typeof insertCustomerTransactionSchema>;
 
 // Analytics types
 export type PageView = typeof pageViews.$inferSelect;
@@ -644,3 +672,15 @@ export const emailSettingsConfig = pgTable("email_settings_config", {
 
 export type EmailSettingConfig = typeof emailSettingsConfig.$inferSelect;
 export type InsertEmailSettingConfig = typeof emailSettingsConfig.$inferInsert;
+
+// Add the missing transaction relation
+export const customerTransactionsRelations = relations(customerTransactions, ({ one }) => ({
+  customer: one(customers, {
+    fields: [customerTransactions.customerId],
+    references: [customers.id],
+  }),
+  order: one(orders, {
+    fields: [customerTransactions.orderId],
+    references: [orders.id],
+  }),
+}));

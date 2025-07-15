@@ -47,6 +47,9 @@ import {
   type InsertEmailTemplate,
   type EmailSettingConfig,
   type InsertEmailSettingConfig,
+  customerTransactions,
+  type CustomerTransaction,
+  type InsertCustomerTransaction,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql } from "drizzle-orm";
@@ -171,6 +174,12 @@ export interface IStorage {
   getSiteSettingByKey(key: string): Promise<SiteSetting | undefined>;
   updateSiteSetting(key: string, value: string): Promise<boolean>;
   createSiteSetting(setting: InsertSiteSetting): Promise<SiteSetting>;
+
+  // Customer transaction operations
+  createCustomerTransaction(transaction: InsertCustomerTransaction): Promise<CustomerTransaction>;
+  getCustomerTransactions(customerId: string): Promise<CustomerTransaction[]>;
+  getCustomerTransactionById(id: string): Promise<CustomerTransaction | undefined>;
+  updateCustomerTransaction(id: string, transaction: Partial<InsertCustomerTransaction>): Promise<CustomerTransaction | undefined>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<{
@@ -1007,6 +1016,34 @@ export class DatabaseStorage implements IStorage {
   async createSiteSetting(setting: InsertSiteSetting): Promise<SiteSetting> {
     const [newSetting] = await db.insert(siteSettings).values(setting).returning();
     return newSetting;
+  }
+
+  // Customer transaction operations
+  async createCustomerTransaction(transaction: InsertCustomerTransaction): Promise<CustomerTransaction> {
+    const [newTransaction] = await db.insert(customerTransactions).values(transaction).returning();
+    return newTransaction;
+  }
+
+  async getCustomerTransactions(customerId: string): Promise<CustomerTransaction[]> {
+    return await db
+      .select()
+      .from(customerTransactions)
+      .where(eq(customerTransactions.customerId, customerId))
+      .orderBy(desc(customerTransactions.createdAt));
+  }
+
+  async getCustomerTransactionById(id: string): Promise<CustomerTransaction | undefined> {
+    const [transaction] = await db.select().from(customerTransactions).where(eq(customerTransactions.id, id));
+    return transaction;
+  }
+
+  async updateCustomerTransaction(id: string, transaction: Partial<InsertCustomerTransaction>): Promise<CustomerTransaction | undefined> {
+    const [updatedTransaction] = await db
+      .update(customerTransactions)
+      .set({ ...transaction, updatedAt: new Date() })
+      .where(eq(customerTransactions.id, id))
+      .returning();
+    return updatedTransaction;
   }
 }
 

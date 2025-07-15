@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Heart, ShoppingCart, Phone, Mail, User, Package, Menu, X, ChevronDown, LogOut, Settings, UserCircle } from "lucide-react";
+import { Search, Heart, ShoppingCart, Phone, Mail, User, Package, Menu, X, ChevronDown, LogOut, Settings, UserCircle, Receipt } from "lucide-react";
 import { api } from "@/lib/api";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -155,6 +155,12 @@ export default function StorefrontHeader() {
                     <Link href="/wishlist" className="cursor-pointer">
                       <Heart className="mr-2 h-4 w-4" />
                       <span>Wishlist</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/transactions" className="cursor-pointer">
+                      <Receipt className="mr-2 h-4 w-4" />
+                      <span>Transaction History</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

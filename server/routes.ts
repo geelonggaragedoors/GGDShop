@@ -1897,6 +1897,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customer Transaction Routes
+  app.get("/api/customer-transactions/:customerId", async (req, res) => {
+    try {
+      const { customerId } = req.params;
+      const transactions = await storage.getCustomerTransactions(customerId);
+      res.json(transactions);
+    } catch (error) {
+      console.error("Error fetching customer transactions:", error);
+      res.status(500).json({ message: "Failed to fetch customer transactions" });
+    }
+  });
+
+  app.get("/api/customer-transactions/:customerId/:transactionId", async (req, res) => {
+    try {
+      const { transactionId } = req.params;
+      const transaction = await storage.getCustomerTransactionById(transactionId);
+      if (!transaction) {
+        return res.status(404).json({ message: "Transaction not found" });
+      }
+      res.json(transaction);
+    } catch (error) {
+      console.error("Error fetching customer transaction:", error);
+      res.status(500).json({ message: "Failed to fetch customer transaction" });
+    }
+  });
+
   app.post("/api/analytics/conversion", async (req, res) => {
     try {
       await analyticsService.trackConversion(req.body);
