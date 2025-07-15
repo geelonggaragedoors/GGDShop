@@ -330,7 +330,25 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (params.categoryId) {
-      conditions.push(eq(products.categoryId, params.categoryId));
+      // Get all subcategories of the selected category
+      const subcategories = await db
+        .select({ id: categories.id })
+        .from(categories)
+        .where(eq(categories.parentId, params.categoryId));
+      
+      const subcategoryIds = subcategories.map(sub => sub.id);
+      
+      // Include products from the category itself OR from its subcategories
+      if (subcategoryIds.length > 0) {
+        conditions.push(
+          or(
+            eq(products.categoryId, params.categoryId),
+            ...subcategoryIds.map(id => eq(products.categoryId, id))
+          )
+        );
+      } else {
+        conditions.push(eq(products.categoryId, params.categoryId));
+      }
     }
     
     if (params.brandId) {
