@@ -102,6 +102,7 @@ export default function Categories() {
       parentId: "none",
       sortOrder: 0,
       isActive: true,
+      showOnHomepage: false,
     },
   });
 
@@ -178,6 +179,7 @@ export default function Categories() {
       parentId: category.parentId || "none",
       sortOrder: category.sortOrder || 0,
       isActive: category.isActive,
+      showOnHomepage: category.showOnHomepage || false,
     });
   };
 
@@ -290,6 +292,15 @@ export default function Categories() {
       cell: ({ row }: any) => (
         <Badge variant={row.original.isActive ? "default" : "secondary"}>
           {row.original.isActive ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      header: "Homepage",
+      accessorKey: "showOnHomepage",
+      cell: ({ row }: any) => (
+        <Badge variant={row.original.showOnHomepage ? "default" : "outline"}>
+          {row.original.showOnHomepage ? "Shown" : "Hidden"}
         </Badge>
       ),
     },
@@ -541,18 +552,32 @@ export default function Categories() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="isActive"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center justify-between py-2">
-                          <FormLabel>Active</FormLabel>
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="isActive"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between py-2">
+                            <FormLabel>Active</FormLabel>
+                            <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="showOnHomepage"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between py-2">
+                            <FormLabel>Show on Homepage</FormLabel>
+                            <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <div className="flex space-x-2 pt-4">
                       <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending || isUploading}>
                         {isUploading ? "Uploading..." : editingCategory ? "Update" : "Create"}

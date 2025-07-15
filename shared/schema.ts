@@ -82,6 +82,7 @@ export const categories = pgTable("categories", {
   parentId: uuid("parent_id"),
   sortOrder: integer("sort_order").default(0),
   isActive: boolean("is_active").default(true),
+  showOnHomepage: boolean("show_on_homepage").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

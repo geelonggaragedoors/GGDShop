@@ -42,7 +42,7 @@ export default function Categories() {
     );
   }
 
-  const displayCategories = categories || [];
+  const displayCategories = categories?.filter(cat => cat.showOnHomepage) || [];
 
   return (
     <section className="py-16 bg-white">
