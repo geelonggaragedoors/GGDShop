@@ -268,11 +268,14 @@ export default function StorefrontHeader() {
                   {/* Dropdown Menu for Subcategories */}
                   {subcategories.length > 0 && hoveredCategory === category.id && (
                     <div className="absolute left-0 top-full pt-2 z-50">
-                      <div className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-48 py-4">
-                        <div className="px-4 pb-2 border-b border-gray-100">
-                          <h3 className="font-semibold text-gray-900 text-sm">{category.name}</h3>
-                        </div>
+                      <div className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-48 py-2">
                         <div className="py-2">
+                          <Link
+                            href={`/products/${category.slug}`}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 transition-colors"
+                          >
+                            View All {category.name}
+                          </Link>
                           {subcategories.map((subcategory: any) => (
                             <Link
                               key={subcategory.id}
