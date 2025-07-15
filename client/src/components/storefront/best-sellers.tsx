@@ -90,7 +90,7 @@ export default function BestSellers() {
                   <Badge className="bg-red-500 text-white">Best Seller</Badge>
                 </div>
                 
-                {product.stockQuantity && product.stockQuantity < 5 && (
+                {!product.alwaysInStock && product.stockQuantity && product.stockQuantity < 5 && (
                   <div className="absolute top-4 right-4">
                     <Badge variant="outline" className="bg-white text-orange-600 border-orange-600">
                       Low Stock
@@ -125,7 +125,9 @@ export default function BestSellers() {
 
                 {product.stockQuantity !== undefined && (
                   <div className="mt-3 text-xs text-gray-500">
-                    {product.stockQuantity > 0 ? (
+                    {product.alwaysInStock ? (
+                      <span className="text-green-600">Always In Stock</span>
+                    ) : product.stockQuantity > 0 ? (
                       <span className="text-green-600">In Stock ({product.stockQuantity} available)</span>
                     ) : (
                       <span className="text-red-600">Out of Stock</span>

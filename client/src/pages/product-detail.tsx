@@ -196,7 +196,14 @@ export default function ProductDetail() {
 
             {/* Stock Status */}
             <div className="flex items-center space-x-2">
-              {product.stockQuantity > 0 ? (
+              {product.alwaysInStock ? (
+                <>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-sm text-green-700 font-medium">
+                    Always in stock
+                  </span>
+                </>
+              ) : product.stockQuantity > 0 ? (
                 <>
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                   <span className="text-sm text-green-700 font-medium">
@@ -240,7 +247,7 @@ export default function ProductDetail() {
                     variant="ghost"
                     size="sm"
                     onClick={incrementQuantity}
-                    disabled={quantity >= product.stockQuantity}
+                    disabled={!product.alwaysInStock && quantity >= product.stockQuantity}
                     className="rounded-l-none"
                   >
                     <Plus className="w-4 h-4" />
@@ -251,7 +258,7 @@ export default function ProductDetail() {
               <div className="flex space-x-3">
                 <Button
                   className="flex-1"
-                  disabled={product.stockQuantity === 0}
+                  disabled={!product.alwaysInStock && product.stockQuantity === 0}
                   onClick={handleAddToCart}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />

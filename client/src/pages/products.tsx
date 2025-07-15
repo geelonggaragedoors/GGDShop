@@ -350,7 +350,11 @@ export default function Products() {
                               </span>
                               <span className="text-xs sm:text-sm text-gray-500 ml-1">inc. GST</span>
                             </div>
-                            {product.stockQuantity > 0 ? (
+                            {product.alwaysInStock ? (
+                              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs sm:text-sm w-fit">
+                                Always In Stock
+                              </Badge>
+                            ) : product.stockQuantity > 0 ? (
                               <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-xs sm:text-sm w-fit">
                                 In Stock
                               </Badge>
@@ -363,11 +367,11 @@ export default function Products() {
 
                           <Button 
                             className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 sm:py-3 text-sm"
-                            disabled={product.stockQuantity === 0}
+                            disabled={!product.alwaysInStock && product.stockQuantity === 0}
                             onClick={(e) => handleAddToCart(product, e)}
                           >
                             <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                            {product.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                            {(!product.alwaysInStock && product.stockQuantity === 0) ? 'Out of Stock' : 'Add to Cart'}
                           </Button>
                         </div>
                         </div>
@@ -404,7 +408,11 @@ export default function Products() {
                                   </span>
                                   <span className="text-sm text-gray-500 ml-1">inc. GST</span>
                                 </div>
-                                {product.stockQuantity > 0 ? (
+                                {product.alwaysInStock ? (
+                                  <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 w-fit">
+                                    Always In Stock
+                                  </Badge>
+                                ) : product.stockQuantity > 0 ? (
                                   <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 w-fit">
                                     In Stock
                                   </Badge>
@@ -416,10 +424,10 @@ export default function Products() {
                               </div>
                               <Button 
                                 className="bg-primary hover:bg-primary/90 text-white font-medium px-4 sm:px-6 w-full sm:w-auto"
-                                disabled={product.stockQuantity === 0}
+                                disabled={!product.alwaysInStock && product.stockQuantity === 0}
                               >
                                 <ShoppingCart className="w-4 h-4 mr-2" />
-                                {product.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                                {(!product.alwaysInStock && product.stockQuantity === 0) ? 'Out of Stock' : 'Add to Cart'}
                               </Button>
                             </div>
                           </div>
