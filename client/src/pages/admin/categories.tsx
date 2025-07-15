@@ -187,6 +187,25 @@ export default function Categories() {
       ),
     },
     {
+      header: "Image",
+      accessorKey: "image",
+      cell: ({ row }: any) => (
+        <div className="flex items-center">
+          {row.original.image ? (
+            <img 
+              src={row.original.image} 
+              alt={row.original.name}
+              className="w-12 h-12 object-cover rounded border"
+            />
+          ) : (
+            <div className="w-12 h-12 bg-gray-200 rounded border flex items-center justify-center">
+              <span className="text-gray-400 text-xs">No image</span>
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
       header: "Products",
       accessorKey: "productCount",
       cell: ({ row }: any) => (
@@ -350,6 +369,23 @@ export default function Categories() {
                           <FormLabel>Description</FormLabel>
                           <FormControl>
                             <Textarea {...field} rows={3} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="image"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Image URL</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="https://example.com/image.jpg"
+                              type="url"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
