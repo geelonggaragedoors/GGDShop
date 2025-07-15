@@ -191,6 +191,19 @@ export default function Products() {
     },
   });
 
+  const togglePublishMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: 'published' | 'draft' }) => {
+      return apiRequest('PATCH', `/api/admin/products/${id}/status`, { status });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({ title: "Product status updated successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
   const form = useForm({
     resolver: zodResolver(insertProductSchema),
     defaultValues: {
@@ -443,21 +456,38 @@ export default function Products() {
     {
       header: "Actions",
       accessorKey: "actions",
-      cell: ({ row }: any) => (
-        <div className="flex space-x-2">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            className="p-1"
-            onClick={() => openEditDialog(row.original)}
-          >
-            <Edit className="w-4 h-4" />
-          </Button>
-          <Button size="sm" variant="ghost" className="p-1 text-red-600 hover:text-red-700">
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
+      cell: ({ row }: any) => {
+        const product = row.original;
+        const isPublished = product.status === 'published';
+        
+        return (
+          <div className="flex space-x-2">
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="p-1"
+              onClick={() => openEditDialog(product)}
+            >
+              <Edit className="w-4 h-4" />
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className={`p-1 ${isPublished ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'}`}
+              onClick={() => togglePublishMutation.mutate({ 
+                id: product.id, 
+                status: isPublished ? 'draft' : 'published' 
+              })}
+              disabled={togglePublishMutation.isPending}
+            >
+              {isPublished ? '📝' : '🚀'}
+            </Button>
+            <Button size="sm" variant="ghost" className="p-1 text-red-600 hover:text-red-700">
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 

@@ -629,6 +629,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update product status (publish/unpublish)
+  app.patch('/api/admin/products/:id/status', hybridAuth, async (req, res) => {
+    try {
+      const { status } = req.body;
+      
+      if (!['published', 'draft'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status. Must be 'published' or 'draft'" });
+      }
+
+      const product = await storage.updateProduct(req.params.id, { status });
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      res.json({ message: `Product ${status} successfully`, product });
+    } catch (error) {
+      console.error("Error updating product status:", error);
+      res.status(500).json({ message: "Failed to update product status" });
+    }
+  });
+
   // Admin category management
   app.get('/api/admin/categories', hybridAuth, async (req, res) => {
     try {
