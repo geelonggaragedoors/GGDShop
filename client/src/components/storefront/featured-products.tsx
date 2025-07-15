@@ -85,24 +85,26 @@ export default function FeaturedProducts() {
             {products.map((product, index) => (
               <Card key={product.id || index} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group product-card border-0">
               <div className="relative">
-                <img 
-                  src={getOptimizedImageUrl(
-                    product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300",
-                    { width: 400, height: 300, quality: 85 }
-                  )}
-                  srcSet={generateSrcSet(product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64", [300, 400, 600])}
-                  sizes={generateSizes([
-                    { size: '(max-width: 768px)', width: 300 },
-                    { size: '(max-width: 1200px)', width: 400 },
-                    { size: '100vw', width: 400 }
-                  ])}
-                  alt={product.name || 'Product image'}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading={index < 4 ? "eager" : "lazy"}
-                  decoding="async"
-                  width="400"
-                  height="300"
-                />
+                <a href={`/product/${product.slug}`}>
+                  <img 
+                    src={getOptimizedImageUrl(
+                      product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300",
+                      { width: 400, height: 300, quality: 85 }
+                    )}
+                    srcSet={generateSrcSet(product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64", [300, 400, 600])}
+                    sizes={generateSizes([
+                      { size: '(max-width: 768px)', width: 300 },
+                      { size: '(max-width: 1200px)', width: 400 },
+                      { size: '100vw', width: 400 }
+                    ])}
+                    alt={product.name || 'Product image'}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading={index < 4 ? "eager" : "lazy"}
+                    decoding="async"
+                    width="400"
+                    height="300"
+                  />
+                </a>
                 {(index === 0 || product.compareAtPrice) && (
                   <Badge className="absolute top-3 left-3 bg-accent hover:bg-accent text-accent-foreground">
                     {index === 0 ? "New" : "Sale"}
@@ -124,7 +126,9 @@ export default function FeaturedProducts() {
               </div>
               
               <CardContent className="p-4">
-                <h4 className="font-semibold text-gray-900 mb-2">{product.name}</h4>
+                <a href={`/product/${product.slug}`}>
+                  <h4 className="font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">{product.name}</h4>
+                </a>
                 <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                   {product.shortDescription || product.description || "Quality garage door product"}
                 </p>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,11 @@ export default function ProductDetail() {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
+
+  // Scroll to top when component mounts
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: [`/api/products/slug/${slug}`],
