@@ -153,6 +153,7 @@ export default function ProductCatalogExport() {
           pdf.setTextColor(150, 150, 150);
           
           // Check if product has images
+          console.log(`Product "${product.name}": images =`, product.images, `Array.isArray = ${Array.isArray(product.images)}, length = ${product.images?.length}`);
           const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
           
           if (hasImages) {
