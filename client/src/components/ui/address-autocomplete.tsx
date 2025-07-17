@@ -155,9 +155,11 @@ export default function AddressAutocomplete({
             color: hsl(var(--foreground));
             font-size: 0.875rem;
             padding: 0.5rem 0.75rem;
-            --gmp-primary-color: hsl(var(--primary));
+            outline: none;
+            transition: border-color 0.2s;
+            --gmp-primary-color: hsl(var(--foreground));
             --gmp-secondary-color: hsl(var(--secondary));
-            --gmp-accent-color: hsl(var(--accent));
+            --gmp-accent-color: hsl(var(--foreground));
             --gmp-outline-color: hsl(var(--border));
             --gmp-background-color: hsl(var(--background));
             --gmp-surface-color: hsl(var(--card));
