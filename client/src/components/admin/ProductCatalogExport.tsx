@@ -1,24 +1,21 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, Loader2 } from "lucide-react";
+import { FileText, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
+import { useQuery } from "@tanstack/react-query";
 
 interface Product {
   id: string;
   name: string;
-  description: string;
   price: number;
-  stockQuantity: number;
-  sku: string;
-  brandId: string;
+  sku?: string;
+  images?: string[];
   categoryId: string;
-  images: string[];
-  specifications: any;
-  isActive: boolean;
-  isFeatured: boolean;
+  brandId: string;
+  stockQuantity: number;
   freePostage: boolean;
+  isFeatured: boolean;
 }
 
 // Helper function to load image and return base64 data
@@ -56,32 +53,23 @@ export default function ProductCatalogExport() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const { data: productsData } = useQuery<{ products: Product[] }>({
-    queryKey: ["/api/admin/products"],
+  const { data: productsData } = useQuery({
+    queryKey: ['/api/admin/products'],
   });
 
   const { data: categories } = useQuery({
-    queryKey: ["/api/categories"],
+    queryKey: ['/api/categories'],
   });
 
   const { data: brands } = useQuery({
-    queryKey: ["/api/brands"],
+    queryKey: ['/api/brands'],
   });
 
   const generatePDF = async () => {
-    if (!productsData?.products?.length) {
+    if (!productsData || !categories || !brands) {
       toast({
-        title: "No products found",
-        description: "There are no products to export.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!categories || !brands) {
-      toast({
-        title: "Loading data",
-        description: "Please wait for product data to load completely.",
+        title: "Error",
+        description: "Product data not loaded yet",
         variant: "destructive",
       });
       return;
@@ -90,21 +78,16 @@ export default function ProductCatalogExport() {
     setIsGenerating(true);
     
     try {
-      // Create PDF directly without html2canvas
-      const pdf = new jsPDF("p", "mm", "a4");
+      toast({
+        title: "Generating PDF...",
+        description: "This may take a moment to load all product images",
+      });
+
+      const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 20;
-      const lineHeight = 6;
       let yPosition = margin;
-
-      // Helper function to add text with word wrapping
-      const addText = (text: string, x: number, y: number, maxWidth: number, fontSize: number = 10) => {
-        pdf.setFontSize(fontSize);
-        const lines = pdf.splitTextToSize(text, maxWidth);
-        pdf.text(lines, x, y);
-        return lines.length * lineHeight;
-      };
 
       // Add header
       pdf.setFontSize(24);
@@ -127,62 +110,43 @@ export default function ProductCatalogExport() {
       pdf.line(margin, yPosition, pageWidth - margin, yPosition);
       yPosition += 10;
 
-      // Process products by category
-      const activeProducts = productsData.products.filter(p => p.isActive);
-      const categorizedProducts = activeProducts.reduce((acc, product) => {
-        const category = categories?.find(c => c.id === product.categoryId);
-        const categoryName = category?.name || 'Uncategorized';
-        if (!acc[categoryName]) acc[categoryName] = [];
-        acc[categoryName].push(product);
-        return acc;
-      }, {} as Record<string, Product[]>);
-
-      // Generate content for each category
-      for (const [categoryName, products] of Object.entries(categorizedProducts)) {
-        // Check if we need a new page
-        if (yPosition > pageHeight - 50) {
+      // Get all products in order (not categorized)
+      const allProducts = productsData.products.filter((p: Product) => p.isActive);
+      
+      // Process products in groups of 4 (2x2 grid per page)
+      for (let i = 0; i < allProducts.length; i += 4) {
+        // Add new page if not the first group
+        if (i > 0) {
           pdf.addPage();
           yPosition = margin;
         }
-
-        // Category header
-        pdf.setFontSize(18);
-        pdf.setTextColor(37, 99, 235); // Blue color
-        pdf.text(categoryName, margin, yPosition);
-        yPosition += 8;
-
-        // Category underline
-        pdf.setDrawColor(229, 231, 235);
-        pdf.line(margin, yPosition, pageWidth - margin, yPosition);
-        yPosition += 10;
-
-        // Products in category
-        for (const product of products) {
-
-          // Check if we need a new page (increased threshold for images)
-          if (yPosition > pageHeight - 70) {
-            pdf.addPage();
-            yPosition = margin;
-          }
-
-          const brand = brands?.find(b => b.id === product.brandId);
+        
+        // Get up to 4 products for this page
+        const pageProducts = allProducts.slice(i, i + 4);
+        
+        // Layout: 2 products per row, 2 rows per page
+        const productWidth = (pageWidth - 3 * margin) / 2; // Width for each product
+        const productHeight = (pageHeight - 3 * margin) / 2; // Height for each product
+        const imageWidth = productWidth - 10; // Leave some padding
+        const imageHeight = productHeight * 0.6; // 60% of product height for image
+        
+        for (let j = 0; j < pageProducts.length; j++) {
+          const product = pageProducts[j];
+          const brand = brands?.find((b: any) => b.id === product.brandId);
           const brandName = brand?.name || 'Unknown Brand';
-
-          // Define layout areas
-          const imageWidth = 30; // Width for product image
-          const imageHeight = 25; // Height for product image
-          const textStartX = margin + imageWidth + 5; // Start text after image + margin
-          const textMaxWidth = pageWidth - textStartX - margin - 50; // Leave space for price
-          const productStartY = yPosition;
-
-          // Add product image placeholder
+          const category = categories?.find((c: any) => c.id === product.categoryId);
+          const categoryName = category?.name || 'Uncategorized';
+          
+          // Calculate position (2x2 grid)
+          const col = j % 2;
+          const row = Math.floor(j / 2);
+          const productX = margin + col * (productWidth + (margin/2));
+          const productY = yPosition + row * (productHeight + (margin/2));
+          
+          // Add product image area
           pdf.setDrawColor(200, 200, 200);
           pdf.setFillColor(245, 245, 245);
-          pdf.rect(margin, yPosition, imageWidth, imageHeight, 'FD');
-          
-          // Add image indicator
-          pdf.setFontSize(8);
-          pdf.setTextColor(150, 150, 150);
+          pdf.rect(productX, productY, imageWidth, imageHeight, 'FD');
           
           // Load and display product image
           const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
@@ -193,7 +157,6 @@ export default function ProductCatalogExport() {
             const imageBase64 = await loadImageAsBase64(imageUrl);
             
             if (imageBase64) {
-              // Calculate image dimensions to fit within the box
               const img = new Image();
               img.src = imageBase64;
               
@@ -204,14 +167,12 @@ export default function ProductCatalogExport() {
                   let displayHeight = imageHeight;
                   
                   if (aspectRatio > 1) {
-                    // Wide image - fit to width
                     displayHeight = imageWidth / aspectRatio;
                     if (displayHeight > imageHeight) {
                       displayHeight = imageHeight;
                       displayWidth = imageHeight * aspectRatio;
                     }
                   } else {
-                    // Tall image - fit to height
                     displayWidth = imageHeight * aspectRatio;
                     if (displayWidth > imageWidth) {
                       displayWidth = imageWidth;
@@ -219,163 +180,94 @@ export default function ProductCatalogExport() {
                     }
                   }
                   
-                  // Center the image in the box
                   const xOffset = (imageWidth - displayWidth) / 2;
                   const yOffset = (imageHeight - displayHeight) / 2;
                   
-                  // Add image to PDF
-                  pdf.addImage(imageBase64, 'JPEG', margin + xOffset, yPosition + yOffset, displayWidth, displayHeight);
+                  pdf.addImage(imageBase64, 'JPEG', productX + xOffset, productY + yOffset, displayWidth, displayHeight);
                   
-                  // Add image count badge if more than one
                   if (product.images.length > 1) {
                     pdf.setFontSize(7);
                     pdf.setTextColor(255, 255, 255);
                     pdf.setFillColor(37, 99, 235);
-                    pdf.rect(margin + imageWidth - 15, yPosition + 2, 12, 6, 'F');
-                    pdf.text(`+${product.images.length - 1}`, margin + imageWidth - 9, yPosition + 6, { align: 'center' });
+                    pdf.rect(productX + imageWidth - 15, productY + 2, 12, 6, 'F');
+                    pdf.text(`+${product.images.length - 1}`, productX + imageWidth - 9, productY + 6, { align: 'center' });
                   }
                   
                   resolve(true);
                 };
               });
             } else {
-              // Image failed to load
               pdf.setFontSize(8);
               pdf.setTextColor(220, 38, 38);
-              pdf.text('IMAGE ERROR', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+              pdf.text('IMAGE ERROR', productX + imageWidth/2, productY + imageHeight/2, { align: 'center' });
             }
           } else {
             pdf.setFontSize(8);
             pdf.setTextColor(150, 150, 150);
-            pdf.text('NO IMAGE', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+            pdf.text('NO IMAGE', productX + imageWidth/2, productY + imageHeight/2, { align: 'center' });
           }
-
-          // Product name and price - with proper wrapping to avoid overlap
-          pdf.setFontSize(14);
-          pdf.setTextColor(31, 41, 55); // Dark gray
           
-          // Calculate available width for product name (leaving space for price)
-          const priceText = `$${product.price.toLocaleString()}`;
-          pdf.setFontSize(14);
+          // Product info starts below image
+          let infoY = productY + imageHeight + 8;
+          
+          // Add checkbox with "checked" text
+          pdf.setDrawColor(0, 0, 0);
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(productX, infoY, 4, 4, 'FD');
+          pdf.setFontSize(8);
+          pdf.setTextColor(102, 102, 102);
+          pdf.text('checked', productX + 6, infoY + 3);
+          infoY += 8;
+          
+          // Add product name
+          pdf.setFontSize(11);
+          pdf.setTextColor(51, 51, 51);
+          const nameLines = pdf.splitTextToSize(product.name, productWidth - 5);
+          pdf.text(nameLines[0], productX, infoY);
+          if (nameLines.length > 1) {
+            pdf.text(nameLines[1], productX, infoY + 4);
+            infoY += 4;
+          }
+          infoY += 6;
+          
+          // Add category
+          pdf.setFontSize(9);
           pdf.setTextColor(37, 99, 235);
-          const priceWidth = pdf.getTextWidth(priceText);
-          const nameMaxWidth = pageWidth - textStartX - margin - priceWidth - 10; // 10mm buffer
+          pdf.text(`Category: ${categoryName}`, productX, infoY);
+          infoY += 5;
           
-          pdf.setFontSize(14);
-          pdf.setTextColor(31, 41, 55); // Dark gray
-          const nameLines = pdf.splitTextToSize(product.name, nameMaxWidth);
-          pdf.text(nameLines, textStartX, yPosition);
+          // Add brand
+          pdf.setFontSize(9);
+          pdf.setTextColor(102, 102, 102);
+          pdf.text(brandName, productX, infoY);
+          infoY += 5;
           
-          // Add price on the first line
-          pdf.setFontSize(14);
-          pdf.setTextColor(37, 99, 235); // Blue color
-          pdf.text(priceText, pageWidth - margin, yPosition, { align: "right" });
-          
-          // Calculate y position based on number of lines in product name
-          const nameHeight = nameLines.length * 5; // 5 is line height for size 14
-          yPosition += Math.max(nameHeight, 8); // Use at least 8mm for single line
-
-          // Product details
+          // Add price with stars
           pdf.setFontSize(10);
-          pdf.setTextColor(102, 102, 102); // Gray color
-          pdf.text(`SKU: ${product.sku || 'N/A'}`, textStartX, yPosition);
+          pdf.setTextColor(51, 51, 51);
+          pdf.text('★★★★★', productX, infoY);
+          infoY += 5;
           
-          // Calculate positions for other details
-          const skuWidth = pdf.getTextWidth(`SKU: ${product.sku || 'N/A'}`);
-          const brandX = textStartX + skuWidth + 15;
-          pdf.text(`Brand: ${brandName}`, brandX, yPosition);
-          
-          const brandWidth = pdf.getTextWidth(`Brand: ${brandName}`);
-          const stockX = brandX + brandWidth + 15;
-          if (stockX < pageWidth - margin - 80) { // Only add if there's space
-            pdf.text(`Stock: ${product.stockQuantity}`, stockX, yPosition);
-          }
-          
-          if (product.freePostage) {
-            pdf.setTextColor(22, 163, 74); // Green color
-            pdf.text('✓ Free Postage', pageWidth - margin - 30, yPosition);
-          }
-          yPosition += 6;
-
-          // Description
-          if (product.description) {
-            pdf.setFontSize(9);
-            pdf.setTextColor(102, 102, 102);
-            const descriptionHeight = addText(product.description, textStartX, yPosition, pageWidth - textStartX - margin, 9);
-            yPosition += descriptionHeight;
-          }
-
-          // Specifications
-          if (product.specifications && Object.keys(product.specifications).length > 0) {
-            pdf.setFontSize(9);
-            pdf.setTextColor(55, 65, 81); // Dark gray
-            pdf.text('Specifications:', textStartX, yPosition);
-            yPosition += 5;
-
-            let specText = '';
-            for (const [key, value] of Object.entries(product.specifications)) {
-              specText += `${key}: ${value}  `;
-            }
-            
-            pdf.setFontSize(8);
-            pdf.setTextColor(102, 102, 102);
-            const specHeight = addText(specText, textStartX, yPosition, pageWidth - textStartX - margin, 8);
-            yPosition += specHeight;
-          }
-
-          // Ensure minimum space is used for image height
-          const contentHeight = yPosition - productStartY;
-          if (contentHeight < imageHeight) {
-            yPosition = productStartY + imageHeight;
-          }
-
-          yPosition += 10; // Space between products
+          pdf.setFontSize(12);
+          pdf.setTextColor(37, 99, 235);
+          pdf.text(`$${product.price.toFixed(2)}`, productX, infoY);
         }
-
-        yPosition += 10; // Space between categories
       }
 
-      // Add footer on last page
-      if (yPosition > pageHeight - 60) {
-        pdf.addPage();
-        yPosition = margin;
-      }
-
-      // Footer separator
-      pdf.setDrawColor(229, 231, 235);
-      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 10;
-
-      // Footer content
-      pdf.setFontSize(12);
-      pdf.setTextColor(102, 102, 102);
-      pdf.text("Geelong Garage Doors", pageWidth / 2, yPosition, { align: "center" });
-      yPosition += 6;
-
-      pdf.setFontSize(10);
-      pdf.text("Email: info@geelonggaragedoors.com | Web: geelonggaragedoors.com", pageWidth / 2, yPosition, { align: "center" });
-      yPosition += 8;
-
-      pdf.setFontSize(9);
-      pdf.setTextColor(136, 136, 136);
-      pdf.text("Prices are subject to change. Contact us for current availability and pricing.", pageWidth / 2, yPosition, { align: "center" });
-      yPosition += 5;
-
-      pdf.text(`Document generated on ${new Date().toLocaleString()}`, pageWidth / 2, yPosition, { align: "center" });
-
-      // Save the PDF
-      const fileName = `Geelong-Garage-Doors-Catalog-${new Date().toISOString().split('T')[0]}.pdf`;
+      // Save PDF
+      const fileName = `geelong-garage-doors-catalog-${new Date().toISOString().split('T')[0]}.pdf`;
       pdf.save(fileName);
 
       toast({
-        title: "PDF Generated Successfully",
-        description: `Product catalog exported as ${fileName}`,
+        title: "Success!",
+        description: "PDF catalog generated successfully",
       });
+
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      console.error('Error generating PDF:', error);
       toast({
-        title: "Export Failed",
-        description: "There was an error generating the PDF. Please try again.",
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -383,25 +275,34 @@ export default function ProductCatalogExport() {
     }
   };
 
-
-
   return (
-    <Button
-      onClick={generatePDF}
-      disabled={isGenerating || !productsData?.products?.length}
-      className="bg-blue-600 hover:bg-blue-700 text-white"
-    >
-      {isGenerating ? (
-        <>
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          Generating PDF...
-        </>
-      ) : (
-        <>
-          <FileText className="w-4 h-4 mr-2" />
-          Export Product Catalog
-        </>
-      )}
-    </Button>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <FileText className="h-5 w-5 text-blue-600" />
+        <h3 className="text-lg font-semibold">Product Catalog Export</h3>
+      </div>
+      
+      <p className="text-sm text-gray-600">
+        Generate a PDF catalog with product images arranged in a 2x2 grid layout (4 products per page).
+      </p>
+      
+      <Button
+        onClick={generatePDF}
+        disabled={isGenerating || !productsData}
+        className="bg-blue-600 hover:bg-blue-700"
+      >
+        {isGenerating ? (
+          <>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            Generating PDF...
+          </>
+        ) : (
+          <>
+            <Download className="h-4 w-4 mr-2" />
+            Generate PDF Catalog
+          </>
+        )}
+      </Button>
+    </div>
   );
 }
