@@ -73,65 +73,7 @@
     @apply border-border;
   }
 
-  /* Google Places Autocomplete styling for new PlaceAutocompleteElement */
-  gmp-place-autocomplete {
-    --gmp-primary-color: hsl(var(--foreground)) !important;
-    --gmp-secondary-color: hsl(var(--secondary)) !important;
-    --gmp-accent-color: hsl(var(--foreground)) !important;
-    --gmp-outline-color: hsl(var(--border)) !important;
-    --gmp-background-color: hsl(var(--background)) !important;
-    --gmp-surface-color: hsl(var(--card)) !important;
-    --gmp-on-surface-color: hsl(var(--foreground)) !important;
-    --gmp-on-surface-variant-color: hsl(var(--muted-foreground)) !important;
-    --gmp-surface-variant-color: hsl(var(--muted)) !important;
-    --gmp-primary-container-color: hsl(var(--background)) !important;
-    --gmp-on-primary-container-color: hsl(var(--foreground)) !important;
-    --gmp-secondary-container-color: hsl(var(--secondary)) !important;
-    --gmp-on-secondary-container-color: hsl(var(--secondary-foreground)) !important;
-    --gmp-tertiary-container-color: hsl(var(--background)) !important;
-    --gmp-on-tertiary-container-color: hsl(var(--foreground)) !important;
-    --gmp-surface-container-color: hsl(var(--card)) !important;
-    --gmp-surface-container-high-color: hsl(var(--card)) !important;
-    --gmp-surface-container-highest-color: hsl(var(--card)) !important;
-    --gmp-surface-container-low-color: hsl(var(--card)) !important;
-    --gmp-surface-container-lowest-color: hsl(var(--card)) !important;
-    --gmp-surface-bright-color: hsl(var(--background)) !important;
-    --gmp-surface-dim-color: hsl(var(--muted)) !important;
-    --gmp-inverse-surface-color: hsl(var(--foreground)) !important;
-    --gmp-inverse-on-surface-color: hsl(var(--background)) !important;
-    --gmp-inverse-primary-color: hsl(var(--foreground)) !important;
-  }
-  
-  /* Force override any internal styling */
-  gmp-place-autocomplete * {
-    color-scheme: light !important;
-  }
-  
-  /* Input styling to match other form inputs */
-  gmp-place-autocomplete input {
-    color: hsl(var(--foreground)) !important;
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    font-size: 0.875rem !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  
-  /* Focus styling for the container */
-  gmp-place-autocomplete:focus-within {
-    border-color: hsl(var(--ring)) !important;
-    outline: 2px solid transparent !important;
-    outline-offset: 2px !important;
-    box-shadow: 0 0 0 2px hsl(var(--ring)) !important;
-  }
-  
-  /* Remove any blue highlighting */
-  gmp-place-autocomplete *:focus {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: transparent !important;
-  }
+  /* Google Places Autocomplete styling for legacy implementation */
   
   /* Traditional CSS classes for legacy support */
   .pac-container {

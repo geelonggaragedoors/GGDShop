@@ -135,76 +135,19 @@ export default function AddressAutocomplete({
       }
 
       try {
-        // Try to use the new PlaceAutocompleteElement if available
-        if (window.google.maps.places.PlaceAutocompleteElement) {
-          console.log('Using new PlaceAutocompleteElement');
-          
-          // Create the new PlaceAutocompleteElement
-          const placeAutocompleteElement = new window.google.maps.places.PlaceAutocompleteElement({
-            componentRestrictions: { country: 'AU' },
-            types: ['address']
-          });
-          
-          // Apply styling to match the site's theme
-          placeAutocompleteElement.style.cssText = `
-            width: 100%;
-            height: 2.5rem;
-            border: 1px solid hsl(var(--border));
-            border-radius: 0.375rem;
-            background: hsl(var(--background));
-            color: hsl(var(--foreground));
-            font-size: 0.875rem;
-            padding: 0.5rem 0.75rem;
-            outline: none;
-            transition: border-color 0.2s;
-            --gmp-primary-color: hsl(var(--foreground));
-            --gmp-secondary-color: hsl(var(--secondary));
-            --gmp-accent-color: hsl(var(--foreground));
-            --gmp-outline-color: hsl(var(--border));
-            --gmp-background-color: hsl(var(--background));
-            --gmp-surface-color: hsl(var(--card));
-            --gmp-on-surface-color: hsl(var(--foreground));
-            --gmp-on-surface-variant-color: hsl(var(--muted-foreground));
-            --gmp-surface-variant-color: hsl(var(--muted));
-            color-scheme: light;
-          `;
-          
-          // Replace the input with the new element
-          if (inputRef.current.parentNode) {
-            inputRef.current.parentNode.replaceChild(placeAutocompleteElement, inputRef.current);
-            autocompleteElementRef.current = placeAutocompleteElement;
-            
-            // Update the ref to point to the new element
-            (inputRef as any).current = placeAutocompleteElement;
-          }
-          
-          // Add event listener for place selection
-          placeAutocompleteElement.addEventListener('gmp-placeselect', async (event: any) => {
-            const place = event.target.place;
-            
-            // Fetch the required fields
-            await place.fetchFields({
-              fields: ['addressComponents', 'formattedAddress', 'geometry']
-            });
-            
-            handlePlaceChangedNew(place);
-          });
-          
-        } else {
-          console.log('Using legacy Autocomplete');
-          
-          // Fallback to legacy implementation
-          autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-            types: ['address'],
-            fields: ['address_components', 'formatted_address', 'geometry'],
-            componentRestrictions: { country: 'AU' }
-          });
+        // Use the legacy Autocomplete implementation for better styling control
+        console.log('Using legacy Autocomplete with proper styling');
+        
+        autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+          types: ['address'],
+          fields: ['address_components', 'formatted_address', 'geometry'],
+          componentRestrictions: { country: 'AU' }
+        });
 
-          autocompleteElementRef.current.addListener('place_changed', () => {
-            const place = autocompleteElementRef.current.getPlace();
-            handlePlaceChanged(place);
-          });
-        }
+        autocompleteElementRef.current.addListener('place_changed', () => {
+          const place = autocompleteElementRef.current.getPlace();
+          handlePlaceChanged(place);
+        });
         
         console.log('Autocomplete initialized successfully');
       } catch (error) {
