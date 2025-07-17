@@ -20,6 +20,11 @@ declare global {
       >;
     }
   }
+  
+  interface Window {
+    googleMapsScriptLoading?: boolean;
+    [key: string]: any;
+  }
 }
 
 interface AddressAutocompleteProps {
@@ -52,42 +57,64 @@ export default function AddressAutocomplete({
 
   useEffect(() => {
     const loadGooglePlacesScript = async () => {
+      // Check if Google Maps API is already loaded
       if (window.google && window.google.maps && window.google.maps.places) {
         initializeAutocomplete();
         return;
       }
 
-      if (document.querySelector('script[src*="maps.googleapis.com"]')) {
-        // Script is loading, wait for it
+      // Check if script is already loading/loaded
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (existingScript || window.googleMapsScriptLoading) {
+        // Script already exists or is loading, wait for it to load
         const checkGoogleLoaded = setInterval(() => {
           if (window.google && window.google.maps && window.google.maps.places) {
             clearInterval(checkGoogleLoaded);
             initializeAutocomplete();
           }
         }, 100);
+        
+        // Clear interval after 10 seconds to prevent infinite waiting
+        setTimeout(() => clearInterval(checkGoogleLoaded), 10000);
         return;
       }
 
       try {
+        // Set flag to prevent duplicate loading
+        window.googleMapsScriptLoading = true;
+        
         // Fetch API key from backend
         const response = await fetch('/api/google-places-key');
         const data = await response.json();
         
+        // Create unique callback name to avoid conflicts
+        const callbackName = `initGooglePlaces_${Date.now()}`;
+        
         // Set up callback function
-        window.initGooglePlaces = () => {
+        window[callbackName] = () => {
           console.log('Google Places API loaded successfully');
+          window.googleMapsScriptLoading = false;
           initializeAutocomplete();
+          // Clean up callback
+          delete window[callbackName];
         };
         
-        // Load Google Maps JavaScript API with callback as per documentation
+        // Load Google Maps JavaScript API with callback
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&callback=initGooglePlaces`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&callback=${callbackName}`;
         script.async = true;
         script.defer = true;
+        script.id = 'google-maps-script'; // Add ID to prevent duplicates
+        
+        script.onerror = () => {
+          console.error('Failed to load Google Maps API');
+          window.googleMapsScriptLoading = false;
+        };
         
         document.head.appendChild(script);
       } catch (err) {
         console.error('Failed to load Google Places API key:', err);
+        window.googleMapsScriptLoading = false;
       }
     };
 
@@ -168,8 +195,9 @@ export default function AddressAutocomplete({
     loadGooglePlacesScript();
 
     return () => {
-      if (autocompleteElementRef.current) {
-        window.google?.maps?.event?.clearInstanceListeners(autocompleteElementRef.current);
+      if (autocompleteElementRef.current && window.google?.maps?.event) {
+        window.google.maps.event.clearInstanceListeners(autocompleteElementRef.current);
+        autocompleteElementRef.current = null;
       }
     };
   }, [onAddressSelect]);
