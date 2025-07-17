@@ -21,6 +21,37 @@ interface Product {
   freePostage: boolean;
 }
 
+// Helper function to load image and return base64 data
+const loadImageAsBase64 = (url: string): Promise<string | null> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw image
+      ctx?.drawImage(img, 0, 0);
+      
+      // Get base64 data
+      const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+      resolve(dataURL);
+    };
+    
+    img.onerror = () => {
+      console.error('Failed to load image:', url);
+      resolve(null);
+    };
+    
+    img.src = url;
+  });
+};
+
 export default function ProductCatalogExport() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
@@ -127,6 +158,7 @@ export default function ProductCatalogExport() {
 
         // Products in category
         for (const product of products) {
+
           // Check if we need a new page (increased threshold for images)
           if (yPosition > pageHeight - 70) {
             pdf.addPage();
@@ -152,19 +184,66 @@ export default function ProductCatalogExport() {
           pdf.setFontSize(8);
           pdf.setTextColor(150, 150, 150);
           
-          // Check if product has images
+          // Load and display product image
           const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
           
           if (hasImages) {
-            // Add image indicator
-            pdf.setFontSize(10);
-            pdf.setTextColor(37, 99, 235); // Blue color
-            pdf.text('IMAGE', margin + imageWidth/2, yPosition + imageHeight/2 - 2, { align: 'center' });
+            const firstImagePath = product.images[0];
+            const imageUrl = `${window.location.origin}${firstImagePath}`;
+            const imageBase64 = await loadImageAsBase64(imageUrl);
             
-            // Add image count
-            pdf.setFontSize(8);
-            pdf.setTextColor(100, 100, 100);
-            pdf.text(`${product.images.length} photo${product.images.length > 1 ? 's' : ''}`, margin + imageWidth/2, yPosition + imageHeight/2 + 4, { align: 'center' });
+            if (imageBase64) {
+              // Calculate image dimensions to fit within the box
+              const img = new Image();
+              img.src = imageBase64;
+              
+              await new Promise((resolve) => {
+                img.onload = () => {
+                  const aspectRatio = img.width / img.height;
+                  let displayWidth = imageWidth;
+                  let displayHeight = imageHeight;
+                  
+                  if (aspectRatio > 1) {
+                    // Wide image - fit to width
+                    displayHeight = imageWidth / aspectRatio;
+                    if (displayHeight > imageHeight) {
+                      displayHeight = imageHeight;
+                      displayWidth = imageHeight * aspectRatio;
+                    }
+                  } else {
+                    // Tall image - fit to height
+                    displayWidth = imageHeight * aspectRatio;
+                    if (displayWidth > imageWidth) {
+                      displayWidth = imageWidth;
+                      displayHeight = imageWidth / aspectRatio;
+                    }
+                  }
+                  
+                  // Center the image in the box
+                  const xOffset = (imageWidth - displayWidth) / 2;
+                  const yOffset = (imageHeight - displayHeight) / 2;
+                  
+                  // Add image to PDF
+                  pdf.addImage(imageBase64, 'JPEG', margin + xOffset, yPosition + yOffset, displayWidth, displayHeight);
+                  
+                  // Add image count badge if more than one
+                  if (product.images.length > 1) {
+                    pdf.setFontSize(7);
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.setFillColor(37, 99, 235);
+                    pdf.rect(margin + imageWidth - 15, yPosition + 2, 12, 6, 'F');
+                    pdf.text(`+${product.images.length - 1}`, margin + imageWidth - 9, yPosition + 6, { align: 'center' });
+                  }
+                  
+                  resolve(true);
+                };
+              });
+            } else {
+              // Image failed to load
+              pdf.setFontSize(8);
+              pdf.setTextColor(220, 38, 38);
+              pdf.text('IMAGE ERROR', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+            }
           } else {
             pdf.setFontSize(8);
             pdf.setTextColor(150, 150, 150);
