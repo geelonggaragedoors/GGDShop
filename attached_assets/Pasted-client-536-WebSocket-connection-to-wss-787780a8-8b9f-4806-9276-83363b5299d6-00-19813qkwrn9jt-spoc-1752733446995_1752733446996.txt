@@ -1,0 +1,45 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=a4w06XqEqktT' failed: 
+setupWebSocket @ client:536
+(anonymous) @ client:531
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=a4w06XqEqktT' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555
+chunk-RPCDYKBN.js?v=a0f51d44:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+content.js:208 {}
+NotificationBell.tsx:67 Connected to notification WebSocket
+NotificationBell.tsx:86 WebSocket authentication successful
+NotificationBell.tsx:99 WebSocket closed unexpectedly: 1005 
+websocket.onclose @ NotificationBell.tsx:99
+NotificationBell.tsx:67 Connected to notification WebSocket
+NotificationBell.tsx:86 WebSocket authentication successful
+ProductCatalogExport.tsx:267 Error generating PDF: TypeError: product.price.toFixed is not a function
+    at generatePDF (ProductCatalogExport.tsx:253:38)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=a0f51d44:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=a0f51d44:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=a0f51d44:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (chunk-RPCDYKBN.js?v=a0f51d44:3736:33)
+    at executeDispatch (chunk-RPCDYKBN.js?v=a0f51d44:7014:11)
+    at processDispatchQueueItemsInOrder (chunk-RPCDYKBN.js?v=a0f51d44:7034:15)
+    at processDispatchQueue (chunk-RPCDYKBN.js?v=a0f51d44:7043:13)
+    at dispatchEventsForPlugins (chunk-RPCDYKBN.js?v=a0f51d44:7051:11)
+    at chunk-RPCDYKBN.js?v=a0f51d44:7174:20
+generatePDF @ ProductCatalogExport.tsx:267
+callCallback2 @ chunk-RPCDYKBN.js?v=a0f51d44:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=a0f51d44:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=a0f51d44:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=a0f51d44:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=a0f51d44:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=a0f51d44:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=a0f51d44:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=a0f51d44:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=a0f51d44:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=a0f51d44:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=a0f51d44:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=a0f51d44:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=a0f51d44:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=a0f51d44:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=a0f51d44:5449

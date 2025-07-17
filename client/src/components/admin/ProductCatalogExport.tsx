@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 interface Product {
   id: string;
   name: string;
-  price: number;
+  price: number | string;
   sku?: string;
   images?: string[];
   categoryId: string;
@@ -16,6 +16,7 @@ interface Product {
   stockQuantity: number;
   freePostage: boolean;
   isFeatured: boolean;
+  isActive?: boolean;
 }
 
 // Helper function to load image and return base64 data
@@ -111,7 +112,7 @@ export default function ProductCatalogExport() {
       yPosition += 10;
 
       // Get all products in order (not categorized)
-      const allProducts = productsData.products.filter((p: Product) => p.isActive);
+      const allProducts = productsData.products.filter((p: Product) => p.isActive !== false);
       
       // Process products in groups of 4 (2x2 grid per page)
       for (let i = 0; i < allProducts.length; i += 4) {
@@ -250,7 +251,8 @@ export default function ProductCatalogExport() {
           
           pdf.setFontSize(12);
           pdf.setTextColor(37, 99, 235);
-          pdf.text(`$${product.price.toFixed(2)}`, productX, infoY);
+          const price = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
+          pdf.text(`$${price.toFixed(2)}`, productX, infoY);
         }
       }
 
