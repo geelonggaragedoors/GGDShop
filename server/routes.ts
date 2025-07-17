@@ -225,33 +225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/products/:id', async (req, res) => {
-    try {
-      const product = await storage.getProductById(req.params.id);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      res.json(product);
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      res.status(500).json({ message: "Failed to fetch product" });
-    }
-  });
-
-  app.get('/api/products/slug/:slug', async (req, res) => {
-    try {
-      const product = await storage.getProductBySlug(req.params.slug);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      res.json(product);
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      res.status(500).json({ message: "Failed to fetch product" });
-    }
-  });
-
-  // Search suggestions endpoint
+  // Search suggestions endpoint - MUST come before /api/products/:id
   app.get('/api/products/search', async (req, res) => {
     try {
       const { q, limit = '8' } = req.query;
@@ -287,6 +261,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error searching products:", error);
       res.status(500).json({ error: "Failed to search products" });
+    }
+  });
+
+  app.get('/api/products/slug/:slug', async (req, res) => {
+    try {
+      const product = await storage.getProductBySlug(req.params.slug);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      res.status(500).json({ message: "Failed to fetch product" });
+    }
+  });
+
+  app.get('/api/products/:id', async (req, res) => {
+    try {
+      const product = await storage.getProductById(req.params.id);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      res.status(500).json({ message: "Failed to fetch product" });
     }
   });
 
