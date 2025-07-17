@@ -84,6 +84,7 @@ export interface IStorage {
     limit?: number;
     offset?: number;
   }): Promise<{ products: Product[]; total: number }>;
+  searchProducts(search: string, limit?: number): Promise<Product[]>;
   getProductById(id: string): Promise<Product | undefined>;
   getProductBySlug(slug: string): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
@@ -369,11 +370,13 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (params.search) {
+      const searchTerm = params.search.toLowerCase();
       conditions.push(
         or(
-          like(products.name, `%${params.search}%`),
-          like(products.description, `%${params.search}%`),
-          like(products.sku, `%${params.search}%`)
+          like(sql`LOWER(${products.name})`, `%${searchTerm}%`),
+          like(sql`LOWER(${products.description})`, `%${searchTerm}%`),
+          like(sql`LOWER(${products.sku})`, `%${searchTerm}%`),
+          like(sql`LOWER(${products.shortDescription})`, `%${searchTerm}%`)
         )
       );
     }
@@ -429,6 +432,30 @@ export class DatabaseStorage implements IStorage {
   async deleteProduct(id: string): Promise<boolean> {
     const result = await db.delete(products).where(eq(products.id, id));
     return result.rowCount! > 0;
+  }
+
+  async searchProducts(search: string, limit: number = 20): Promise<Product[]> {
+    const searchTerm = search.toLowerCase();
+    
+    let query = db
+      .select()
+      .from(products)
+      .where(
+        and(
+          eq(products.isActive, true),
+          eq(products.status, 'published'),
+          or(
+            like(sql`LOWER(${products.name})`, `%${searchTerm}%`),
+            like(sql`LOWER(${products.description})`, `%${searchTerm}%`),
+            like(sql`LOWER(${products.sku})`, `%${searchTerm}%`),
+            like(sql`LOWER(${products.shortDescription})`, `%${searchTerm}%`)
+          )
+        )
+      )
+      .orderBy(desc(products.createdAt))
+      .limit(limit);
+
+    return await query;
   }
 
   async updateProductStock(id: string, quantity: number): Promise<boolean> {

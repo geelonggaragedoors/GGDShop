@@ -228,22 +228,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Search suggestions endpoint - MUST come before /api/products/:id
   app.get('/api/products/search', async (req, res) => {
     try {
-      const { q, limit = '8' } = req.query;
+      const { q, limit = '20' } = req.query;
       
       if (!q || typeof q !== 'string' || q.trim().length < 2) {
         return res.json({ products: [] });
       }
 
-      const result = await storage.getProducts({
-        search: q.trim(),
-        limit: parseInt(limit as string),
-        offset: 0,
-        active: true
-      });
+      const products = await storage.searchProducts(
+        q.trim(),
+        parseInt(limit as string)
+      );
 
       // Include category and brand info for each product
       const productsWithDetails = await Promise.all(
-        result.products.map(async (product) => {
+        products.map(async (product) => {
           const [category, brand] = await Promise.all([
             product.categoryId ? storage.getCategoryById(product.categoryId) : null,
             product.brandId ? storage.getBrandById(product.brandId) : null
