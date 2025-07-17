@@ -251,6 +251,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search suggestions endpoint
+  app.get('/api/products/search', async (req, res) => {
+    try {
+      const { q, limit = '8' } = req.query;
+      
+      if (!q || typeof q !== 'string' || q.trim().length < 2) {
+        return res.json({ products: [] });
+      }
+
+      const result = await storage.getProducts({
+        search: q.trim(),
+        limit: parseInt(limit as string),
+        offset: 0,
+        active: true
+      });
+
+      // Include category and brand info for each product
+      const productsWithDetails = await Promise.all(
+        result.products.map(async (product) => {
+          const [category, brand] = await Promise.all([
+            product.categoryId ? storage.getCategoryById(product.categoryId) : null,
+            product.brandId ? storage.getBrandById(product.brandId) : null
+          ]);
+          
+          return {
+            ...product,
+            category: category ? { id: category.id, name: category.name } : null,
+            brand: brand ? { id: brand.id, name: brand.name } : null
+          };
+        })
+      );
+
+      res.json({ products: productsWithDetails });
+    } catch (error) {
+      console.error("Error searching products:", error);
+      res.status(500).json({ error: "Failed to search products" });
+    }
+  });
+
   // Public category routes
   app.get('/api/categories', async (req, res) => {
     try {

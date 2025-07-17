@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,13 +11,13 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/hooks/useAuth";
 import AdminSwitcher from "@/components/AdminSwitcher";
+import SearchDropdown from "@/components/storefront/SearchDropdown";
 
 export default function StorefrontHeader() {
   const { cartCount, cartTotal } = useCart();
   const { wishlistCount } = useWishlist();
   const { user, isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [, setLocation] = useLocation();
@@ -28,13 +27,10 @@ export default function StorefrontHeader() {
     queryFn: api.categories.getAll,
   });
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setLocation(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setShowMobileSearch(false);
-      setIsMobileMenuOpen(false);
-    }
+  const handleSearch = (query: string) => {
+    setLocation(`/products?search=${encodeURIComponent(query)}`);
+    setShowMobileSearch(false);
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -82,16 +78,7 @@ export default function StorefrontHeader() {
           
           {/* Search bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
-            <form onSubmit={handleSearch} className="relative w-full">
-              <Input 
-                type="text" 
-                placeholder="Search products..." 
-                className="w-full pl-10 pr-4"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-            </form>
+            <SearchDropdown onSearch={handleSearch} />
           </div>
           
           {/* Cart and actions */}
@@ -231,17 +218,11 @@ export default function StorefrontHeader() {
         {/* Mobile Search Dropdown */}
         {showMobileSearch && (
           <div className="md:hidden bg-white border-t border-gray-200 px-4 py-3">
-            <form onSubmit={handleSearch} className="relative">
-              <Input 
-                type="text" 
-                placeholder="Search products..." 
-                className="w-full pl-10 pr-4"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-              />
-              <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-            </form>
+            <SearchDropdown 
+              onSearch={handleSearch} 
+              autoFocus={true}
+              isMobile={true}
+            />
           </div>
         )}
         
@@ -309,16 +290,7 @@ export default function StorefrontHeader() {
             <div className="py-4 space-y-4">
               {/* Mobile Search */}
               <div className="px-4 md:hidden">
-                <form onSubmit={handleSearch} className="relative">
-                  <Input 
-                    type="text" 
-                    placeholder="Search products..." 
-                    className="w-full pl-10 pr-4"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                </form>
+                <SearchDropdown onSearch={handleSearch} isMobile={true} />
               </div>
               
               {/* Mobile Menu Items */}
