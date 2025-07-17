@@ -153,19 +153,18 @@ export default function ProductCatalogExport() {
           pdf.setTextColor(150, 150, 150);
           
           // Check if product has images
-          console.log(`Product "${product.name}": images =`, product.images, `Array.isArray = ${Array.isArray(product.images)}, length = ${product.images?.length}`);
           const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
           
           if (hasImages) {
-            // Add a small icon or indicator for images
+            // Add image indicator
             pdf.setFontSize(10);
             pdf.setTextColor(37, 99, 235); // Blue color
-            pdf.text('📷', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+            pdf.text('IMAGE', margin + imageWidth/2, yPosition + imageHeight/2 - 2, { align: 'center' });
             
             // Add image count
             pdf.setFontSize(8);
             pdf.setTextColor(100, 100, 100);
-            pdf.text(`${product.images.length} image${product.images.length > 1 ? 's' : ''}`, margin + imageWidth/2, yPosition + imageHeight/2 + 5, { align: 'center' });
+            pdf.text(`${product.images.length} photo${product.images.length > 1 ? 's' : ''}`, margin + imageWidth/2, yPosition + imageHeight/2 + 4, { align: 'center' });
           } else {
             pdf.setFontSize(8);
             pdf.setTextColor(150, 150, 150);
