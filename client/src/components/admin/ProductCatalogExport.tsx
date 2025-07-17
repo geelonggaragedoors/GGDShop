@@ -152,12 +152,22 @@ export default function ProductCatalogExport() {
           pdf.setFontSize(8);
           pdf.setTextColor(150, 150, 150);
           
-          // Debug: Check image data structure
-          console.log('Product:', product.name, 'Images:', product.images, 'Type:', typeof product.images, 'Length:', product.images?.length);
+          // Check if product has images
+          const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
           
-          if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-            pdf.text('IMAGE', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+          if (hasImages) {
+            // Add a small icon or indicator for images
+            pdf.setFontSize(10);
+            pdf.setTextColor(37, 99, 235); // Blue color
+            pdf.text('📷', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+            
+            // Add image count
+            pdf.setFontSize(8);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`${product.images.length} image${product.images.length > 1 ? 's' : ''}`, margin + imageWidth/2, yPosition + imageHeight/2 + 5, { align: 'center' });
           } else {
+            pdf.setFontSize(8);
+            pdf.setTextColor(150, 150, 150);
             pdf.text('NO IMAGE', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
           }
 
