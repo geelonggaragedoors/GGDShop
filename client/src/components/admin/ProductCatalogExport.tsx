@@ -127,8 +127,8 @@ export default function ProductCatalogExport() {
 
         // Products in category
         for (const product of products) {
-          // Check if we need a new page
-          if (yPosition > pageHeight - 40) {
+          // Check if we need a new page (increased threshold for images)
+          if (yPosition > pageHeight - 70) {
             pdf.addPage();
             yPosition = margin;
           }
@@ -136,26 +136,71 @@ export default function ProductCatalogExport() {
           const brand = brands?.find(b => b.id === product.brandId);
           const brandName = brand?.name || 'Unknown Brand';
 
-          // Product name and price
+          // Define layout areas
+          const imageWidth = 30; // Width for product image
+          const imageHeight = 25; // Height for product image
+          const textStartX = margin + imageWidth + 5; // Start text after image + margin
+          const textMaxWidth = pageWidth - textStartX - margin - 50; // Leave space for price
+          const productStartY = yPosition;
+
+          // Add product image placeholder
+          pdf.setDrawColor(200, 200, 200);
+          pdf.setFillColor(245, 245, 245);
+          pdf.rect(margin, yPosition, imageWidth, imageHeight, 'FD');
+          
+          // Add image indicator
+          pdf.setFontSize(8);
+          pdf.setTextColor(150, 150, 150);
+          if (product.images && product.images.length > 0) {
+            pdf.text('IMAGE', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+          } else {
+            pdf.text('NO IMAGE', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
+          }
+
+          // Product name and price - with proper wrapping to avoid overlap
           pdf.setFontSize(14);
           pdf.setTextColor(31, 41, 55); // Dark gray
-          pdf.text(product.name, margin, yPosition);
+          
+          // Calculate available width for product name (leaving space for price)
+          const priceText = `$${product.price.toLocaleString()}`;
+          pdf.setFontSize(14);
+          pdf.setTextColor(37, 99, 235);
+          const priceWidth = pdf.getTextWidth(priceText);
+          const nameMaxWidth = pageWidth - textStartX - margin - priceWidth - 10; // 10mm buffer
           
           pdf.setFontSize(14);
+          pdf.setTextColor(31, 41, 55); // Dark gray
+          const nameLines = pdf.splitTextToSize(product.name, nameMaxWidth);
+          pdf.text(nameLines, textStartX, yPosition);
+          
+          // Add price on the first line
+          pdf.setFontSize(14);
           pdf.setTextColor(37, 99, 235); // Blue color
-          pdf.text(`$${product.price.toLocaleString()}`, pageWidth - margin, yPosition, { align: "right" });
-          yPosition += 8;
+          pdf.text(priceText, pageWidth - margin, yPosition, { align: "right" });
+          
+          // Calculate y position based on number of lines in product name
+          const nameHeight = nameLines.length * 5; // 5 is line height for size 14
+          yPosition += Math.max(nameHeight, 8); // Use at least 8mm for single line
 
           // Product details
           pdf.setFontSize(10);
           pdf.setTextColor(102, 102, 102); // Gray color
-          pdf.text(`SKU: ${product.sku || 'N/A'}`, margin, yPosition);
-          pdf.text(`Brand: ${brandName}`, margin + 60, yPosition);
-          pdf.text(`Stock: ${product.stockQuantity}`, margin + 120, yPosition);
+          pdf.text(`SKU: ${product.sku || 'N/A'}`, textStartX, yPosition);
+          
+          // Calculate positions for other details
+          const skuWidth = pdf.getTextWidth(`SKU: ${product.sku || 'N/A'}`);
+          const brandX = textStartX + skuWidth + 15;
+          pdf.text(`Brand: ${brandName}`, brandX, yPosition);
+          
+          const brandWidth = pdf.getTextWidth(`Brand: ${brandName}`);
+          const stockX = brandX + brandWidth + 15;
+          if (stockX < pageWidth - margin - 80) { // Only add if there's space
+            pdf.text(`Stock: ${product.stockQuantity}`, stockX, yPosition);
+          }
           
           if (product.freePostage) {
             pdf.setTextColor(22, 163, 74); // Green color
-            pdf.text('✓ Free Postage', margin + 160, yPosition);
+            pdf.text('✓ Free Postage', pageWidth - margin - 30, yPosition);
           }
           yPosition += 6;
 
@@ -163,7 +208,7 @@ export default function ProductCatalogExport() {
           if (product.description) {
             pdf.setFontSize(9);
             pdf.setTextColor(102, 102, 102);
-            const descriptionHeight = addText(product.description, margin, yPosition, pageWidth - 2 * margin, 9);
+            const descriptionHeight = addText(product.description, textStartX, yPosition, pageWidth - textStartX - margin, 9);
             yPosition += descriptionHeight;
           }
 
@@ -171,7 +216,7 @@ export default function ProductCatalogExport() {
           if (product.specifications && Object.keys(product.specifications).length > 0) {
             pdf.setFontSize(9);
             pdf.setTextColor(55, 65, 81); // Dark gray
-            pdf.text('Specifications:', margin, yPosition);
+            pdf.text('Specifications:', textStartX, yPosition);
             yPosition += 5;
 
             let specText = '';
@@ -181,11 +226,17 @@ export default function ProductCatalogExport() {
             
             pdf.setFontSize(8);
             pdf.setTextColor(102, 102, 102);
-            const specHeight = addText(specText, margin, yPosition, pageWidth - 2 * margin, 8);
+            const specHeight = addText(specText, textStartX, yPosition, pageWidth - textStartX - margin, 8);
             yPosition += specHeight;
           }
 
-          yPosition += 8; // Space between products
+          // Ensure minimum space is used for image height
+          const contentHeight = yPosition - productStartY;
+          if (contentHeight < imageHeight) {
+            yPosition = productStartY + imageHeight;
+          }
+
+          yPosition += 10; // Space between products
         }
 
         yPosition += 10; // Space between categories
