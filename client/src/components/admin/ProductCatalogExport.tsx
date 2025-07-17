@@ -151,7 +151,11 @@ export default function ProductCatalogExport() {
           // Add image indicator
           pdf.setFontSize(8);
           pdf.setTextColor(150, 150, 150);
-          if (product.images && product.images.length > 0) {
+          
+          // Debug: Check image data structure
+          console.log('Product:', product.name, 'Images:', product.images, 'Type:', typeof product.images, 'Length:', product.images?.length);
+          
+          if (product.images && Array.isArray(product.images) && product.images.length > 0) {
             pdf.text('IMAGE', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
           } else {
             pdf.text('NO IMAGE', margin + imageWidth/2, yPosition + imageHeight/2, { align: 'center' });
