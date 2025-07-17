@@ -13,8 +13,8 @@ interface Product {
   price: number;
   stockQuantity: number;
   sku: string;
-  brand: { name: string };
-  category: { name: string };
+  brandId: string;
+  categoryId: string;
   images: string[];
   specifications: any;
   isActive: boolean;
@@ -30,11 +30,28 @@ export default function ProductCatalogExport() {
     queryKey: ["/api/admin/products"],
   });
 
+  const { data: categories } = useQuery({
+    queryKey: ["/api/categories"],
+  });
+
+  const { data: brands } = useQuery({
+    queryKey: ["/api/brands"],
+  });
+
   const generatePDF = async () => {
     if (!productsData?.products?.length) {
       toast({
         title: "No products found",
         description: "There are no products to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!categories || !brands) {
+      toast({
+        title: "Loading data",
+        description: "Please wait for product data to load completely.",
         variant: "destructive",
       });
       return;
@@ -55,7 +72,7 @@ export default function ProductCatalogExport() {
       document.body.appendChild(tempContainer);
 
       // Generate HTML content for PDF
-      const htmlContent = generateCatalogHTML(productsData.products);
+      const htmlContent = generateCatalogHTML(productsData.products, categories, brands);
       tempContainer.innerHTML = htmlContent;
 
       // Convert to canvas
@@ -113,12 +130,13 @@ export default function ProductCatalogExport() {
     }
   };
 
-  const generateCatalogHTML = (products: Product[]) => {
+  const generateCatalogHTML = (products: Product[], categories: any[], brands: any[]) => {
     const activeProducts = products.filter(p => p.isActive);
     const categorizedProducts = activeProducts.reduce((acc, product) => {
-      const category = product.category.name;
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(product);
+      const category = categories?.find(c => c.id === product.categoryId);
+      const categoryName = category?.name || 'Uncategorized';
+      if (!acc[categoryName]) acc[categoryName] = [];
+      acc[categoryName].push(product);
       return acc;
     }, {} as Record<string, Product[]>);
 
@@ -138,7 +156,11 @@ export default function ProductCatalogExport() {
               ${category}
             </h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-              ${products.map(product => `
+              ${products.map(product => {
+                const brand = brands?.find(b => b.id === product.brandId);
+                const brandName = brand?.name || 'Unknown Brand';
+                
+                return `
                 <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; background: #fafafa;">
                   <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                     <h3 style="color: #1f2937; font-size: 16px; margin: 0; font-weight: bold;">${product.name}</h3>
@@ -146,8 +168,8 @@ export default function ProductCatalogExport() {
                   </div>
                   
                   <div style="margin-bottom: 10px;">
-                    <p style="color: #666; font-size: 12px; margin: 2px 0;"><strong>SKU:</strong> ${product.sku}</p>
-                    <p style="color: #666; font-size: 12px; margin: 2px 0;"><strong>Brand:</strong> ${product.brand.name}</p>
+                    <p style="color: #666; font-size: 12px; margin: 2px 0;"><strong>SKU:</strong> ${product.sku || 'N/A'}</p>
+                    <p style="color: #666; font-size: 12px; margin: 2px 0;"><strong>Brand:</strong> ${brandName}</p>
                     <p style="color: #666; font-size: 12px; margin: 2px 0;"><strong>Stock:</strong> ${product.stockQuantity}</p>
                     ${product.freePostage ? '<p style="color: #16a34a; font-size: 12px; margin: 2px 0; font-weight: bold;">✓ Free Postage</p>' : ''}
                   </div>
@@ -169,7 +191,8 @@ export default function ProductCatalogExport() {
                     </div>
                   ` : ''}
                 </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
           </div>
         `).join('')}
