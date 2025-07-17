@@ -1,0 +1,361 @@
+choice. Try it out, and share your input to help shape the future of GMP!
+Home
+Products
+Google Maps Platform
+Documentation
+Web
+Maps JavaScript API
+Legacy
+Was this helpful?
+
+Send feedbackMigrate to the new Place Autocomplete
+
+bookmark_border
+European Economic Area (EEA) developers
+Place Autocomplete is a feature of the Places library in the Maps JavaScript API. You can use autocomplete to give your applications the type-ahead-search behavior of the Google Maps search field.
+
+This page explains the differences between legacy and new Place Autocomplete features. In both versions there are two general ways to integrate Autocomplete:
+
+Programmatic interface: For developers seeking greater customization and control over the autocomplete experience.
+Place Autocomplete widget: A search bar which can be embedded on a map or web page.
+Autocomplete programmatic interface
+The following table lists some of the main differences in the use of programmatic Place Autocomplete between Places Autocomplete Service (legacy) and Autocomplete Data API (new):
+
+PlacesService (Legacy)	Place (New)
+Places Autocomplete Service reference	Autocomplete Data (new) reference
+AutocompletionRequest	AutocompleteRequest
+AutocompleteService.getPlacePredictions	AutocompleteSuggestion.fetchAutocompleteSuggestions
+AutocompletePrediction	PlacePrediction
+Methods require the use of a callback to handle the results object and PlacesServiceStatus response.	Uses Promises, and works asynchronously.
+Methods require a PlacesServiceStatus check.	No required status check, can use standard error handling. Learn more.
+Place data fields are set as options when the Autocomplete instance is created.	Place data fields are set later when fetchFields() is called.
+Query predictions are supported (SearchBox only).	Query predictions are not available in the Autocomplete class.
+Limited to a fixed set of place types and place data fields.	Access to an expanded selection of place types and place data fields.
+The following are used by both legacy and new Autocomplete APIs:
+
+locationBias
+locationRestriction
+AutocompleteSessionToken
+ComponentRestrictions
+Code comparison (programmatic)
+This section compares code for autocomplete to illustrate the differences between the Places Service and the Place class, for programmatic interfaces.
+
+Retrieve autocomplete predictions (legacy)
+The legacy Places Service lets you retrieve autocomplete predictions programmatically, for more control over the user interface than is offered by the Autocomplete class. In the following example, a single request is made for "par", with a AutocompletionRequest consisting of the input value and a set of bounds for biasing the prediction. The example returns a list of AutocompletePrediction instances, and shows the description for each one. The example function also creates a session token and applies it to the request.
+
+
+function init() {
+  const placeInfo = document.getElementById("prediction");
+  const service = new google.maps.places.AutocompleteService();
+  const placesService = new google.maps.places.PlacesService(placeInfo);
+  var sessionToken = new google.maps.places.AutocompleteSessionToken();
+
+  // Define request options.
+  let request = {
+    input: "par",
+    sessionToken: sessionToken,
+    bounds: {
+      west: -122.44,
+      north: 37.8,
+      east: -122.39,
+      south: 37.78,
+    },
+  }
+
+  // Display the query string.
+  const title = document.getElementById("title");
+  title.appendChild(
+    document.createTextNode('Place predictions for "' + request.input + '":'),
+  );
+
+  // Perform the query and display the results.
+  const displaySuggestions = function (predictions, status) {
+    // Check the status of the Places Service.
+    if (status != google.maps.places.PlacesServiceStatus.OK || !predictions) {
+      alert(status);
+      return;
+    }
+
+    predictions.forEach((prediction) => {
+      const li = document.createElement("li");
+      li.appendChild(document.createTextNode(prediction.description));
+      document.getElementById("results").appendChild(li);
+    });
+
+    const placeRequest = {
+      placeId: predictions[0].place_id,
+      fields: ["name", "formatted_address"],
+    };
+
+    placesService.getDetails(placeRequest, (place, status) => {
+      if (status == google.maps.places.PlacesServiceStatus.OK && place) {
+        placeInfo.textContent = `
+          First predicted place: ${place.name} at ${place.formatted_address}`
+      }
+    });
+
+  };
+
+  // Show the results of the query.
+  service.getPlacePredictions(request, displaySuggestions);
+}
+Programmatically retrieving Place Autocomplete Service predictions
+Place Autocomplete example
+Session tokens
+AutocompletionRequest reference
+AutocompletePrediction reference
+Retrieve autocomplete predictions (new)
+The new Place class also lets you retrieve autocomplete predictions programmatically for more control over the user interface than is offered by the PlaceAutocompleteElement class. In the following example, a single request is made for "par", with an AutocompleteRequest consisting of the input value and a set of bounds for biasing the prediction. The example returns a list of placePrediction instances and shows the description for each one. The example function also creates a session token and applies it to the request.
+
+
+async function init() {
+  let sessionToken = new google.maps.places.AutocompleteSessionToken();
+
+  // Define request options.
+  let request = {
+    input: "par",
+    sessionToken: sessionToken,
+    locationBias: {
+      west: -122.44,
+      north: 37.8,
+      east: -122.39,
+      south: 37.78,
+    },
+  };
+
+  // Display the query string.
+  const title = document.getElementById("title");
+  title.appendChild(
+    document.createTextNode('Place predictions for "' + request.input + '":'),
+  );
+
+  // Perform the query and display the results.
+  const { suggestions } =
+    await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+
+  const resultsElement = document.getElementById("results");
+
+  for (let suggestion of suggestions) {
+    const placePrediction = suggestion.placePrediction;
+    const listItem = document.createElement("li");
+
+    listItem.appendChild(
+      document.createTextNode(placePrediction.text.text),
+    );
+
+    resultsElement.appendChild(listItem);
+  }
+
+  // Show the first predicted place.
+  let place = suggestions[0].placePrediction.toPlace();
+
+  await place.fetchFields({
+    fields: ["displayName", "formattedAddress"],
+  });
+
+  const placeInfo = document.getElementById("prediction");
+
+  placeInfo.textContent = `
+    First predicted place: ${place.displayName} at ${place.formattedAddress}`
+}
+Place Autocomplete Data API
+Place Autocomplete Data Predictions example
+Place Autocomplete Data Sessions example
+Session tokens
+AutocompleteRequest interface reference
+AutocompleteSuggestion class reference
+PlacePrediction class reference
+Place autocomplete widget
+The following table lists some of the main differences in the use of autocomplete widgets between the Places service (legacy), and the Place class (new):
+
+Places Service (Legacy)	Place (New)
+Autocomplete class for place predictions.	PlaceAutocompleteElement class for place predictions.
+SearchBox class
+for query predictions.	Query predictions are not available in the Autocomplete class.
+Only the default input placeholder text is localized.	Text input placeholder, predictions list logo, and place predictions all support regional localization.
+Widget uses setBounds() or autocomplete.bindTo() to constrain (bias) the search to the specified bounds, and strictBounds to restrict results to the specified bounds.	Widget uses the locationBias property to bias results to the specified bounds, and the locationRestriction property to restrict the search to the specified bounds.
+Widgets can only be integrated by using a standard HTML input element.	Widget can be integrated using a standard HTML input element or a gmp-place-autocomplete element.
+When using the widget, it is possible for users to request things that may not be valid (for example "bisneyland"); this case must be explicitly handled.	The widget will only return results for the provided suggestions, and cannot issue requests for arbitrary values; therefore there is no need to handle potentially invalid requests.
+Returns legacy PlaceResult instance.	Returns Place instance.
+Place data fields are set as options for the Autocomplete object.	Place data fields are set when the user makes a selection and fetchFields() is called.
+Limited to a fixed set of place types and place data fields.	Access to an expanded selection of place types and place data fields.
+Code comparison (widgets)
+This section compares code for autocomplete to illustrate the differences between the legacy Place Autocomplete Widget and the new Place Autocomplete element.
+
+Place Autocomplete Widget (legacy)
+The Places Service offers two types of autocomplete widgets, which you can add by using the Autocomplete and SearchBox classes. Each kind of widget can be added to a map as a map control, or embedded directly onto a web page. The following code example shows embedding an Autocomplete widget as a map control.
+
+The Autocomplete widget constructor takes two arguments:
+An HTML input element of type text. This is the input field that the autocomplete service will monitor and attach its results to.
+An optional AutocompleteOptions argument, where you can specify further options to constrain the query.
+To set bounds, the Autocomplete instance can be explicitly bound to the map by calling autocomplete.bindTo().
+Specify place data fields in the options for autocomplete.
+
+function initMap() {
+  const map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 40.749933, lng: -73.98633 },
+    zoom: 13,
+    mapTypeControl: false,
+  });
+  const card = document.getElementById("pac-card");
+  const input = document.getElementById("pac-input");
+  const options = {
+    fields: ["formatted_address", "geometry", "name"],
+    strictBounds: false,
+  };
+
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
+
+  const autocomplete = new google.maps.places.Autocomplete(input, options);
+
+  // Bind the map's bounds (viewport) property to the autocomplete object,
+  // so that the autocomplete requests use the current map bounds for the
+  // bounds option in the request.
+  autocomplete.bindTo("bounds", map);
+
+  const infowindow = new google.maps.InfoWindow();
+  const infowindowContent = document.getElementById("infowindow-content");
+
+  infowindow.setContent(infowindowContent);
+
+  const marker = new google.maps.Marker({
+    map,
+    anchorPoint: new google.maps.Point(0, -29),
+  });
+
+  autocomplete.addListener("place_changed", () => {
+    infowindow.close();
+    marker.setVisible(false);
+
+    const place = autocomplete.getPlace();
+
+    if (!place.geometry || !place.geometry.location) {
+      // User entered the name of a Place that was not suggested and
+      // pressed the Enter key, or the Place Details request failed.
+      window.alert("No details available for input: '" + place.name + "'");
+      return;
+    }
+
+    // If the place has a geometry, then present it on a map.
+    if (place.geometry.viewport) {
+      map.fitBounds(place.geometry.viewport);
+    } else {
+      map.setCenter(place.geometry.location);
+      map.setZoom(17);
+    }
+
+    marker.setPosition(place.geometry.location);
+    marker.setVisible(true);
+    infowindowContent.children["place-name"].textContent = place.name;
+    infowindowContent.children["place-address"].textContent =
+      place.formatted_address;
+    infowindow.open(map, marker);
+  });
+}
+Place Autocomplete documentation
+Place Autocomplete Widget example
+Places Search Box example
+Autocomplete class reference
+Place Autocomplete Widget (New)
+The Place class offers the PlaceAutocompleteElement, an HTMLElement subclass which provides a UI component that can be added to a map as a map control, or embedded directly onto a web page. The following code example shows embedding an PlaceAutocompleteElement widget as a map control.
+
+The Place Autocomplete Widget has been improved in the following ways:
+
+The Autocomplete widget UI supports regional localization (including RTL languages), for the text input placeholder, predictions list logo, and the place predictions.
+Enhanced accessibility, including support for screen readers and keyboard interaction.
+The Autocomplete widget returns the new Place class to simplify handling of the returned object.
+Better support for mobile devices and small screens.
+Better performance and improved graphical appearance.
+Key implementation differences include:
+
+The PlaceAutocompleteElement provides its own input field, and is directly inserted into the page using HTML or JavaScript (as opposed to being provided an existing input element).
+Query predictions are not available in the Autocomplete class.
+The PlaceAutocompleteElement is constructed using PlaceAutocompleteElementOptions.
+Place data fields are specified at selection time (when fetchFields() is called).
+Set bounds by using either the locationBounds or locationRestriction option.
+
+let map;
+let marker;
+let infoWindow;
+
+async function initMap() {
+  // Request needed libraries.
+  const [{ Map }, { AdvancedMarkerElement }] = await Promise.all([
+    google.maps.importLibrary("marker"),
+    google.maps.importLibrary("places"),
+  ]);
+
+  // Initialize the map.
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 40.749933, lng: -73.98633 },
+    zoom: 13,
+    mapId: "4504f8b37365c3d0",
+    mapTypeControl: false,
+  });
+
+  const placeAutocomplete =
+    new google.maps.places.PlaceAutocompleteElement({
+      locationRestriction: map.getBounds(),
+    });
+
+  placeAutocomplete.id = "place-autocomplete-input";
+  const card = document.getElementById("place-autocomplete-card");
+
+  card.appendChild(placeAutocomplete);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
+
+  // Create the marker and infowindow.
+  marker = new google.maps.marker.AdvancedMarkerElement({
+    map,
+  });
+  infoWindow = new google.maps.InfoWindow({});
+
+  // Add the gmp-select listener, and display the results on the map.
+  placeAutocomplete.addEventListener("gmp-select", async ( place ) => {
+    const place = event.placePrediction.toPlace();
+    await place.fetchFields({
+      fields: ["displayName", "formattedAddress", "location"],
+    });
+    // If the place has a geometry, then present it on a map.
+    if (place.viewport) {
+      map.fitBounds(place.viewport);
+    } else {
+      map.setCenter(place.location);
+      map.setZoom(17);
+    }
+
+    let content =
+      '<div id="infowindow-content">' +
+      '<span id="place-displayname" class="title">' +
+      place.displayName +
+      '</span><br />' +
+      '<span id="place-address">' +
+      place.formattedAddress +
+      '</span>' +
+      '</div>';
+
+    updateInfoWindow(content, place.location);
+    marker.position = place.location;
+  });
+}
+
+// Helper function to create an info window.
+function updateInfoWindow(content, center) {
+  infoWindow.setContent(content);
+  infoWindow.setPosition(center);
+  infoWindow.open({
+    map,
+    anchor: marker,
+    shouldFocus: false,
+  });
+}
+Place Autocomplete Widget (Preview) documentation
+Place Autocomplete widget example
+Place Autocomplete Element example
+PlaceAutocompleteElement class reference
+Was this helpful?
+
+Send feedback
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2025-07-16 UTC.

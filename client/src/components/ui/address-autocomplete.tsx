@@ -10,6 +10,18 @@ interface AddressComponents {
   country?: string;
 }
 
+// Declare the custom HTML element for the new PlaceAutocompleteElement
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'gmp-place-autocomplete': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+    }
+  }
+}
+
 interface AddressAutocompleteProps {
   onAddressSelect: (address: {
     formatted_address: string;
@@ -69,7 +81,7 @@ export default function AddressAutocomplete({
         
         // Load Google Maps JavaScript API with callback as per documentation
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&loading=async&callback=initGooglePlaces`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&callback=initGooglePlaces`;
         script.async = true;
         script.defer = true;
         
@@ -96,7 +108,8 @@ export default function AddressAutocomplete({
       }
 
       try {
-        // Use the existing Autocomplete method (still supported)
+        // Use the current stable Autocomplete implementation
+        // This will continue to work even after the new PlaceAutocompleteElement becomes available
         autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
           types: ['address'],
           fields: ['address_components', 'formatted_address', 'geometry'],
@@ -149,6 +162,8 @@ export default function AddressAutocomplete({
         components
       });
     };
+
+
 
     loadGooglePlacesScript();
 
