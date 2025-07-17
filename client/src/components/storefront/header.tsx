@@ -230,6 +230,7 @@ export default function StorefrontHeader() {
         <nav className="hidden md:block py-3 border-t border-gray-100">
           <ul className="flex space-x-8 text-sm font-bold">
             <li><Link href="/" className="text-gray-700 hover:text-primary transition-colors">Home</Link></li>
+            <li><Link href="/products" className="text-gray-700 hover:text-primary transition-colors">All Products</Link></li>
             
             {/* Main Categories with Dropdown Menus */}
             {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
@@ -297,6 +298,7 @@ export default function StorefrontHeader() {
               <div className="px-4">
                 <ul className="space-y-4">
                   <li><Link href="/" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Home</Link></li>
+                  <li><Link href="/products" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">All Products</Link></li>
                   
                   {/* Shop Section */}
                   <li>
