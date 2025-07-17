@@ -155,13 +155,6 @@ export default function AddressAutocomplete({
             color: hsl(var(--foreground));
             font-size: 0.875rem;
             padding: 0.5rem 0.75rem;
-            --gmp-autocomplete-background: hsl(var(--background));
-            --gmp-autocomplete-color: hsl(var(--foreground));
-            --gmp-autocomplete-border: 1px solid hsl(var(--border));
-            --gmp-autocomplete-border-radius: 0.375rem;
-            --gmp-autocomplete-hover-background: hsl(var(--accent));
-            --gmp-autocomplete-selected-background: hsl(var(--accent));
-            --gmp-autocomplete-selected-color: hsl(var(--accent-foreground));
           `;
           
           // Replace the input with the new element
@@ -173,9 +166,8 @@ export default function AddressAutocomplete({
             (inputRef as any).current = placeAutocompleteElement;
           }
           
-          // Add event listener for place selection (correct event name for new element)
+          // Add event listener for place selection
           placeAutocompleteElement.addEventListener('gmp-placeselect', async (event: any) => {
-            // Get the place from the event
             const place = event.target.place;
             
             // Fetch the required fields
