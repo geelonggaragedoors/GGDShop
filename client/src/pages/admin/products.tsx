@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
 import { ProductImport } from "@/components/admin/ProductImport";
+import ProductCatalogExport from "@/components/admin/ProductCatalogExport";
 
 export default function Products() {
   const [search, setSearch] = useState("");
@@ -544,6 +545,7 @@ export default function Products() {
               <p className="text-gray-600">Manage your garage door inventory</p>
             </div>
             <div className="flex space-x-3">
+              <ProductCatalogExport />
               <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline">
