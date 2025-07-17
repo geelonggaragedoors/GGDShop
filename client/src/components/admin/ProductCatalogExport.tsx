@@ -225,7 +225,7 @@ export default function ProductCatalogExport() {
           pdf.setFontSize(8);
           pdf.setTextColor(102, 102, 102);
           pdf.text('checked', productX + 6, infoY + 3);
-          infoY += 6;
+          infoY += 8; // Increased space to prevent overlap
           
           // Add product name
           pdf.setFontSize(11);
@@ -261,7 +261,7 @@ export default function ProductCatalogExport() {
               .replace(/\n/g, ' ')
               .trim();
             const descriptionLines = pdf.splitTextToSize(cleanDescription, productWidth - 2);
-            const maxLines = 4; // Up to 4 lines with better spacing
+            const maxLines = 8; // Doubled to 8 lines since we removed stars
             for (let i = 0; i < Math.min(descriptionLines.length, maxLines); i++) {
               pdf.text(descriptionLines[i], productX, infoY);
               infoY += 4;
@@ -269,12 +269,7 @@ export default function ProductCatalogExport() {
             infoY += 3;
           }
           
-          // Add price with stars
-          pdf.setFontSize(9);
-          pdf.setTextColor(51, 51, 51);
-          pdf.text('*****', productX, infoY);
-          infoY += 5;
-          
+          // Add price (removed stars)
           pdf.setFontSize(12);
           pdf.setTextColor(37, 99, 235);
           const price = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
