@@ -61,15 +61,17 @@ export default function AddressAutocomplete({
         const response = await fetch('/api/google-places-key');
         const data = await response.json();
         
-        // Load Google Maps JavaScript API with proper async loading
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&loading=async`;
-        script.async = true;
-        script.defer = true;
-        
-        script.onload = () => {
+        // Set up callback function
+        window.initGooglePlaces = () => {
+          console.log('Google Places API loaded successfully');
           initializeAutocomplete();
         };
+        
+        // Load Google Maps JavaScript API with callback as per documentation
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&loading=async&callback=initGooglePlaces`;
+        script.async = true;
+        script.defer = true;
         
         document.head.appendChild(script);
       } catch (err) {
@@ -78,21 +80,38 @@ export default function AddressAutocomplete({
     };
 
     const initializeAutocomplete = () => {
-      if (!inputRef.current || !window.google || !window.google.maps || !window.google.maps.places) {
+      console.log('Initializing autocomplete...');
+      console.log('Input ref:', inputRef.current);
+      console.log('Google maps loaded:', !!window.google);
+      console.log('Places loaded:', !!window.google?.maps?.places);
+      
+      if (!inputRef.current) {
+        console.error('Input ref not available');
+        return;
+      }
+      
+      if (!window.google || !window.google.maps || !window.google.maps.places) {
+        console.error('Google Maps API not loaded');
         return;
       }
 
-      // Use the existing Autocomplete method (still supported)
-      autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-        types: ['address'],
-        fields: ['address_components', 'formatted_address', 'geometry'],
-        componentRestrictions: { country: 'AU' } // Restrict to Australia
-      });
+      try {
+        // Use the existing Autocomplete method (still supported)
+        autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+          types: ['address'],
+          fields: ['address_components', 'formatted_address', 'geometry'],
+          componentRestrictions: { country: 'AU' } // Restrict to Australia
+        });
 
-      autocompleteElementRef.current.addListener('place_changed', () => {
-        const place = autocompleteElementRef.current.getPlace();
-        handlePlaceChanged(place);
-      });
+        autocompleteElementRef.current.addListener('place_changed', () => {
+          const place = autocompleteElementRef.current.getPlace();
+          handlePlaceChanged(place);
+        });
+        
+        console.log('Autocomplete initialized successfully');
+      } catch (error) {
+        console.error('Error initializing autocomplete:', error);
+      }
     };
 
     const handlePlaceChanged = (place: any) => {
