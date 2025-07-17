@@ -829,6 +829,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Order tracking (public endpoint)
+  app.get('/api/orders/track/:orderNumber', async (req, res) => {
+    try {
+      const orderNumber = req.params.orderNumber;
+      const order = await storage.getOrderByNumber(orderNumber);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Get order items
+      const orderItems = await storage.getOrderItems(order.id);
+
+      // Get customer details if available
+      const customer = order.customerId ? await storage.getCustomerById(order.customerId) : null;
+
+      // Format the order for the tracking page
+      const trackingData = {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        userId: order.customerId || '',
+        items: orderItems.map(item => ({
+          id: item.id,
+          name: item.productName || `Product ${item.productId}`,
+          quantity: item.quantity,
+          price: parseFloat(item.price),
+          image: item.productImage || '',
+          sku: item.productSku || ''
+        })),
+        total: parseFloat(order.total),
+        status: order.status,
+        shippingAddress: order.shippingAddress ? {
+          address: order.shippingAddress.split(',')[0]?.trim() || '',
+          city: order.shippingAddress.split(',')[1]?.trim() || '',
+          state: order.shippingAddress.split(',')[2]?.trim().split(' ')[0] || '',
+          postcode: order.shippingAddress.split(',')[2]?.trim().split(' ')[1] || '',
+          country: 'Australia'
+        } : {
+          address: '',
+          city: '',
+          state: '',
+          postcode: '',
+          country: 'Australia'
+        },
+        billingAddress: {
+          firstName: customer?.firstName || '',
+          lastName: customer?.lastName || '',
+          email: customer?.email || order.customerEmail || '',
+          phone: customer?.phone || '',
+          address: order.shippingAddress ? order.shippingAddress.split(',')[0]?.trim() || '' : '',
+          city: order.shippingAddress ? order.shippingAddress.split(',')[1]?.trim() || '' : '',
+          state: order.shippingAddress ? order.shippingAddress.split(',')[2]?.trim().split(' ')[0] || '' : '',
+          postcode: order.shippingAddress ? order.shippingAddress.split(',')[2]?.trim().split(' ')[1] || '' : '',
+          country: 'Australia'
+        },
+        paymentMethod: order.paypalOrderId ? 'PayPal' : 'Credit Card',
+        paymentStatus: order.paymentStatus,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt
+      };
+
+      res.json(trackingData);
+    } catch (error) {
+      console.error("Error fetching order for tracking:", error);
+      res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
   // Admin order management
   app.get('/api/admin/orders', hybridAuth, async (req, res) => {
     try {

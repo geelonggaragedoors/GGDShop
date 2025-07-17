@@ -109,7 +109,7 @@ export default function SimpleHeader() {
                 <a href="/api/login" className="hover:text-primary transition-colors">Create Account</a>
               </div>
             )}
-            <a href="#" className="hover:text-primary transition-colors">Track Order</a>
+            <Link href="/track-order" className="hover:text-primary transition-colors">Track Order</Link>
           </div>
         </div>
         

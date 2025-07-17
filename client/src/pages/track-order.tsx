@@ -1,325 +1,293 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Search, Package, Truck, CheckCircle, Clock, AlertCircle } from "lucide-react";
-import { SEOHead } from "@/components/SEOHead";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Package, MapPin, Calendar, DollarSign, User, Phone, Mail, Search } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 interface Order {
   id: string;
   orderNumber: string;
-  status: string;
+  userId: string;
+  items: any[];
   total: number;
-  createdAt: string;
-  items: Array<{
-    id: string;
-    productName: string;
-    quantity: number;
-    price: number;
-  }>;
+  status: string;
   shippingAddress: {
-    street: string;
+    address: string;
     city: string;
     state: string;
-    postalCode: string;
+    postcode: string;
+    country: string;
   };
-  customer: {
+  billingAddress: {
     firstName: string;
     lastName: string;
     email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    postcode: string;
+    country: string;
   };
+  paymentMethod: string;
+  paymentStatus: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-const statusConfig = {
-  pending: { color: "bg-yellow-500", icon: Clock, label: "Order Received" },
-  processing: { color: "bg-blue-500", icon: Package, label: "Processing" },
-  shipped: { color: "bg-purple-500", icon: Truck, label: "Shipped" },
-  delivered: { color: "bg-green-500", icon: CheckCircle, label: "Delivered" },
-  cancelled: { color: "bg-red-500", icon: AlertCircle, label: "Cancelled" }
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+    case 'processing':
+      return 'bg-blue-100 text-blue-800 border-blue-300';
+    case 'shipped':
+      return 'bg-purple-100 text-purple-800 border-purple-300';
+    case 'delivered':
+      return 'bg-green-100 text-green-800 border-green-300';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800 border-red-300';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-300';
+  }
 };
 
-export default function TrackOrder() {
-  const [orderNumber, setOrderNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [searchAttempted, setSearchAttempted] = useState(false);
-  const { toast } = useToast();
+const getStatusSteps = (status: string) => {
+  const steps = [
+    { key: 'pending', label: 'Order Placed' },
+    { key: 'processing', label: 'Processing' },
+    { key: 'shipped', label: 'Shipped' },
+    { key: 'delivered', label: 'Delivered' }
+  ];
+  
+  const currentIndex = steps.findIndex(step => step.key === status.toLowerCase());
+  return steps.map((step, index) => ({
+    ...step,
+    completed: index <= currentIndex,
+    current: index === currentIndex
+  }));
+};
 
-  const { data: order, isLoading, error, refetch } = useQuery({
-    queryKey: ["/api/orders/track", orderNumber, email],
-    enabled: false, // Only run when manually triggered
+export default function TrackOrderPage() {
+  const [orderNumber, setOrderNumber] = useState('');
+  const [searchAttempted, setSearchAttempted] = useState(false);
+
+  const { data: order, isLoading, error } = useQuery<Order>({
+    queryKey: ['/api/orders/track', orderNumber],
+    enabled: !!orderNumber && searchAttempted,
+    retry: false
   });
 
-  const handleTrackOrder = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!orderNumber.trim() || !email.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter both order number and email address.",
-        variant: "destructive",
-      });
-      return;
+    if (orderNumber.trim()) {
+      setSearchAttempted(true);
     }
-
-    setSearchAttempted(true);
-    refetch();
-  };
-
-  const getStatusIcon = (status: string) => {
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    const Icon = config.icon;
-    return <Icon className="w-5 h-5" />;
-  };
-
-  const getStatusColor = (status: string) => {
-    return statusConfig[status as keyof typeof statusConfig]?.color || "bg-gray-500";
-  };
-
-  const getStatusLabel = (status: string) => {
-    return statusConfig[status as keyof typeof statusConfig]?.label || status;
   };
 
   return (
-    <>
-      <SEOHead 
-        title="Track Your Order - Geelong Garage Doors"
-        description="Track your garage door order status. Enter your order number and email to get real-time updates on your purchase."
-        keywords="track order, order status, garage door delivery, order tracking"
-      />
-      
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Track Your Order</h1>
-            <p className="text-gray-600">
-              Enter your order number and email address to track your garage door order
-            </p>
-          </div>
-
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Search className="w-5 h-5" />
-                Order Lookup
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleTrackOrder} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="orderNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                      Order Number
-                    </label>
-                    <Input
-                      id="orderNumber"
-                      type="text"
-                      placeholder="e.g., ORD-123456"
-                      value={orderNumber}
-                      onChange={(e) => setOrderNumber(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Tracking..." : "Track Order"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Order Results */}
-          {searchAttempted && (
-            <>
-              {isLoading && (
-                <Card>
-                  <CardContent className="py-8">
-                    <div className="text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                      <p>Searching for your order...</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {error && (
-                <Card>
-                  <CardContent className="py-8">
-                    <div className="text-center">
-                      <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Order Not Found</h3>
-                      <p className="text-gray-600 mb-4">
-                        We couldn't find an order with that number and email combination.
-                      </p>
-                      <ul className="text-sm text-gray-500 text-left max-w-md mx-auto">
-                        <li>• Check your order number is correct</li>
-                        <li>• Verify the email address matches your order</li>
-                        <li>• Order numbers are case-sensitive</li>
-                        <li>• Contact us if you continue having issues</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {order && (
-                <div className="space-y-6">
-                  {/* Order Status */}
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle>Order #{order.orderNumber}</CardTitle>
-                        <Badge className={`${getStatusColor(order.status)} text-white`}>
-                          <span className="flex items-center gap-1">
-                            {getStatusIcon(order.status)}
-                            {getStatusLabel(order.status)}
-                          </span>
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <p className="text-sm text-gray-600">Order Date</p>
-                          <p className="font-medium">
-                            {new Date(order.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Total Amount</p>
-                          <p className="font-medium">${order.total.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Customer</p>
-                          <p className="font-medium">
-                            {order.customer.firstName} {order.customer.lastName}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Order Items */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Order Items</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {order.items.map((item, index) => (
-                          <div key={item.id}>
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className="font-medium">{item.productName}</p>
-                                <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                              </div>
-                              <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                            </div>
-                            {index < order.items.length - 1 && <Separator className="mt-4" />}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Shipping Address */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Shipping Address</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-gray-700">
-                        <p>{order.shippingAddress.street}</p>
-                        <p>
-                          {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Status Timeline */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Order Timeline</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {Object.entries(statusConfig).map(([status, config], index) => {
-                          const Icon = config.icon;
-                          const isCompleted = ['pending', 'processing', 'shipped'].includes(status) && 
-                                            ['processing', 'shipped', 'delivered'].includes(order.status);
-                          const isCurrent = status === order.status;
-                          
-                          return (
-                            <div key={status} className="flex items-center gap-3">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                isCurrent ? config.color : isCompleted ? 'bg-green-500' : 'bg-gray-300'
-                              } text-white`}>
-                                <Icon className="w-4 h-4" />
-                              </div>
-                              <span className={`font-medium ${
-                                isCurrent ? 'text-gray-900' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                              }`}>
-                                {config.label}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Help Section */}
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Need Help?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold mb-2">Contact Support</h4>
-                  <p className="text-sm text-gray-600 mb-2">
-                    If you have questions about your order, our team is here to help.
-                  </p>
-                  <div className="space-y-1">
-                    <p className="text-sm">📞 (03) 5221 8999</p>
-                    <p className="text-sm">✉️ info@geelonggaragedoors.com.au</p>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Order Information</h4>
-                  <p className="text-sm text-gray-600 mb-2">
-                    You can find your order number in your confirmation email.
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Orders typically process within 1-2 business days and shipping times vary by location.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Track Your Order</h1>
+          <p className="text-gray-600">Enter your order number to track your delivery status</p>
         </div>
+
+        {/* Search Form */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Search className="w-5 h-5" />
+              Order Lookup
+            </CardTitle>
+            <CardDescription>
+              Enter your order number to view tracking information
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSearch} className="flex gap-4">
+              <Input
+                type="text"
+                placeholder="Enter order number (e.g., ORD-12345)"
+                value={orderNumber}
+                onChange={(e) => setOrderNumber(e.target.value)}
+                className="flex-1"
+              />
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Track Order'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && searchAttempted && (
+          <Alert className="mb-6">
+            <AlertDescription>
+              Order not found. Please check your order number and try again.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Order Details */}
+        {order && (
+          <div className="space-y-6">
+            {/* Order Status */}
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Package className="w-5 h-5" />
+                      Order {order.orderNumber}
+                    </CardTitle>
+                    <CardDescription>
+                      Placed on {new Date(order.createdAt).toLocaleDateString()}
+                    </CardDescription>
+                  </div>
+                  <Badge className={getStatusColor(order.status)}>
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {/* Status Timeline */}
+                <div className="flex items-center justify-between mb-6">
+                  {getStatusSteps(order.status).map((step, index) => (
+                    <div key={step.key} className="flex flex-col items-center flex-1">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
+                        step.completed 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-gray-200 text-gray-500'
+                      }`}>
+                        {index + 1}
+                      </div>
+                      <div className={`text-xs text-center ${
+                        step.completed ? 'text-primary font-medium' : 'text-gray-500'
+                      }`}>
+                        {step.label}
+                      </div>
+                      {index < getStatusSteps(order.status).length - 1 && (
+                        <div className={`h-0.5 w-full mt-4 ${
+                          step.completed ? 'bg-primary' : 'bg-gray-200'
+                        }`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Order Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm font-medium">Total: {formatCurrency(order.total)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">{order.items.length} item(s)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">Payment: {order.paymentStatus}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Order Items */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Order Items</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {order.items.map((item, index) => (
+                    <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
+                      {item.image && (
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h4 className="font-medium">{item.name}</h4>
+                        <p className="text-sm text-gray-600">SKU: {item.sku}</p>
+                        <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{formatCurrency(item.price * item.quantity)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Shipping & Billing Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Shipping Address */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5" />
+                    Shipping Address
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    <p>{order.shippingAddress.address}</p>
+                    <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postcode}</p>
+                    <p>{order.shippingAddress.country}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Billing Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="w-5 h-5" />
+                    Billing Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p className="font-medium">{order.billingAddress.firstName} {order.billingAddress.lastName}</p>
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm">{order.billingAddress.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm">{order.billingAddress.phone}</span>
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="text-sm space-y-1">
+                      <p>{order.billingAddress.address}</p>
+                      <p>{order.billingAddress.city}, {order.billingAddress.state} {order.billingAddress.postcode}</p>
+                    </div>
+                    <Separator className="my-2" />
+                    <p className="text-sm">Payment Method: {order.paymentMethod}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }
