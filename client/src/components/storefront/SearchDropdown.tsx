@@ -138,7 +138,7 @@ export default function SearchDropdown({
                 return (
                   <Link
                     key={product.id}
-                    href={`/product/${product.id}`}
+                    href={`/product/${product.slug}`}
                     className="block px-4 py-3 hover:bg-gray-50 transition-colors"
                     onClick={() => handleSuggestionClick(product)}
                   >
