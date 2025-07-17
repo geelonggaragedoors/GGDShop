@@ -101,7 +101,7 @@ export default function AddressAutocomplete({
         
         // Load Google Maps JavaScript API with callback
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&callback=${callbackName}`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places&loading=async&callback=${callbackName}`;
         script.async = true;
         script.defer = true;
         script.id = 'google-maps-script'; // Add ID to prevent duplicates
@@ -135,18 +135,52 @@ export default function AddressAutocomplete({
       }
 
       try {
-        // Use the current stable Autocomplete implementation
-        // This will continue to work even after the new PlaceAutocompleteElement becomes available
-        autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-          types: ['address'],
-          fields: ['address_components', 'formatted_address', 'geometry'],
-          componentRestrictions: { country: 'AU' } // Restrict to Australia
-        });
+        // Try to use the new PlaceAutocompleteElement if available
+        if (window.google.maps.places.PlaceAutocompleteElement) {
+          console.log('Using new PlaceAutocompleteElement');
+          
+          // Create the new PlaceAutocompleteElement
+          const placeAutocompleteElement = new window.google.maps.places.PlaceAutocompleteElement({
+            locationRestriction: { country: 'AU' },
+            types: ['address']
+          });
+          
+          // Replace the input with the new element
+          if (inputRef.current.parentNode) {
+            inputRef.current.parentNode.replaceChild(placeAutocompleteElement, inputRef.current);
+            autocompleteElementRef.current = placeAutocompleteElement;
+            
+            // Update the ref to point to the new element
+            (inputRef as any).current = placeAutocompleteElement;
+          }
+          
+          // Add event listener for place selection
+          placeAutocompleteElement.addEventListener('gmp-placeselect', async (event: any) => {
+            const place = event.target.place;
+            
+            // Fetch the required fields
+            await place.fetchFields({
+              fields: ['addressComponents', 'formattedAddress', 'geometry']
+            });
+            
+            handlePlaceChangedNew(place);
+          });
+          
+        } else {
+          console.log('Using legacy Autocomplete');
+          
+          // Fallback to legacy implementation
+          autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+            types: ['address'],
+            fields: ['address_components', 'formatted_address', 'geometry'],
+            componentRestrictions: { country: 'AU' }
+          });
 
-        autocompleteElementRef.current.addListener('place_changed', () => {
-          const place = autocompleteElementRef.current.getPlace();
-          handlePlaceChanged(place);
-        });
+          autocompleteElementRef.current.addListener('place_changed', () => {
+            const place = autocompleteElementRef.current.getPlace();
+            handlePlaceChanged(place);
+          });
+        }
         
         console.log('Autocomplete initialized successfully');
       } catch (error) {
@@ -186,6 +220,42 @@ export default function AddressAutocomplete({
 
       onAddressSelect({
         formatted_address: place.formatted_address,
+        components
+      });
+    };
+
+    const handlePlaceChangedNew = (place: any) => {
+      if (!place.addressComponents) {
+        return;
+      }
+
+      const components: AddressComponents = {};
+      
+      place.addressComponents.forEach((component: any) => {
+        const types = component.types;
+        
+        if (types.includes('street_number')) {
+          components.street_number = component.longText;
+        }
+        if (types.includes('route')) {
+          components.route = component.longText;
+        }
+        if (types.includes('locality')) {
+          components.locality = component.longText;
+        }
+        if (types.includes('administrative_area_level_1')) {
+          components.administrative_area_level_1 = component.shortText;
+        }
+        if (types.includes('postal_code')) {
+          components.postal_code = component.longText;
+        }
+        if (types.includes('country')) {
+          components.country = component.shortText;
+        }
+      });
+
+      onAddressSelect({
+        formatted_address: place.formattedAddress,
         components
       });
     };
