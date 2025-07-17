@@ -1,0 +1,18 @@
+[vite] connecting...
+DOMException {}
+
+Google Places API loaded successfully
+Initializing autocomplete...
+Input ref: 
+<input data-replit-metadata="client/src/components/ui/address-autocomplete.tsx:276:4" data-component-name="Input" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm" id="address-autocomplete" placeholder="Start typing your address..." autocomplete="off" value></input>
+Google maps loaded: true
+Places loaded: true
+Using new PlaceAutocompleteElement
+Error initializing autocomplete: 
+Vl {message: "<gmp-place-autocomplete>: Cannot set property "locationRestriction" to [object Object]: Invalid…", name: "InvalidValueError"}
+message: "<gmp-place-autocomplete>: Cannot set property "locationRestriction" to [object Object]: Invalid LocationBias: {"country":"AU"}"
+name: "InvalidValueError"
+stack: "InvalidValueError↵ at _.Xl (https://maps.googleapis.com/maps-api-v3/api/js/61/10d/main.js:155:445)↵ at TH.dh (https://maps.googleapis.com/maps-api-v3/api/js/61/10d/main.js:412:184)↵ at set locationRestriction (https://maps.googleapis.com/maps-api-v3/api/js/61/10d/places.js:1068:163)↵ at new PH (https://maps.googleapis.com/maps-api-v3/api/js/61/10d/places.js:1065:2756)↵ at new TH (https://maps.googleapis.com/maps-api-v3/api/js/61/10d/places.js:1077:534)↵ at initializeAutocomplete (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/address-autocomplete.tsx:89:44)↵ at window.<computed> (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/address-autocomplete.tsx:55:11)↵ at https://maps.googleapis.com/maps-api-v3/api/js/61/10d/main.js:276:275↵ at https://maps.googleapis.com/maps-api-v3/api/js/61/10d/main.js:275:288"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object

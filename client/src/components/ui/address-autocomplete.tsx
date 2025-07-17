@@ -141,7 +141,7 @@ export default function AddressAutocomplete({
           
           // Create the new PlaceAutocompleteElement
           const placeAutocompleteElement = new window.google.maps.places.PlaceAutocompleteElement({
-            locationRestriction: { country: 'AU' },
+            componentRestrictions: { country: 'AU' },
             types: ['address']
           });
           
@@ -154,8 +154,9 @@ export default function AddressAutocomplete({
             (inputRef as any).current = placeAutocompleteElement;
           }
           
-          // Add event listener for place selection
+          // Add event listener for place selection (correct event name for new element)
           placeAutocompleteElement.addEventListener('gmp-placeselect', async (event: any) => {
+            // Get the place from the event
             const place = event.target.place;
             
             // Fetch the required fields
