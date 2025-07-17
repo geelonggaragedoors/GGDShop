@@ -254,11 +254,18 @@ export default function ProductCatalogExport() {
           if (product.description && product.description.trim()) {
             pdf.setFontSize(9);
             pdf.setTextColor(102, 102, 102);
-            // Clean the description and add proper spacing between sentences
+            // Clean the description thoroughly
             const cleanDescription = product.description
-              .replace(/\s+/g, ' ')
-              .replace(/\. /g, '.  ')  // Add extra space after periods
-              .replace(/\n/g, ' ')
+              .replace(/\\n/g, ' ')  // Replace literal \n with spaces
+              .replace(/\n/g, ' ')   // Replace actual newlines with spaces
+              .replace(/\s+/g, ' ')  // Replace multiple spaces with single space
+              .replace(/\. /g, '.  ') // Add extra space after periods
+              .replace(/&nbsp;/g, ' ') // Replace HTML entities
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
               .trim();
             const descriptionLines = pdf.splitTextToSize(cleanDescription, productWidth - 2);
             const maxLines = 8; // Doubled to 8 lines since we removed stars
