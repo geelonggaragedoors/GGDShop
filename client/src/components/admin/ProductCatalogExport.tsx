@@ -245,10 +245,12 @@ export default function ProductCatalogExport() {
           infoY += 4;
           
           // Add description if available
-          if (product.description) {
+          if (product.description && product.description.trim()) {
             pdf.setFontSize(7);
             pdf.setTextColor(102, 102, 102);
-            const descriptionLines = pdf.splitTextToSize(product.description, productWidth - 5);
+            // Clean the description of excessive whitespace and newlines
+            const cleanDescription = product.description.replace(/\s+/g, ' ').trim();
+            const descriptionLines = pdf.splitTextToSize(cleanDescription, productWidth - 5);
             const maxLines = 3; // Limit to 3 lines
             for (let i = 0; i < Math.min(descriptionLines.length, maxLines); i++) {
               pdf.text(descriptionLines[i], productX, infoY);
@@ -260,7 +262,7 @@ export default function ProductCatalogExport() {
           // Add price with stars
           pdf.setFontSize(8);
           pdf.setTextColor(51, 51, 51);
-          pdf.text('★★★★★', productX, infoY);
+          pdf.text('*****', productX, infoY);
           infoY += 4;
           
           pdf.setFontSize(11);
