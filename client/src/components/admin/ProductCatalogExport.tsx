@@ -228,31 +228,31 @@ export default function ProductCatalogExport() {
           infoY += 6;
           
           // Add product name
-          pdf.setFontSize(9);
+          pdf.setFontSize(11);
           pdf.setTextColor(51, 51, 51);
           const nameLines = pdf.splitTextToSize(product.name, productWidth - 2);
           pdf.text(nameLines[0], productX, infoY);
           if (nameLines.length > 1) {
-            pdf.text(nameLines[1], productX, infoY + 3);
-            infoY += 3;
+            pdf.text(nameLines[1], productX, infoY + 4);
+            infoY += 4;
           }
-          infoY += 4;
+          infoY += 6;
           
           // Add category
-          pdf.setFontSize(7);
+          pdf.setFontSize(9);
           pdf.setTextColor(37, 99, 235);
           pdf.text(`Category: ${categoryName}`, productX, infoY);
-          infoY += 3;
+          infoY += 5;
           
           // Add brand
-          pdf.setFontSize(7);
+          pdf.setFontSize(9);
           pdf.setTextColor(102, 102, 102);
           pdf.text(brandName, productX, infoY);
-          infoY += 3;
+          infoY += 6;
           
           // Add description if available
           if (product.description && product.description.trim()) {
-            pdf.setFontSize(8);
+            pdf.setFontSize(9);
             pdf.setTextColor(102, 102, 102);
             // Clean the description and add proper spacing between sentences
             const cleanDescription = product.description
@@ -261,21 +261,21 @@ export default function ProductCatalogExport() {
               .replace(/\n/g, ' ')
               .trim();
             const descriptionLines = pdf.splitTextToSize(cleanDescription, productWidth - 2);
-            const maxLines = 5; // Up to 5 lines
+            const maxLines = 4; // Up to 4 lines with better spacing
             for (let i = 0; i < Math.min(descriptionLines.length, maxLines); i++) {
               pdf.text(descriptionLines[i], productX, infoY);
-              infoY += 3.5;
+              infoY += 4;
             }
-            infoY += 2;
+            infoY += 3;
           }
           
           // Add price with stars
-          pdf.setFontSize(7);
+          pdf.setFontSize(9);
           pdf.setTextColor(51, 51, 51);
           pdf.text('*****', productX, infoY);
-          infoY += 3;
+          infoY += 5;
           
-          pdf.setFontSize(10);
+          pdf.setFontSize(12);
           pdf.setTextColor(37, 99, 235);
           const price = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
           pdf.text(`$${price.toFixed(2)}`, productX, infoY);
