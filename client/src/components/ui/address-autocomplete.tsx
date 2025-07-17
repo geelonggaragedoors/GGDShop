@@ -155,6 +155,16 @@ export default function AddressAutocomplete({
             color: hsl(var(--foreground));
             font-size: 0.875rem;
             padding: 0.5rem 0.75rem;
+            --gmp-primary-color: hsl(var(--primary));
+            --gmp-secondary-color: hsl(var(--secondary));
+            --gmp-accent-color: hsl(var(--accent));
+            --gmp-outline-color: hsl(var(--border));
+            --gmp-background-color: hsl(var(--background));
+            --gmp-surface-color: hsl(var(--card));
+            --gmp-on-surface-color: hsl(var(--foreground));
+            --gmp-on-surface-variant-color: hsl(var(--muted-foreground));
+            --gmp-surface-variant-color: hsl(var(--muted));
+            color-scheme: light;
           `;
           
           // Replace the input with the new element
