@@ -145,6 +145,25 @@ export default function AddressAutocomplete({
             types: ['address']
           });
           
+          // Apply styling to match the site's theme
+          placeAutocompleteElement.style.cssText = `
+            width: 100%;
+            height: 2.5rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            --gmp-autocomplete-background: hsl(var(--background));
+            --gmp-autocomplete-color: hsl(var(--foreground));
+            --gmp-autocomplete-border: 1px solid hsl(var(--border));
+            --gmp-autocomplete-border-radius: 0.375rem;
+            --gmp-autocomplete-hover-background: hsl(var(--accent));
+            --gmp-autocomplete-selected-background: hsl(var(--accent));
+            --gmp-autocomplete-selected-color: hsl(var(--accent-foreground));
+          `;
+          
           // Replace the input with the new element
           if (inputRef.current.parentNode) {
             inputRef.current.parentNode.replaceChild(placeAutocompleteElement, inputRef.current);
