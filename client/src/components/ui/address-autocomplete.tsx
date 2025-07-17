@@ -82,34 +82,17 @@ export default function AddressAutocomplete({
         return;
       }
 
-      // Check if PlaceAutocompleteElement is available (new method)
-      if (window.google.maps.places.PlaceAutocompleteElement) {
-        // Use the new PlaceAutocompleteElement
-        autocompleteElementRef.current = new window.google.maps.places.PlaceAutocompleteElement({
-          input: inputRef.current,
-          types: ['address'],
-          fields: ['address_components', 'formatted_address', 'geometry'],
-          componentRestrictions: { country: 'AU' } // Restrict to Australia
-        });
+      // Use the existing Autocomplete method (still supported)
+      autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+        types: ['address'],
+        fields: ['address_components', 'formatted_address', 'geometry'],
+        componentRestrictions: { country: 'AU' } // Restrict to Australia
+      });
 
-        autocompleteElementRef.current.addListener('place_changed', () => {
-          const place = autocompleteElementRef.current.getPlace();
-          handlePlaceChanged(place);
-        });
-      } else {
-        // Fallback to the old Autocomplete method
-        console.warn('Using deprecated google.maps.places.Autocomplete. Consider updating to PlaceAutocompleteElement.');
-        autocompleteElementRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-          types: ['address'],
-          fields: ['address_components', 'formatted_address', 'geometry'],
-          componentRestrictions: { country: 'AU' } // Restrict to Australia
-        });
-
-        autocompleteElementRef.current.addListener('place_changed', () => {
-          const place = autocompleteElementRef.current.getPlace();
-          handlePlaceChanged(place);
-        });
-      }
+      autocompleteElementRef.current.addListener('place_changed', () => {
+        const place = autocompleteElementRef.current.getPlace();
+        handlePlaceChanged(place);
+      });
     };
 
     const handlePlaceChanged = (place: any) => {
