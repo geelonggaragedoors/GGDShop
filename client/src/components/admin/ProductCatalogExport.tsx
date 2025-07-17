@@ -115,20 +115,26 @@ export default function ProductCatalogExport() {
       // Get all products in order (not categorized)
       const allProducts = productsData.products.filter((p: Product) => p.isActive !== false);
       
-      // Process products in groups of 4 (2x2 grid per page)
-      for (let i = 0; i < allProducts.length; i += 4) {
+      // Process products - 2 on first page (due to header), 4 on subsequent pages
+      let productsProcessed = 0;
+      
+      while (productsProcessed < allProducts.length) {
         // Add new page if not the first group
-        if (i > 0) {
+        if (productsProcessed > 0) {
           pdf.addPage();
           yPosition = margin;
         }
         
-        // Get up to 4 products for this page
-        const pageProducts = allProducts.slice(i, i + 4);
+        // Get products for this page (2 for first page, 4 for others)
+        const productsPerPage = productsProcessed === 0 ? 2 : 4;
+        const pageProducts = allProducts.slice(productsProcessed, productsProcessed + productsPerPage);
+        productsProcessed += pageProducts.length;
         
-        // Layout: 2 products per row, 2 rows per page
+        // Layout: 2 products per row
         const productWidth = (pageWidth - 3 * margin) / 2; // Width for each product
-        const productHeight = (pageHeight - 3 * margin) / 2; // Height for each product
+        const productHeight = productsProcessed <= 2 ? 
+          (pageHeight - yPosition - margin) / 1 : // First page: use remaining space for single row
+          (pageHeight - 3 * margin) / 2; // Other pages: 2 rows per page
         const imageWidth = productWidth - 2; // Absolute minimum padding
         const imageHeight = productHeight * 0.5; // 50% of product height for image
         
@@ -139,7 +145,7 @@ export default function ProductCatalogExport() {
           const category = categories?.find((c: any) => c.id === product.categoryId);
           const categoryName = category?.name || 'Uncategorized';
           
-          // Calculate position (2x2 grid)
+          // Calculate position (2 products per row)
           const col = j % 2;
           const row = Math.floor(j / 2);
           const productX = margin + col * (productWidth + (margin/2));
@@ -246,17 +252,21 @@ export default function ProductCatalogExport() {
           
           // Add description if available
           if (product.description && product.description.trim()) {
-            pdf.setFontSize(6);
+            pdf.setFontSize(8);
             pdf.setTextColor(102, 102, 102);
-            // Clean the description of excessive whitespace and newlines
-            const cleanDescription = product.description.replace(/\s+/g, ' ').trim();
+            // Clean the description and add proper spacing between sentences
+            const cleanDescription = product.description
+              .replace(/\s+/g, ' ')
+              .replace(/\. /g, '.  ')  // Add extra space after periods
+              .replace(/\n/g, ' ')
+              .trim();
             const descriptionLines = pdf.splitTextToSize(cleanDescription, productWidth - 2);
-            const maxLines = 5; // Increase to 5 lines
+            const maxLines = 5; // Up to 5 lines
             for (let i = 0; i < Math.min(descriptionLines.length, maxLines); i++) {
               pdf.text(descriptionLines[i], productX, infoY);
-              infoY += 2.5;
+              infoY += 3.5;
             }
-            infoY += 1;
+            infoY += 2;
           }
           
           // Add price with stars
