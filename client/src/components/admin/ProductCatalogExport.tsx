@@ -17,6 +17,7 @@ interface Product {
   freePostage: boolean;
   isFeatured: boolean;
   isActive?: boolean;
+  description?: string;
 }
 
 // Helper function to load image and return base64 data
@@ -87,7 +88,7 @@ export default function ProductCatalogExport() {
       const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
+      const margin = 10;
       let yPosition = margin;
 
       // Add header
@@ -128,8 +129,8 @@ export default function ProductCatalogExport() {
         // Layout: 2 products per row, 2 rows per page
         const productWidth = (pageWidth - 3 * margin) / 2; // Width for each product
         const productHeight = (pageHeight - 3 * margin) / 2; // Height for each product
-        const imageWidth = productWidth - 10; // Leave some padding
-        const imageHeight = productHeight * 0.6; // 60% of product height for image
+        const imageWidth = productWidth - 5; // Minimal padding
+        const imageHeight = productHeight * 0.55; // 55% of product height for image
         
         for (let j = 0; j < pageProducts.length; j++) {
           const product = pageProducts[j];
@@ -209,7 +210,7 @@ export default function ProductCatalogExport() {
           }
           
           // Product info starts below image
-          let infoY = productY + imageHeight + 8;
+          let infoY = productY + imageHeight + 5;
           
           // Add checkbox with "checked" text
           pdf.setDrawColor(0, 0, 0);
@@ -218,38 +219,51 @@ export default function ProductCatalogExport() {
           pdf.setFontSize(8);
           pdf.setTextColor(102, 102, 102);
           pdf.text('checked', productX + 6, infoY + 3);
-          infoY += 8;
+          infoY += 7;
           
           // Add product name
-          pdf.setFontSize(11);
+          pdf.setFontSize(10);
           pdf.setTextColor(51, 51, 51);
           const nameLines = pdf.splitTextToSize(product.name, productWidth - 5);
           pdf.text(nameLines[0], productX, infoY);
           if (nameLines.length > 1) {
-            pdf.text(nameLines[1], productX, infoY + 4);
-            infoY += 4;
+            pdf.text(nameLines[1], productX, infoY + 3.5);
+            infoY += 3.5;
           }
-          infoY += 6;
+          infoY += 5;
           
           // Add category
-          pdf.setFontSize(9);
+          pdf.setFontSize(8);
           pdf.setTextColor(37, 99, 235);
           pdf.text(`Category: ${categoryName}`, productX, infoY);
-          infoY += 5;
+          infoY += 4;
           
           // Add brand
-          pdf.setFontSize(9);
+          pdf.setFontSize(8);
           pdf.setTextColor(102, 102, 102);
           pdf.text(brandName, productX, infoY);
-          infoY += 5;
+          infoY += 4;
+          
+          // Add description if available
+          if (product.description) {
+            pdf.setFontSize(7);
+            pdf.setTextColor(102, 102, 102);
+            const descriptionLines = pdf.splitTextToSize(product.description, productWidth - 5);
+            const maxLines = 3; // Limit to 3 lines
+            for (let i = 0; i < Math.min(descriptionLines.length, maxLines); i++) {
+              pdf.text(descriptionLines[i], productX, infoY);
+              infoY += 3;
+            }
+            infoY += 2;
+          }
           
           // Add price with stars
-          pdf.setFontSize(10);
+          pdf.setFontSize(8);
           pdf.setTextColor(51, 51, 51);
           pdf.text('★★★★★', productX, infoY);
-          infoY += 5;
+          infoY += 4;
           
-          pdf.setFontSize(12);
+          pdf.setFontSize(11);
           pdf.setTextColor(37, 99, 235);
           const price = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
           pdf.text(`$${price.toFixed(2)}`, productX, infoY);
