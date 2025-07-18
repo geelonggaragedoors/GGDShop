@@ -72,6 +72,7 @@ export default function ProfilePage() {
   // Initialize form data when user loads
   useEffect(() => {
     if (user) {
+      console.log('Loading user data into form:', user);
       setFormData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
