@@ -102,6 +102,13 @@ export default function Checkout() {
         }
       }
       
+      console.log('Parsed address fields:', {
+        address: streetAddress,
+        city: parsedCity,
+        state: parsedState,
+        postcode: parsedPostcode
+      });
+      
       setFormData(prev => ({
         ...prev,
         firstName: user.firstName || '',
@@ -111,7 +118,7 @@ export default function Checkout() {
         address: streetAddress,
         city: parsedCity,
         postcode: parsedPostcode,
-        state: parsedState.toLowerCase() // Convert to lowercase for state selector
+        state: parsedState
       }));
       setIsGuestCheckout(false);
     }

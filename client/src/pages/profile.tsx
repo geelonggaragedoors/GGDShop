@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, User, Mail, Phone, MapPin, Save } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -22,6 +23,9 @@ export default function ProfilePage() {
     email: '',
     phone: '',
     address: '',
+    city: '',
+    state: '',
+    postcode: '',
   });
 
   const updateProfileMutation = useMutation({
@@ -52,7 +56,30 @@ export default function ProfilePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfileMutation.mutate(formData);
+    
+    // Format address for backend storage
+    const stateCodeToName: { [key: string]: string } = {
+      'vic': 'VIC',
+      'nsw': 'NSW',
+      'qld': 'QLD',
+      'wa': 'WA',
+      'sa': 'SA',
+      'tas': 'TAS',
+      'act': 'ACT',
+      'nt': 'NT'
+    };
+    
+    const stateCode = stateCodeToName[formData.state.toLowerCase()] || formData.state.toUpperCase();
+    const fullAddress = `${formData.address}, ${formData.city}, ${stateCode} ${formData.postcode}, Australia`;
+    
+    const profileData = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      phone: formData.phone,
+      address: fullAddress
+    };
+    
+    updateProfileMutation.mutate(profileData);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,23 +89,67 @@ export default function ProfilePage() {
     }));
   };
 
-  const handleAddressChange = (address: string) => {
-    setFormData(prev => ({
-      ...prev,
-      address: address
-    }));
-  };
+
 
   // Initialize form data when user loads
   useEffect(() => {
     if (user) {
       console.log('Loading user data into form:', user);
+      
+      // Parse the address from the user profile
+      let parsedCity = '';
+      let parsedState = '';
+      let parsedPostcode = '';
+      let streetAddress = user.address || '';
+      
+      if (user.address) {
+        // Handle addresses like "3 Conquest St, Mount Duneed VIC 3217, Australia"
+        const addressParts = user.address.split(',');
+        if (addressParts.length >= 3) {
+          streetAddress = addressParts[0].trim();
+          parsedCity = addressParts[1].trim();
+          
+          // Parse the state and postcode from the last part before country
+          const statePostcodePart = addressParts[2].trim();
+          const statePostcodeMatch = statePostcodePart.match(/^(.+?)\s+(\d{4})$/);
+          if (statePostcodeMatch) {
+            const stateFullName = statePostcodeMatch[1].trim();
+            parsedPostcode = statePostcodeMatch[2];
+            
+            // Convert state name to code
+            const stateMap: { [key: string]: string } = {
+              'VIC': 'vic',
+              'Victoria': 'vic',
+              'NSW': 'nsw',
+              'New South Wales': 'nsw',
+              'QLD': 'qld',
+              'Queensland': 'qld',
+              'WA': 'wa',
+              'Western Australia': 'wa',
+              'SA': 'sa',
+              'South Australia': 'sa',
+              'TAS': 'tas',
+              'Tasmania': 'tas',
+              'ACT': 'act',
+              'Australian Capital Territory': 'act',
+              'NT': 'nt',
+              'Northern Territory': 'nt'
+            };
+            
+            parsedState = stateMap[stateFullName] || stateFullName.toLowerCase();
+          }
+        }
+      }
+      
       setFormData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: user.address || '',
+        address: streetAddress,
+        city: parsedCity,
+        state: parsedState,
+        postcode: parsedPostcode,
       });
     }
   }, [user]);
@@ -200,13 +271,59 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
-                  <AddressAutocomplete
-                    onAddressSelect={(address) => handleAddressChange(address.formatted_address)}
-                    placeholder="Enter your address"
-                    defaultValue={formData.address}
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Street Address</Label>
+                    <Input
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="123 Main Street"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        placeholder="Geelong"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="postcode">Postcode</Label>
+                      <Input
+                        id="postcode"
+                        name="postcode"
+                        value={formData.postcode}
+                        onChange={handleInputChange}
+                        placeholder="3220"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State</Label>
+                    <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vic">Victoria</SelectItem>
+                        <SelectItem value="nsw">New South Wales</SelectItem>
+                        <SelectItem value="qld">Queensland</SelectItem>
+                        <SelectItem value="wa">Western Australia</SelectItem>
+                        <SelectItem value="sa">South Australia</SelectItem>
+                        <SelectItem value="tas">Tasmania</SelectItem>
+                        <SelectItem value="act">Australian Capital Territory</SelectItem>
+                        <SelectItem value="nt">Northern Territory</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="flex justify-end">
