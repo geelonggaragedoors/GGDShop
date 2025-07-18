@@ -180,7 +180,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle Replit Auth user
       else if (req.user.claims && req.user.claims.sub) {
         const userId = req.user.claims.sub;
+        console.log('Fetching user from database for ID:', userId);
         user = await storage.getUser(userId);
+        console.log('Retrieved user from database:', user);
       }
       
       if (!user) {
