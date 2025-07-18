@@ -467,9 +467,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order submission (public)
   app.post('/api/orders', async (req, res) => {
     try {
-      const orderData = insertOrderSchema.parse(req.body);
-      const order = await storage.createOrder(orderData);
-      res.status(201).json(order);
+      const { items, ...orderData } = req.body;
+      
+      // Validate order data
+      const validOrderData = insertOrderSchema.parse(orderData);
+      
+      // Create the order
+      const order = await storage.createOrder(validOrderData);
+      
+      // Create order items if provided
+      if (items && Array.isArray(items)) {
+        for (const item of items) {
+          const orderItem = {
+            orderId: order.id,
+            productId: item.productId,
+            quantity: parseInt(item.quantity),
+            price: item.price,
+            total: item.total
+          };
+          
+          await storage.addOrderItem(orderItem);
+        }
+      }
+      
+      res.status(201).json({ order });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid order data", errors: error.errors });

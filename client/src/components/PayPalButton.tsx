@@ -28,14 +28,60 @@ export default function PayPalButton({
       setIsLoading(true);
       setError(null);
       
+      // Generate order number
+      const orderNumber = `GGD-${Date.now()}`;
+      
+      // Create properly formatted order data
+      const orderPayload = {
+        orderNumber,
+        customerEmail: orderData.customerData.email,
+        subtotal: orderData.totals.subtotal.toString(),
+        shippingCost: orderData.totals.shipping.toString(),
+        taxAmount: orderData.totals.tax.toString(),
+        total: orderData.totals.total.toString(),
+        currency: currency,
+        shippingAddress: {
+          firstName: orderData.customerData.firstName,
+          lastName: orderData.customerData.lastName,
+          email: orderData.customerData.email,
+          phone: orderData.customerData.phone,
+          address: orderData.customerData.address,
+          city: orderData.customerData.city,
+          state: orderData.customerData.state,
+          postcode: orderData.customerData.postcode,
+          country: 'Australia'
+        },
+        billingAddress: {
+          firstName: orderData.customerData.firstName,
+          lastName: orderData.customerData.lastName,
+          email: orderData.customerData.email,
+          phone: orderData.customerData.phone,
+          address: orderData.customerData.address,
+          city: orderData.customerData.city,
+          state: orderData.customerData.state,
+          postcode: orderData.customerData.postcode,
+          country: 'Australia'
+        },
+        status: 'pending',
+        paymentStatus: 'pending',
+        items: orderData.cartItems.map((item: any) => ({
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price.toString(),
+          total: (item.price * item.quantity).toString()
+        }))
+      };
+      
       // Create order in database first
       const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(orderPayload)
       });
       
       if (!orderResponse.ok) {
+        const errorData = await orderResponse.json();
+        console.error('Order creation error:', errorData);
         throw new Error('Failed to create order');
       }
       
@@ -50,7 +96,8 @@ export default function PayPalButton({
           currency, 
           orderData: {
             ...orderData,
-            orderId: orderResult.order.id
+            orderId: orderResult.order.id,
+            orderNumber
           }
         })
       });

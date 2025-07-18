@@ -1,0 +1,156 @@
+content.js:208 {}
+index-CdwTIWfl.js:519 Loading user data into form: {id: '31520905', email: 'stevejford1@gmail.com', firstName: 'Stephen', lastName: 'Ford', phone: '0435473212', …}
+index-CdwTIWfl.js:519 Original user address: 3 Conquest St, VIC VIC 3217, Australia
+index-CdwTIWfl.js:519 Address parts: (3) ['3 Conquest St', ' VIC VIC 3217', ' Australia']
+index-CdwTIWfl.js:519 Parsed address fields: {address: '3 Conquest St', city: 'VIC', state: 'vic', postcode: '3217'}
+index-CdwTIWfl.js:519 Google Places API loaded successfully
+index-CdwTIWfl.js:519 Initializing autocomplete...
+index-CdwTIWfl.js:519 Input ref: <input class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm" id=​"address-autocomplete" placeholder=​"Start typing your address..." autocomplete=​"off" value=​"3 Conquest St">​flex
+index-CdwTIWfl.js:519 Google maps loaded: true
+index-CdwTIWfl.js:519 Places loaded: true
+index-CdwTIWfl.js:519 Using legacy Autocomplete with proper styling
+places.js:76 As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+GF @ places.js:76
+c @ index-CdwTIWfl.js:519
+window.<computed> @ index-CdwTIWfl.js:519
+(anonymous) @ main.js:276
+(anonymous) @ main.js:275
+Promise.then
+bda @ main.js:275
+await in bda
+google.maps.Load @ js?key=AIzaSyCnNLLRAESSiaEP5EOoLt_VXgaSh7F5YLk&libraries=places&loading=async&callback=initGooglePlaces_1752821329650:38
+(anonymous) @ main.js:515
+(anonymous) @ main.js:515
+index-CdwTIWfl.js:519 Autocomplete initialized successfully
+index-CdwTIWfl.js:519 Initializing autocomplete...
+index-CdwTIWfl.js:519 Input ref: <input class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm pac-target-input" id=​"address-autocomplete" placeholder=​"Start typing your address..." autocomplete=​"off" value=​"3 Conquest St">​flex
+index-CdwTIWfl.js:519 Google maps loaded: true
+index-CdwTIWfl.js:519 Places loaded: true
+index-CdwTIWfl.js:519 Using legacy Autocomplete with proper styling
+places.js:76 As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+GF @ places.js:76
+c @ index-CdwTIWfl.js:519
+(anonymous) @ index-CdwTIWfl.js:519
+setInterval
+l @ index-CdwTIWfl.js:519
+(anonymous) @ index-CdwTIWfl.js:519
+fj @ index-CdwTIWfl.js:40
+vp @ index-CdwTIWfl.js:40
+pne @ index-CdwTIWfl.js:40
+zd @ index-CdwTIWfl.js:40
+vT @ index-CdwTIWfl.js:40
+fd @ index-CdwTIWfl.js:38
+(anonymous) @ index-CdwTIWfl.js:40
+setTimeout
+i @ index-CdwTIWfl.js:48
+o @ index-CdwTIWfl.js:48
+batch @ index-CdwTIWfl.js:48
+rc @ index-CdwTIWfl.js:48
+setData @ index-CdwTIWfl.js:48
+onSuccess @ index-CdwTIWfl.js:48
+f @ index-CdwTIWfl.js:48
+Promise.then
+y @ index-CdwTIWfl.js:48
+start @ index-CdwTIWfl.js:48
+fetch @ index-CdwTIWfl.js:48
+Tv @ index-CdwTIWfl.js:48
+onSubscribe @ index-CdwTIWfl.js:48
+subscribe @ index-CdwTIWfl.js:48
+(anonymous) @ index-CdwTIWfl.js:48
+X9 @ index-CdwTIWfl.js:38
+fj @ index-CdwTIWfl.js:40
+vp @ index-CdwTIWfl.js:40
+vT @ index-CdwTIWfl.js:40
+fd @ index-CdwTIWfl.js:38
+pne @ index-CdwTIWfl.js:40
+zd @ index-CdwTIWfl.js:40
+kB @ index-CdwTIWfl.js:40
+S @ index-CdwTIWfl.js:25
+M @ index-CdwTIWfl.js:25
+index-CdwTIWfl.js:519 Autocomplete initialized successfully
+index-CdwTIWfl.js:519 Initializing autocomplete...
+index-CdwTIWfl.js:519 Input ref: <input class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm pac-target-input" id=​"address-autocomplete" placeholder=​"Start typing your address..." autocomplete=​"off" value=​"3 Conquest St">​flex
+index-CdwTIWfl.js:519 Google maps loaded: true
+index-CdwTIWfl.js:519 Places loaded: true
+index-CdwTIWfl.js:519 Using legacy Autocomplete with proper styling
+places.js:76 As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+GF @ places.js:76
+c @ index-CdwTIWfl.js:519
+(anonymous) @ index-CdwTIWfl.js:519
+setInterval
+l @ index-CdwTIWfl.js:519
+(anonymous) @ index-CdwTIWfl.js:519
+fj @ index-CdwTIWfl.js:40
+vp @ index-CdwTIWfl.js:40
+vT @ index-CdwTIWfl.js:40
+fd @ index-CdwTIWfl.js:38
+pne @ index-CdwTIWfl.js:40
+zd @ index-CdwTIWfl.js:40
+kB @ index-CdwTIWfl.js:40
+S @ index-CdwTIWfl.js:25
+M @ index-CdwTIWfl.js:25
+index-CdwTIWfl.js:519 Autocomplete initialized successfully
+index-CdwTIWfl.js:519  POST https://geelonggaragedoors.com/api/orders 400 (Bad Request)
+f @ index-CdwTIWfl.js:519
+Ite @ index-CdwTIWfl.js:37
+Lte @ index-CdwTIWfl.js:37
+Rte @ index-CdwTIWfl.js:37
+zE @ index-CdwTIWfl.js:37
+L9 @ index-CdwTIWfl.js:37
+(anonymous) @ index-CdwTIWfl.js:37
+qC @ index-CdwTIWfl.js:40
+a9 @ index-CdwTIWfl.js:37
+nS @ index-CdwTIWfl.js:37
+vC @ index-CdwTIWfl.js:37
+Zte @ index-CdwTIWfl.js:37
+index-CdwTIWfl.js:519 PayPal payment error: Error: Failed to create order
+    at f (index-CdwTIWfl.js:519:134169)
+f @ index-CdwTIWfl.js:519
+await in f
+Ite @ index-CdwTIWfl.js:37
+Lte @ index-CdwTIWfl.js:37
+Rte @ index-CdwTIWfl.js:37
+zE @ index-CdwTIWfl.js:37
+L9 @ index-CdwTIWfl.js:37
+(anonymous) @ index-CdwTIWfl.js:37
+qC @ index-CdwTIWfl.js:40
+a9 @ index-CdwTIWfl.js:37
+nS @ index-CdwTIWfl.js:37
+vC @ index-CdwTIWfl.js:37
+Zte @ index-CdwTIWfl.js:37
+index-CdwTIWfl.js:519 PayPal payment error: Error: Failed to create order
+    at f (index-CdwTIWfl.js:519:134169)
+F @ index-CdwTIWfl.js:519
+f @ index-CdwTIWfl.js:519
+await in f
+Ite @ index-CdwTIWfl.js:37
+Lte @ index-CdwTIWfl.js:37
+Rte @ index-CdwTIWfl.js:37
+zE @ index-CdwTIWfl.js:37
+L9 @ index-CdwTIWfl.js:37
+(anonymous) @ index-CdwTIWfl.js:37
+qC @ index-CdwTIWfl.js:40
+a9 @ index-CdwTIWfl.js:37
+nS @ index-CdwTIWfl.js:37
+vC @ index-CdwTIWfl.js:37
+Zte @ index-CdwTIWfl.js:37
+index-CdwTIWfl.js:519 Initializing autocomplete...
+index-CdwTIWfl.js:519 Input ref: <input class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm pac-target-input" id=​"address-autocomplete" placeholder=​"Start typing your address..." autocomplete=​"off" value=​"3 Conquest St">​flex
+index-CdwTIWfl.js:519 Google maps loaded: true
+index-CdwTIWfl.js:519 Places loaded: true
+index-CdwTIWfl.js:519 Using legacy Autocomplete with proper styling
+places.js:76 As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+GF @ places.js:76
+c @ index-CdwTIWfl.js:519
+l @ index-CdwTIWfl.js:519
+(anonymous) @ index-CdwTIWfl.js:519
+fj @ index-CdwTIWfl.js:40
+vp @ index-CdwTIWfl.js:40
+vT @ index-CdwTIWfl.js:40
+fd @ index-CdwTIWfl.js:38
+pne @ index-CdwTIWfl.js:40
+zd @ index-CdwTIWfl.js:40
+kB @ index-CdwTIWfl.js:40
+S @ index-CdwTIWfl.js:25
+M @ index-CdwTIWfl.js:25
+index-CdwTIWfl.js:519 Autocomplete initialized successfully
