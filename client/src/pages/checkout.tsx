@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, Minus, Plus, Trash2, UserPlus, User } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, UserPlus, User, Shield, Lock, CheckCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import SimpleHeader from "@/components/storefront/simple-header";
@@ -857,17 +857,40 @@ export default function Checkout() {
                 <CardTitle>Payment Method</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2 p-3 border rounded-lg bg-blue-50">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2 p-4 border rounded-lg bg-blue-50">
                     <RadioGroupItem value="paypal" id="paypal" checked />
                     <Label htmlFor="paypal" className="flex items-center gap-2">
-                      <span>PayPal</span>
+                      <span className="font-medium">PayPal</span>
                       <span className="text-sm text-gray-600">- Secure payment processing</span>
                     </Label>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    Pay securely with your PayPal account or credit/debit card through PayPal.
-                  </p>
+                  
+                  {/* Trust Signals */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-green-600" />
+                      <span className="font-medium text-green-800">Secure Payment</span>
+                    </div>
+                    <div className="text-sm text-green-700 space-y-1">
+                      <p>• Pay with your PayPal account or any credit/debit card</p>
+                      <p>• No PayPal account required - checkout as guest</p>
+                      <p>• Your payment information is protected by PayPal's security</p>
+                      <p>• We never see or store your card details</p>
+                    </div>
+                  </div>
+                  
+                  {/* Payment Methods Accepted */}
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-2">We accept:</p>
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">PayPal</div>
+                      <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">VISA</div>
+                      <div className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">Mastercard</div>
+                      <div className="bg-blue-800 text-white px-2 py-1 rounded text-xs font-bold">AMEX</div>
+                      <div className="bg-orange-600 text-white px-2 py-1 rounded text-xs font-bold">Discover</div>
+                    </div>
+                  </div>
                 </div>
 
 
@@ -959,28 +982,65 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                <div className="w-full">
+                <div className="w-full space-y-4">
+                  {/* Security Guarantee */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lock className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">100% Secure Checkout</span>
+                    </div>
+                    <p className="text-xs text-blue-700">
+                      Your payment is protected by PayPal's advanced security. We never store your payment information.
+                    </p>
+                  </div>
+
                   {isFormValid ? (
-                    <PayPalButton 
-                      amount={finalTotal.toFixed(2)}
-                      currency="AUD"
-                      intent="capture"
-                      orderData={{
-                        customerData: formData,
-                        cartItems,
-                        shippingMethod,
-                        paymentMethod: 'paypal',
-                        totals: {
-                          subtotal: cartTotal,
-                          shipping: shippingCost,
-                          tax: gst,
-                          total: finalTotal
-                        }
-                      }}
-                      onSuccess={handlePayPalSuccess}
-                      onError={handlePayPalError}
-                      onCancel={() => console.log('PayPal payment cancelled')}
-                    />
+                    <div className="space-y-3">
+                      {/* Trust badges before PayPal button */}
+                      <div className="flex items-center justify-center gap-4 py-2 border rounded-lg bg-gray-50">
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span className="text-xs text-gray-600">SSL Secured</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Shield className="w-4 h-4 text-green-600" />
+                          <span className="text-xs text-gray-600">PCI Compliant</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Lock className="w-4 h-4 text-green-600" />
+                          <span className="text-xs text-gray-600">256-bit Encryption</span>
+                        </div>
+                      </div>
+                      
+                      <PayPalButton 
+                        amount={finalTotal.toFixed(2)}
+                        currency="AUD"
+                        intent="capture"
+                        orderData={{
+                          customerData: formData,
+                          cartItems,
+                          shippingMethod,
+                          paymentMethod: 'paypal',
+                          totals: {
+                            subtotal: cartTotal,
+                            shipping: shippingCost,
+                            tax: gst,
+                            total: finalTotal
+                          }
+                        }}
+                        onSuccess={handlePayPalSuccess}
+                        onError={handlePayPalError}
+                        onCancel={() => console.log('PayPal payment cancelled')}
+                      />
+                      
+                      {/* Money-back guarantee */}
+                      <div className="text-center">
+                        <p className="text-xs text-gray-600">
+                          <CheckCircle className="w-3 h-3 inline mr-1 text-green-600" />
+                          100% Money-Back Guarantee • Secure Payment • Australian Business
+                        </p>
+                      </div>
+                    </div>
                   ) : (
                     <div className="space-y-3">
                       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
