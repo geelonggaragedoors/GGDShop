@@ -196,7 +196,7 @@ export const shippingRates = pgTable("shipping_rates", {
 export const orders = pgTable("orders", {
   id: uuid("id").defaultRandom().primaryKey(),
   orderNumber: varchar("order_number").notNull().unique(),
-  customerId: uuid("customer_id"),
+  customerId: varchar("customer_id"),
   customerEmail: varchar("customer_email").notNull(),
   status: varchar("status").default("pending"), // pending, processing, shipped, delivered, cancelled
   paymentStatus: varchar("payment_status").default("pending"), // pending, paid, failed, refunded
