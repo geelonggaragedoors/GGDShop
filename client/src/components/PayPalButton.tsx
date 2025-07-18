@@ -65,7 +65,7 @@ export default function PayPalButton({
         status: 'pending',
         paymentStatus: 'pending',
         items: orderData.cartItems.map((item: any) => ({
-          productId: item.id,
+          productId: item.productId,
           quantity: item.quantity,
           price: item.price.toString(),
           total: (item.price * item.quantity).toString()
