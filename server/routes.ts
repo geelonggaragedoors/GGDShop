@@ -2480,6 +2480,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add logging middleware for debugging
+  app.use('/api/admin/email-test', (req, res, next) => {
+    console.log('*** EMAIL TEST MIDDLEWARE HIT ***');
+    console.log('Method:', req.method);
+    console.log('URL:', req.url);
+    console.log('Body:', req.body);
+    next();
+  });
+
   app.post('/api/admin/email-test', async (req, res) => {
     try {
       console.log('=== EMAIL TEST REQUEST START ===');
