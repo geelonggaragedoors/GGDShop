@@ -92,9 +92,8 @@ export class EmailService {
           ...baseData,
           shipping_address: "123 Main Street\nGeelong VIC 3220\nAustralia",
           order_items: "• Garage Door Remote Control x2\n• Steel Garage Door (White) x1\n• Installation Service x1",
-          tracking_number: "AUS123456789",
           estimated_delivery: "3-5 business days",
-          shipping_method: "Standard Shipping",
+          shipping_method: "Standard Delivery",
           reset_link: "https://geelonggaragedoors.com/reset-password?token=sample123"
         };
       
