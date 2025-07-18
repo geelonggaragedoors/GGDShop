@@ -549,6 +549,10 @@ export const insertStaffInvitationSchema = createInsertSchema(staffInvitations).
   id: true,
   createdAt: true,
   acceptedAt: true,
+  token: true,
+  invitedBy: true,
+  expiresAt: true,
+  status: true,
 });
 
 export const insertRoleSchema = createInsertSchema(roles).omit({

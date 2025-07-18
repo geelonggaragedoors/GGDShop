@@ -54,6 +54,12 @@ export const templateVariables = {
     { name: 'order_items', description: 'List of ordered items' },
     { name: 'priority', description: 'Priority level (High, Medium, Low)' },
     { name: 'notification_type', description: 'Type of notification' },
+    { name: 'invite_email', description: 'Email address being invited' },
+    { name: 'invite_role', description: 'Role being invited for' },
+    { name: 'invite_link', description: 'Link to accept invitation' },
+    { name: 'expiry_days', description: 'Number of days until invitation expires' },
+    { name: 'company_name', description: 'Company name' },
+    { name: 'admin_email', description: 'Admin email address' },
   ],
   admin: [
     { name: 'admin_name', description: 'Admin name' },
@@ -204,6 +210,83 @@ export const defaultTemplates = [
       
       Best regards,
       System Notification
+    `,
+    variables: templateVariables.staff,
+    isActive: true,
+  },
+  
+  {
+    name: 'Staff Invitation',
+    subject: 'You\'re Invited to Join {{company_name}}',
+    templateType: 'staff',
+    category: 'invitation',
+    htmlContent: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin: 0;">{{company_name}}</h1>
+          <p style="color: #666; margin: 5px 0;">Professional Garage Door Solutions</p>
+        </div>
+        
+        <div style="background: #2563eb; color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center;">
+          <h2 style="margin: 0;">🎉 You're Invited!</h2>
+          <p style="margin: 10px 0 0 0;">Join our team as a {{invite_role}}</p>
+        </div>
+        
+        <p>Hello,</p>
+        
+        <p>You have been invited to join {{company_name}} as a <strong>{{invite_role}}</strong>. We're excited to have you on our team!</p>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin: 0 0 15px 0; color: #333;">Invitation Details</h3>
+          <p><strong>Email:</strong> {{invite_email}}</p>
+          <p><strong>Role:</strong> {{invite_role}}</p>
+          <p><strong>Expires in:</strong> {{expiry_days}} days</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="{{invite_link}}" style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+            Accept Invitation
+          </a>
+        </div>
+        
+        <p style="color: #666; font-size: 14px;">
+          <strong>Note:</strong> This invitation will expire in {{expiry_days}} days. If you have any questions, please contact us at {{admin_email}}.
+        </p>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+          <p><strong>About {{company_name}}:</strong></p>
+          <p>We're a leading provider of professional garage door solutions, serving customers throughout the Geelong region with quality products and exceptional service.</p>
+        </div>
+        
+        <p>We look forward to working with you!</p>
+        
+        <p>Best regards,<br>{{company_name}} Team</p>
+      </div>
+    `,
+    textContent: `
+      You're Invited to Join {{company_name}}
+      
+      Hello,
+      
+      You have been invited to join {{company_name}} as a {{invite_role}}. We're excited to have you on our team!
+      
+      Invitation Details:
+      - Email: {{invite_email}}
+      - Role: {{invite_role}}
+      - Expires in: {{expiry_days}} days
+      
+      To accept this invitation, please visit:
+      {{invite_link}}
+      
+      Note: This invitation will expire in {{expiry_days}} days. If you have any questions, please contact us at {{admin_email}}.
+      
+      About {{company_name}}:
+      We're a leading provider of professional garage door solutions, serving customers throughout the Geelong region with quality products and exceptional service.
+      
+      We look forward to working with you!
+      
+      Best regards,
+      {{company_name}} Team
     `,
     variables: templateVariables.staff,
     isActive: true,

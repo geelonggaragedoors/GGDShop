@@ -278,6 +278,26 @@ export class EmailService {
     });
   }
 
+  async sendStaffInvitation(invitationData: any, template: any) {
+    const emailData = {
+      invite_email: invitationData.email,
+      invite_role: invitationData.role,
+      invite_link: invitationData.inviteLink,
+      expiry_days: invitationData.expiryDays?.toString() || '7',
+      company_name: 'Geelong Garage Doors',
+      admin_email: 'orders@geelonggaragedoors.com'
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: invitationData.email,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
   private formatOrderItems(items: any[]): string {
     return items.map(item => 
       `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
