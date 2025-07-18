@@ -7,6 +7,14 @@ import { setupVite, serveStatic, log } from "./vite";
 // Load environment variables
 dotenv.config();
 
+// Verify SendGrid API key is loaded
+if (!process.env.SENDGRID_API_KEY) {
+  console.log('⚠️  SENDGRID_API_KEY not found in environment variables');
+  console.log('   Please add it to your Replit Secrets for email functionality');
+} else {
+  console.log('✅ SendGrid API key loaded successfully');
+}
+
 // Set UploadThing environment variable
 process.env.UPLOADTHING_TOKEN = 'eyJhcGlLZXkiOiJza19saXZlXzA2MTI4MjRkNDkwZGY1ZTVjY2RkMGNlMWJhYzY2ZWI3YzVkYzdiZmY1NWVhMWY3YmU5NzhhYzQ1M2E5NTRlZWUiLCJhcHBJZCI6ImUydWNibmYxbnQiLCJyZWdpb25zIjpbInNlYTEiXX0=';
 

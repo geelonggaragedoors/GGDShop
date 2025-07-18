@@ -5,6 +5,7 @@ if (!process.env.SENDGRID_API_KEY) {
   console.error('SENDGRID_API_KEY environment variable is not set');
 } else {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('SendGrid API key configured successfully');
 }
 
 interface EmailOptions {
