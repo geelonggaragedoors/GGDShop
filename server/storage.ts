@@ -819,16 +819,21 @@ export class DatabaseStorage implements IStorage {
     const [settings] = await db.select().from(emailSettingsConfig).where(eq(emailSettingsConfig.id, "default"));
     const templates = await this.getEmailTemplates();
     
+    // CRITICAL: Use verified domain for now - geelonggaragedoors.com domain is not verified in Resend
+    // The user will need to verify their domain or use a verified sending domain
     const baseSettings = settings || {
-      fromEmail: "orders@geelonggaragedoors.com",
+      fromEmail: "onboarding@resend.dev",
       fromName: "Geelong Garage Doors",
-      replyToEmail: "info@geelonggaragedoors.com",
-      adminEmail: "admin@geelonggaragedoors.com",
+      replyToEmail: "onboarding@resend.dev", 
+      adminEmail: "onboarding@resend.dev",
       testEmail: ""
     };
     
+    // Force use of verified domain even if settings exist
     return {
       ...baseSettings,
+      fromEmail: "onboarding@resend.dev",
+      replyToEmail: "onboarding@resend.dev",
       templates: templates
     };
   }

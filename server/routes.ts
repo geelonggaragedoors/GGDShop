@@ -2498,6 +2498,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log('Sending test email to:', testEmail, 'with template:', templateId);
+      console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
       
       // Send test email using the EmailService
       const result = await emailService.sendTestEmail(templateId, testEmail);
