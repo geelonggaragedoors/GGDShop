@@ -28,20 +28,42 @@ export default function PayPalButton({
       setIsLoading(true);
       setError(null);
       
-      const response = await fetch('/api/paypal/redirect-checkout', {
+      // Create order in database first
+      const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, currency, orderData })
+        body: JSON.stringify(orderData)
       });
       
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+      if (!orderResponse.ok) {
+        throw new Error('Failed to create order');
       }
       
-      const data = await response.json();
+      const orderResult = await orderResponse.json();
       
-      if (data.approveUrl) {
-        window.location.href = data.approveUrl;
+      // Now create PayPal payment
+      const paypalResponse = await fetch('/api/paypal/redirect-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          amount, 
+          currency, 
+          orderData: {
+            ...orderData,
+            orderId: orderResult.order.id
+          }
+        })
+      });
+      
+      if (!paypalResponse.ok) {
+        throw new Error(`PayPal API error: ${paypalResponse.status}`);
+      }
+      
+      const paypalData = await paypalResponse.json();
+      
+      if (paypalData.approveUrl) {
+        // Redirect to PayPal
+        window.location.href = paypalData.approveUrl;
       } else {
         throw new Error('No approval URL received from PayPal');
       }
