@@ -1,7 +1,11 @@
+import dotenv from "dotenv";
 import express, { type Request, Response, NextFunction } from "express";
 import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+// Load environment variables
+dotenv.config();
 
 // Set UploadThing environment variable
 process.env.UPLOADTHING_TOKEN = 'eyJhcGlLZXkiOiJza19saXZlXzA2MTI4MjRkNDkwZGY1ZTVjY2RkMGNlMWJhYzY2ZWI3YzVkYzdiZmY1NWVhMWY3YmU5NzhhYzQ1M2E5NTRlZWUiLCJhcHBJZCI6ImUydWNibmYxbnQiLCJyZWdpb25zIjpbInNlYTEiXX0=';

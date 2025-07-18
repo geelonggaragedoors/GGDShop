@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { db } from './db';
 import { users, customers } from '@shared/schema';
 import { eq, and, lt, gte } from 'drizzle-orm';
-import { emailService } from './emailService';
+import { emailService } from './email';
 
 const SALT_ROUNDS = 12;
 const MAX_LOGIN_ATTEMPTS = 5;

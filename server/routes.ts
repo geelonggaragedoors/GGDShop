@@ -56,11 +56,10 @@ const csvUpload = multer({
     }
   },
 });
-import { emailService } from "./email-service";
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
 import { authService } from "./authService";
-import { importService } from "./importService";
+import { emailService } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
@@ -1060,35 +1059,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Send order email
+  // Send order email - placeholder for new email system
   app.post('/api/admin/orders/:id/email', hybridAuth, async (req, res) => {
-    try {
-      const orderId = req.params.id;
-      const { type } = req.body;
-      
-      const order = await storage.getOrder(orderId);
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-      
-      const customer = await storage.getCustomer(order.customerId || '');
-      if (!customer) {
-        return res.status(404).json({ message: "Customer not found" });
-      }
-      
-      const orderItems = await storage.getOrderItems(orderId);
-      
-      if (type === 'receipt') {
-        await emailService.sendOrderConfirmation(order, customer, orderItems);
-      } else if (type === 'status_update') {
-        await emailService.sendOrderStatusUpdate(order, customer, 'previous_status');
-      }
-      
-      res.json({ message: "Email sent successfully" });
-    } catch (error) {
-      console.error("Error sending order email:", error);
-      res.status(500).json({ message: "Failed to send email" });
-    }
+    res.json({ message: "Email functionality will be rebuilt" });
   });
 
   // Customer registration (public)
@@ -2372,174 +2345,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Email management routes
-  app.get('/api/admin/email-settings', hybridAuth, async (req, res) => {
-    try {
-      const settings = await storage.getEmailSettings();
-      res.json(settings);
-    } catch (error) {
-      console.error('Error fetching email settings:', error);
-      res.status(500).json({ error: 'Failed to fetch email settings' });
-    }
-  });
-
-  app.put('/api/admin/email-settings', hybridAuth, async (req, res) => {
-    try {
-      const settings = await storage.updateEmailSettings(req.body);
-      res.json(settings);
-    } catch (error) {
-      console.error('Error updating email settings:', error);
-      res.status(500).json({ error: 'Failed to update email settings' });
-    }
-  });
-
-  app.get('/api/admin/email-templates', hybridAuth, async (req, res) => {
-    try {
-      const templates = await storage.getEmailTemplates();
-      res.json(templates);
-    } catch (error) {
-      console.error('Error fetching email templates:', error);
-      res.status(500).json({ error: 'Failed to fetch email templates' });
-    }
-  });
-
-  app.get('/api/admin/email-templates/:id', hybridAuth, async (req, res) => {
-    try {
-      const template = await storage.getEmailTemplate(req.params.id);
-      if (!template) {
-        return res.status(404).json({ error: 'Template not found' });
-      }
-      res.json(template);
-    } catch (error) {
-      console.error('Error fetching email template:', error);
-      res.status(500).json({ error: 'Failed to fetch email template' });
-    }
-  });
-
-  app.post('/api/admin/email-templates', hybridAuth, async (req, res) => {
-    try {
-      const template = await storage.createEmailTemplate(req.body);
-      res.json(template);
-    } catch (error) {
-      console.error('Error creating email template:', error);
-      res.status(500).json({ error: 'Failed to create email template' });
-    }
-  });
-
-  // Email logs endpoints
-  app.get('/api/admin/email-logs', hybridAuth, async (req, res) => {
-    try {
-      const { limit, offset, status, templateId, recipientEmail, startDate, endDate } = req.query;
-      const params = {
-        limit: limit ? parseInt(limit as string) : undefined,
-        offset: offset ? parseInt(offset as string) : undefined,
-        status: status as string,
-        templateId: templateId as string,
-        recipientEmail: recipientEmail as string,
-        startDate: startDate ? new Date(startDate as string) : undefined,
-        endDate: endDate ? new Date(endDate as string) : undefined,
-      };
-      
-      const result = await storage.getEmailLogs(params);
-      res.json(result);
-    } catch (error) {
-      console.error('Error fetching email logs:', error);
-      res.status(500).json({ error: 'Failed to fetch email logs' });
-    }
-  });
-
-  app.get('/api/admin/email-analytics', hybridAuth, async (req, res) => {
-    try {
-      const { templateId, startDate, endDate } = req.query;
-      const analytics = await storage.getEmailAnalytics(
-        templateId as string,
-        startDate ? new Date(startDate as string) : undefined,
-        endDate ? new Date(endDate as string) : undefined
-      );
-      res.json(analytics);
-    } catch (error) {
-      console.error('Error fetching email analytics:', error);
-      res.status(500).json({ error: 'Failed to fetch email analytics' });
-    }
-  });
-
-  app.put('/api/admin/email-logs/:id/status', hybridAuth, async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { status, metadata } = req.body;
-      const success = await storage.updateEmailLogStatus(id, status, metadata);
-      
-      if (!success) {
-        return res.status(404).json({ error: 'Email log not found' });
-      }
-      
-      res.json({ message: 'Email log status updated successfully' });
-    } catch (error) {
-      console.error('Error updating email log status:', error);
-      res.status(500).json({ error: 'Failed to update email log status' });
-    }
-  });
-
-  app.put('/api/admin/email-templates/:id', hybridAuth, async (req, res) => {
-    try {
-      const template = await storage.updateEmailTemplate(req.params.id, req.body);
-      res.json(template);
-    } catch (error) {
-      console.error('Error updating email template:', error);
-      res.status(500).json({ error: 'Failed to update email template' });
-    }
-  });
-
-  // Add middleware to log ALL requests to email-test endpoint
-  app.all('/api/admin/email-test', (req, res, next) => {
-    console.log('*** EMAIL TEST ENDPOINT HIT ***');
-    console.log('Method:', req.method);
-    console.log('URL:', req.originalUrl);
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
-    next();
-  });
-
-  // Email test endpoint
+  // Simple email test endpoint
   app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
-    console.log('=== EMAIL TEST REQUEST START ===');
+    console.log('=== EMAIL TEST ENDPOINT ===');
     console.log('Request body:', req.body);
-    console.log('User:', req.user ? 'Authenticated' : 'Not authenticated');
     
     try {
-      const { templateId, testEmail } = req.body;
+      const { testEmail } = req.body;
       
       if (!testEmail) {
-        console.log('No test email provided');
         return res.status(400).json({ error: 'Test email address is required' });
       }
       
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(testEmail)) {
-        console.log('Invalid email format:', testEmail);
         return res.status(400).json({ error: 'Invalid email format' });
       }
       
-      console.log('Sending test email to:', testEmail, 'with template:', templateId);
-      
-      // Send test email using the EmailService
-      const result = await emailService.sendTestEmail(templateId, testEmail);
-      
-      console.log('Email service result:', result);
+      console.log('Sending test email to:', testEmail);
+      const result = await emailService.sendTestEmail(testEmail);
       
       if (result.success) {
-        res.json({ 
-          message: 'Test email sent successfully', 
-          emailLogId: result.emailLogId 
-        });
+        res.json({ message: 'Test email sent successfully', id: result.id });
       } else {
-        console.log('Email service error:', result.error);
-        res.status(400).json({ error: result.error });
+        res.status(500).json({ error: result.error });
       }
     } catch (error) {
-      console.error('Error testing email:', error);
-      res.status(500).json({ error: 'Failed to test email' });
+      console.error('Email test error:', error);
+      res.status(500).json({ error: 'Failed to send test email' });
     }
   });
 
