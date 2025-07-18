@@ -55,17 +55,63 @@ export default function Checkout() {
   // Prefill form data when user is authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
+      console.log('Loading user data into form:', user);
+      
+      // Parse the address from the user profile
+      let parsedCity = '';
+      let parsedState = '';
+      let parsedPostcode = '';
+      let streetAddress = user.address || '';
+      
+      if (user.address) {
+        // Handle addresses like "3 Conquest St, Mount Duneed VIC 3217, Australia"
+        const addressParts = user.address.split(',');
+        if (addressParts.length >= 3) {
+          streetAddress = addressParts[0].trim();
+          parsedCity = addressParts[1].trim();
+          
+          // Parse the state and postcode from the last part before country
+          const statePostcodePart = addressParts[2].trim();
+          const statePostcodeMatch = statePostcodePart.match(/^(.+?)\s+(\d{4})$/);
+          if (statePostcodeMatch) {
+            const stateFullName = statePostcodeMatch[1].trim();
+            parsedPostcode = statePostcodeMatch[2];
+            
+            // Convert state name to code
+            const stateMap: { [key: string]: string } = {
+              'VIC': 'vic',
+              'Victoria': 'vic',
+              'NSW': 'nsw',
+              'New South Wales': 'nsw',
+              'QLD': 'qld',
+              'Queensland': 'qld',
+              'WA': 'wa',
+              'Western Australia': 'wa',
+              'SA': 'sa',
+              'South Australia': 'sa',
+              'TAS': 'tas',
+              'Tasmania': 'tas',
+              'ACT': 'act',
+              'Australian Capital Territory': 'act',
+              'NT': 'nt',
+              'Northern Territory': 'nt'
+            };
+            
+            parsedState = stateMap[stateFullName] || stateFullName.toLowerCase();
+          }
+        }
+      }
+      
       setFormData(prev => ({
         ...prev,
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: user.address || '',
-        // Parse existing address if available
-        city: user.address ? user.address.split(',')[1]?.trim() || '' : '',
-        postcode: user.address ? user.address.split(',')[2]?.trim().split(' ')[1] || '' : '',
-        state: user.address ? user.address.split(',')[2]?.trim().split(' ')[0] || '' : ''
+        address: streetAddress,
+        city: parsedCity,
+        postcode: parsedPostcode,
+        state: parsedState.toLowerCase() // Convert to lowercase for state selector
       }));
       setIsGuestCheckout(false);
     }
@@ -303,6 +349,20 @@ export default function Checkout() {
       if (isGuestCheckout && createAccount) {
         console.log('Creating new account...');
         try {
+          // Format address properly for storage
+          const stateCodeToName: { [key: string]: string } = {
+            'vic': 'VIC',
+            'nsw': 'NSW',
+            'qld': 'QLD',
+            'wa': 'WA',
+            'sa': 'SA',
+            'tas': 'TAS',
+            'act': 'ACT',
+            'nt': 'NT'
+          };
+          const stateCode = stateCodeToName[formData.state.toLowerCase()] || formData.state.toUpperCase();
+          const fullAddress = `${formData.address}, ${formData.city}, ${stateCode} ${formData.postcode}, Australia`;
+          
           const accountResponse = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -312,7 +372,7 @@ export default function Checkout() {
               firstName: formData.firstName,
               lastName: formData.lastName,
               phone: formData.phone,
-              address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.postcode}`
+              address: fullAddress
             })
           });
 
@@ -335,6 +395,20 @@ export default function Checkout() {
       if (isAuthenticated && user) {
         console.log('Updating user profile...');
         try {
+          // Format address properly for storage
+          const stateCodeToName: { [key: string]: string } = {
+            'vic': 'VIC',
+            'nsw': 'NSW',
+            'qld': 'QLD',
+            'wa': 'WA',
+            'sa': 'SA',
+            'tas': 'TAS',
+            'act': 'ACT',
+            'nt': 'NT'
+          };
+          const stateCode = stateCodeToName[formData.state.toLowerCase()] || formData.state.toUpperCase();
+          const fullAddress = `${formData.address}, ${formData.city}, ${stateCode} ${formData.postcode}, Australia`;
+          
           await fetch('/api/auth/update-profile', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -342,7 +416,7 @@ export default function Checkout() {
               firstName: formData.firstName,
               lastName: formData.lastName,
               phone: formData.phone,
-              address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.postcode}`
+              address: fullAddress
             })
           });
           console.log('Profile updated successfully');
