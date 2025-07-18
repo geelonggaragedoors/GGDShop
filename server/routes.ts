@@ -2480,16 +2480,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add logging middleware for debugging
-  app.use('/api/admin/email-test', (req, res, next) => {
-    console.log('*** EMAIL TEST MIDDLEWARE HIT ***');
+  // Simple test route to verify routing works
+  app.post('/api/admin/email-test', async (req, res) => {
+    console.log('*** EMAIL TEST ENDPOINT HIT ***');
+    console.log('Request received!');
     console.log('Method:', req.method);
     console.log('URL:', req.url);
     console.log('Body:', req.body);
-    next();
+    console.log('Headers:', req.headers);
+    
+    // Simple test response
+    res.json({ message: 'Test route working', received: req.body });
+    return;
   });
 
-  app.post('/api/admin/email-test', async (req, res) => {
+  app.post('/api/admin/email-test-real', async (req, res) => {
     try {
       console.log('=== EMAIL TEST REQUEST START ===');
       console.log('Request body:', req.body);
