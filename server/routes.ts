@@ -56,7 +56,7 @@ const csvUpload = multer({
     }
   },
 });
-import { emailService } from "./emailService";
+import { emailService } from "./email-service";
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
 import { authService } from "./authService";
@@ -2498,9 +2498,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log('Sending test email to:', testEmail, 'with template:', templateId);
-      
-      // Import and use the email service for real email sending
-      const { emailService } = await import('./email-service');
       
       // Send test email using the EmailService
       const result = await emailService.sendTestEmail(templateId, testEmail);
