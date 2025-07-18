@@ -2490,42 +2490,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // TEST: Simple route to verify routing works
-  app.post('/api/admin/email-test-simple', (req, res) => {
-    console.log('SIMPLE TEST ROUTE HIT!!!');
-    console.log('Simple test - Request body:', req.body);
-    console.log('Simple test - Headers:', req.headers);
-    res.json({ message: 'Simple test route working!' });
-  });
-
-  // Add middleware to catch all requests to this endpoint
-  app.all('/api/admin/email-test', (req, res, next) => {
-    console.log('*** EMAIL TEST REQUEST INTERCEPTED ***');
-    console.log('Method:', req.method);
-    console.log('URL:', req.originalUrl);
-    console.log('Body:', req.body);
-    console.log('Content-Type:', req.headers['content-type']);
-    console.log('Authorization:', req.headers.authorization);
-    console.log('Cookie:', req.headers.cookie);
-    console.log('User:', req.user ? 'Authenticated' : 'Not authenticated');
-    next();
-  });
-
-  // Add another test endpoint for debugging
-  app.get('/api/admin/email-test-debug', (req, res) => {
-    console.log('DEBUG ENDPOINT HIT - GET /api/admin/email-test-debug');
-    res.json({ message: 'Debug endpoint working', timestamp: new Date().toISOString() });
-  });
-
+  // Email test endpoint
   app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
+    console.log('=== EMAIL TEST REQUEST START ===');
+    console.log('Request body:', req.body);
+    console.log('User:', req.user ? 'Authenticated' : 'Not authenticated');
+    
     try {
-      console.log('=== EMAIL TEST REQUEST START ===');
-      console.log('Request body:', req.body);
-      console.log('Request method:', req.method);
-      console.log('Request URL:', req.url);
-      console.log('Content-Type:', req.headers['content-type']);
-      console.log('User authenticated:', req.user ? 'Yes' : 'No');
-      
       const { templateId, testEmail } = req.body;
       
       if (!testEmail) {
@@ -2541,7 +2512,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log('Sending test email to:', testEmail, 'with template:', templateId);
-      console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
       
       // Send test email using the EmailService
       const result = await emailService.sendTestEmail(templateId, testEmail);
@@ -2562,6 +2532,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to test email' });
     }
   });
+
+
 
   const httpServer = createServer(app);
   
