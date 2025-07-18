@@ -71,8 +71,8 @@ export default function ProfilePage() {
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || '',
-        phone: '',
-        address: '',
+        phone: user.phone || '',
+        address: user.address || '',
       });
     }
   }, [user]);

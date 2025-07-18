@@ -33,6 +33,8 @@ export const users = pgTable("users", {
   passwordHash: varchar("password_hash"), // bcrypt hashed password
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
+  phone: varchar("phone"),
+  address: text("address"),
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").default("staff"), // admin, manager, staff
   isActive: boolean("is_active").default(true),
