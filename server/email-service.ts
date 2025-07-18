@@ -44,8 +44,11 @@ export class EmailService {
       const emailSettings = await this.getEmailSettings();
       
       // Send email via Resend
+      const fromField = `${emailSettings.fromName} <${emailSettings.fromEmail}>`;
+      console.log('Sending email with from:', fromField, 'to:', to);
+      
       const result = await resend.emails.send({
-        from: `${emailSettings.fromName} <${emailSettings.fromEmail}>`,
+        from: fromField,
         to: [to],
         subject,
         html,
@@ -215,19 +218,38 @@ export class EmailService {
   private async getEmailSettings(): Promise<any> {
     try {
       const settings = await storage.getEmailSettings();
-      return settings || {
-        fromEmail: 'orders@geelonggaragedoors.com',
-        fromName: 'Geelong Garage Doors',
-        replyToEmail: 'info@geelonggaragedoors.com',
-        adminEmail: 'admin@geelonggaragedoors.com',
-      };
+      if (settings) {
+        return settings;
+      }
+      
+      // For testing, use a verified domain if the custom domain isn't working
+      // In production, you need to verify your domain with Resend
+      const isProduction = process.env.NODE_ENV === 'production';
+      
+      if (isProduction) {
+        return {
+          fromEmail: 'orders@geelonggaragedoors.com',
+          fromName: 'Geelong Garage Doors',
+          replyToEmail: 'info@geelonggaragedoors.com',
+          adminEmail: 'admin@geelonggaragedoors.com',
+        };
+      } else {
+        // For testing, use the default Resend domain
+        return {
+          fromEmail: 'onboarding@resend.dev',
+          fromName: 'Geelong Garage Doors',
+          replyToEmail: 'onboarding@resend.dev',
+          adminEmail: 'onboarding@resend.dev',
+        };
+      }
     } catch (error) {
       console.error('Failed to get email settings:', error);
+      // For testing, use the default Resend domain
       return {
-        fromEmail: 'orders@geelonggaragedoors.com',
+        fromEmail: 'onboarding@resend.dev',
         fromName: 'Geelong Garage Doors',
-        replyToEmail: 'info@geelonggaragedoors.com',
-        adminEmail: 'admin@geelonggaragedoors.com',
+        replyToEmail: 'onboarding@resend.dev',
+        adminEmail: 'onboarding@resend.dev',
       };
     }
   }

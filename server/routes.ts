@@ -2488,6 +2488,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Test email address is required' });
       }
       
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(testEmail)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
+      
       // Import and use the email service for real email sending
       const { emailService } = await import('./email-service');
       
