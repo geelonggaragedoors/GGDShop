@@ -2482,17 +2482,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
     try {
+      console.log('Test email request received:', req.body);
       const { templateId, testEmail } = req.body;
       
       if (!testEmail) {
+        console.log('No test email provided');
         return res.status(400).json({ error: 'Test email address is required' });
       }
       
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(testEmail)) {
+        console.log('Invalid email format:', testEmail);
         return res.status(400).json({ error: 'Invalid email format' });
       }
+      
+      console.log('Sending test email to:', testEmail, 'with template:', templateId);
       
       // Import and use the email service for real email sending
       const { emailService } = await import('./email-service');
@@ -2500,12 +2505,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send test email using the EmailService
       const result = await emailService.sendTestEmail(templateId, testEmail);
       
+      console.log('Email service result:', result);
+      
       if (result.success) {
         res.json({ 
           message: 'Test email sent successfully', 
           emailLogId: result.emailLogId 
         });
       } else {
+        console.log('Email service error:', result.error);
         res.status(400).json({ error: result.error });
       }
     } catch (error) {
