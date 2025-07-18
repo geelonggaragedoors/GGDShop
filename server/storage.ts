@@ -187,6 +187,21 @@ export interface IStorage {
   getCustomerTransactionById(id: string): Promise<CustomerTransaction | undefined>;
   updateCustomerTransaction(id: string, transaction: Partial<InsertCustomerTransaction>): Promise<CustomerTransaction | undefined>;
 
+  // Email template operations
+  getEmailTemplates(params?: {
+    templateType?: string;
+    category?: string;
+    isActive?: boolean;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ templates: EmailTemplate[]; total: number }>;
+  getEmailTemplateById(id: string): Promise<EmailTemplate | undefined>;
+  createEmailTemplate(template: InsertEmailTemplate): Promise<EmailTemplate>;
+  updateEmailTemplate(id: string, template: Partial<InsertEmailTemplate>): Promise<EmailTemplate | undefined>;
+  deleteEmailTemplate(id: string): Promise<boolean>;
+  getDefaultTemplates(): Promise<EmailTemplate[]>;
+  seedDefaultTemplates(): Promise<void>;
+
   // Email log operations
   createEmailLog(log: InsertEmailLog): Promise<EmailLog>;
   getEmailLogs(params?: { 
@@ -1328,6 +1343,108 @@ export class DatabaseStorage implements IStorage {
       openRate: Math.round(openRate * 100) / 100,
       clickRate: Math.round(clickRate * 100) / 100,
     };
+  }
+
+  // Email template operations
+  async getEmailTemplates(params?: {
+    templateType?: string;
+    category?: string;
+    isActive?: boolean;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ templates: EmailTemplate[]; total: number }> {
+    let query = db.select().from(emailTemplates);
+    let countQuery = db.select({ count: count() }).from(emailTemplates);
+
+    // Apply filters
+    const conditions = [];
+    if (params?.templateType) {
+      conditions.push(eq(emailTemplates.templateType, params.templateType));
+    }
+    if (params?.category) {
+      conditions.push(eq(emailTemplates.category, params.category));
+    }
+    if (params?.isActive !== undefined) {
+      conditions.push(eq(emailTemplates.isActive, params.isActive));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+      countQuery = countQuery.where(and(...conditions));
+    }
+
+    // Apply pagination
+    if (params?.limit) {
+      query = query.limit(params.limit);
+      if (params.offset) {
+        query = query.offset(params.offset);
+      }
+    }
+
+    const [templates, totalResult] = await Promise.all([
+      query.orderBy(desc(emailTemplates.createdAt)),
+      countQuery
+    ]);
+
+    return {
+      templates,
+      total: totalResult[0]?.count || 0
+    };
+  }
+
+  async getEmailTemplateById(id: string): Promise<EmailTemplate | undefined> {
+    const [template] = await db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.id, id));
+    return template;
+  }
+
+  async createEmailTemplate(template: InsertEmailTemplate): Promise<EmailTemplate> {
+    const [newTemplate] = await db
+      .insert(emailTemplates)
+      .values(template)
+      .returning();
+    return newTemplate;
+  }
+
+  async updateEmailTemplate(id: string, template: Partial<InsertEmailTemplate>): Promise<EmailTemplate | undefined> {
+    const [updatedTemplate] = await db
+      .update(emailTemplates)
+      .set({ ...template, updatedAt: new Date() })
+      .where(eq(emailTemplates.id, id))
+      .returning();
+    return updatedTemplate;
+  }
+
+  async deleteEmailTemplate(id: string): Promise<boolean> {
+    const result = await db
+      .delete(emailTemplates)
+      .where(eq(emailTemplates.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getDefaultTemplates(): Promise<EmailTemplate[]> {
+    return db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.isActive, true))
+      .orderBy(asc(emailTemplates.templateType), asc(emailTemplates.category));
+  }
+
+  async seedDefaultTemplates(): Promise<void> {
+    const { defaultTemplates } = await import("@shared/email-templates");
+    
+    // Check if templates already exist
+    const existingTemplates = await db.select().from(emailTemplates).limit(1);
+    if (existingTemplates.length > 0) {
+      return; // Templates already seeded
+    }
+
+    // Insert default templates
+    for (const template of defaultTemplates) {
+      await db.insert(emailTemplates).values(template).onConflictDoNothing();
+    }
   }
 }
 

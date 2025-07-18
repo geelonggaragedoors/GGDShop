@@ -2377,7 +2377,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email Template Management Routes
+  app.get('/api/admin/email-templates', hybridAuth, async (req, res) => {
+    try {
+      const { templateType, category, isActive, limit, offset } = req.query;
+      const params = {
+        templateType: templateType as string,
+        category: category as string,
+        isActive: isActive === 'true' ? true : isActive === 'false' ? false : undefined,
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
+      };
+      
+      const result = await storage.getEmailTemplates(params);
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching email templates:", error);
+      res.status(500).json({ message: "Failed to fetch email templates" });
+    }
+  });
 
+  app.get('/api/admin/email-templates/:id', hybridAuth, async (req, res) => {
+    try {
+      const template = await storage.getEmailTemplateById(req.params.id);
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+      res.json(template);
+    } catch (error) {
+      console.error("Error fetching email template:", error);
+      res.status(500).json({ message: "Failed to fetch email template" });
+    }
+  });
+
+  app.post('/api/admin/email-templates', hybridAuth, async (req, res) => {
+    try {
+      const { insertEmailTemplateSchema } = await import("@shared/schema");
+      const validatedData = insertEmailTemplateSchema.parse(req.body);
+      const template = await storage.createEmailTemplate(validatedData);
+      
+      res.status(201).json(template);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid template data", errors: error.errors });
+      }
+      console.error("Error creating email template:", error);
+      res.status(500).json({ message: "Failed to create email template" });
+    }
+  });
+
+  app.put('/api/admin/email-templates/:id', hybridAuth, async (req, res) => {
+    try {
+      const { insertEmailTemplateSchema } = await import("@shared/schema");
+      const validatedData = insertEmailTemplateSchema.partial().parse(req.body);
+      const template = await storage.updateEmailTemplate(req.params.id, validatedData);
+      
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+      
+      res.json(template);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid template data", errors: error.errors });
+      }
+      console.error("Error updating email template:", error);
+      res.status(500).json({ message: "Failed to update email template" });
+    }
+  });
+
+  app.delete('/api/admin/email-templates/:id', hybridAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteEmailTemplate(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+      res.json({ message: "Template deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting email template:", error);
+      res.status(500).json({ message: "Failed to delete email template" });
+    }
+  });
+
+  app.post('/api/admin/email-templates/:id/test', hybridAuth, async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      const template = await storage.getEmailTemplateById(req.params.id);
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      // Send test email with template
+      await emailService.sendTestEmail(email, template);
+      
+      res.json({ message: "Test email sent successfully" });
+    } catch (error) {
+      console.error("Error sending test email:", error);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  app.post('/api/admin/email-templates/seed', hybridAuth, async (req, res) => {
+    try {
+      await storage.seedDefaultTemplates();
+      res.json({ message: "Default templates seeded successfully" });
+    } catch (error) {
+      console.error("Error seeding templates:", error);
+      res.status(500).json({ message: "Failed to seed templates" });
+    }
+  });
 
   const httpServer = createServer(app);
   

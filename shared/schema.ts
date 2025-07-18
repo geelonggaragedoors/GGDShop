@@ -74,6 +74,21 @@ export const roles = pgTable("roles", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Email Templates Table
+export const emailTemplates = pgTable("email_templates", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name").notNull(),
+  subject: varchar("subject").notNull(),
+  htmlContent: text("html_content").notNull(),
+  textContent: text("text_content"),
+  templateType: varchar("template_type").notNull(), // 'customer', 'staff', 'admin'
+  category: varchar("category").notNull(), // 'order_confirmation', 'welcome', 'notification', etc.
+  variables: jsonb("variables").default([]), // Available template variables
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Categories table
 export const categories = pgTable("categories", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -643,19 +658,14 @@ export const siteSettings = pgTable("site_settings", {
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type InsertSiteSetting = typeof siteSettings.$inferInsert;
 
-// Email templates table
-export const emailTemplates = pgTable("email_templates", {
-  id: varchar("id", { length: 50 }).primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  description: text("description"),
-  subject: varchar("subject", { length: 500 }).notNull(),
-  htmlContent: text("html_content").notNull(),
-  textContent: text("text_content").notNull(),
-  isActive: boolean("is_active").default(true),
-  variables: text("variables").array().default([]),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+// Email template schema for validation
+export const insertEmailTemplateSchema = createInsertSchema(emailTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
+
+export const emailTemplateSchema = createInsertSchema(emailTemplates);
 
 export type EmailTemplate = typeof emailTemplates.$inferSelect;
 export type InsertEmailTemplate = typeof emailTemplates.$inferInsert;
