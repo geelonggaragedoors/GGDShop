@@ -16,6 +16,9 @@ import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
+import Profile from "@/pages/profile";
+import Orders from "@/pages/orders";
+import Wishlist from "@/pages/wishlist";
 import AdminLayout from "@/pages/admin/layout";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
@@ -52,6 +55,9 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/track-order" component={TrackOrder} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/orders" component={Orders} />
+      <Route path="/wishlist" component={Wishlist} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/product/:slug" component={ProductDetail} />

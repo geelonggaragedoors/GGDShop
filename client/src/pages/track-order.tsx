@@ -8,6 +8,8 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Package, MapPin, Calendar, DollarSign, User, Phone, Mail, Search } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import StorefrontHeader from '@/components/storefront/header';
+import StorefrontFooter from '@/components/storefront/footer';
 
 interface Order {
   id: string;
@@ -91,8 +93,10 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4">
+    <>
+      <StorefrontHeader />
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto py-8 px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Track Your Order</h1>
           <p className="text-gray-600">Enter your order number to track your delivery status</p>
@@ -287,7 +291,9 @@ export default function TrackOrderPage() {
             </div>
           </div>
         )}
+        </div>
       </div>
-    </div>
+      <StorefrontFooter />
+    </>
   );
 }
