@@ -2480,6 +2480,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add middleware to catch all requests to this endpoint
+  app.all('/api/admin/email-test', (req, res, next) => {
+    console.log('*** EMAIL TEST REQUEST INTERCEPTED ***');
+    console.log('Method:', req.method);
+    console.log('URL:', req.originalUrl);
+    console.log('Body:', req.body);
+    console.log('Headers:', req.headers);
+    next();
+  });
+
   app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
     try {
       console.log('=== EMAIL TEST REQUEST START ===');
