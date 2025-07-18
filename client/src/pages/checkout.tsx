@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -9,19 +9,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Trash2, UserPlus, User } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import SimpleHeader from "@/components/storefront/simple-header";
 import PayPalButton from "@/components/PayPalButton";
 import AddressAutocomplete from "@/components/ui/address-autocomplete";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isGuestCheckout, setIsGuestCheckout] = useState(!isAuthenticated);
+  const [createAccount, setCreateAccount] = useState(false);
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -45,8 +47,29 @@ export default function Checkout() {
     address: '',
     city: '',
     postcode: '',
-    state: ''
+    state: '',
+    password: '',
+    confirmPassword: ''
   });
+
+  // Prefill form data when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        // Parse existing address if available
+        city: user.address ? user.address.split(',')[1]?.trim() || '' : '',
+        postcode: user.address ? user.address.split(',')[2]?.trim().split(' ')[1] || '' : '',
+        state: user.address ? user.address.split(',')[2]?.trim().split(' ')[0] || '' : ''
+      }));
+      setIsGuestCheckout(false);
+    }
+  }, [isAuthenticated, user]);
 
   const handleInputChange = (field: string, value: string) => {
     console.log(`Updating ${field} to:`, value);
@@ -212,6 +235,26 @@ export default function Checkout() {
     const required = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'postcode', 'state'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
+    // Additional validation for account creation
+    if (isGuestCheckout && createAccount) {
+      if (!formData.password) {
+        missing.push('password');
+      }
+      if (!formData.confirmPassword) {
+        missing.push('confirmPassword');
+      }
+      if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+        if (showToast) {
+          toast({
+            title: "Password Mismatch",
+            description: "Password and confirm password must match.",
+            variant: "destructive"
+          });
+        }
+        return false;
+      }
+    }
+    
     if (missing.length > 0 && showToast) {
       toast({
         title: "Missing Information",
@@ -256,6 +299,59 @@ export default function Checkout() {
     setIsProcessing(true);
     
     try {
+      // Create account if guest checkout with account creation
+      if (isGuestCheckout && createAccount) {
+        console.log('Creating new account...');
+        try {
+          const accountResponse = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: formData.email,
+              password: formData.password,
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              phone: formData.phone,
+              address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.postcode}`
+            })
+          });
+
+          if (accountResponse.ok) {
+            console.log('Account created successfully');
+            toast({
+              title: "Account Created",
+              description: "Your account has been created and you've been logged in.",
+            });
+          } else {
+            console.log('Account creation failed, continuing with guest checkout');
+          }
+        } catch (accountError) {
+          console.error('Account creation error:', accountError);
+          // Continue with guest checkout if account creation fails
+        }
+      }
+
+      // Update existing user profile if authenticated
+      if (isAuthenticated && user) {
+        console.log('Updating user profile...');
+        try {
+          await fetch('/api/auth/update-profile', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              phone: formData.phone,
+              address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.postcode}`
+            })
+          });
+          console.log('Profile updated successfully');
+        } catch (profileError) {
+          console.error('Profile update error:', profileError);
+          // Continue with order creation even if profile update fails
+        }
+      }
+
       // Create order in database
       const orderData = {
         customerData: formData,
@@ -358,17 +454,47 @@ export default function Checkout() {
             {!isAuthenticated && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Account Options</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="w-5 h-5" />
+                    Account Options
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="guest-checkout" 
-                      checked={isGuestCheckout}
-                      onCheckedChange={(checked) => setIsGuestCheckout(checked === true)}
-                    />
-                    <Label htmlFor="guest-checkout">Checkout as Guest</Label>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="guest-checkout" 
+                        checked={isGuestCheckout}
+                        onCheckedChange={(checked) => setIsGuestCheckout(checked === true)}
+                      />
+                      <Label htmlFor="guest-checkout">Checkout as Guest</Label>
+                    </div>
+                    
+                    {isGuestCheckout && (
+                      <div className="ml-6 space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="create-account" 
+                            checked={createAccount}
+                            onCheckedChange={(checked) => setCreateAccount(checked === true)}
+                          />
+                          <Label htmlFor="create-account" className="flex items-center gap-2">
+                            <UserPlus className="w-4 h-4" />
+                            Create an account for future orders
+                          </Label>
+                        </div>
+                        
+                        {createAccount && (
+                          <Alert>
+                            <AlertDescription>
+                              You'll be able to track orders, save addresses, and checkout faster next time!
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    )}
                   </div>
+                  
                   {!isGuestCheckout && (
                     <div className="space-y-4 pt-4 border-t">
                       <div className="grid grid-cols-2 gap-4">
@@ -381,6 +507,28 @@ export default function Checkout() {
                       </div>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Logged In User Info */}
+            {isAuthenticated && user && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="w-5 h-5" />
+                    Account Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <p className="text-sm text-green-800">
+                      ✓ Logged in as <strong>{user.email}</strong>
+                    </p>
+                    <p className="text-sm text-green-600 mt-1">
+                      Your profile information has been automatically filled in below. You can update it if needed.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -431,6 +579,41 @@ export default function Checkout() {
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                   />
                 </div>
+                
+                {/* Password fields for account creation */}
+                {isGuestCheckout && createAccount && (
+                  <>
+                    <Separator className="my-4" />
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <UserPlus className="w-4 h-4 text-blue-600" />
+                        <Label className="text-sm font-medium text-blue-600">Account Setup</Label>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="password">Password *</Label>
+                          <Input 
+                            id="password" 
+                            type="password" 
+                            placeholder="Create password" 
+                            value={formData.password}
+                            onChange={(e) => handleInputChange('password', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                          <Input 
+                            id="confirmPassword" 
+                            type="password" 
+                            placeholder="Confirm password" 
+                            value={formData.confirmPassword}
+                            onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
                 <div>
                   <Label htmlFor="address-autocomplete">Address *</Label>
                   <AddressAutocomplete

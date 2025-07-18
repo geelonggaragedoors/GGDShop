@@ -24,6 +24,7 @@ import { createRouteHandler } from "uploadthing/express";
 import { ourFileRouter } from "./uploadthing";
 import { importService } from "./importService";
 import fs from "fs";
+import bcrypt from "bcryptjs";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -176,6 +177,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Enhanced authentication routes
   app.use('/api/auth', authRoutes);
+
+  // Public registration endpoint for checkout
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, phone, address } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+      
+      // Create new user
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const user = await storage.createUser({
+        email,
+        passwordHash: hashedPassword,
+        firstName,
+        lastName,
+        phone,
+        address,
+        role: 'customer',
+        isActive: true,
+        emailVerified: true // Auto-verify for checkout users
+      });
+      
+      // Auto-login the user
+      req.login(user, (err) => {
+        if (err) {
+          console.error('Auto-login error:', err);
+          return res.status(201).json({ message: "Account created successfully" });
+        }
+        
+        // Remove sensitive fields
+        const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = user;
+        res.status(201).json({ user: userResponse, message: "Account created and logged in successfully" });
+      });
+    } catch (error) {
+      console.error("Error creating account:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
+  // Update profile endpoint with PATCH method
+  app.patch('/api/auth/update-profile', hybridAuth, async (req: any, res) => {
+    try {
+      const { firstName, lastName, phone, address } = req.body;
+      
+      let userId;
+      
+      // Handle password-authenticated user
+      if (req.user.email) {
+        userId = req.user.id;
+      } 
+      // Handle Replit Auth user
+      else if (req.user.claims && req.user.claims.sub) {
+        userId = req.user.claims.sub;
+      }
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID not found" });
+      }
+      
+      const updatedUser = await storage.updateUserProfile(userId, {
+        firstName,
+        lastName,
+        phone,
+        address
+      });
+      
+      // Remove sensitive fields
+      const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = updatedUser;
+      res.json(userResponse);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
 
   // Auth routes with hybrid authentication
   app.get('/api/auth/user', hybridAuth, async (req: any, res) => {
