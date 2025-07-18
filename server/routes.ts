@@ -68,18 +68,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Hybrid authentication middleware - supports both password and Replit Auth
   const hybridAuth = async (req: any, res: any, next: any) => {
+    console.log('=== HYBRID AUTH DEBUG ===');
+    console.log('req.isAuthenticated():', req.isAuthenticated());
+    console.log('req.user:', req.user);
+    console.log('req.session:', req.session);
+    console.log('req.sessionID:', req.sessionID);
+    console.log('req.headers.cookie:', req.headers.cookie);
+    
     // Check if user is authenticated via session (password auth)
     if (req.isAuthenticated() && req.user) {
       // Check if it's a password-authenticated user (has email directly)
       if (req.user.email) {
+        console.log('✓ Password-authenticated user found');
         return next();
       }
       // Check if it's a Replit Auth user (has claims)
       if (req.user.claims && req.user.claims.sub) {
+        console.log('✓ Replit Auth user found');
         return next();
       }
     }
     
+    console.log('✗ No valid authentication found');
     // Not authenticated
     return res.status(401).json({ message: "Unauthorized" });
   };
@@ -2492,7 +2502,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Method:', req.method);
     console.log('URL:', req.originalUrl);
     console.log('Body:', req.body);
-    console.log('Headers:', req.headers);
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('Authorization:', req.headers.authorization);
+    console.log('Cookie:', req.headers.cookie);
+    console.log('User:', req.user ? 'Authenticated' : 'Not authenticated');
     next();
   });
 
