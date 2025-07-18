@@ -50,6 +50,9 @@ import {
   customerTransactions,
   type CustomerTransaction,
   type InsertCustomerTransaction,
+  emailLogs,
+  type EmailLog,
+  type InsertEmailLog,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql } from "drizzle-orm";
@@ -183,6 +186,30 @@ export interface IStorage {
   getCustomerTransactions(customerId: string): Promise<CustomerTransaction[]>;
   getCustomerTransactionById(id: string): Promise<CustomerTransaction | undefined>;
   updateCustomerTransaction(id: string, transaction: Partial<InsertCustomerTransaction>): Promise<CustomerTransaction | undefined>;
+
+  // Email log operations
+  createEmailLog(log: InsertEmailLog): Promise<EmailLog>;
+  getEmailLogs(params?: { 
+    limit?: number; 
+    offset?: number; 
+    status?: string; 
+    templateId?: string;
+    recipientEmail?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }): Promise<{ logs: EmailLog[]; total: number }>;
+  updateEmailLogStatus(id: string, status: string, metadata?: any): Promise<boolean>;
+  getEmailLogById(id: string): Promise<EmailLog | undefined>;
+  getEmailAnalytics(templateId?: string, startDate?: Date, endDate?: Date): Promise<{
+    totalSent: number;
+    totalDelivered: number;
+    totalOpened: number;
+    totalClicked: number;
+    totalFailed: number;
+    deliveryRate: number;
+    openRate: number;
+    clickRate: number;
+  }>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<{
@@ -818,6 +845,11 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
+  async getEmailSettings(): Promise<any> {
+    const [settings] = await db.select().from(emailSettingsConfig).where(eq(emailSettingsConfig.id, "default"));
+    return settings;
+  }
+
   async getEmailTemplates(): Promise<any[]> {
     return await db.select().from(emailTemplates).orderBy(asc(emailTemplates.name));
   }
@@ -1086,6 +1118,140 @@ export class DatabaseStorage implements IStorage {
       .where(eq(customerTransactions.id, id))
       .returning();
     return updatedTransaction;
+  }
+
+  // Email log operations
+  async createEmailLog(log: InsertEmailLog): Promise<EmailLog> {
+    const [newLog] = await db.insert(emailLogs).values(log).returning();
+    return newLog;
+  }
+
+  async getEmailLogs(params?: { 
+    limit?: number; 
+    offset?: number; 
+    status?: string; 
+    templateId?: string;
+    recipientEmail?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }): Promise<{ logs: EmailLog[]; total: number }> {
+    const { limit = 50, offset = 0, status, templateId, recipientEmail, startDate, endDate } = params || {};
+
+    let query = db.select().from(emailLogs);
+    let countQuery = db.select({ count: count() }).from(emailLogs);
+
+    const conditions = [];
+    if (status) {
+      conditions.push(eq(emailLogs.status, status));
+    }
+    if (templateId) {
+      conditions.push(eq(emailLogs.templateId, templateId));
+    }
+    if (recipientEmail) {
+      conditions.push(like(emailLogs.recipientEmail, `%${recipientEmail}%`));
+    }
+    if (startDate) {
+      conditions.push(sql`${emailLogs.createdAt} >= ${startDate}`);
+    }
+    if (endDate) {
+      conditions.push(sql`${emailLogs.createdAt} <= ${endDate}`);
+    }
+
+    if (conditions.length > 0) {
+      const whereCondition = conditions.length === 1 ? conditions[0] : and(...conditions);
+      query = query.where(whereCondition);
+      countQuery = countQuery.where(whereCondition);
+    }
+
+    const [logsResult, totalResult] = await Promise.all([
+      query.orderBy(desc(emailLogs.createdAt)).limit(limit).offset(offset),
+      countQuery
+    ]);
+
+    return {
+      logs: logsResult,
+      total: totalResult[0].count
+    };
+  }
+
+  async updateEmailLogStatus(id: string, status: string, metadata?: any): Promise<boolean> {
+    const updateData: any = { status, updatedAt: new Date() };
+    
+    if (status === 'sent' && !metadata?.sentAt) {
+      updateData.sentAt = new Date();
+    }
+    if (status === 'delivered' && !metadata?.deliveredAt) {
+      updateData.deliveredAt = new Date();
+    }
+    if (status === 'failed' && metadata?.errorMessage) {
+      updateData.errorMessage = metadata.errorMessage;
+    }
+    if (metadata?.resendId) {
+      updateData.resendId = metadata.resendId;
+    }
+
+    const result = await db
+      .update(emailLogs)
+      .set(updateData)
+      .where(eq(emailLogs.id, id));
+    return result.rowCount! > 0;
+  }
+
+  async getEmailLogById(id: string): Promise<EmailLog | undefined> {
+    const [log] = await db.select().from(emailLogs).where(eq(emailLogs.id, id));
+    return log;
+  }
+
+  async getEmailAnalytics(templateId?: string, startDate?: Date, endDate?: Date): Promise<{
+    totalSent: number;
+    totalDelivered: number;
+    totalOpened: number;
+    totalClicked: number;
+    totalFailed: number;
+    deliveryRate: number;
+    openRate: number;
+    clickRate: number;
+  }> {
+    let query = db.select().from(emailLogs);
+    
+    const conditions = [];
+    if (templateId) {
+      conditions.push(eq(emailLogs.templateId, templateId));
+    }
+    if (startDate) {
+      conditions.push(sql`${emailLogs.createdAt} >= ${startDate}`);
+    }
+    if (endDate) {
+      conditions.push(sql`${emailLogs.createdAt} <= ${endDate}`);
+    }
+
+    if (conditions.length > 0) {
+      const whereCondition = conditions.length === 1 ? conditions[0] : and(...conditions);
+      query = query.where(whereCondition);
+    }
+
+    const logs = await query;
+    
+    const totalSent = logs.filter(log => log.status === 'sent' || log.status === 'delivered').length;
+    const totalDelivered = logs.filter(log => log.status === 'delivered').length;
+    const totalOpened = logs.filter(log => log.openedAt !== null).length;
+    const totalClicked = logs.filter(log => log.clickedAt !== null).length;
+    const totalFailed = logs.filter(log => log.status === 'failed').length;
+
+    const deliveryRate = totalSent > 0 ? (totalDelivered / totalSent) * 100 : 0;
+    const openRate = totalDelivered > 0 ? (totalOpened / totalDelivered) * 100 : 0;
+    const clickRate = totalOpened > 0 ? (totalClicked / totalOpened) * 100 : 0;
+
+    return {
+      totalSent,
+      totalDelivered,
+      totalOpened,
+      totalClicked,
+      totalFailed,
+      deliveryRate: Math.round(deliveryRate * 100) / 100,
+      openRate: Math.round(openRate * 100) / 100,
+      clickRate: Math.round(clickRate * 100) / 100,
+    };
   }
 }
 

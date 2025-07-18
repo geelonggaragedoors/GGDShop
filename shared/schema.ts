@@ -675,6 +675,30 @@ export const emailSettingsConfig = pgTable("email_settings_config", {
 export type EmailSettingConfig = typeof emailSettingsConfig.$inferSelect;
 export type InsertEmailSettingConfig = typeof emailSettingsConfig.$inferInsert;
 
+// Email logs table to track all sent emails
+export const emailLogs = pgTable("email_logs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  templateId: varchar("template_id", { length: 50 }).references(() => emailTemplates.id),
+  templateName: varchar("template_name", { length: 255 }),
+  recipientEmail: varchar("recipient_email", { length: 255 }).notNull(),
+  recipientName: varchar("recipient_name", { length: 255 }),
+  subject: varchar("subject", { length: 500 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending, sent, failed, delivered, bounced
+  resendId: varchar("resend_id", { length: 255 }), // Resend email ID for tracking
+  errorMessage: text("error_message"),
+  sentAt: timestamp("sent_at"),
+  deliveredAt: timestamp("delivered_at"),
+  openedAt: timestamp("opened_at"),
+  clickedAt: timestamp("clicked_at"),
+  metadata: jsonb("metadata"), // Store additional data like order ID, user ID, etc.
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type InsertEmailLog = typeof emailLogs.$inferInsert;
+export type InsertEmailSettingConfig = typeof emailSettingsConfig.$inferInsert;
+
 // Add the missing transaction relation
 export const customerTransactionsRelations = relations(customerTransactions, ({ one }) => ({
   customer: one(customers, {

@@ -20,6 +20,7 @@ import Reviews from "./reviews";
 import Enquiries from "./enquiries";
 import SettingsPage from "./settings";
 import SiteSettings from "./site-settings";
+import EmailManagement from "./email-management";
 import {
   LayoutDashboard,
   Package,
@@ -38,6 +39,7 @@ import {
   LogOut,
   BarChart3,
   Globe,
+  Mail,
 } from "lucide-react";
 
 const sidebarItems = [
@@ -53,6 +55,7 @@ const sidebarItems = [
   { id: "media", label: "Media Library", icon: Images, path: "/admin/media" },
   { id: "site-settings", label: "Site Settings", icon: Globe, path: "/admin/site-settings" },
   { id: "staff", label: "Staff & Roles", icon: UserCheck, path: "/admin/staff" },
+  { id: "email-management", label: "Email Management", icon: Mail, path: "/admin/email-management" },
   { id: "settings", label: "Settings", icon: SettingsIcon, path: "/admin/settings" },
 ];
 
@@ -126,6 +129,8 @@ export default function AdminLayout() {
         return <Staff />;
       case "site-settings":
         return <SiteSettings />;
+      case "email-management":
+        return <EmailManagement />;
       case "settings":
         return <SettingsPage />;
       default:

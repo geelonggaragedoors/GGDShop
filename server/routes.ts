@@ -2416,6 +2416,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email logs endpoints
+  app.get('/api/admin/email-logs', hybridAuth, async (req, res) => {
+    try {
+      const { limit, offset, status, templateId, recipientEmail, startDate, endDate } = req.query;
+      const params = {
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
+        status: status as string,
+        templateId: templateId as string,
+        recipientEmail: recipientEmail as string,
+        startDate: startDate ? new Date(startDate as string) : undefined,
+        endDate: endDate ? new Date(endDate as string) : undefined,
+      };
+      
+      const result = await storage.getEmailLogs(params);
+      res.json(result);
+    } catch (error) {
+      console.error('Error fetching email logs:', error);
+      res.status(500).json({ error: 'Failed to fetch email logs' });
+    }
+  });
+
+  app.get('/api/admin/email-analytics', hybridAuth, async (req, res) => {
+    try {
+      const { templateId, startDate, endDate } = req.query;
+      const analytics = await storage.getEmailAnalytics(
+        templateId as string,
+        startDate ? new Date(startDate as string) : undefined,
+        endDate ? new Date(endDate as string) : undefined
+      );
+      res.json(analytics);
+    } catch (error) {
+      console.error('Error fetching email analytics:', error);
+      res.status(500).json({ error: 'Failed to fetch email analytics' });
+    }
+  });
+
+  app.put('/api/admin/email-logs/:id/status', hybridAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status, metadata } = req.body;
+      const success = await storage.updateEmailLogStatus(id, status, metadata);
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Email log not found' });
+      }
+      
+      res.json({ message: 'Email log status updated successfully' });
+    } catch (error) {
+      console.error('Error updating email log status:', error);
+      res.status(500).json({ error: 'Failed to update email log status' });
+    }
+  });
+
   app.put('/api/admin/email-templates/:id', hybridAuth, async (req, res) => {
     try {
       const template = await storage.updateEmailTemplate(req.params.id, req.body);
@@ -2428,60 +2482,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
     try {
-      const { templateId, testEmail, variables = {} } = req.body;
+      const { templateId, testEmail } = req.body;
       
-      // For testing, return successful with mock data since we have pre-defined templates in the UI
-      const testVariables = {
-        customerName: 'John Smith',
-        orderNumber: '#GGD-2025-001',
-        total: '$1,299.00',
-        status: 'Processing',
-        estimatedDelivery: 'March 15, 2025',
-        cartItems: '<ul><li>Standard Garage Door - $899.00</li><li>Installation Service - $400.00</li></ul>',
-        cartTotal: '$1,299.00',
-        checkoutUrl: 'https://geelonggaragedoors.com.au/checkout',
-        amount: '$1,299.00',
-        paymentMethod: 'PayPal',
-        transactionId: 'TXN123456789',
-        paymentDate: 'March 10, 2025',
-        trackingNumber: 'GGD123456',
-        estimatedShipping: 'March 12, 2025',
-        staffEmail: 'admin@geelonggaragedoors.com.au',
-        resetLink: 'https://geelonggaragedoors.com.au/reset-password?token=abc123',
-        inviteLink: 'https://geelonggaragedoors.com.au/accept-invitation?token=inv456'
-      };
-
-      // Send test email using predefined template content
-      const subject = `[TEST] Order Confirmation - ${testVariables.orderNumber}`;
-      const htmlContent = `
-        <h2>Test Email - Order Confirmation</h2>
-        <p>Hi ${testVariables.customerName},</p>
-        <p>Thank you for your order! We've received your order ${testVariables.orderNumber} and it's being processed.</p>
-        <div style="border: 1px solid #ddd; padding: 20px; margin: 20px 0;">
-          <h3>Order Details</h3>
-          <p><strong>Order Number:</strong> ${testVariables.orderNumber}</p>
-          <p><strong>Total:</strong> ${testVariables.total}</p>
-          <p><strong>Status:</strong> ${testVariables.status}</p>
-          <p><strong>Estimated Delivery:</strong> ${testVariables.estimatedDelivery}</p>
-        </div>
-        <p>We'll send you updates as your order progresses.</p>
-        <p>Best regards,<br>Geelong Garage Doors Team</p>
-        <hr>
-        <p style="color: #666; font-size: 12px;">This is a test email from the email management system.</p>
-      `;
-
-      // Send test email
-      await emailService.sendEmail({
-        to: testEmail,
-        from: 'orders@geelonggaragedoors.com.au',
-        subject: subject,
-        html: htmlContent
-      });
-
-      res.json({ success: true, message: 'Test email sent successfully' });
+      if (!testEmail) {
+        return res.status(400).json({ error: 'Test email address is required' });
+      }
+      
+      // Import and use the email service for real email sending
+      const { emailService } = await import('./email-service');
+      
+      // Send test email using the EmailService
+      const result = await emailService.sendTestEmail(templateId, testEmail);
+      
+      if (result.success) {
+        res.json({ 
+          message: 'Test email sent successfully', 
+          emailLogId: result.emailLogId 
+        });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
     } catch (error) {
-      console.error('Error sending test email:', error);
-      res.status(500).json({ error: 'Failed to send test email' });
+      console.error('Error testing email:', error);
+      res.status(500).json({ error: 'Failed to test email' });
     }
   });
 
