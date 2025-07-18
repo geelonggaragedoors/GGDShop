@@ -2490,7 +2490,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   });
 
-  app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
+  app.post('/api/admin/email-test', async (req, res) => {
     try {
       console.log('=== EMAIL TEST REQUEST START ===');
       console.log('Request body:', req.body);
