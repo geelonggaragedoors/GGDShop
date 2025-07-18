@@ -254,6 +254,134 @@ export default function EmailTemplates() {
               New Template
             </Button>
           </DialogTrigger>
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedTemplate ? "Edit Template" : "Create New Template"}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="name">Template Name</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="templateType">Template Type</Label>
+                  <Select
+                    value={formData.templateType}
+                    onValueChange={(value) => setFormData({ ...formData, templateType: value, category: "" })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templateTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories[formData.templateType as keyof typeof categories]?.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="subject">Subject Line</Label>
+                  <Input
+                    id="subject"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-6">
+                <div className="col-span-2">
+                  <Label htmlFor="content">Email Content</Label>
+                  <Textarea
+                    id="content"
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    className="min-h-[300px] font-mono text-sm"
+                    placeholder="Enter your email template content here..."
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Available Variables</Label>
+                  <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto border rounded p-3">
+                    {availableVariables.map((variable) => (
+                      <div key={variable.name} className="text-sm">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="w-full justify-start text-left h-auto py-1 px-2"
+                          onClick={() => insertVariable(variable.name)}
+                        >
+                          <div>
+                            <div className="font-mono text-blue-600">{variable.name}</div>
+                            <div className="text-xs text-gray-500">{variable.description}</div>
+                          </div>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  checked={formData.isActive}
+                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                  className="rounded"
+                />
+                <Label htmlFor="isActive">Active Template</Label>
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={createTemplateMutation.isPending || updateTemplateMutation.isPending}>
+                  {createTemplateMutation.isPending || updateTemplateMutation.isPending ? "Saving..." : "Save Template"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
         </Dialog>
       </div>
 
@@ -353,151 +481,6 @@ export default function EmailTemplates() {
           </TabsContent>
         ))}
       </Tabs>
-
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {selectedTemplate ? "Edit Template" : "Create New Template"}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Template Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="templateType">Template Type</Label>
-              <Select
-                value={formData.templateType}
-                onValueChange={(value) => setFormData({ ...formData, templateType: value, category: "" })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {templateTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories[formData.templateType as keyof typeof categories]?.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="subject">Subject Line</Label>
-              <Input
-                id="subject"
-                value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-6">
-            <div className="col-span-2 space-y-4">
-              <div>
-                <Label htmlFor="htmlContent">HTML Content</Label>
-                <Textarea
-                  id="htmlContent"
-                  value={formData.htmlContent}
-                  onChange={(e) => setFormData({ ...formData, htmlContent: e.target.value })}
-                  className="min-h-[300px] font-mono"
-                  placeholder="Enter HTML content..."
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="textContent">Plain Text Content (Optional)</Label>
-                <Textarea
-                  id="textContent"
-                  value={formData.textContent}
-                  onChange={(e) => setFormData({ ...formData, textContent: e.target.value })}
-                  className="min-h-[150px]"
-                  placeholder="Enter plain text version..."
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label>Available Variables</Label>
-              <div className="border rounded-lg p-4 max-h-[400px] overflow-y-auto">
-                <div className="space-y-3">
-                  {templateVariables[formData.templateType as keyof typeof templateVariables]?.map((variable) => (
-                    <div key={variable.name} className="border-b pb-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start p-0 h-auto"
-                        onClick={() => insertVariable(variable.name)}
-                      >
-                        <div className="text-left">
-                          <div className="font-mono text-sm text-blue-600">
-                            {`{{${variable.name}}}`}
-                          </div>
-                          <div className="text-xs text-gray-500">{variable.description}</div>
-                        </div>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="isActive"
-                checked={formData.isActive}
-                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              />
-              <Label htmlFor="isActive">Template is active</Label>
-            </div>
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={createTemplateMutation.isPending || updateTemplateMutation.isPending}
-              >
-                {selectedTemplate ? "Update" : "Create"} Template
-              </Button>
-            </div>
-          </div>
-        </form>
-      </DialogContent>
     </div>
   );
 }
