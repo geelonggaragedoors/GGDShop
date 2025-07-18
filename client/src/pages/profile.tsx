@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import StorefrontHeader from '@/components/storefront/header';
 import StorefrontFooter from '@/components/storefront/footer';
-import AddressAutocomplete from '@/components/ui/address-autocomplete';
+
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading } = useAuth();
