@@ -223,26 +223,16 @@ export class EmailService {
         return settings;
       }
       
-      // For testing, use a verified domain if the custom domain isn't working
-      // In production, you need to verify your domain with Resend
-      const isProduction = process.env.NODE_ENV === 'production';
+      // Domain verification issue: geelonggaragedoors.com is not verified in Resend
+      // Use the verified domain from your Resend account for testing
+      // You need to verify your domain with Resend for production use
       
-      if (isProduction) {
-        return {
-          fromEmail: 'orders@geelonggaragedoors.com',
-          fromName: 'Geelong Garage Doors',
-          replyToEmail: 'info@geelonggaragedoors.com',
-          adminEmail: 'admin@geelonggaragedoors.com',
-        };
-      } else {
-        // Use the verified domain from your Resend account
-        return {
-          fromEmail: 'orders@geelonggaragedoors.com',
-          fromName: 'Geelong Garage Doors',
-          replyToEmail: 'info@geelonggaragedoors.com',
-          adminEmail: 'admin@geelonggaragedoors.com',
-        };
-      }
+      return {
+        fromEmail: 'onboarding@resend.dev',
+        fromName: 'Geelong Garage Doors',
+        replyToEmail: 'onboarding@resend.dev',
+        adminEmail: 'onboarding@resend.dev',
+      };
     } catch (error) {
       console.error('Failed to get email settings:', error);
       // For testing, use the default Resend domain
