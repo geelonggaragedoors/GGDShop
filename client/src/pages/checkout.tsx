@@ -65,17 +65,22 @@ export default function Checkout() {
       
       if (user.address) {
         // Handle addresses like "3 Conquest St, Mount Duneed VIC 3217, Australia"
-        const addressParts = user.address.split(',');
-        if (addressParts.length >= 3) {
-          streetAddress = addressParts[0].trim();
-          parsedCity = addressParts[1].trim();
+        // or malformed ones like "3 Conquest St, Mount Duneed VIC 3217, VIC , Australia"
+        const addressParts = user.address.split(',').map(part => part.trim()).filter(part => part && part !== 'Australia');
+        
+        if (addressParts.length >= 2) {
+          streetAddress = addressParts[0];
           
-          // Parse the state and postcode from the last part before country
-          const statePostcodePart = addressParts[2].trim();
-          const statePostcodeMatch = statePostcodePart.match(/^(.+?)\s+(\d{4})$/);
-          if (statePostcodeMatch) {
-            const stateFullName = statePostcodeMatch[1].trim();
-            parsedPostcode = statePostcodeMatch[2];
+          // The last part should contain city, state, and postcode
+          const lastPart = addressParts[addressParts.length - 1];
+          
+          // Try to match "City STATE 1234" or "City STATE" patterns
+          const cityStatePostcodeMatch = lastPart.match(/^(.+?)\s+(VIC|NSW|QLD|WA|SA|TAS|ACT|NT|Victoria|New South Wales|Queensland|Western Australia|South Australia|Tasmania|Australian Capital Territory|Northern Territory)\s*(\d{4})?$/i);
+          
+          if (cityStatePostcodeMatch) {
+            parsedCity = cityStatePostcodeMatch[1].trim();
+            const stateFullName = cityStatePostcodeMatch[2].trim();
+            parsedPostcode = cityStatePostcodeMatch[3] || '';
             
             // Convert state name to code
             const stateMap: { [key: string]: string } = {
@@ -97,11 +102,16 @@ export default function Checkout() {
               'Northern Territory': 'nt'
             };
             
-            parsedState = stateMap[stateFullName] || stateFullName.toLowerCase();
+            parsedState = stateMap[stateFullName.toUpperCase()] || stateFullName.toLowerCase();
+          } else if (addressParts.length >= 2) {
+            // Fallback: assume second part is city, try to extract state/postcode
+            parsedCity = addressParts[1];
           }
         }
       }
       
+      console.log('Original user address:', user.address);
+      console.log('Address parts:', user.address ? user.address.split(',') : []);
       console.log('Parsed address fields:', {
         address: streetAddress,
         city: parsedCity,

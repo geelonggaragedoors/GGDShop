@@ -70,7 +70,7 @@ export default function ProfilePage() {
     };
     
     const stateCode = stateCodeToName[formData.state.toLowerCase()] || formData.state.toUpperCase();
-    const fullAddress = `${formData.address}, ${formData.city}, ${stateCode} ${formData.postcode}, Australia`;
+    const fullAddress = `${formData.address}, ${formData.city} ${stateCode} ${formData.postcode}, Australia`;
     
     const profileData = {
       firstName: formData.firstName,
