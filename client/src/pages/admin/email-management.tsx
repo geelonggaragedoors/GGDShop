@@ -91,7 +91,9 @@ function TestEmailForm({ templates }: { templates: any[] }) {
   const handleTestEmail = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!testEmail) {
+    console.log('Form submitted with:', { testEmail, selectedTemplate });
+    
+    if (!testEmail || testEmail.trim() === '') {
       toast({
         title: "Email required",
         description: "Please enter a test email address",
