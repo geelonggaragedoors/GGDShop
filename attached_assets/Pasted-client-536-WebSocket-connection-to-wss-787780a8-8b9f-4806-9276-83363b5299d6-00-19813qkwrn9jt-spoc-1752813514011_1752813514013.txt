@@ -1,0 +1,129 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=MaIjqsH7pLs3' failed: 
+setupWebSocket @ client:536
+(anonymous) @ client:531
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=MaIjqsH7pLs3' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555
+chunk-RPCDYKBN.js?v=62b2e735:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+content.js:208 {}
+queryClient.ts:15  GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/admin/email-templates?templateType=customer 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+queryFn @ email-templates.tsx:107
+fetchFn @ @tanstack_react-query.js?v=62b2e735:840
+run @ @tanstack_react-query.js?v=62b2e735:494
+start @ @tanstack_react-query.js?v=62b2e735:536
+fetch @ @tanstack_react-query.js?v=62b2e735:926
+executeFetch_fn @ @tanstack_react-query.js?v=62b2e735:2211
+onSubscribe @ @tanstack_react-query.js?v=62b2e735:1898
+subscribe @ @tanstack_react-query.js?v=62b2e735:24
+(anonymous) @ @tanstack_react-query.js?v=62b2e735:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=62b2e735:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=62b2e735:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=62b2e735:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=62b2e735:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=62b2e735:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=62b2e735:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=62b2e735:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=62b2e735:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=62b2e735:19416
+commitRoot @ chunk-RPCDYKBN.js?v=62b2e735:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=62b2e735:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=62b2e735:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=62b2e735:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=62b2e735:555
+flush @ @tanstack_react-query.js?v=62b2e735:569
+batch @ @tanstack_react-query.js?v=62b2e735:587
+dispatch_fn @ @tanstack_react-query.js?v=62b2e735:996
+setData @ @tanstack_react-query.js?v=62b2e735:696
+onSuccess @ @tanstack_react-query.js?v=62b2e735:897
+resolve @ @tanstack_react-query.js?v=62b2e735:456
+Promise.then
+run @ @tanstack_react-query.js?v=62b2e735:498
+start @ @tanstack_react-query.js?v=62b2e735:536
+fetch @ @tanstack_react-query.js?v=62b2e735:926
+executeFetch_fn @ @tanstack_react-query.js?v=62b2e735:2211
+onSubscribe @ @tanstack_react-query.js?v=62b2e735:1898
+subscribe @ @tanstack_react-query.js?v=62b2e735:24
+(anonymous) @ @tanstack_react-query.js?v=62b2e735:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=62b2e735:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=62b2e735:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=62b2e735:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=62b2e735:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=62b2e735:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=62b2e735:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=62b2e735:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=62b2e735:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=62b2e735:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=62b2e735:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=62b2e735:19432
+commitRoot @ chunk-RPCDYKBN.js?v=62b2e735:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=62b2e735:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=62b2e735:18718
+workLoop @ chunk-RPCDYKBN.js?v=62b2e735:197
+flushWork @ chunk-RPCDYKBN.js?v=62b2e735:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=62b2e735:384
+NotificationBell.tsx:67 Connected to notification WebSocket
+NotificationBell.tsx:86 WebSocket authentication successful
+chunk-KPFFAGS4.js?v=62b2e735:339 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-KPFFAGS4.js?v=62b2e735:339
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=62b2e735:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=62b2e735:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=62b2e735:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=62b2e735:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=62b2e735:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=62b2e735:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=62b2e735:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=62b2e735:19416
+commitRoot @ chunk-RPCDYKBN.js?v=62b2e735:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=62b2e735:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=62b2e735:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=62b2e735:18627
+queryClient.ts:15  GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/admin/email-templates?templateType=staff 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+queryFn @ email-templates.tsx:107
+fetchFn @ @tanstack_react-query.js?v=62b2e735:840
+run @ @tanstack_react-query.js?v=62b2e735:494
+start @ @tanstack_react-query.js?v=62b2e735:536
+fetch @ @tanstack_react-query.js?v=62b2e735:926
+executeFetch_fn @ @tanstack_react-query.js?v=62b2e735:2211
+setOptions @ @tanstack_react-query.js?v=62b2e735:1955
+(anonymous) @ @tanstack_react-query.js?v=62b2e735:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=62b2e735:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=62b2e735:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=62b2e735:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=62b2e735:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=62b2e735:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=62b2e735:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=62b2e735:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=62b2e735:19416
+commitRoot @ chunk-RPCDYKBN.js?v=62b2e735:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=62b2e735:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=62b2e735:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=62b2e735:18627
+queryClient.ts:15  GET https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/admin/email-templates?templateType=admin 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+queryFn @ email-templates.tsx:107
+fetchFn @ @tanstack_react-query.js?v=62b2e735:840
+run @ @tanstack_react-query.js?v=62b2e735:494
+start @ @tanstack_react-query.js?v=62b2e735:536
+fetch @ @tanstack_react-query.js?v=62b2e735:926
+executeFetch_fn @ @tanstack_react-query.js?v=62b2e735:2211
+setOptions @ @tanstack_react-query.js?v=62b2e735:1955
+(anonymous) @ @tanstack_react-query.js?v=62b2e735:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=62b2e735:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=62b2e735:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=62b2e735:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=62b2e735:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=62b2e735:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=62b2e735:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=62b2e735:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=62b2e735:19416
+commitRoot @ chunk-RPCDYKBN.js?v=62b2e735:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=62b2e735:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=62b2e735:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=62b2e735:18627
