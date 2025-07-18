@@ -2490,6 +2490,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add middleware to log ALL requests to email-test endpoint
+  app.all('/api/admin/email-test', (req, res, next) => {
+    console.log('*** EMAIL TEST ENDPOINT HIT ***');
+    console.log('Method:', req.method);
+    console.log('URL:', req.originalUrl);
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    next();
+  });
+
   // Email test endpoint
   app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
     console.log('=== EMAIL TEST REQUEST START ===');
