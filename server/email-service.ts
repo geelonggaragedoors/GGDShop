@@ -55,9 +55,9 @@ export class EmailService {
         text: text || this.htmlToText(html),
         reply_to: emailSettings.replyToEmail || emailSettings.fromEmail,
         tags: [
-          { name: 'source', value: 'geelong-garage-doors' },
-          { name: 'template', value: templateName || 'custom' },
-          ...(metadata?.orderId ? [{ name: 'order_id', value: metadata.orderId }] : []),
+          { name: 'source', value: 'geelong_garage_doors' },
+          { name: 'template', value: (templateName || 'custom').replace(/[^a-zA-Z0-9_-]/g, '_') },
+          ...(metadata?.orderId ? [{ name: 'order_id', value: String(metadata.orderId).replace(/[^a-zA-Z0-9_-]/g, '_') }] : []),
         ],
       });
 
