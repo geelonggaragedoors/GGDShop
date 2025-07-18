@@ -62,6 +62,7 @@ export class EmailService {
       });
 
       if (result.error) {
+        console.error('Resend API Error:', result.error);
         // Update log with error
         await storage.updateEmailLogStatus(emailLog.id, 'failed', {
           errorMessage: result.error.message,
@@ -234,12 +235,12 @@ export class EmailService {
           adminEmail: 'admin@geelonggaragedoors.com',
         };
       } else {
-        // For testing, use the default Resend domain
+        // Use the verified domain from your Resend account
         return {
-          fromEmail: 'onboarding@resend.dev',
+          fromEmail: 'orders@geelonggaragedoors.com',
           fromName: 'Geelong Garage Doors',
-          replyToEmail: 'onboarding@resend.dev',
-          adminEmail: 'onboarding@resend.dev',
+          replyToEmail: 'info@geelonggaragedoors.com',
+          adminEmail: 'admin@geelonggaragedoors.com',
         };
       }
     } catch (error) {
