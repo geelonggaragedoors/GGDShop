@@ -857,43 +857,20 @@ export default function Checkout() {
                 <CardTitle>Payment Method</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card">Credit/Debit Card</Label>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 p-3 border rounded-lg bg-blue-50">
+                    <RadioGroupItem value="paypal" id="paypal" checked />
+                    <Label htmlFor="paypal" className="flex items-center gap-2">
+                      <span>PayPal</span>
+                      <span className="text-sm text-gray-600">- Secure payment processing</span>
+                    </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="paypal" id="paypal" />
-                    <Label htmlFor="paypal">PayPal</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="afterpay" id="afterpay" />
-                    <Label htmlFor="afterpay">Afterpay</Label>
-                  </div>
-                </RadioGroup>
+                  <p className="text-sm text-gray-600">
+                    Pay securely with your PayPal account or credit/debit card through PayPal.
+                  </p>
+                </div>
 
-                {paymentMethod === "card" && (
-                  <div className="space-y-4 pt-4 border-t">
-                    <div>
-                      <Label htmlFor="cardNumber">Card Number</Label>
-                      <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="expiry">Expiry Date</Label>
-                        <Input id="expiry" placeholder="MM/YY" />
-                      </div>
-                      <div>
-                        <Label htmlFor="cvv">CVV</Label>
-                        <Input id="cvv" placeholder="123" />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="cardName">Name on Card</Label>
-                      <Input id="cardName" placeholder="John Doe" />
-                    </div>
-                  </div>
-                )}
+
               </CardContent>
             </Card>
           </div>
@@ -982,91 +959,60 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  {paymentMethod === "card" && (
-                    <Button 
-                      className="w-full" 
-                      size="lg"
-                      onClick={handleCardPayment}
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? "Processing..." : "Complete Order"}
-                    </Button>
-                  )}
-                  
-                  {paymentMethod === "paypal" && (
-                    <div className="w-full">
-                      {isFormValid ? (
-                        <PayPalButton 
-                          amount={finalTotal.toFixed(2)}
-                          currency="AUD"
-                          intent="capture"
-                          orderData={{
-                            customerData: formData,
-                            cartItems,
-                            shippingMethod,
-                            paymentMethod: 'paypal',
-                            totals: {
-                              subtotal: cartTotal,
-                              shipping: shippingCost,
-                              tax: gst,
-                              total: finalTotal
-                            }
-                          }}
-                          onSuccess={handlePayPalSuccess}
-                          onError={handlePayPalError}
-                          onCancel={() => console.log('PayPal payment cancelled')}
-                        />
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p className="text-yellow-800 text-sm font-medium mb-2">
-                              Please complete all required shipping information:
-                            </p>
-                            <ul className="text-yellow-700 text-xs space-y-1">
-                              {!formData.firstName && <li>• First Name</li>}
-                              {!formData.lastName && <li>• Last Name</li>}
-                              {!formData.email && <li>• Email Address</li>}
-                              {!formData.address && <li>• Street Address</li>}
-                              {!formData.city && <li>• City</li>}
-                              {!formData.postcode && <li>• Postcode</li>}
-                              {!formData.state && <li>• State</li>}
-                            </ul>
-                          </div>
-                          <button
-                            onClick={() => {
-                              // Focus on first empty required field
-                              const firstEmpty = ['firstName', 'lastName', 'email', 'address', 'city', 'postcode'].find(
-                                field => !formData[field as keyof typeof formData]
-                              );
-                              if (firstEmpty) {
-                                document.getElementById(firstEmpty)?.focus();
-                              }
-                            }}
-                            className="w-full bg-gray-300 text-gray-600 font-semibold py-3 px-6 rounded-lg cursor-not-allowed"
-                            disabled
-                          >
-                            Complete Required Fields to Continue
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {paymentMethod === "afterpay" && (
-                    <Button 
-                      className="w-full" 
-                      size="lg" 
-                      variant="outline"
-                      onClick={() => {
-                        toast({
-                          title: "Afterpay Integration",
-                          description: "Afterpay payment integration coming soon!",
-                        });
+                <div className="w-full">
+                  {isFormValid ? (
+                    <PayPalButton 
+                      amount={finalTotal.toFixed(2)}
+                      currency="AUD"
+                      intent="capture"
+                      orderData={{
+                        customerData: formData,
+                        cartItems,
+                        shippingMethod,
+                        paymentMethod: 'paypal',
+                        totals: {
+                          subtotal: cartTotal,
+                          shipping: shippingCost,
+                          tax: gst,
+                          total: finalTotal
+                        }
                       }}
-                    >
-                      Pay with Afterpay
-                    </Button>
+                      onSuccess={handlePayPalSuccess}
+                      onError={handlePayPalError}
+                      onCancel={() => console.log('PayPal payment cancelled')}
+                    />
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-yellow-800 text-sm font-medium mb-2">
+                          Please complete all required shipping information:
+                        </p>
+                        <ul className="text-yellow-700 text-xs space-y-1">
+                          {!formData.firstName && <li>• First Name</li>}
+                          {!formData.lastName && <li>• Last Name</li>}
+                          {!formData.email && <li>• Email Address</li>}
+                          {!formData.address && <li>• Street Address</li>}
+                          {!formData.city && <li>• City</li>}
+                          {!formData.postcode && <li>• Postcode</li>}
+                          {!formData.state && <li>• State</li>}
+                        </ul>
+                      </div>
+                      <button
+                        onClick={() => {
+                          // Focus on first empty required field
+                          const firstEmpty = ['firstName', 'lastName', 'email', 'address', 'city', 'postcode'].find(
+                            field => !formData[field as keyof typeof formData]
+                          );
+                          if (firstEmpty) {
+                            document.getElementById(firstEmpty)?.focus();
+                          }
+                        }}
+                        className="w-full bg-gray-300 text-gray-600 font-semibold py-3 px-6 rounded-lg cursor-not-allowed"
+                        disabled
+                      >
+                        Complete Required Fields to Continue
+                      </button>
+                    </div>
                   )}
                 </div>
 
