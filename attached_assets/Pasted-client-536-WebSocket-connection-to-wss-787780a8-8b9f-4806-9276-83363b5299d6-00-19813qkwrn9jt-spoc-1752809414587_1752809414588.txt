@@ -1,0 +1,41 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=SLJJbhz6MS6g' failed: 
+setupWebSocket @ client:536
+(anonymous) @ client:531
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=SLJJbhz6MS6g' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555
+chunk-RPCDYKBN.js?v=d3bfbca8:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+content.js:208 {}
+NotificationBell.tsx:67 Connected to notification WebSocket
+NotificationBell.tsx:86 WebSocket authentication successful
+email-management.tsx:94 Form submitted with: {testEmail: 'stevejford1@gmail.com', selectedTemplate: 'order_confirmation'}
+queryClient.ts:15  POST https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/admin/email-test 400 (Bad Request)
+apiRequest @ queryClient.ts:15
+mutationFn @ email-management.tsx:68
+fn @ @tanstack_react-query.js?v=d3bfbca8:1189
+run @ @tanstack_react-query.js?v=d3bfbca8:494
+start @ @tanstack_react-query.js?v=d3bfbca8:536
+execute @ @tanstack_react-query.js?v=d3bfbca8:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=d3bfbca8:2630
+(anonymous) @ @tanstack_react-query.js?v=d3bfbca8:3295
+handleTestEmail @ email-management.tsx:114
+callCallback2 @ chunk-RPCDYKBN.js?v=d3bfbca8:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=d3bfbca8:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=d3bfbca8:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=d3bfbca8:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=d3bfbca8:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=d3bfbca8:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=d3bfbca8:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=d3bfbca8:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=d3bfbca8:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=d3bfbca8:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=d3bfbca8:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=d3bfbca8:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=d3bfbca8:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=d3bfbca8:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=d3bfbca8:5449
