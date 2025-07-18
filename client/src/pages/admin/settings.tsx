@@ -203,8 +203,6 @@ const defaultTemplates = [
 
 function EmailManagement() {
   const { toast } = useToast();
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("order_confirmation");
-  const [testEmail, setTestEmail] = useState("");
   const [localSettings, setLocalSettings] = useState<any>(null);
 
   const { data: emailSettings, isLoading } = useQuery({
@@ -253,28 +251,7 @@ function EmailManagement() {
     },
   });
 
-  const testEmailMutation = useMutation({
-    mutationFn: async (data: { templateId: string; email: string }) => {
-      const response = await apiRequest("POST", "/api/admin/email-test", {
-        templateId: data.templateId,
-        testEmail: data.email
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Test email sent",
-        description: "Check your inbox for the test email.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to send test email",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const handleSettingsUpdate = (field: string, value: any) => {
     // Update local state immediately for responsive UI
@@ -293,7 +270,6 @@ function EmailManagement() {
 
   // Use default templates if no templates in emailSettings, or merge them
   const availableTemplates = emailSettings?.templates || defaultTemplates;
-  const selectedTemplateData = availableTemplates.find((t: EmailTemplate) => t.id === selectedTemplate);
 
   const handleTemplateUpdate = (templateId: string, updates: Partial<EmailTemplate>) => {
     const updatedTemplates = availableTemplates.map((template: EmailTemplate) =>
@@ -302,17 +278,7 @@ function EmailManagement() {
     updateSettingsMutation.mutate({ templates: updatedTemplates });
   };
 
-  const handleTestEmail = () => {
-    if (!testEmail) {
-      toast({
-        title: "Error",
-        description: "Please enter a test email address",
-        variant: "destructive",
-      });
-      return;
-    }
-    testEmailMutation.mutate({ templateId: selectedTemplate, email: testEmail });
-  };
+
 
   if (isLoading) {
     return <div className="p-6">Loading email settings...</div>;
@@ -321,10 +287,9 @@ function EmailManagement() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="config" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="config">Configuration</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="test">Test Email</TabsTrigger>
         </TabsList>
 
         <TabsContent value="config">
