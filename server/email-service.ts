@@ -223,24 +223,21 @@ export class EmailService {
         return settings;
       }
       
-      // Domain verification issue: geelonggaragedoors.com is not verified in Resend
-      // Use the verified domain from your Resend account for testing
-      // You need to verify your domain with Resend for production use
-      
+      // Using verified domain orders@geelonggaragedoors.com
       return {
-        fromEmail: 'onboarding@resend.dev',
+        fromEmail: 'orders@geelonggaragedoors.com',
         fromName: 'Geelong Garage Doors',
-        replyToEmail: 'onboarding@resend.dev',
-        adminEmail: 'onboarding@resend.dev',
+        replyToEmail: 'orders@geelonggaragedoors.com',
+        adminEmail: 'orders@geelonggaragedoors.com',
       };
     } catch (error) {
       console.error('Failed to get email settings:', error);
-      // For testing, use the default Resend domain
+      // For testing, use the verified domain
       return {
-        fromEmail: 'onboarding@resend.dev',
+        fromEmail: 'orders@geelonggaragedoors.com',
         fromName: 'Geelong Garage Doors',
-        replyToEmail: 'onboarding@resend.dev',
-        adminEmail: 'onboarding@resend.dev',
+        replyToEmail: 'orders@geelonggaragedoors.com',
+        adminEmail: 'orders@geelonggaragedoors.com',
       };
     }
   }

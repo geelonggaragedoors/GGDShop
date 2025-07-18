@@ -2480,6 +2480,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // TEST: Simple route to verify routing works
+  app.post('/api/admin/email-test-simple', (req, res) => {
+    console.log('SIMPLE TEST ROUTE HIT!!!');
+    res.json({ message: 'Simple test route working!' });
+  });
+
   // Add middleware to catch all requests to this endpoint
   app.all('/api/admin/email-test', (req, res, next) => {
     console.log('*** EMAIL TEST REQUEST INTERCEPTED ***');
