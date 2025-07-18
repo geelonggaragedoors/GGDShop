@@ -1480,7 +1480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ clientId: process.env.PAYPAL_CLIENT_ID });
   });
 
-  app.get("/paypal/setup", async (req, res) => {
+  app.get("/api/paypal/setup", async (req, res) => {
     try {
       await loadPaypalDefault(req, res);
     } catch (error) {
@@ -1489,7 +1489,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/paypal/order", async (req, res) => {
+  app.post("/api/paypal/order", async (req, res) => {
     try {
       await createPaypalOrder(req, res);
     } catch (error) {
@@ -1498,7 +1498,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/paypal/order/:orderID/capture", async (req, res) => {
+  app.post("/api/paypal/order/:orderID/capture", async (req, res) => {
     try {
       await capturePaypalOrder(req, res);
     } catch (error) {
