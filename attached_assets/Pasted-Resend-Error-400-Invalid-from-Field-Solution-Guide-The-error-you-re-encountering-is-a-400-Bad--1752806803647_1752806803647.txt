@@ -1,0 +1,110 @@
+Resend Error 400: Invalid "from" Field - Solution Guide
+The error you're encountering is a 400 Bad Request error specifically related to the from field in your Resend email configuration. This error occurs when the email address in the from field doesn't meet Resend's validation requirements.
+
+[image:1]
+
+Understanding the Error
+The error message "Invalid 'from' field. The email address needs to follow the email@example.com or Name <email@example.com> format" indicates that Resend cannot process your email request because the sender address doesn't comply with their formatting requirements.
+
+Common Causes
+Domain Verification Issues
+
+The most common cause is attempting to send emails from a domain that hasn't been verified in your Resend account. By default, Resend only allows you to send emails to your own email address when using unverified domains. To send emails to other recipients, you must add and verify a custom domain.
+
+Incorrect Email Format
+
+The from field must follow specific formatting rules:
+
+Simple format: email@example.com
+
+Format with display name: Name <email@example.com>
+
+Invalid Characters or Syntax
+
+The email address may contain invalid characters or have syntax errors that prevent proper validation.
+
+Solutions
+1. Verify Your Domain
+To resolve this issue, you need to add and verify a custom domain in your Resend account:
+
+Add Domain to Resend: Log into your Resend dashboard and navigate to the Domains section
+
+Configure DNS Records: Add the required MX, SPF, and DKIM records provided by Resend to your DNS provider
+
+Wait for Verification: Domain verification typically completes within 15 minutes of adding the DNS records
+
+The required DNS records include:
+
+MX Record: For receiving bounce and complaint feedback
+
+SPF Record: Lists IP addresses authorized to send email on your behalf
+
+DKIM Records: Digital signatures for email authentication
+
+2. Use Correct Email Format
+Ensure your from field uses the proper format:
+
+javascript
+// Simple format
+from: 'sender@yourdomain.com'
+
+// Format with display name
+from: 'Your Name <sender@yourdomain.com>'
+3. Check for Common Formatting Issues
+Remove any extra spaces or special characters
+
+Ensure the email address is properly encoded
+
+Verify there are no typos in the domain name
+
+Make sure you're using a domain you own, not public domains like Gmail or Yahoo
+
+4. Use Resend's Test Environment
+For testing purposes, you can use Resend's designated test addresses:
+
+delivered@resend.dev - Simulates successful delivery
+
+bounced@resend.dev - Simulates email bouncing
+
+Domain Verification Process
+When adding a domain to Resend, you'll receive specific DNS records that must be added to your DNS provider. For example, if using Cloudflare:
+
+MX Record:
+
+Type: MX
+
+Name: send
+
+Value: feedback-smtp.us-east-1.amazonses.com
+
+Priority: 10
+
+SPF Record:
+
+Type: TXT
+
+Name: send
+
+Value: "v=spf1 include:amazonses.com ~all"
+
+Best Practices
+Use subdomains (e.g., mail.yourdomain.com) instead of root domains for better reputation management
+
+Ensure all DNS records are properly configured before attempting to send emails
+
+Wait for full domain verification before switching from test addresses to your custom domain
+
+Monitor your domain's verification status in the Resend dashboard
+
+Troubleshooting Tips
+If your domain isn't verifying:
+
+Double-check that DNS records match exactly what Resend provided
+
+Use DNS lookup tools like dns.email to verify records are publicly visible
+
+Some DNS providers automatically append domain names to record values - add a trailing period if needed
+
+Allow up to 48 hours for DNS propagation in some cases
+
+By following these steps and ensuring your domain is properly verified, you should be able to resolve the 400 error and successfully send emails through Resend.

@@ -9,11 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
-import { Save, Store, Mail, Shield, Globe, Bell, Send, TestTube, Settings as SettingsIcon, Users, ShoppingCart, Lock, Package, AlertCircle, CheckCircle } from "lucide-react";
+import { Save, Store, Mail, Shield, Globe, Bell, Settings as SettingsIcon, Users, ShoppingCart, Lock, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface EmailTemplate {
   id: string;
@@ -268,15 +266,7 @@ function EmailManagement() {
     }
   };
 
-  // Use default templates if no templates in emailSettings, or merge them
-  const availableTemplates = emailSettings?.templates || defaultTemplates;
-
-  const handleTemplateUpdate = (templateId: string, updates: Partial<EmailTemplate>) => {
-    const updatedTemplates = availableTemplates.map((template: EmailTemplate) =>
-      template.id === templateId ? { ...template, ...updates } : template
-    );
-    updateSettingsMutation.mutate({ templates: updatedTemplates });
-  };
+  // Template management has been moved to the dedicated Email Management section
 
 
 
@@ -378,163 +368,18 @@ function EmailManagement() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Template</Label>
-                    <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select template" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableTemplates.map((template: EmailTemplate) => (
-                          <SelectItem key={template.id} value={template.id}>
-                            <div className="flex items-center space-x-2">
-                              <span>{template.name}</span>
-                              {template.isActive ? (
-                                <CheckCircle className="w-4 h-4 text-green-500" />
-                              ) : (
-                                <AlertCircle className="w-4 h-4 text-gray-400" />
-                              )}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {selectedTemplateData && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label>Template Active</Label>
-                        <Switch
-                          checked={selectedTemplateData.isActive}
-                          onCheckedChange={(checked) => 
-                            handleTemplateUpdate(selectedTemplate, { isActive: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Subject</Label>
-                        <Input
-                          value={selectedTemplateData.subject}
-                          onChange={(e) => 
-                            handleTemplateUpdate(selectedTemplate, { subject: e.target.value })
-                          }
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Available Variables</Label>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedTemplateData?.variables?.map((variable: string) => (
-                            <Badge key={variable} variant="secondary">
-                              {"{" + variable + "}"}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                <div className="text-sm text-gray-600">
+                  Email template management is now available in the dedicated <strong>Email Management</strong> section. 
+                  Go to Admin → Email Management to configure templates, test emails, and view analytics.
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Template Content</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {selectedTemplateData && (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>HTML Content</Label>
-                      <Textarea
-                        value={selectedTemplateData.htmlContent}
-                        onChange={(e) => 
-                          handleTemplateUpdate(selectedTemplate, { htmlContent: e.target.value })
-                        }
-                        rows={8}
-                        className="font-mono text-sm"
-                      />
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label>Text Content</Label>
-                      <Textarea
-                        value={selectedTemplateData.textContent}
-                        onChange={(e) => 
-                          handleTemplateUpdate(selectedTemplate, { textContent: e.target.value })
-                        }
-                        rows={6}
-                        className="font-mono text-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="test">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TestTube className="w-5 h-5" />
-                <span>Test Email</span>
-              </CardTitle>
-              <CardDescription>
-                Send test emails to verify templates and configuration
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Template to Test</Label>
-                  <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select template" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {emailSettings?.templates?.map((template: EmailTemplate) => (
-                        <SelectItem key={template.id} value={template.id}>
-                          {template.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
 
-                <div className="space-y-2">
-                  <Label>Test Email Address</Label>
-                  <Input
-                    type="email"
-                    value={testEmail}
-                    onChange={(e) => setTestEmail(e.target.value)}
-                    placeholder="test@example.com"
-                  />
-                </div>
-              </div>
-
-              <Button 
-                onClick={handleTestEmail}
-                disabled={testEmailMutation.isPending}
-                className="w-full"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                {testEmailMutation.isPending ? "Sending..." : "Send Test Email"}
-              </Button>
-
-              <div className="bg-yellow-50 p-4 rounded-lg">
-                <h4 className="text-sm font-medium text-yellow-900 mb-2">Test Email Note</h4>
-                <p className="text-sm text-yellow-700">
-                  Test emails will be sent with sample data to demonstrate how the template appears to recipients.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );
