@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import StorefrontHeader from '@/components/storefront/header';
 import StorefrontFooter from '@/components/storefront/footer';
+import AddressAutocomplete from '@/components/ui/address-autocomplete';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -56,8 +57,15 @@ export default function ProfilePage() {
     }));
   };
 
+  const handleAddressChange = (address: string) => {
+    setFormData(prev => ({
+      ...prev,
+      address: address
+    }));
+  };
+
   // Initialize form data when user loads
-  useState(() => {
+  useEffect(() => {
     if (user) {
       setFormData({
         firstName: user.firstName || '',
@@ -67,7 +75,7 @@ export default function ProfilePage() {
         address: '',
       });
     }
-  });
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -188,17 +196,11 @@ export default function ProfilePage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="address">Address</Label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                    <Input
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      className="pl-10"
-                      placeholder="Enter your address"
-                    />
-                  </div>
+                  <AddressAutocomplete
+                    onAddressSelect={(address) => handleAddressChange(address.formatted_address)}
+                    placeholder="Enter your address"
+                    defaultValue={formData.address}
+                  />
                 </div>
 
                 <div className="flex justify-end">

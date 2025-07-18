@@ -58,6 +58,8 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUserProfile(id: string, updates: { firstName?: string; lastName?: string; phone?: string; address?: string }): Promise<User>;
+  getOrdersByUserId(userId: string): Promise<Order[]>;
 
   // Category operations
   getCategories(): Promise<Category[]>;
@@ -213,6 +215,19 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async updateUserProfile(id: string, updates: { firstName?: string; lastName?: string; phone?: string; address?: string }): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser;
+  }
+
+  async getOrdersByUserId(userId: string): Promise<Order[]> {
+    return db.select().from(orders).where(eq(orders.customerId, userId)).orderBy(desc(orders.createdAt));
   }
 
   // Category operations

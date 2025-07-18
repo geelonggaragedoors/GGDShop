@@ -196,6 +196,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile update endpoint
+  app.put('/api/user/profile', hybridAuth, async (req: any, res) => {
+    try {
+      const { firstName, lastName, phone, address } = req.body;
+      
+      let userId;
+      
+      // Handle password-authenticated user
+      if (req.user.email) {
+        userId = req.user.id;
+      } 
+      // Handle Replit Auth user
+      else if (req.user.claims && req.user.claims.sub) {
+        userId = req.user.claims.sub;
+      }
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID not found" });
+      }
+      
+      const updatedUser = await storage.updateUserProfile(userId, {
+        firstName,
+        lastName,
+        phone,
+        address
+      });
+      
+      // Remove sensitive fields
+      const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = updatedUser;
+      res.json(userResponse);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // User orders endpoint
+  app.get('/api/user/orders', hybridAuth, async (req: any, res) => {
+    try {
+      let userId;
+      
+      // Handle password-authenticated user
+      if (req.user.email) {
+        userId = req.user.id;
+      } 
+      // Handle Replit Auth user
+      else if (req.user.claims && req.user.claims.sub) {
+        userId = req.user.claims.sub;
+      }
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID not found" });
+      }
+      
+      const orders = await storage.getOrdersByUserId(userId);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching user orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
   // Public product routes
   app.get('/api/products', async (req, res) => {
     try {
