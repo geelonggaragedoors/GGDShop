@@ -140,6 +140,155 @@ export class EmailService {
     
     return processed;
   }
+
+  // Business email methods
+  async sendOrderConfirmation(orderData: any, template: any) {
+    const emailData = {
+      customer_name: orderData.customerName || 'Customer',
+      order_number: orderData.orderNumber,
+      order_date: new Date(orderData.createdAt).toLocaleDateString(),
+      total_amount: orderData.total.toFixed(2),
+      shipping_address: orderData.shippingAddress || 'N/A',
+      order_items: this.formatOrderItems(orderData.items || [])
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: orderData.customerEmail,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
+  async sendOrderStatusUpdate(orderData: any, template: any) {
+    const emailData = {
+      customer_name: orderData.customerName || 'Customer',
+      order_number: orderData.orderNumber,
+      estimated_delivery: orderData.estimatedDelivery || '3-5 business days',
+      shipping_method: orderData.shippingMethod || 'Standard Delivery',
+      shipping_address: orderData.shippingAddress || 'N/A'
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: orderData.customerEmail,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
+  async sendPasswordReset(userData: any, template: any) {
+    const emailData = {
+      customer_name: userData.firstName || userData.email,
+      reset_link: userData.resetLink
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: userData.email,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
+  async sendNewOrderAlert(orderData: any, template: any, staffEmail: string) {
+    const emailData = {
+      order_number: orderData.orderNumber,
+      customer_name: orderData.customerName || 'Customer',
+      customer_email: orderData.customerEmail,
+      total_amount: orderData.total.toFixed(2),
+      order_date: new Date(orderData.createdAt).toLocaleDateString(),
+      admin_link: `https://geelonggaragedoors.com/admin/orders/${orderData.id}`
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: staffEmail,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
+  async sendLowStockAlert(productData: any, template: any, staffEmail: string) {
+    const emailData = {
+      product_name: productData.name,
+      current_stock: productData.stock.toString(),
+      minimum_stock: productData.minStock?.toString() || '10',
+      product_sku: productData.sku || 'N/A',
+      admin_link: `https://geelonggaragedoors.com/admin/products/${productData.id}`
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: staffEmail,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
+  async sendDailyReport(reportData: any, template: any, adminEmail: string) {
+    const emailData = {
+      report_date: new Date().toLocaleDateString(),
+      total_orders: reportData.totalOrders?.toString() || '0',
+      total_revenue: reportData.totalRevenue?.toFixed(2) || '0.00',
+      average_order_value: reportData.averageOrderValue?.toFixed(2) || '0.00',
+      new_customers: reportData.newCustomers?.toString() || '0',
+      top_products: this.formatTopProducts(reportData.topProducts || []),
+      admin_link: 'https://geelonggaragedoors.com/admin/dashboard'
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: adminEmail,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
+  async sendSystemAlert(alertData: any, template: any, adminEmail: string) {
+    const emailData = {
+      alert_type: alertData.type || 'System Alert',
+      severity: alertData.severity || 'Medium',
+      alert_time: new Date().toLocaleString(),
+      alert_message: alertData.message,
+      server_name: alertData.serverName || 'web-server-01',
+      service_name: alertData.serviceName || 'application',
+      error_code: alertData.errorCode || 'SYS_001'
+    };
+
+    const processedSubject = this.processTemplate(template.subject, emailData);
+    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+
+    return this.sendEmail({
+      to: adminEmail,
+      subject: processedSubject,
+      html: processedHtml
+    });
+  }
+
+  private formatOrderItems(items: any[]): string {
+    return items.map(item => 
+      `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+    ).join('\n');
+  }
+
+  private formatTopProducts(products: any[]): string {
+    return products.map(product => 
+      `• ${product.name} - ${product.sales} units`
+    ).join('\n');
+  }
 }
 
 export const emailService = new EmailService();

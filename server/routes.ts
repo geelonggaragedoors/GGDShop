@@ -1059,9 +1059,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Send order email - placeholder for new email system
+  // Send order email
   app.post('/api/admin/orders/:id/email', hybridAuth, async (req, res) => {
-    res.json({ message: "Email functionality will be rebuilt" });
+    try {
+      const { type } = req.body;
+      const order = await storage.getOrder(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      let templateName = '';
+      switch (type) {
+        case 'receipt':
+        case 'confirmation':
+          templateName = 'Order Confirmation';
+          break;
+        case 'status_update':
+        case 'shipped':
+          templateName = 'Order Shipped';
+          break;
+        default:
+          return res.status(400).json({ message: "Invalid email type" });
+      }
+
+      // Get the template
+      const templates = await storage.getEmailTemplates({ 
+        templateType: 'customer',
+        isActive: true 
+      });
+      
+      const template = templates.templates.find(t => t.name === templateName);
+      
+      if (!template) {
+        return res.status(404).json({ message: "Email template not found" });
+      }
+
+      // Send the email
+      let result;
+      if (type === 'receipt' || type === 'confirmation') {
+        result = await emailService.sendOrderConfirmation(order, template);
+      } else if (type === 'status_update' || type === 'shipped') {
+        result = await emailService.sendOrderStatusUpdate(order, template);
+      }
+
+      if (result.success) {
+        res.json({ message: "Email sent successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to send email", error: result.error });
+      }
+    } catch (error) {
+      console.error("Error sending order email:", error);
+      res.status(500).json({ message: "Failed to send email" });
+    }
   });
 
   // Customer registration (public)
@@ -1386,10 +1436,202 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await storage.updateOrderStatus(id, status);
       
+      // Send order shipped email if status is changed to shipped
+      if (status === 'shipped') {
+        try {
+          const order = await storage.getOrder(id);
+          if (order) {
+            const templates = await storage.getEmailTemplates({ 
+              templateType: 'customer',
+              isActive: true 
+            });
+            
+            const shippedTemplate = templates.templates.find(t => t.name === 'Order Shipped');
+            if (shippedTemplate) {
+              await emailService.sendOrderStatusUpdate(order, shippedTemplate);
+              console.log('Order shipped email sent to:', order.customerEmail);
+            }
+          }
+        } catch (emailError) {
+          console.error('Failed to send shipped email:', emailError);
+        }
+      }
+      
       res.json({ success: true });
     } catch (error) {
       console.error("Error updating order status:", error);
       res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  // Password reset request
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if user exists or not for security
+        return res.json({ message: "If an account exists with this email, you will receive reset instructions" });
+      }
+
+      // Generate reset token
+      const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const resetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+      await storage.updateUser(user.id, {
+        resetPasswordToken: resetToken,
+        resetPasswordExpires: resetExpires
+      });
+
+      // Send password reset email
+      try {
+        const templates = await storage.getEmailTemplates({ 
+          templateType: 'customer',
+          isActive: true 
+        });
+        
+        const resetTemplate = templates.templates.find(t => t.name === 'Password Reset');
+        if (resetTemplate) {
+          const resetData = {
+            ...user,
+            resetLink: `${process.env.NODE_ENV === 'production' ? 'https://geelonggaragedoors.com' : 'http://localhost:5000'}/reset-password?token=${resetToken}`
+          };
+          
+          await emailService.sendPasswordReset(resetData, resetTemplate);
+          console.log('Password reset email sent to:', email);
+        }
+      } catch (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+      }
+
+      res.json({ message: "If an account exists with this email, you will receive reset instructions" });
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // Low stock monitoring endpoint (can be called manually or via cron)
+  app.post("/api/admin/check-low-stock", hybridAuth, async (req, res) => {
+    try {
+      const products = await storage.getProducts({ active: true });
+      const lowStockProducts = products.products.filter(product => {
+        const minStock = 10; // Default minimum stock level
+        return product.stock <= minStock;
+      });
+
+      if (lowStockProducts.length > 0) {
+        const templates = await storage.getEmailTemplates({ 
+          templateType: 'staff',
+          isActive: true 
+        });
+        
+        const lowStockTemplate = templates.templates.find(t => t.name === 'Low Stock Alert');
+        
+        if (lowStockTemplate) {
+          // Send individual alerts for each low stock product
+          const emailPromises = lowStockProducts.map(product => 
+            emailService.sendLowStockAlert(product, lowStockTemplate, 'orders@geelonggaragedoors.com')
+          );
+          
+          await Promise.all(emailPromises);
+          console.log(`Low stock alerts sent for ${lowStockProducts.length} products`);
+        }
+      }
+
+      res.json({ 
+        message: `Checked ${products.products.length} products`,
+        lowStockCount: lowStockProducts.length,
+        lowStockProducts: lowStockProducts.map(p => ({ id: p.id, name: p.name, stock: p.stock }))
+      });
+    } catch (error) {
+      console.error("Error checking low stock:", error);
+      res.status(500).json({ message: "Failed to check low stock" });
+    }
+  });
+
+  // Daily report generation endpoint
+  app.post("/api/admin/generate-daily-report", hybridAuth, async (req, res) => {
+    try {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      // Get analytics data for the report
+      const orders = await storage.getOrders({ 
+        startDate: yesterday,
+        endDate: today,
+        limit: 1000
+      });
+      
+      const reportData = {
+        totalOrders: orders.orders.length,
+        totalRevenue: orders.orders.reduce((sum, order) => sum + parseFloat(order.total), 0),
+        averageOrderValue: orders.orders.length > 0 ? orders.orders.reduce((sum, order) => sum + parseFloat(order.total), 0) / orders.orders.length : 0,
+        newCustomers: orders.orders.filter(order => order.createdAt >= yesterday).length,
+        topProducts: [] // You can implement this based on your needs
+      };
+
+      const templates = await storage.getEmailTemplates({ 
+        templateType: 'admin',
+        isActive: true 
+      });
+      
+      const dailyReportTemplate = templates.templates.find(t => t.name === 'Daily Sales Report');
+      
+      if (dailyReportTemplate) {
+        await emailService.sendDailyReport(reportData, dailyReportTemplate, 'orders@geelonggaragedoors.com');
+        console.log('Daily report sent to admin');
+      }
+
+      res.json({ 
+        message: "Daily report generated and sent",
+        reportData
+      });
+    } catch (error) {
+      console.error("Error generating daily report:", error);
+      res.status(500).json({ message: "Failed to generate daily report" });
+    }
+  });
+
+  // System alert endpoint
+  app.post("/api/admin/system-alert", hybridAuth, async (req, res) => {
+    try {
+      const { type, severity, message, serverName, serviceName, errorCode } = req.body;
+      
+      const alertData = {
+        type: type || 'System Alert',
+        severity: severity || 'Medium',
+        message: message || 'System alert triggered',
+        serverName: serverName || 'web-server-01',
+        serviceName: serviceName || 'application',
+        errorCode: errorCode || 'SYS_001'
+      };
+
+      const templates = await storage.getEmailTemplates({ 
+        templateType: 'admin',
+        isActive: true 
+      });
+      
+      const systemAlertTemplate = templates.templates.find(t => t.name === 'System Alert');
+      
+      if (systemAlertTemplate) {
+        await emailService.sendSystemAlert(alertData, systemAlertTemplate, 'orders@geelonggaragedoors.com');
+        console.log('System alert sent to admin');
+      }
+
+      res.json({ 
+        message: "System alert sent",
+        alertData
+      });
+    } catch (error) {
+      console.error("Error sending system alert:", error);
+      res.status(500).json({ message: "Failed to send system alert" });
     }
   });
 
@@ -1481,6 +1723,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
         shippingAddress: `${customerData.address}, ${customerData.city}, ${customerData.state} ${customerData.postcode}`,
         notes: `Shipping: ${shippingMethod === 'express' ? 'Express (2-3 days)' : 'Standard (5-7 days)'}`
       });
+
+      // Send order confirmation email
+      try {
+        const templates = await storage.getEmailTemplates({ 
+          templateType: 'customer',
+          isActive: true 
+        });
+        
+        const orderConfirmationTemplate = templates.templates.find(t => t.name === 'Order Confirmation');
+        
+        if (orderConfirmationTemplate) {
+          const orderWithItems = {
+            ...order,
+            customerName: `${customerData.firstName} ${customerData.lastName}`,
+            items: cartItems,
+            total: totals.total
+          };
+          
+          await emailService.sendOrderConfirmation(orderWithItems, orderConfirmationTemplate);
+          console.log('Order confirmation email sent to:', customer.email);
+        }
+
+        // Send new order alert to staff
+        const staffTemplates = await storage.getEmailTemplates({ 
+          templateType: 'staff',
+          isActive: true 
+        });
+        
+        const staffTemplate = staffTemplates.templates.find(t => t.name === 'New Order Alert');
+        if (staffTemplate) {
+          const orderWithItems = {
+            ...order,
+            customerName: `${customerData.firstName} ${customerData.lastName}`,
+            items: cartItems,
+            total: totals.total
+          };
+          
+          await emailService.sendNewOrderAlert(orderWithItems, staffTemplate, 'orders@geelonggaragedoors.com');
+          console.log('New order alert sent to staff');
+        }
+      } catch (emailError) {
+        console.error('Failed to send order emails:', emailError);
+        // Don't fail the order creation if email fails
+      }
 
       // Add order items
       for (const item of cartItems) {
