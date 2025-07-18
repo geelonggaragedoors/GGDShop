@@ -175,7 +175,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Handle password-authenticated user
       if (req.user.email) {
-        user = req.user;
+        console.log('Password-authenticated user, getting fresh data from database for ID:', req.user.id);
+        user = await storage.getUser(req.user.id);
+        console.log('Fresh user data from database:', user);
       } 
       // Handle Replit Auth user
       else if (req.user.claims && req.user.claims.sub) {
