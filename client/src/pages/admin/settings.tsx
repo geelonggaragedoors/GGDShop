@@ -255,7 +255,10 @@ function EmailManagement() {
 
   const testEmailMutation = useMutation({
     mutationFn: async (data: { templateId: string; email: string }) => {
-      const response = await apiRequest("POST", "/api/admin/email-test", data);
+      const response = await apiRequest("POST", "/api/admin/email-test", {
+        templateId: data.templateId,
+        testEmail: data.email
+      });
       return response.json();
     },
     onSuccess: () => {
