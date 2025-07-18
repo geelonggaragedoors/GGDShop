@@ -1,0 +1,73 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=eHyD2aJ5qCNk' failed: 
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=eHyD2aJ5qCNk' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+chunk-RPCDYKBN.js?v=62b2e735:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+content.js:208 Object
+checkout.tsx:58 Loading user data into form: Object
+checkout.tsx:113 Original user address: 3 Conquest St, Mount Duneed, VIC 3217, Australia
+checkout.tsx:114 Address parts: Array(4)
+checkout.tsx:115 Parsed address fields: Object
+chunk-OXZDJRWN.js?v=62b2e735:50 Uncaught Error: `RadioGroupItem` must be used within `RadioGroup`
+    at useContext2 (chunk-OXZDJRWN.js?v=62b2e735:50:13)
+    at @radix-ui_react-radio-group.js?v=62b2e735:240:21
+    at renderWithHooks (chunk-RPCDYKBN.js?v=62b2e735:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=62b2e735:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=62b2e735:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=62b2e735:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=62b2e735:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=62b2e735:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=62b2e735:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=62b2e735:19198:20)
+chunk-OXZDJRWN.js?v=62b2e735:50 Uncaught Error: `RadioGroupItem` must be used within `RadioGroup`
+    at useContext2 (chunk-OXZDJRWN.js?v=62b2e735:50:13)
+    at @radix-ui_react-radio-group.js?v=62b2e735:240:21
+    at renderWithHooks (chunk-RPCDYKBN.js?v=62b2e735:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=62b2e735:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=62b2e735:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=62b2e735:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=62b2e735:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=62b2e735:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=62b2e735:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=62b2e735:19198:20)
+chunk-RPCDYKBN.js?v=62b2e735:14032 The above error occurred in the <RadioGroupItem> component:
+
+    at https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-radio-group.js?v=62b2e735:239:13
+    at _c3 (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/radio-group.tsx:43:50)
+    at div
+    at div
+    at div
+    at _c9 (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at Checkout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/checkout.tsx?t=1752818456283:38:68)
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=62b2e735:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=62b2e735:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?t=1752818456283&v=VKxw8g7zceFBL4sWL2XJD:49:42)
+    at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+    at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=62b2e735:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=62b2e735:64:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=62b2e735:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=62b2e735:14032
+chunk-RPCDYKBN.js?v=62b2e735:9129 Uncaught Error: `RadioGroupItem` must be used within `RadioGroup`
+    at useContext2 (chunk-OXZDJRWN.js?v=62b2e735:50:13)
+    at @radix-ui_react-radio-group.js?v=62b2e735:240:21
+    at renderWithHooks (chunk-RPCDYKBN.js?v=62b2e735:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=62b2e735:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=62b2e735:15946:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=62b2e735:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=62b2e735:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=62b2e735:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=62b2e735:19116:15)
+    at recoverFromConcurrentError (chunk-RPCDYKBN.js?v=62b2e735:18736:28)

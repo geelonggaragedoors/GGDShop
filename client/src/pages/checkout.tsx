@@ -859,11 +859,11 @@ export default function Checkout() {
               <CardContent className="space-y-4">
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2 p-4 border rounded-lg bg-blue-50">
-                    <RadioGroupItem value="paypal" id="paypal" checked />
-                    <Label htmlFor="paypal" className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <div className="flex items-center gap-2">
                       <span className="font-medium">PayPal</span>
                       <span className="text-sm text-gray-600">- Secure payment processing</span>
-                    </Label>
+                    </div>
                   </div>
                   
                   {/* Trust Signals */}
