@@ -10,6 +10,8 @@ Preferred communication style: Simple, everyday language.
 Email domain: Using geelonggaragedoors.com (verified in SendGrid) instead of .com.au
 Deployment: Site deployed to geelonggaragedoors.com - needs NODE_ENV=production for correct password reset URLs
 Email system: Using SendGrid with API key stored securely in Replit Secrets
+Payment system: PayPal-only checkout (handles both PayPal accounts and guest credit card payments)
+Design preference: Blue-only color scheme throughout application
 
 ## System Architecture
 
@@ -40,9 +42,10 @@ Email system: Using SendGrid with API key stored securely in Replit Secrets
 #### E-commerce Features
 - **Product Management**: Full CRUD operations with categories, brands, and media
 - **Order Processing**: Complete order lifecycle with status tracking
-- **Payment Integration**: PayPal SDK for secure payment processing
+- **Payment Integration**: PayPal-only checkout with comprehensive trust signals (handles both PayPal accounts and guest credit card payments)
 - **Shipping Calculations**: Australia Post API integration for real-time shipping costs
 - **Inventory Management**: Stock tracking and low stock alerts
+- **Smart Checkout**: Auto-fills customer information for logged-in users with address parsing
 
 #### Admin Dashboard
 - **User Interface**: Responsive admin panel with sidebar navigation
