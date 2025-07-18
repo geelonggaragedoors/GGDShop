@@ -2480,21 +2480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Simple test route to verify routing works
-  app.post('/api/admin/email-test', async (req, res) => {
-    console.log('*** EMAIL TEST ENDPOINT HIT ***');
-    console.log('Request received!');
-    console.log('Method:', req.method);
-    console.log('URL:', req.url);
-    console.log('Body:', req.body);
-    console.log('Headers:', req.headers);
-    
-    // Simple test response
-    res.json({ message: 'Test route working', received: req.body });
-    return;
-  });
-
-  app.post('/api/admin/email-test-real', async (req, res) => {
+  app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
     try {
       console.log('=== EMAIL TEST REQUEST START ===');
       console.log('Request body:', req.body);
