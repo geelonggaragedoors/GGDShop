@@ -845,18 +845,89 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
-  async getEmailSettings(): Promise<any> {
-    const [settings] = await db.select().from(emailSettingsConfig).where(eq(emailSettingsConfig.id, "default"));
-    return settings;
-  }
+
 
   async getEmailTemplates(): Promise<any[]> {
-    return await db.select().from(emailTemplates).orderBy(asc(emailTemplates.name));
+    // Return predefined templates since we don't have emailTemplates table yet
+    return [
+      {
+        id: 'order_confirmation',
+        name: 'Order Confirmation',
+        subject: 'Order Confirmation - {{orderNumber}}',
+        htmlContent: `
+          <h2>Order Confirmation</h2>
+          <p>Hi {{customerName}},</p>
+          <p>Thank you for your order! We've received your order {{orderNumber}} and it's being processed.</p>
+          <div style="border: 1px solid #ddd; padding: 20px; margin: 20px 0;">
+            <h3>Order Details</h3>
+            <p><strong>Order Number:</strong> {{orderNumber}}</p>
+            <p><strong>Total:</strong> {{orderTotal}}</p>
+            <p><strong>Status:</strong> Processing</p>
+          </div>
+          <p>We'll send you updates as your order progresses.</p>
+          <p>Best regards,<br>Geelong Garage Doors Team</p>
+        `,
+        isActive: true
+      },
+      {
+        id: 'order_status_update',
+        name: 'Order Status Update',
+        subject: 'Order Update - {{orderNumber}}',
+        htmlContent: `
+          <h2>Order Status Update</h2>
+          <p>Hi {{customerName}},</p>
+          <p>Your order {{orderNumber}} status has been updated to: <strong>{{orderStatus}}</strong></p>
+          <div style="border: 1px solid #ddd; padding: 20px; margin: 20px 0;">
+            <h3>Order Details</h3>
+            <p><strong>Order Number:</strong> {{orderNumber}}</p>
+            <p><strong>Status:</strong> {{orderStatus}}</p>
+            <p><strong>Total:</strong> {{orderTotal}}</p>
+          </div>
+          <p>Track your order at: {{trackingUrl}}</p>
+          <p>Best regards,<br>Geelong Garage Doors Team</p>
+        `,
+        isActive: true
+      },
+      {
+        id: 'low_stock_alert',
+        name: 'Low Stock Alert',
+        subject: 'Low Stock Alert - {{productName}}',
+        htmlContent: `
+          <h2>Low Stock Alert</h2>
+          <p>The following product is running low on stock:</p>
+          <div style="border: 1px solid #ddd; padding: 20px; margin: 20px 0;">
+            <h3>Product Details</h3>
+            <p><strong>Product:</strong> {{productName}}</p>
+            <p><strong>Current Stock:</strong> {{currentStock}}</p>
+            <p><strong>Threshold:</strong> {{lowStockThreshold}}</p>
+          </div>
+          <p>Please restock this item soon to avoid stockouts.</p>
+          <p>View product: {{productUrl}}</p>
+        `,
+        isActive: true
+      },
+      {
+        id: 'password_reset',
+        name: 'Password Reset',
+        subject: 'Password Reset Request',
+        htmlContent: `
+          <h2>Password Reset Request</h2>
+          <p>A password reset has been requested for your account.</p>
+          <p>Click the link below to reset your password:</p>
+          <div style="margin: 20px 0;">
+            <a href="{{resetLink}}" style="background: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
+          </div>
+          <p>If you didn't request this, please ignore this email.</p>
+          <p>Best regards,<br>Geelong Garage Doors Team</p>
+        `,
+        isActive: true
+      }
+    ];
   }
 
   async getEmailTemplate(id: string): Promise<any | undefined> {
-    const [template] = await db.select().from(emailTemplates).where(eq(emailTemplates.id, id));
-    return template;
+    const templates = await this.getEmailTemplates();
+    return templates.find(template => template.id === id);
   }
 
   async createEmailTemplate(template: any): Promise<any> {

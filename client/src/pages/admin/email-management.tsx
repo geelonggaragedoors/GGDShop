@@ -24,7 +24,8 @@ import {
   TrendingUp,
   Users,
   Calendar,
-  BarChart3
+  BarChart3,
+  Loader2
 } from "lucide-react";
 
 interface EmailLog {
@@ -55,6 +56,125 @@ interface EmailAnalytics {
   deliveryRate: number;
   openRate: number;
   clickRate: number;
+}
+
+function TestEmailForm({ templates }: { templates: any[] }) {
+  const { toast } = useToast();
+  const [selectedTemplate, setSelectedTemplate] = useState("order_confirmation");
+  const [testEmail, setTestEmail] = useState("");
+
+  const testEmailMutation = useMutation({
+    mutationFn: async ({ templateId, email }: { templateId: string; email: string }) => {
+      const response = await apiRequest("POST", "/api/admin/email-test", {
+        templateId,
+        testEmail: email,
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Test email sent successfully",
+        description: `Test email has been sent to ${testEmail}`,
+      });
+      // Refresh email logs to show the test email
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/email-logs"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to send test email",
+        description: error.message || "There was an error sending the test email",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleTestEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!testEmail) {
+      toast({
+        title: "Email required",
+        description: "Please enter a test email address",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!selectedTemplate) {
+      toast({
+        title: "Template required",
+        description: "Please select a template to test",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    testEmailMutation.mutate({ templateId: selectedTemplate, email: testEmail });
+  };
+
+  return (
+    <form onSubmit={handleTestEmail} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="template">Template to Test</Label>
+          <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a template" />
+            </SelectTrigger>
+            <SelectContent>
+              {templates?.map((template: any) => (
+                <SelectItem key={template.id} value={template.id}>
+                  {template.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
+          <Label htmlFor="testEmail">Test Email Address</Label>
+          <Input
+            id="testEmail"
+            type="email"
+            placeholder="test@example.com"
+            value={testEmail}
+            onChange={(e) => setTestEmail(e.target.value)}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <Button type="submit" disabled={testEmailMutation.isPending}>
+          {testEmailMutation.isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            <>
+              <Send className="w-4 h-4 mr-2" />
+              Send Test Email
+            </>
+          )}
+        </Button>
+        
+        {selectedTemplate && (
+          <div className="text-sm text-gray-600">
+            Selected: {templates?.find(t => t.id === selectedTemplate)?.name}
+          </div>
+        )}
+      </div>
+      
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h4 className="text-sm font-medium text-blue-900 mb-2">Test Email Info</h4>
+        <p className="text-sm text-blue-700">
+          Test emails will be sent using sample data and will be tracked in your email logs. 
+          The email will be clearly marked as "[TEST]" in the subject line.
+        </p>
+      </div>
+    </form>
+  );
 }
 
 export default function EmailManagement() {
@@ -516,25 +636,39 @@ export default function EmailManagement() {
         <TabsContent value="templates" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Email Templates</CardTitle>
+              <CardTitle>Test Email</CardTitle>
               <CardDescription>
-                Manage your email templates and integrate with Resend
+                Send test emails to verify your email templates and delivery
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">Resend Integration</h4>
-                <p className="text-sm text-blue-700">
-                  Templates are automatically synced with Resend for reliable delivery. 
-                  All emails sent through this system are tracked and logged for your review.
-                </p>
-              </div>
-              
-              <div className="mt-6">
-                <Button>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Go to Template Editor
-                </Button>
+              <TestEmailForm templates={templates} />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Email Templates</CardTitle>
+              <CardDescription>
+                Available email templates for your system
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {templates?.map((template: any) => (
+                  <div key={template.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium">{template.name}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{template.subject}</p>
+                      </div>
+                      <Badge variant="outline">Active</Badge>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-500">Template ID: {template.id}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
