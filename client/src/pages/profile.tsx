@@ -69,8 +69,22 @@ export default function ProfilePage() {
       'nt': 'NT'
     };
     
+    console.log('Form data before submission:', formData);
+    
+    // Only proceed if we have valid data
+    if (!formData.state || !formData.city || !formData.postcode) {
+      toast({
+        title: "Error",
+        description: "Please fill in all address fields (city, state, postcode).",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const stateCode = stateCodeToName[formData.state.toLowerCase()] || formData.state.toUpperCase();
     const fullAddress = `${formData.address}, ${formData.city} ${stateCode} ${formData.postcode}, Australia`;
+    
+    console.log('Generated address:', fullAddress);
     
     const profileData = {
       firstName: formData.firstName,
@@ -79,6 +93,7 @@ export default function ProfilePage() {
       address: fullAddress
     };
     
+    console.log('Submitting profile data:', profileData);
     updateProfileMutation.mutate(profileData);
   };
 
@@ -103,42 +118,73 @@ export default function ProfilePage() {
       let streetAddress = user.address || '';
       
       if (user.address) {
+        console.log('Parsing address:', user.address);
+        
         // Handle addresses like "3 Conquest St, Mount Duneed VIC 3217, Australia"
-        const addressParts = user.address.split(',');
-        if (addressParts.length >= 3) {
-          streetAddress = addressParts[0].trim();
-          parsedCity = addressParts[1].trim();
+        // or malformed ones like "3 Conquest St, Mount Duneed VIC 3217 VIC VIC , Australia"
+        const addressParts = user.address.split(',').map(part => part.trim()).filter(part => part && part !== 'Australia');
+        console.log('Address parts:', addressParts);
+        
+        if (addressParts.length >= 2) {
+          streetAddress = addressParts[0];
           
-          // Parse the state and postcode from the last part before country
-          const statePostcodePart = addressParts[2].trim();
-          const statePostcodeMatch = statePostcodePart.match(/^(.+?)\s+(\d{4})$/);
-          if (statePostcodeMatch) {
-            const stateFullName = statePostcodeMatch[1].trim();
-            parsedPostcode = statePostcodeMatch[2];
+          // Find the part with the state and postcode pattern
+          let foundMatch = false;
+          for (let i = 1; i < addressParts.length; i++) {
+            const part = addressParts[i];
             
-            // Convert state name to code
-            const stateMap: { [key: string]: string } = {
-              'VIC': 'vic',
-              'Victoria': 'vic',
-              'NSW': 'nsw',
-              'New South Wales': 'nsw',
-              'QLD': 'qld',
-              'Queensland': 'qld',
-              'WA': 'wa',
-              'Western Australia': 'wa',
-              'SA': 'sa',
-              'South Australia': 'sa',
-              'TAS': 'tas',
-              'Tasmania': 'tas',
-              'ACT': 'act',
-              'Australian Capital Territory': 'act',
-              'NT': 'nt',
-              'Northern Territory': 'nt'
-            };
+            // Try to match patterns like "Mount Duneed VIC 3217" or "City VIC 3217"
+            const cityStatePostcodeMatch = part.match(/^(.+?)\s+(VIC|NSW|QLD|WA|SA|TAS|ACT|NT|Victoria|New South Wales|Queensland|Western Australia|South Australia|Tasmania|Australian Capital Territory|Northern Territory)(?:\s+VIC)*\s*(\d{4})?$/i);
             
-            parsedState = stateMap[stateFullName] || stateFullName.toLowerCase();
+            if (cityStatePostcodeMatch) {
+              parsedCity = cityStatePostcodeMatch[1].trim();
+              const stateFullName = cityStatePostcodeMatch[2].trim();
+              parsedPostcode = cityStatePostcodeMatch[3] || '';
+              
+              // Convert state name to code
+              const stateMap: { [key: string]: string } = {
+                'VIC': 'vic',
+                'Victoria': 'vic',
+                'NSW': 'nsw',
+                'New South Wales': 'nsw',
+                'QLD': 'qld',
+                'Queensland': 'qld',
+                'WA': 'wa',
+                'Western Australia': 'wa',
+                'SA': 'sa',
+                'South Australia': 'sa',
+                'TAS': 'tas',
+                'Tasmania': 'tas',
+                'ACT': 'act',
+                'Australian Capital Territory': 'act',
+                'NT': 'nt',
+                'Northern Territory': 'nt'
+              };
+              
+              parsedState = stateMap[stateFullName.toUpperCase()] || stateFullName.toLowerCase();
+              foundMatch = true;
+              break;
+            }
+          }
+          
+          // If no match found, try to parse the last part
+          if (!foundMatch && addressParts.length >= 2) {
+            const lastPart = addressParts[addressParts.length - 1];
+            const simpleMatch = lastPart.match(/^(.+?)\s+(\d{4})$/);
+            if (simpleMatch) {
+              parsedCity = simpleMatch[1].replace(/\s+(VIC|NSW|QLD|WA|SA|TAS|ACT|NT)+/gi, '').trim();
+              parsedPostcode = simpleMatch[2];
+              parsedState = 'vic'; // Default to VIC for now
+            }
           }
         }
+        
+        console.log('Parsed fields:', {
+          street: streetAddress,
+          city: parsedCity,
+          state: parsedState,
+          postcode: parsedPostcode
+        });
       }
       
       setFormData({

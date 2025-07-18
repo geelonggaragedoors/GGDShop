@@ -1,0 +1,13 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=9uFh90oQ2L5o' failed: 
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=9uFh90oQ2L5o' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+chunk-RPCDYKBN.js?v=62b2e735:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+content.js:208 Object
+profile.tsx:97 Loading user data into form: Object
+profile.tsx:33 Updating profile with data: Objectaddress: "3 Conquest St, Mount Duneed VIC 3217 VIC VIC , Australia"firstName: "Stephen"lastName: "Ford"phone: "0435473212"[[Prototype]]: Object
+profile.tsx:36 Profile update response: Objectaddress: "3 Conquest St, Mount Duneed VIC 3217 VIC VIC , Australia"createdAt: "2025-05-29T23:27:05.543Z"email: "stevejford1@gmail.com"emailVerified: truefailedLoginAttempts: 0firstName: "Stephen"id: "31520905"isActive: truelastLoginAt: "2025-07-18T04:05:19.744Z"lastName: "Ford"lockedUntil: nullphone: "0435473212"profileImageUrl: nullresetPasswordExpires: nullrole: "admin"updatedAt: "2025-07-18T05:34:11.727Z"[[Prototype]]: Object
+profile.tsx:40 Profile update success: Objectaddress: "3 Conquest St, Mount Duneed VIC 3217 VIC VIC , Australia"createdAt: "2025-05-29T23:27:05.543Z"email: "stevejford1@gmail.com"emailVerified: truefailedLoginAttempts: 0firstName: "Stephen"id: "31520905"isActive: truelastLoginAt: "2025-07-18T04:05:19.744Z"lastName: "Ford"lockedUntil: nullphone: "0435473212"profileImageUrl: nullresetPasswordExpires: nullrole: "admin"updatedAt: "2025-07-18T05:34:11.727Z"[[Prototype]]: Object
+profile.tsx:97 Loading user data into form: Objectaddress: "3 Conquest St, Mount Duneed VIC 3217 VIC VIC , Australia"createdAt: "2025-05-29T23:27:05.543Z"email: "stevejford1@gmail.com"emailVerified: truefailedLoginAttempts: 0firstName: "Stephen"id: "31520905"isActive: truelastLoginAt: "2025-07-18T04:05:19.744Z"lastName: "Ford"lockedUntil: nullphone: "0435473212"profileImageUrl: nullresetPasswordExpires: nullrole: "admin"updatedAt: "2025-07-18T05:34:11.727Z"[[Prototype]]: Object
