@@ -2493,6 +2493,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // TEST: Simple route to verify routing works
   app.post('/api/admin/email-test-simple', (req, res) => {
     console.log('SIMPLE TEST ROUTE HIT!!!');
+    console.log('Simple test - Request body:', req.body);
+    console.log('Simple test - Headers:', req.headers);
     res.json({ message: 'Simple test route working!' });
   });
 
@@ -2507,6 +2509,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Cookie:', req.headers.cookie);
     console.log('User:', req.user ? 'Authenticated' : 'Not authenticated');
     next();
+  });
+
+  // Add another test endpoint for debugging
+  app.get('/api/admin/email-test-debug', (req, res) => {
+    console.log('DEBUG ENDPOINT HIT - GET /api/admin/email-test-debug');
+    res.json({ message: 'Debug endpoint working', timestamp: new Date().toISOString() });
   });
 
   app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
