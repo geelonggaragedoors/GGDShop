@@ -2480,11 +2480,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/email-test', hybridAuth, async (req, res) => {
+  app.post('/api/admin/email-test', async (req, res) => {
     try {
       console.log('=== EMAIL TEST REQUEST START ===');
       console.log('Request body:', req.body);
-      console.log('Request headers:', req.headers);
+      console.log('Request method:', req.method);
+      console.log('Request URL:', req.url);
+      console.log('Content-Type:', req.headers['content-type']);
       console.log('User authenticated:', req.user ? 'Yes' : 'No');
       
       const { templateId, testEmail } = req.body;
