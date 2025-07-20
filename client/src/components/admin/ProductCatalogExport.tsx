@@ -89,198 +89,288 @@ export default function ProductCatalogExport() {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 10;
-      let yPosition = margin;
+      let pageNumber = 1;
 
-      // Add header
-      pdf.setFontSize(24);
-      pdf.setTextColor(37, 99, 235); // Blue color
-      pdf.text("Geelong Garage Doors", pageWidth / 2, yPosition, { align: "center" });
-      yPosition += 12;
+      // Helper function to add page numbers
+      const addPageNumber = () => {
+        pdf.setFontSize(10);
+        pdf.setTextColor(136, 136, 136);
+        pdf.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - 5, { align: "right" });
+        pageNumber++;
+      };
 
-      pdf.setFontSize(16);
-      pdf.setTextColor(102, 102, 102); // Gray color
-      pdf.text("Product Catalog & Price List", pageWidth / 2, yPosition, { align: "center" });
-      yPosition += 8;
+      // COVER PAGE
+      let yPosition = 50;
+      
+      // Add a simple logo placeholder (blue rectangle with text)
+      pdf.setFillColor(37, 99, 235);
+      pdf.rect(pageWidth / 2 - 30, yPosition, 60, 20, 'F');
+      pdf.setFontSize(18);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text("GGD", pageWidth / 2, yPosition + 13, { align: "center" });
+      yPosition += 40;
 
-      pdf.setFontSize(12);
-      pdf.setTextColor(136, 136, 136); // Light gray
-      pdf.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, yPosition, { align: "center" });
+      // Main title
+      pdf.setFontSize(28);
+      pdf.setTextColor(37, 99, 235);
+      pdf.text("Geelong Garage Door", pageWidth / 2, yPosition, { align: "center" });
       yPosition += 15;
+      pdf.text("Product Catalog", pageWidth / 2, yPosition, { align: "center" });
+      yPosition += 30;
 
-      // Add line separator
+      // Subtitle
+      pdf.setFontSize(16);
+      pdf.setTextColor(102, 102, 102);
+      pdf.text("Complete Product Range & Price List", pageWidth / 2, yPosition, { align: "center" });
+      yPosition += 20;
+
+      // Date
+      pdf.setFontSize(12);
+      pdf.setTextColor(136, 136, 136);
+      pdf.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, yPosition, { align: "center" });
+
+      addPageNumber();
+
+      // Organize products by category
+      const allProducts = productsData.products.filter((p: Product) => p.isActive !== false);
+      const productsByCategory = new Map();
+      
+      // Group products by category
+      allProducts.forEach(product => {
+        const category = categories?.find((c: any) => c.id === product.categoryId);
+        const categoryName = category?.name || 'Uncategorized';
+        
+        if (!productsByCategory.has(categoryName)) {
+          productsByCategory.set(categoryName, []);
+        }
+        productsByCategory.get(categoryName).push(product);
+      });
+
+      // CATEGORY INDEX PAGE
+      pdf.addPage();
+      yPosition = margin + 20;
+      
+      pdf.setFontSize(24);
+      pdf.setTextColor(37, 99, 235);
+      pdf.text("Category Index", pageWidth / 2, yPosition, { align: "center" });
+      yPosition += 20;
+
       pdf.setDrawColor(229, 231, 235);
       pdf.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 10;
+      yPosition += 15;
 
-      // Get all products in order (not categorized)
-      const allProducts = productsData.products.filter((p: Product) => p.isActive !== false);
+      // Calculate page numbers for each category
+      let currentPage = 3; // Starting after cover and index
+      const categoryPages = new Map();
       
-      // Process products - 2 on first page (due to header), 4 on subsequent pages
-      let productsProcessed = 0;
+      for (const [categoryName, products] of productsByCategory) {
+        categoryPages.set(categoryName, currentPage);
+        const productsPerPage = 4;
+        const pagesNeeded = Math.ceil(products.length / productsPerPage);
+        currentPage += pagesNeeded;
+      }
+
+      // Display category index
+      pdf.setFontSize(14);
+      pdf.setTextColor(51, 51, 51);
       
-      while (productsProcessed < allProducts.length) {
-        // Add new page if not the first group
-        if (productsProcessed > 0) {
-          pdf.addPage();
-          yPosition = margin;
-        }
+      for (const [categoryName, products] of productsByCategory) {
+        const startPage = categoryPages.get(categoryName);
+        const productsPerPage = 4;
+        const pagesNeeded = Math.ceil(products.length / productsPerPage);
+        const endPage = startPage + pagesNeeded - 1;
         
-        // Get products for this page (2 for first page, 4 for others)
-        const productsPerPage = productsProcessed === 0 ? 2 : 4;
-        const pageProducts = allProducts.slice(productsProcessed, productsProcessed + productsPerPage);
-        productsProcessed += pageProducts.length;
+        const pageRange = pagesNeeded === 1 ? `Page ${startPage}` : `Pages ${startPage}-${endPage}`;
         
-        // Layout: 2 products per row
-        const productWidth = (pageWidth - 3 * margin) / 2; // Width for each product
-        const productHeight = productsProcessed <= 2 ? 
-          (pageHeight - yPosition - margin) / 1 : // First page: use remaining space for single row
-          (pageHeight - 3 * margin) / 2; // Other pages: 2 rows per page
-        const imageWidth = productWidth - 2; // Absolute minimum padding
-        const imageHeight = productHeight * 0.5; // 50% of product height for image
+        // Category name and dots
+        const categoryText = `${categoryName} (${products.length} products)`;
+        const pageText = pageRange;
+        const availableWidth = pageWidth - 2 * margin - pdf.getTextWidth(pageText);
+        const categoryWidth = pdf.getTextWidth(categoryText);
+        const dotsWidth = availableWidth - categoryWidth - 5;
+        const dotCount = Math.floor(dotsWidth / pdf.getTextWidth('.'));
+        const dots = '.'.repeat(Math.max(0, dotCount));
         
-        for (let j = 0; j < pageProducts.length; j++) {
-          const product = pageProducts[j];
-          const brand = brands?.find((b: any) => b.id === product.brandId);
-          const brandName = brand?.name || 'Unknown Brand';
-          const category = categories?.find((c: any) => c.id === product.categoryId);
-          const categoryName = category?.name || 'Uncategorized';
-          
-          // Calculate position (2 products per row)
-          const col = j % 2;
-          const row = Math.floor(j / 2);
-          const productX = margin + col * (productWidth + (margin/2));
-          const productY = yPosition + row * (productHeight + (margin/2));
-          
-          // Add product image area
-          pdf.setDrawColor(200, 200, 200);
-          pdf.setFillColor(245, 245, 245);
-          pdf.rect(productX, productY, imageWidth, imageHeight, 'FD');
-          
-          // Load and display product image
-          const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
-          
-          if (hasImages) {
-            const firstImagePath = product.images[0];
-            const imageUrl = `${window.location.origin}${firstImagePath}`;
-            const imageBase64 = await loadImageAsBase64(imageUrl);
-            
-            if (imageBase64) {
-              const img = new Image();
-              img.src = imageBase64;
-              
-              await new Promise((resolve) => {
-                img.onload = () => {
-                  const aspectRatio = img.width / img.height;
-                  let displayWidth = imageWidth;
-                  let displayHeight = imageHeight;
-                  
-                  if (aspectRatio > 1) {
-                    displayHeight = imageWidth / aspectRatio;
-                    if (displayHeight > imageHeight) {
-                      displayHeight = imageHeight;
-                      displayWidth = imageHeight * aspectRatio;
-                    }
-                  } else {
-                    displayWidth = imageHeight * aspectRatio;
-                    if (displayWidth > imageWidth) {
-                      displayWidth = imageWidth;
+        pdf.text(categoryText, margin, yPosition);
+        pdf.text(dots, margin + categoryWidth + 2, yPosition);
+        pdf.text(pageText, pageWidth - margin, yPosition, { align: "right" });
+        yPosition += 8;
+      }
+
+      addPageNumber();
+
+      // PRODUCT PAGES BY CATEGORY
+      for (const [categoryName, products] of productsByCategory) {
+        pdf.addPage();
+        yPosition = margin;
+
+        // Category header
+        pdf.setFontSize(20);
+        pdf.setTextColor(37, 99, 235);
+        pdf.text(categoryName, pageWidth / 2, yPosition, { align: "center" });
+        yPosition += 15;
+
+        pdf.setDrawColor(229, 231, 235);
+        pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+        yPosition += 15;
+
+        let productsProcessed = 0;
+        let isFirstPageOfCategory = true;
+
+        while (productsProcessed < products.length) {
+          if (!isFirstPageOfCategory) {
+            pdf.addPage();
+            yPosition = margin + 10;
+          }
+          isFirstPageOfCategory = false;
+
+          const productsPerPage = 4;
+          const pageProducts = products.slice(productsProcessed, productsProcessed + productsPerPage);
+          productsProcessed += pageProducts.length;
+
+          // Layout: 2 products per row, 2 rows per page
+          const productWidth = (pageWidth - 3 * margin) / 2;
+          const productHeight = (pageHeight - yPosition - 30) / 2; // Leave space for page number
+          const imageWidth = productWidth - 2;
+          const imageHeight = productHeight * 0.5;
+
+          for (let j = 0; j < pageProducts.length; j++) {
+            const product = pageProducts[j];
+            const brand = brands?.find((b: any) => b.id === product.brandId);
+            const brandName = brand?.name || 'Unknown Brand';
+
+            // Calculate position (2 products per row)
+            const col = j % 2;
+            const row = Math.floor(j / 2);
+            const productX = margin + col * (productWidth + (margin/2));
+            const productY = yPosition + row * (productHeight + (margin/2));
+
+            // Add product image area
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setFillColor(245, 245, 245);
+            pdf.rect(productX, productY, imageWidth, imageHeight, 'FD');
+
+            // Load and display product image
+            const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
+
+            if (hasImages) {
+              const firstImagePath = product.images[0];
+              const imageUrl = `${window.location.origin}${firstImagePath}`;
+              const imageBase64 = await loadImageAsBase64(imageUrl);
+
+              if (imageBase64) {
+                const img = new Image();
+                img.src = imageBase64;
+
+                await new Promise((resolve) => {
+                  img.onload = () => {
+                    const aspectRatio = img.width / img.height;
+                    let displayWidth = imageWidth;
+                    let displayHeight = imageHeight;
+
+                    if (aspectRatio > 1) {
                       displayHeight = imageWidth / aspectRatio;
+                      if (displayHeight > imageHeight) {
+                        displayHeight = imageHeight;
+                        displayWidth = imageHeight * aspectRatio;
+                      }
+                    } else {
+                      displayWidth = imageHeight * aspectRatio;
+                      if (displayWidth > imageWidth) {
+                        displayWidth = imageWidth;
+                        displayHeight = imageWidth / aspectRatio;
+                      }
                     }
-                  }
-                  
-                  const xOffset = (imageWidth - displayWidth) / 2;
-                  const yOffset = (imageHeight - displayHeight) / 2;
-                  
-                  pdf.addImage(imageBase64, 'JPEG', productX + xOffset, productY + yOffset, displayWidth, displayHeight);
-                  
-                  if (product.images.length > 1) {
-                    pdf.setFontSize(7);
-                    pdf.setTextColor(255, 255, 255);
-                    pdf.setFillColor(37, 99, 235);
-                    pdf.rect(productX + imageWidth - 15, productY + 2, 12, 6, 'F');
-                    pdf.text(`+${product.images.length - 1}`, productX + imageWidth - 9, productY + 6, { align: 'center' });
-                  }
-                  
-                  resolve(true);
-                };
-              });
+
+                    const xOffset = (imageWidth - displayWidth) / 2;
+                    const yOffset = (imageHeight - displayHeight) / 2;
+
+                    pdf.addImage(imageBase64, 'JPEG', productX + xOffset, productY + yOffset, displayWidth, displayHeight);
+
+                    if (product.images.length > 1) {
+                      pdf.setFontSize(7);
+                      pdf.setTextColor(255, 255, 255);
+                      pdf.setFillColor(37, 99, 235);
+                      pdf.rect(productX + imageWidth - 15, productY + 2, 12, 6, 'F');
+                      pdf.text(`+${product.images.length - 1}`, productX + imageWidth - 9, productY + 6, { align: 'center' });
+                    }
+
+                    resolve(true);
+                  };
+                });
+              } else {
+                pdf.setFontSize(8);
+                pdf.setTextColor(220, 38, 38);
+                pdf.text('IMAGE ERROR', productX + imageWidth/2, productY + imageHeight/2, { align: 'center' });
+              }
             } else {
               pdf.setFontSize(8);
-              pdf.setTextColor(220, 38, 38);
-              pdf.text('IMAGE ERROR', productX + imageWidth/2, productY + imageHeight/2, { align: 'center' });
+              pdf.setTextColor(150, 150, 150);
+              pdf.text('NO IMAGE', productX + imageWidth/2, productY + imageHeight/2, { align: 'center' });
             }
-          } else {
+
+            // Product info starts below image
+            let infoY = productY + imageHeight + 3;
+
+            // Add checkbox
+            pdf.setDrawColor(0, 0, 0);
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(productX, infoY, 4, 4, 'FD');
             pdf.setFontSize(8);
-            pdf.setTextColor(150, 150, 150);
-            pdf.text('NO IMAGE', productX + imageWidth/2, productY + imageHeight/2, { align: 'center' });
-          }
-          
-          // Product info starts below image
-          let infoY = productY + imageHeight + 3;
-          
-          // Add checkbox with "checked" text
-          pdf.setDrawColor(0, 0, 0);
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(productX, infoY, 4, 4, 'FD');
-          pdf.setFontSize(8);
-          pdf.setTextColor(102, 102, 102);
-          pdf.text('checked', productX + 6, infoY + 3);
-          infoY += 8; // Increased space to prevent overlap
-          
-          // Add product name
-          pdf.setFontSize(11);
-          pdf.setTextColor(51, 51, 51);
-          const nameLines = pdf.splitTextToSize(product.name, productWidth - 2);
-          pdf.text(nameLines[0], productX, infoY);
-          if (nameLines.length > 1) {
-            pdf.text(nameLines[1], productX, infoY + 4);
-            infoY += 4;
-          }
-          infoY += 6;
-          
-          // Add category
-          pdf.setFontSize(9);
-          pdf.setTextColor(37, 99, 235);
-          pdf.text(`Category: ${categoryName}`, productX, infoY);
-          infoY += 5;
-          
-          // Add brand
-          pdf.setFontSize(9);
-          pdf.setTextColor(102, 102, 102);
-          pdf.text(brandName, productX, infoY);
-          infoY += 6;
-          
-          // Add description if available
-          if (product.description && product.description.trim()) {
-            pdf.setFontSize(9);
             pdf.setTextColor(102, 102, 102);
-            // Clean the description thoroughly
-            const cleanDescription = product.description
-              .replace(/\\n/g, ' ')  // Replace literal \n with spaces
-              .replace(/\n/g, ' ')   // Replace actual newlines with spaces
-              .replace(/\s+/g, ' ')  // Replace multiple spaces with single space
-              .replace(/\. /g, '.  ') // Add extra space after periods
-              .replace(/&nbsp;/g, ' ') // Replace HTML entities
-              .replace(/&amp;/g, '&')
-              .replace(/&lt;/g, '<')
-              .replace(/&gt;/g, '>')
-              .replace(/&quot;/g, '"')
-              .replace(/&#39;/g, "'")
-              .trim();
-            const descriptionLines = pdf.splitTextToSize(cleanDescription, productWidth - 2);
-            const maxLines = 8; // Doubled to 8 lines since we removed stars
-            for (let i = 0; i < Math.min(descriptionLines.length, maxLines); i++) {
-              pdf.text(descriptionLines[i], productX, infoY);
+            pdf.text('checked', productX + 6, infoY + 3);
+            infoY += 8;
+
+            // Add product name
+            pdf.setFontSize(11);
+            pdf.setTextColor(51, 51, 51);
+            const nameLines = pdf.splitTextToSize(product.name, productWidth - 2);
+            pdf.text(nameLines[0], productX, infoY);
+            if (nameLines.length > 1) {
+              pdf.text(nameLines[1], productX, infoY + 4);
               infoY += 4;
             }
-            infoY += 3;
+            infoY += 6;
+
+            // Add brand
+            pdf.setFontSize(9);
+            pdf.setTextColor(102, 102, 102);
+            pdf.text(brandName, productX, infoY);
+            infoY += 6;
+
+            // Add description if available
+            if (product.description && product.description.trim()) {
+              pdf.setFontSize(9);
+              pdf.setTextColor(102, 102, 102);
+              const cleanDescription = product.description
+                .replace(/\\n/g, ' ')
+                .replace(/\n/g, ' ')
+                .replace(/\s+/g, ' ')
+                .replace(/\. /g, '.  ')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+                .trim();
+              const descriptionLines = pdf.splitTextToSize(cleanDescription, productWidth - 2);
+              const maxLines = 6;
+              for (let i = 0; i < Math.min(descriptionLines.length, maxLines); i++) {
+                pdf.text(descriptionLines[i], productX, infoY);
+                infoY += 4;
+              }
+              infoY += 3;
+            }
+
+            // Add price
+            pdf.setFontSize(12);
+            pdf.setTextColor(37, 99, 235);
+            const price = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
+            pdf.text(`$${price.toFixed(2)}`, productX, infoY);
           }
-          
-          // Add price (removed stars)
-          pdf.setFontSize(12);
-          pdf.setTextColor(37, 99, 235);
-          const price = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
-          pdf.text(`$${price.toFixed(2)}`, productX, infoY);
+
+          addPageNumber();
         }
       }
 
@@ -290,7 +380,7 @@ export default function ProductCatalogExport() {
 
       toast({
         title: "Success!",
-        description: "PDF catalog generated successfully",
+        description: "PDF catalog generated successfully with page numbers and category index",
       });
 
     } catch (error) {
@@ -313,7 +403,7 @@ export default function ProductCatalogExport() {
       </div>
       
       <p className="text-sm text-gray-600">
-        Generate a PDF catalog with product images arranged in a 2x2 grid layout (4 products per page).
+        Generate a professional PDF catalog with cover page, category index, page numbers, and products organized by category (4 products per page).
       </p>
       
       <Button
