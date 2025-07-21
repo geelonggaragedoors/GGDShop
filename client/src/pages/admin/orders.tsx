@@ -226,19 +226,20 @@ export default function Orders() {
           >
             <Eye className="w-4 h-4" />
           </Button>
-          {row.original.status !== 'shipped' && row.original.paymentStatus === 'paid' && (
+          {(row.original.status === 'paid' || row.original.status === 'pending' || row.original.status === 'processing') && (
             <Button
               size="sm"
               onClick={() => {
                 setSelectedOrderForTracking(row.original.id);
                 setIsTrackingDialogOpen(true);
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-600"
+              title="Ship this order"
             >
               <Truck className="w-4 h-4" />
             </Button>
           )}
-          {row.original.status === 'shipped' && row.original.auspostTrackingNumber && (
+          {row.original.status === 'shipped' && (
             <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 px-2 py-1">
               <Truck className="w-3 h-3 mr-1" />
               Shipped
