@@ -1,0 +1,41 @@
+checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:9 {entry: {…}, content: 'content-manifest.d130b289ce2fd152c2079e107bd935fe.json', initialDataQuery: 'initialDataQuery.30fd19135ec5a86571e47436f11c227c.graphql', shellDataQuery: null, coreDataQuery: null, …}
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:71 Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'nonce-F/r58pz459XdpaMLHt6j8nQ29196IdJ98LVvoY40KT5Zp3BU' 'self' https://*.paypal.com https://*.paypal.cn https://*.paypalobjects.com https://objects.paypal.cn https://www.gstatic.com https://*.synchronycredit.com https://synchronycredit.com 'unsafe-inline' https://www.datadoghq-browser-agent.com https://static.novacredit.com".
+
+renderBannerElements @ checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:71
+renderBannerElements @ checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:71
+(anonymous) @ checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:71
+checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:71 Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'nonce-F/r58pz459XdpaMLHt6j8nQ29196IdJ98LVvoY40KT5Zp3BU' 'self' https://*.paypal.com https://*.paypal.cn https://*.paypalobjects.com https://objects.paypal.cn https://www.gstatic.com https://*.synchronycredit.com https://synchronycredit.com 'unsafe-inline' https://www.datadoghq-browser-agent.com https://static.novacredit.com".
+
+renderBannerElements @ checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:71
+(anonymous) @ checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:71
+datadog-rum.js:1 Datadog Browser SDK: service value doesn't meet tag requirements and will be sanitized. More details: https://docs.datadoghq.com/getting_started/tagging/#defining-tags
+kn @ datadog-rum.js:1
+(anonymous) @ datadog-rum.js:1
+Cn @ datadog-rum.js:1
+In @ datadog-rum.js:1
+qn @ datadog-rum.js:1
+h @ datadog-rum.js:1
+init @ datadog-rum.js:1
+(anonymous) @ datadog-rum.js:1
+v @ datadog-rum.js:1
+(anonymous) @ datadog-rum.js:1
+(anonymous) @ checkoutweb?flow=1-P&ulReturn=true&token=3LK65971856834308&ssrt=1753070806907&rcache=1&useraction=PAY&locale.x=en_AU&country=AU&frr=1:90
+index.tsx:249 serverGqlData {data: {…}}
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
