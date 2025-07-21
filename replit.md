@@ -12,6 +12,7 @@ Deployment: Site deployed to geelonggaragedoors.com - needs NODE_ENV=production 
 Email system: Using SendGrid with API key stored securely in Replit Secrets
 Payment system: PayPal-only checkout (handles both PayPal accounts and guest credit card payments)
 Design preference: Blue-only color scheme throughout application
+Business model: E-commerce parts supplier - sells garage door parts for shipping, does NOT provide installation services
 
 ## System Architecture
 

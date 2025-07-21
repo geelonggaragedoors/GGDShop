@@ -137,8 +137,8 @@ export default function CheckoutSuccess() {
                     3
                   </div>
                   <div>
-                    <p className="font-medium">Professional Installation</p>
-                    <p className="text-sm text-gray-600">Our team will contact you to schedule installation</p>
+                    <p className="font-medium">Package Delivery</p>
+                    <p className="text-sm text-gray-600">Your garage door parts will be shipped to your address</p>
                   </div>
                 </div>
               </div>
@@ -162,10 +162,10 @@ export default function CheckoutSuccess() {
         </div>
 
         <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="font-semibold text-blue-900 mb-2">Installation Services Available</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">Quality Garage Door Parts</h3>
           <p className="text-blue-800 text-sm">
-            Professional installation is available for all our garage doors. Our certified technicians 
-            ensure proper installation and setup. Contact us to schedule your installation appointment.
+            All our garage door parts are sourced from trusted manufacturers and come with warranties. 
+            Need installation help? We recommend consulting with a local garage door technician in your area.
           </p>
         </div>
       </div>
