@@ -37,10 +37,7 @@ if (PAYPAL_CLIENT_ID && PAYPAL_CLIENT_SECRET) {
       oAuthClientSecret: PAYPAL_CLIENT_SECRET,
     },
     timeout: 0,
-    environment:
-                  process.env.NODE_ENV === "production"
-                    ? Environment.Production
-                    : Environment.Sandbox,
+    environment: Environment.Production,
     logging: {
       logLevel: LogLevel.Info,
       logRequest: {
