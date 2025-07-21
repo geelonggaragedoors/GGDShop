@@ -58,61 +58,79 @@ export default function NotificationBell() {
   useEffect(() => {
     if (!user) return;
 
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws/notifications`;
-    
-    const websocket = new WebSocket(wsUrl);
-    
-    websocket.onopen = () => {
-      console.log("Connected to notification WebSocket");
-      websocket.send(JSON.stringify({ type: "auth", userId: user.id }));
-    };
+    let reconnectTimeout: NodeJS.Timeout;
+    let websocket: WebSocket | null = null;
+    let isIntentionalClose = false;
 
-    websocket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        
-        if (message.type === "notification") {
-          setNotifications(prev => [message.data, ...prev]);
+    const connect = () => {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${protocol}//${window.location.host}/ws/notifications`;
+      
+      websocket = new WebSocket(wsUrl);
+      
+      websocket.onopen = () => {
+        console.log("Connected to notification WebSocket");
+        websocket?.send(JSON.stringify({ type: "auth", userId: user.id }));
+      };
+
+      websocket.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
           
-          // Show browser notification if permission granted
-          if (Notification.permission === "granted") {
-            new Notification(message.data.title, {
-              body: message.data.message,
-              icon: "/favicon.ico",
-            });
+          if (message.type === "notification") {
+            setNotifications(prev => [message.data, ...prev]);
+            
+            // Show browser notification if permission granted
+            if (Notification.permission === "granted") {
+              new Notification(message.data.title, {
+                body: message.data.message,
+                icon: "/favicon.ico",
+              });
+            }
+          } else if (message.type === "auth_success") {
+            console.log("WebSocket authentication successful");
           }
-        } else if (message.type === "auth_success") {
-          console.log("WebSocket authentication successful");
+        } catch (error) {
+          console.error("Error processing notification:", error);
         }
-      } catch (error) {
-        console.error("Error processing notification:", error);
-      }
+      };
+
+      websocket.onerror = (error) => {
+        console.error("WebSocket connection error:", error);
+      };
+
+      websocket.onclose = (event) => {
+        if (!isIntentionalClose) {
+          console.warn("WebSocket closed unexpectedly:", event.code);
+          // Reconnect after 3 seconds if not intentionally closed
+          reconnectTimeout = setTimeout(() => {
+            if (!isIntentionalClose) {
+              connect();
+            }
+          }, 3000);
+        } else {
+          console.log("WebSocket connection closed intentionally");
+        }
+      };
+
+      setWs(websocket);
     };
 
-    websocket.onerror = (error) => {
-      console.error("WebSocket connection error:", error);
-    };
-
-    websocket.onclose = (event) => {
-      if (event.code !== 1000) {
-        console.warn("WebSocket closed unexpectedly:", event.code, event.reason);
-      } else {
-        console.log("WebSocket connection closed");
-      }
-    };
-
-    setWs(websocket);
+    connect();
 
     return () => {
-      websocket.close();
+      isIntentionalClose = true;
+      clearTimeout(reconnectTimeout);
+      if (websocket) {
+        websocket.close(1000, "Component unmounting");
+      }
     };
   }, [user]);
 
   // Update notifications from query data
   useEffect(() => {
     if (notificationData) {
-      setNotifications(notificationData || []);
+      setNotifications(notificationData);
     }
   }, [notificationData]);
 

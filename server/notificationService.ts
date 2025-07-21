@@ -35,6 +35,13 @@ export class NotificationService {
 
     this.wss.on('connection', (ws, req) => {
       console.log('New notification WebSocket connection');
+      
+      // Add ping/pong for connection health
+      const pingInterval = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.ping();
+        }
+      }, 30000); // Ping every 30 seconds
 
       ws.on('message', (data) => {
         try {
@@ -49,18 +56,22 @@ export class NotificationService {
         }
       });
 
-      ws.on('close', () => {
+      ws.on('close', (code) => {
+        clearInterval(pingInterval);
         this.removeClient(ws);
-        console.log('Notification WebSocket connection closed');
+        console.log(`Notification WebSocket connection closed with code: ${code}`);
       });
 
       ws.on('error', (error) => {
         console.error('WebSocket error:', error);
+        clearInterval(pingInterval);
         this.removeClient(ws);
       });
-    });
 
-    console.log('Notification WebSocket server initialized on /ws/notifications');
+      ws.on('pong', () => {
+        // Keep connection alive
+      });
+    });
   }
 
   private addClient(userId: string, ws: WebSocket) {
@@ -71,8 +82,8 @@ export class NotificationService {
   }
 
   private removeClient(ws: WebSocket) {
-    for (const [userId, clients] of this.clients.entries()) {
-      const index = clients.findIndex(client => client.ws === ws);
+    for (const [userId, clients] of Array.from(this.clients.entries())) {
+      const index = clients.findIndex((client: ConnectedClient) => client.ws === ws);
       if (index !== -1) {
         clients.splice(index, 1);
         if (clients.length === 0) {
