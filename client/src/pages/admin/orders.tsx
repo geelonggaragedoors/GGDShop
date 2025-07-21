@@ -14,7 +14,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Search, Eye, Edit, Package, Truck } from "lucide-react";
+import { Search, Eye, Edit, Package, Truck, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
@@ -233,9 +233,17 @@ export default function Orders() {
                 setSelectedOrderForTracking(row.original.id);
                 setIsTrackingDialogOpen(true);
               }}
+              className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
             >
-              <Truck className="w-4 h-4" />
+              <Truck className="w-4 h-4 mr-1" />
+              Ship
             </Button>
+          )}
+          {row.original.status === 'shipped' && row.original.auspostTrackingNumber && (
+            <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
+              <Truck className="w-3 h-3 mr-1" />
+              Shipped
+            </Badge>
           )}
         </div>
       ),
@@ -318,9 +326,12 @@ export default function Orders() {
 
       {/* Australia Post Tracking Dialog */}
       <Dialog open={isTrackingDialogOpen} onOpenChange={setIsTrackingDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Australia Post Tracking Number</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Truck className="w-5 h-5 text-blue-600" />
+              Ship Order with Australia Post
+            </DialogTitle>
           </DialogHeader>
           <Form {...trackingForm}>
             <form onSubmit={trackingForm.handleSubmit((data) => {
@@ -336,31 +347,52 @@ export default function Orders() {
                 name="trackingNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>12-Digit Tracking Number</FormLabel>
+                    <FormLabel className="text-sm font-medium">
+                      Australia Post Tracking Number
+                    </FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="e.g. 997172053728" 
+                        placeholder="Enter 12-digit number (e.g. 997172053728)" 
                         {...field}
                         maxLength={12}
+                        className="font-mono text-center text-lg tracking-wider"
                       />
                     </FormControl>
                     <FormMessage />
+                    <div className="text-xs text-gray-500 mt-1">
+                      This will automatically update the order status to "shipped" and send a tracking email to the customer.
+                    </div>
                   </FormItem>
                 )}
               />
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-2 pt-2">
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={() => setIsTrackingDialogOpen(false)}
+                  onClick={() => {
+                    setIsTrackingDialogOpen(false);
+                    trackingForm.reset();
+                  }}
+                  disabled={addTrackingMutation.isPending}
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={addTrackingMutation.isPending}
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
-                  {addTrackingMutation.isPending ? "Shipping..." : "Ship Order"}
+                  {addTrackingMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Shipping...
+                    </>
+                  ) : (
+                    <>
+                      <Truck className="w-4 h-4 mr-2" />
+                      Ship Order
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
