@@ -61,7 +61,6 @@ const sidebarItems = [
   { id: "site-settings", label: "Site Settings", icon: Globe, path: "/admin/site-settings" },
   { id: "staff", label: "Staff & Roles", icon: UserCheck, path: "/admin/staff" },
   { id: "email-templates", label: "Email Templates", icon: Mail, path: "/admin/email-templates" },
-  { id: "email-test", label: "Email Test", icon: Mail, path: "/admin/email-test" },
   { id: "settings", label: "Settings", icon: SettingsIcon, path: "/admin/settings" },
 ];
 
@@ -141,8 +140,6 @@ export default function AdminLayout() {
         return <SiteSettings />;
       case "email-templates":
         return <EmailTemplates />;
-      case "email-test":
-        return <EmailTest />;
       case "settings":
         return <SettingsPage />;
       default:

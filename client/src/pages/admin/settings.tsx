@@ -9,9 +9,142 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
-import { Save, Store, Mail, Shield, Globe, Bell, Settings as SettingsIcon, Users, ShoppingCart, Lock, Package, CreditCard, Copy, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
+import { Save, Store, Mail, Shield, Globe, Bell, Settings as SettingsIcon, Users, ShoppingCart, Lock, Package, CreditCard, Copy, ExternalLink, CheckCircle, AlertTriangle, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// Email Test Component
+function EmailTestTab() {
+  const [testEmail, setTestEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const { toast } = useToast();
+
+  const handleSendTest = async () => {
+    if (!testEmail) {
+      toast({
+        title: "Error",
+        description: "Please enter a test email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const response = await apiRequest('POST', '/api/admin/email-test', {
+        testEmail: testEmail
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setResult({ success: true, message: data.message });
+        toast({
+          title: "Success",
+          description: "Test email sent successfully!",
+        });
+      } else {
+        setResult({ success: false, message: data.error || 'Failed to send test email' });
+        toast({
+          title: "Error",
+          description: data.error || 'Failed to send test email',
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Email test error:', error);
+      setResult({ success: false, message: 'Network error occurred' });
+      toast({
+        title: "Error",
+        description: "Network error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center space-x-2">
+          <Send className="w-5 h-5 text-blue-600" />
+          <CardTitle>Email Test</CardTitle>
+        </div>
+        <CardDescription>
+          Test the email system by sending a test email to any address
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="testEmail">Test Email Address</Label>
+          <Input
+            id="testEmail"
+            type="email"
+            placeholder="test@example.com"
+            value={testEmail}
+            onChange={(e) => setTestEmail(e.target.value)}
+            className="mt-1"
+          />
+        </div>
+
+        <Button 
+          onClick={handleSendTest}
+          disabled={loading || !testEmail}
+          className="w-full"
+        >
+          {loading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Sending...
+            </>
+          ) : (
+            <>
+              <Send className="h-4 w-4 mr-2" />
+              Send Test Email
+            </>
+          )}
+        </Button>
+
+        {result && (
+          <Alert className={result.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+            <AlertDescription className={result.success ? 'text-green-800' : 'text-red-800'}>
+              {result.message}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="mt-6 pt-4 border-t">
+          <h4 className="font-medium text-gray-900 mb-2">Email Configuration</h4>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">From Email:</span>
+                <span className="font-mono">orders@geelonggaragedoors.com</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">From Name:</span>
+                <span>Geelong Garage Doors</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Provider:</span>
+                <span>SendGrid</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Status:</span>
+                <span className="text-green-600">✓ Configured</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 interface EmailTemplate {
   id: string;
@@ -529,7 +662,7 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="store" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="store" className="flex items-center space-x-2">
             <Store className="w-4 h-4" />
             <span>Store</span>
@@ -542,6 +675,10 @@ export default function Settings() {
           <TabsTrigger value="email" className="flex items-center space-x-2">
             <Mail className="w-4 h-4" />
             <span>Email</span>
+          </TabsTrigger>
+          <TabsTrigger value="email-test" className="flex items-center space-x-2">
+            <Send className="w-4 h-4" />
+            <span>Email Test</span>
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center space-x-2">
             <Shield className="w-4 h-4" />
@@ -838,6 +975,10 @@ export default function Settings() {
               </Form>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="email-test" className="space-y-6">
+          <EmailTestTab />
         </TabsContent>
 
         <TabsContent value="paypal" className="space-y-6">
