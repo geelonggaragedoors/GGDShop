@@ -226,7 +226,24 @@ export default function Orders() {
           >
             <Eye className="w-4 h-4" />
           </Button>
-
+          {row.original.status !== 'shipped' && row.original.paymentStatus === 'paid' && (
+            <Button
+              size="sm"
+              onClick={() => {
+                setSelectedOrderForTracking(row.original.id);
+                setIsTrackingDialogOpen(true);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Truck className="w-4 h-4" />
+            </Button>
+          )}
+          {row.original.status === 'shipped' && row.original.auspostTrackingNumber && (
+            <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 px-2 py-1">
+              <Truck className="w-3 h-3 mr-1" />
+              Shipped
+            </Badge>
+          )}
         </div>
       ),
     },
@@ -257,13 +274,6 @@ export default function Orders() {
               <p className="text-gray-600">Track and manage customer orders</p>
             </div>
             <div className="flex space-x-3">
-              <Button 
-                onClick={() => setIsTrackingDialogOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2"
-              >
-                <Truck className="w-4 h-4 mr-2" />
-                Ship Order
-              </Button>
               <Button variant="outline">
                 <Package className="w-4 h-4 mr-2" />
                 Export Orders
@@ -322,27 +332,7 @@ export default function Orders() {
               Ship Order with Australia Post
             </DialogTitle>
           </DialogHeader>
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <h4 className="font-medium text-sm text-gray-700 mb-2">Select Order to Ship:</h4>
-            <Select
-              value={selectedOrderForTracking || ""}
-              onValueChange={setSelectedOrderForTracking}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose an order to ship..." />
-              </SelectTrigger>
-              <SelectContent>
-                {ordersData?.orders
-                  .filter((order: any) => order.status !== 'shipped' && order.paymentStatus === 'paid')
-                  .map((order: any) => (
-                    <SelectItem key={order.id} value={order.id}>
-                      {order.orderNumber} - {order.customerEmail} - ${order.total}
-                    </SelectItem>
-                  ))
-                }
-              </SelectContent>
-            </Select>
-          </div>
+
           
           <Form {...trackingForm}>
             <form onSubmit={trackingForm.handleSubmit((data) => {
@@ -382,7 +372,6 @@ export default function Orders() {
                   variant="outline" 
                   onClick={() => {
                     setIsTrackingDialogOpen(false);
-                    setSelectedOrderForTracking(null);
                     trackingForm.reset();
                   }}
                   disabled={addTrackingMutation.isPending}
@@ -391,7 +380,7 @@ export default function Orders() {
                 </Button>
                 <Button 
                   type="submit" 
-                  disabled={addTrackingMutation.isPending || !selectedOrderForTracking}
+                  disabled={addTrackingMutation.isPending}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   {addTrackingMutation.isPending ? (
