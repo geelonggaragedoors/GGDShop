@@ -323,10 +323,10 @@ export default function Products() {
       length: typeof product.length === 'string' ? parseFloat(product.length) : (product.length || 0),
       width: typeof product.width === 'string' ? parseFloat(product.width) : (product.width || 0),
       height: typeof product.height === 'string' ? parseFloat(product.height) : (product.height || 0),
-      isFeatured: product.isFeatured || false,
-      isActive: product.isActive !== false,
-      alwaysInStock: product.alwaysInStock || false,
-      freePostage: product.freePostage || false,
+      isFeatured: Boolean(product.isFeatured),
+      isActive: Boolean(product.isActive),
+      alwaysInStock: Boolean(product.alwaysInStock),
+      freePostage: Boolean(product.freePostage),
     });
     
     // Pre-populate selected images if they exist
