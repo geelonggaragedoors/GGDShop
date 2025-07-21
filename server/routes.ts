@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth } from "./replitAuth";
 import { authRoutes } from "./authRoutes";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+import { handlePayPalWebhook } from "./paypalWebhooks";
 import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes, calculateTotalShippingCost } from "./australiaPost";
 import { fileStorage } from "./fileStorage";
 import { 
@@ -1526,6 +1527,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("PayPal capture error:", error);
       res.status(500).json({ error: "Failed to capture PayPal payment" });
     }
+  });
+
+  // PayPal webhook endpoint for payment confirmations
+  app.post("/api/paypal/webhook", async (req, res) => {
+    await handlePayPalWebhook(req, res);
   });
 
   // Update order payment status

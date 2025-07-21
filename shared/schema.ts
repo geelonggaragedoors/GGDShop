@@ -239,6 +239,8 @@ export const orders = pgTable("orders", {
   auspostLabelUrl: varchar("auspost_label_url"), // Shipping label URL
   printedAt: timestamp("printed_at"), // When order was printed
   printedBy: varchar("printed_by"), // Who printed the order
+  paidAt: timestamp("paid_at"), // When payment was completed
+  paymentFailureReason: text("payment_failure_reason"), // Reason for payment failure
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -85,7 +85,7 @@ export async function getClientToken() {
 
 export async function createPaypalOrder(req: Request, res: Response) {
   try {
-    const { amount, currency, intent } = req.body;
+    const { amount, currency, intent, orderId } = req.body;
 
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       return res
@@ -116,6 +116,7 @@ export async function createPaypalOrder(req: Request, res: Response) {
               currencyCode: currency,
               value: amount,
             },
+            customId: orderId, // Include our order ID for webhook identification
           },
         ],
       },

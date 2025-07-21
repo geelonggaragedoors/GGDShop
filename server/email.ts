@@ -197,6 +197,53 @@ export class EmailService {
     });
   }
 
+  async sendPaymentConfirmation(customerEmail: string, orderData: any): Promise<boolean> {
+    try {
+      console.log('📧 Sending payment confirmation email to:', customerEmail);
+      
+      // Simple payment confirmation email
+      const subject = `Payment Confirmed - Order ${orderData.orderNumber}`;
+      
+      const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #1e3a8a; color: white; padding: 20px; text-align: center;">
+            <h1>Payment Confirmed!</h1>
+          </div>
+          
+          <div style="padding: 20px;">
+            <h2>Hi ${orderData.customerName},</h2>
+            
+            <p>Great news! Your payment has been successfully processed by PayPal.</p>
+            
+            <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin: 20px 0;">
+              <h3 style="margin: 0 0 10px 0; color: #1e3a8a;">Payment Details</h3>
+              <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+              <p><strong>Amount Paid:</strong> $${orderData.total}</p>
+              <p><strong>PayPal Transaction ID:</strong> ${orderData.paypalTransactionId}</p>
+              <p><strong>Date:</strong> ${orderData.paidAt.toLocaleString()}</p>
+            </div>
+            
+            <p>Your order is now being processed and you'll receive another email when it ships.</p>
+            
+            <p>Thanks for your business!<br>
+            <strong>Geelong Garage Doors</strong></p>
+          </div>
+        </div>
+      `;
+
+      return await this.sendEmail({
+        to: customerEmail,
+        from: this.fromEmail,
+        subject,
+        html: htmlContent
+      });
+      
+    } catch (error) {
+      console.error('❌ Failed to send payment confirmation email:', error);
+      return false;
+    }
+  }
+
   async sendNewOrderAlert(orderData: any, template: any, staffEmail: string) {
     const emailData = {
       order_number: orderData.orderNumber,
