@@ -22,6 +22,7 @@ import SettingsPage from "./settings";
 import SiteSettings from "./site-settings";
 import EmailTest from "./email-test";
 import EmailTemplates from "./email-templates";
+import EventsPage from "./events";
 import {
   LayoutDashboard,
   Package,
@@ -42,6 +43,7 @@ import {
   Globe,
   Mail,
   CreditCard,
+  Activity,
 } from "lucide-react";
 
 const sidebarItems = [
@@ -49,6 +51,7 @@ const sidebarItems = [
   { id: "analytics", label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
   { id: "products", label: "Products", icon: Package, path: "/admin/products" },
   { id: "orders", label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
+  { id: "events", label: "Events & Notifications", icon: Activity, path: "/admin/events" },
   { id: "enquiries", label: "Quote Requests", icon: MessageSquare, path: "/admin/enquiries" },
   { id: "categories", label: "Categories", icon: Tags, path: "/admin/categories" },
   { id: "brands", label: "Brands", icon: Building, path: "/admin/brands" },
@@ -87,6 +90,8 @@ export default function AdminLayout() {
         return { title: "Orders", subtitle: "Track and manage customer orders" };
       case "enquiries":
         return { title: "Quote Requests", subtitle: "Manage customer enquiries and quote requests" };
+      case "events":
+        return { title: "Events & Notifications", subtitle: "Monitor webhook events, email notifications, and system alerts" };
       case "categories":
         return { title: "Categories", subtitle: "Organize your product categories" };
       case "brands":
@@ -118,6 +123,8 @@ export default function AdminLayout() {
         return <Orders />;
       case "enquiries":
         return <Enquiries />;
+      case "events":
+        return <EventsPage />;
       case "categories":
         return <Categories />;
       case "brands":
