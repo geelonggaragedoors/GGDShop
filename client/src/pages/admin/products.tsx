@@ -404,6 +404,14 @@ export default function Products() {
       },
     },
     {
+      header: "Brand",
+      accessorKey: "brandId",
+      cell: ({ row }: any) => {
+        const brand = brands?.find(b => b.id === row.original.brandId);
+        return <span className="text-gray-600">{brand?.name || "—"}</span>;
+      },
+    },
+    {
       header: "Price",
       accessorKey: "price",
       cell: ({ row }: any) => (
