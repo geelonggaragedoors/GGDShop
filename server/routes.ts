@@ -1885,6 +1885,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else {
           console.warn('⚠️ New Order Alert template not found or not active');
         }
+
+        // Create admin notification for new order (notify all admin users)
+        try {
+          const adminUsers = await storage.getAdminUsers(); // Get all admin users
+          for (const admin of adminUsers) {
+            await notificationService.createOrderNotification(
+              admin.id,
+              order.id,
+              'new',
+              {
+                orderNumber: order.orderNumber,
+                customerName: `${customerData.firstName} ${customerData.lastName}`,
+                total: totals.total,
+                itemCount: cartItems.length
+              }
+            );
+          }
+          console.log('✅ Admin notifications created for new order');
+        } catch (notificationError) {
+          console.error('❌ Failed to create admin notification:', notificationError);
+          // Don't fail the order creation if notification fails
+        }
       } catch (emailError) {
         console.error('Failed to send order emails:', emailError);
         // Don't fail the order creation if email fails

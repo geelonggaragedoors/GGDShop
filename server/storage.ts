@@ -63,6 +63,7 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserProfile(id: string, updates: { firstName?: string; lastName?: string; phone?: string; address?: string }): Promise<User>;
   getOrdersByUserId(userId: string): Promise<Order[]>;
+  getAdminUsers(): Promise<User[]>;
 
   // Category operations
   getCategories(): Promise<Category[]>;
@@ -270,6 +271,10 @@ export class DatabaseStorage implements IStorage {
 
   async getOrdersByUserId(userId: string): Promise<Order[]> {
     return db.select().from(orders).where(eq(orders.customerId, userId)).orderBy(desc(orders.createdAt));
+  }
+
+  async getAdminUsers(): Promise<User[]> {
+    return db.select().from(users).where(eq(users.role, 'admin'));
   }
 
   // Category operations
