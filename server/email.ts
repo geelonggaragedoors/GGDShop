@@ -211,22 +211,155 @@ export class EmailService {
     });
   }
 
-  async sendOrderStatusUpdate(orderData: any, template: any) {
-    const emailData = {
-      customer_name: orderData.customerName || 'Customer',
-      order_number: orderData.orderNumber,
-      estimated_delivery: orderData.estimatedDelivery || '3-5 business days',
-      shipping_method: orderData.shippingMethod || 'Standard Delivery',
-      shipping_address: orderData.shippingAddress || 'N/A'
-    };
+  // Order Status Update Methods - Using proper email templates instead of generic test emails
+  async sendOrderProcessingEmail(customerEmail: string, orderData: any) {
+    console.log('=== SENDING ORDER PROCESSING EMAIL ===');
+    console.log('Customer Email:', customerEmail);
+    console.log('Order:', orderData.orderNumber);
 
-    const processedSubject = this.processTemplate(template.subject, emailData);
-    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+    const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0;">Order Being Processed</h1>
+        <p style="margin: 10px 0 0 0;">We're preparing your order</p>
+      </div>
+      
+      <div style="padding: 20px; background-color: #f9fafb;">
+        <h2 style="color: #1e40af; margin-top: 0;">Hi ${orderData.customerName || 'Valued Customer'},</h2>
+        <p>Good news! Your order is now being processed and will be shipped soon.</p>
+        
+        <div style="background-color: #e0f2fe; border-left: 4px solid #1e40af; padding: 15px; margin: 20px 0;">
+          <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+          <p><strong>Status:</strong> Processing</p>
+          <p><strong>Estimated Processing Time:</strong> 1-2 business days</p>
+        </div>
+        
+        <p>We'll send you another email with tracking information once your order ships.</p>
+      </div>
+
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+        <p>Thank you for choosing Geelong Garage Doors!</p>
+      </div>
+    </div>`;
 
     return this.sendEmail({
-      to: orderData.customerEmail,
-      subject: processedSubject,
-      html: processedHtml
+      to: customerEmail,
+      subject: `Order Processing - ${orderData.orderNumber}`,
+      html: emailHtml
+    });
+  }
+
+  async sendOrderShippedEmail(customerEmail: string, orderData: any) {
+    console.log('=== SENDING ORDER SHIPPED EMAIL ===');
+    console.log('Customer Email:', customerEmail);
+    console.log('Order:', orderData.orderNumber);
+
+    const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0;">Order Shipped! 📦</h1>
+        <p style="margin: 10px 0 0 0;">Your order is on the way</p>
+      </div>
+      
+      <div style="padding: 20px; background-color: #f9fafb;">
+        <h2 style="color: #1e40af; margin-top: 0;">Hi ${orderData.customerName || 'Valued Customer'},</h2>
+        <p>Great news! Your order has been shipped and is on its way to you.</p>
+        
+        <div style="background-color: #e0f2fe; border-left: 4px solid #1e40af; padding: 15px; margin: 20px 0;">
+          <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+          <p><strong>Status:</strong> Shipped</p>
+          <p><strong>Estimated Delivery:</strong> 3-5 business days</p>
+          ${orderData.tracking ? `<p><strong>Tracking Number:</strong> ${orderData.tracking}</p>` : ''}
+        </div>
+        
+        <p>You can expect delivery within 3-5 business days. We'll notify you once it's delivered.</p>
+      </div>
+
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+        <p>Thank you for choosing Geelong Garage Doors!</p>
+      </div>
+    </div>`;
+
+    return this.sendEmail({
+      to: customerEmail,
+      subject: `Order Shipped - ${orderData.orderNumber}`,
+      html: emailHtml
+    });
+  }
+
+  async sendOrderDeliveredEmail(customerEmail: string, orderData: any) {
+    console.log('=== SENDING ORDER DELIVERED EMAIL ===');
+    console.log('Customer Email:', customerEmail);
+    console.log('Order:', orderData.orderNumber);
+
+    const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0;">Order Delivered! ✅</h1>
+        <p style="margin: 10px 0 0 0;">Your order has arrived</p>
+      </div>
+      
+      <div style="padding: 20px; background-color: #f9fafb;">
+        <h2 style="color: #1e40af; margin-top: 0;">Hi ${orderData.customerName || 'Valued Customer'},</h2>
+        <p>Excellent! Your order has been successfully delivered.</p>
+        
+        <div style="background-color: #e0f2fe; border-left: 4px solid #1e40af; padding: 15px; margin: 20px 0;">
+          <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+          <p><strong>Status:</strong> Delivered</p>
+          <p><strong>Delivered On:</strong> ${new Date().toLocaleDateString()}</p>
+        </div>
+        
+        <p>We hope you're satisfied with your purchase. If you have any questions or concerns, please don't hesitate to contact us.</p>
+        <p>Thank you for choosing Geelong Garage Doors for your garage door parts!</p>
+      </div>
+
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+        <p>Thank you for choosing Geelong Garage Doors!</p>
+      </div>
+    </div>`;
+
+    return this.sendEmail({
+      to: customerEmail,
+      subject: `Order Delivered - ${orderData.orderNumber}`,
+      html: emailHtml
+    });
+  }
+
+  async sendOrderCanceledEmail(customerEmail: string, orderData: any) {
+    console.log('=== SENDING ORDER CANCELED EMAIL ===');
+    console.log('Customer Email:', customerEmail);
+    console.log('Order:', orderData.orderNumber);
+
+    const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #dc2626; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0;">Order Canceled</h1>
+        <p style="margin: 10px 0 0 0;">Your order has been canceled</p>
+      </div>
+      
+      <div style="padding: 20px; background-color: #f9fafb;">
+        <h2 style="color: #1e40af; margin-top: 0;">Hi ${orderData.customerName || 'Valued Customer'},</h2>
+        <p>We're writing to inform you that your order has been canceled as requested.</p>
+        
+        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
+          <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+          <p><strong>Status:</strong> Canceled</p>
+          <p><strong>Canceled On:</strong> ${new Date().toLocaleDateString()}</p>
+        </div>
+        
+        <p>If you paid for this order, any applicable refunds will be processed within 3-5 business days.</p>
+        <p>If you have any questions about this cancellation, please contact us.</p>
+      </div>
+
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+        <p>Thank you for choosing Geelong Garage Doors!</p>
+      </div>
+    </div>`;
+
+    return this.sendEmail({
+      to: customerEmail,
+      subject: `Order Canceled - ${orderData.orderNumber}`,
+      html: emailHtml
     });
   }
 

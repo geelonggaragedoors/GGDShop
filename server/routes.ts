@@ -1542,25 +1542,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await storage.updateOrderStatus(id, status);
       
-      // Send order shipped email if status is changed to shipped
-      if (status === 'shipped') {
-        try {
-          const order = await storage.getOrder(id);
-          if (order) {
-            const templates = await storage.getEmailTemplates({ 
-              templateType: 'customer',
-              isActive: true 
-            });
-            
-            const shippedTemplate = templates.templates.find(t => t.name === 'Order Shipped');
-            if (shippedTemplate) {
-              await emailService.sendOrderStatusUpdate(order, shippedTemplate);
-              console.log('Order shipped email sent to:', order.customerEmail);
-            }
+      // Send appropriate status update email
+      try {
+        const order = await storage.getOrder(id);
+        if (order && order.customerEmail) {
+          const orderData = {
+            orderNumber: order.orderNumber,
+            customerName: order.shippingAddress?.firstName ? 
+              `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 
+              'Valued Customer',
+            tracking: order.australiaPostTrackingNumber
+          };
+
+          if (status === 'processing') {
+            await emailService.sendOrderProcessingEmail(order.customerEmail, orderData);
+            console.log('Order processing email sent to:', order.customerEmail);
+          } else if (status === 'shipped') {
+            await emailService.sendOrderShippedEmail(order.customerEmail, orderData);
+            console.log('Order shipped email sent to:', order.customerEmail);
+          } else if (status === 'delivered') {
+            await emailService.sendOrderDeliveredEmail(order.customerEmail, orderData);
+            console.log('Order delivered email sent to:', order.customerEmail);
+          } else if (status === 'canceled') {
+            await emailService.sendOrderCanceledEmail(order.customerEmail, orderData);
+            console.log('Order canceled email sent to:', order.customerEmail);
           }
-        } catch (emailError) {
-          console.error('Failed to send shipped email:', emailError);
         }
+      } catch (emailError) {
+        console.error('Failed to send status update email:', emailError);
       }
       
       res.json({ success: true });
@@ -2924,6 +2933,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Test order confirmation error:', error);
       res.status(500).json({ error: 'Failed to send order confirmation email' });
+    }
+  });
+
+  // Test all order status emails
+  app.post('/api/test-order-status-emails', hybridAuth, async (req, res) => {
+    try {
+      const customerEmail = "stevejford1@gmail.com";
+      const orderData = {
+        orderNumber: "GGD-1753072097969",
+        customerName: "Stephen Ford"
+      };
+
+      const results = [];
+      
+      // Test processing email
+      console.log('Testing order processing email...');
+      const processingResult = await emailService.sendOrderProcessingEmail(customerEmail, orderData);
+      results.push({ type: 'processing', success: processingResult.success });
+      
+      // Wait a bit between emails
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Test shipped email  
+      console.log('Testing order shipped email...');
+      const shippedResult = await emailService.sendOrderShippedEmail(customerEmail, orderData);
+      results.push({ type: 'shipped', success: shippedResult.success });
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Test delivered email
+      console.log('Testing order delivered email...');
+      const deliveredResult = await emailService.sendOrderDeliveredEmail(customerEmail, orderData);
+      results.push({ type: 'delivered', success: deliveredResult.success });
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Test canceled email
+      console.log('Testing order canceled email...');
+      const canceledResult = await emailService.sendOrderCanceledEmail(customerEmail, orderData);
+      results.push({ type: 'canceled', success: canceledResult.success });
+      
+      res.json({ 
+        message: 'All order status emails tested',
+        results: results
+      });
+      
+    } catch (error) {
+      console.error('Test order status emails error:', error);
+      res.status(500).json({ error: 'Failed to test order status emails' });
     }
   });
 
