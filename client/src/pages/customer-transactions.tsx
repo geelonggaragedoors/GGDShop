@@ -6,21 +6,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar, Mail, Package, Receipt, Search, Download, Filter } from 'lucide-react';
+import { Calendar, Mail, Package, Receipt, Search, Download, Filter, CreditCard, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Transaction {
   id: string;
   customerId: string;
   orderId: string;
-  type: string;
-  amount: number;
-  description: string;
+  transactionType: string;
+  documentType: string;
+  amount: string;
   paymentMethod: string;
-  transactionId: string;
+  transactionReference: string;
   status: string;
-  emailSentAt: string;
-  createdAt: string;
+  emailSentAt: Date | null;
+  createdAt: Date;
 }
 
 export default function CustomerTransactions() {
@@ -35,11 +35,11 @@ export default function CustomerTransactions() {
   });
 
   const filteredTransactions = transactions.filter((transaction: Transaction) => {
-    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = transaction.transactionType.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          transaction.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         transaction.transactionId.toLowerCase().includes(searchTerm.toLowerCase());
+                         transaction.transactionReference?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesType = filterType === 'all' || transaction.type === filterType;
+    const matchesType = filterType === 'all' || transaction.transactionType === filterType;
     
     const matchesDate = !dateRange.start || !dateRange.end || 
                        (new Date(transaction.createdAt) >= new Date(dateRange.start) && 
@@ -50,11 +50,13 @@ export default function CustomerTransactions() {
 
   const getTransactionTypeColor = (type: string) => {
     switch (type) {
-      case 'order_confirmation':
+      case 'invoice':
         return 'bg-blue-100 text-blue-800';
-      case 'payment_receipt':
+      case 'receipt':
         return 'bg-green-100 text-green-800';
-      case 'status_update':
+      case 'refund':
+        return 'bg-red-100 text-red-800';
+      case 'credit':
         return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -63,12 +65,14 @@ export default function CustomerTransactions() {
 
   const getTransactionIcon = (type: string) => {
     switch (type) {
-      case 'order_confirmation':
+      case 'invoice':
         return <Package className="w-4 h-4" />;
-      case 'payment_receipt':
+      case 'receipt':
         return <Receipt className="w-4 h-4" />;
-      case 'status_update':
-        return <Mail className="w-4 h-4" />;
+      case 'refund':
+        return <CreditCard className="w-4 h-4" />;
+      case 'credit':
+        return <DollarSign className="w-4 h-4" />;
       default:
         return <Mail className="w-4 h-4" />;
     }
@@ -76,12 +80,14 @@ export default function CustomerTransactions() {
 
   const getTransactionTitle = (type: string) => {
     switch (type) {
-      case 'order_confirmation':
-        return 'Order Confirmation';
-      case 'payment_receipt':
+      case 'invoice':
+        return 'Order Invoice';
+      case 'receipt':
         return 'Payment Receipt';
-      case 'status_update':
-        return 'Status Update';
+      case 'refund':
+        return 'Refund Receipt';
+      case 'credit':
+        return 'Credit Note';
       default:
         return type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
@@ -111,12 +117,12 @@ export default function CustomerTransactions() {
           <h2>Transaction Details</h2>
           <p><strong>Transaction ID:</strong> ${transaction.id}</p>
           <p><strong>Order ID:</strong> ${transaction.orderId}</p>
-          <p><strong>Type:</strong> ${getTransactionTitle(transaction.type)}</p>
-          <p><strong>Amount:</strong> <span class="amount">$${transaction.amount.toFixed(2)}</span></p>
+          <p><strong>Type:</strong> ${getTransactionTitle(transaction.transactionType)}</p>
+          <p><strong>Amount:</strong> <span class="amount">$${parseFloat(transaction.amount).toFixed(2)}</span></p>
           <p><strong>Payment Method:</strong> ${transaction.paymentMethod}</p>
           <p><strong>Status:</strong> ${transaction.status}</p>
           <p><strong>Date:</strong> ${format(new Date(transaction.createdAt), 'PPP')}</p>
-          <p><strong>Description:</strong> ${transaction.description}</p>
+          <p><strong>Document Type:</strong> ${transaction.documentType}</p>
         </div>
         
         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
@@ -139,6 +145,8 @@ export default function CustomerTransactions() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+
 
   if (isLoading) {
     return (
@@ -203,9 +211,10 @@ export default function CustomerTransactions() {
                 className="w-full p-2 border border-gray-300 rounded-md"
               >
                 <option value="all">All Types</option>
-                <option value="order_confirmation">Order Confirmations</option>
-                <option value="payment_receipt">Payment Receipts</option>
-                <option value="status_update">Status Updates</option>
+                <option value="invoice">Invoices</option>
+                <option value="receipt">Payment Receipts</option>
+                <option value="refund">Refunds</option>
+                <option value="credit">Credits</option>
               </select>
             </div>
             <div>
@@ -250,18 +259,18 @@ export default function CustomerTransactions() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
-                      {getTransactionIcon(transaction.type)}
+                      {getTransactionIcon(transaction.transactionType)}
                     </div>
                     <div className="flex-grow">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-semibold text-gray-900">
-                          {getTransactionTitle(transaction.type)}
+                          {getTransactionTitle(transaction.transactionType)}
                         </h3>
-                        <Badge className={getTransactionTypeColor(transaction.type)}>
+                        <Badge className={getTransactionTypeColor(transaction.transactionType)}>
                           {transaction.status}
                         </Badge>
                       </div>
-                      <p className="text-gray-700 mb-2">{transaction.description}</p>
+                      <p className="text-gray-700 mb-2">{transaction.documentType}</p>
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
@@ -274,7 +283,7 @@ export default function CustomerTransactions() {
                   </div>
                   <div className="text-right">
                     <div className="text-xl font-bold text-blue-600 mb-2">
-                      ${transaction.amount.toFixed(2)}
+                      ${parseFloat(transaction.amount).toFixed(2)}
                     </div>
                     <Button
                       onClick={() => handleDownloadInvoice(transaction)}
@@ -300,7 +309,7 @@ export default function CustomerTransactions() {
             <div className="flex justify-between items-center text-sm text-gray-600">
               <span>Total Transactions: {filteredTransactions.length}</span>
               <span>
-                Total Amount: ${filteredTransactions.reduce((sum, t) => sum + t.amount, 0).toFixed(2)}
+                Total Amount: ${filteredTransactions.reduce((sum, t) => sum + parseFloat(t.amount), 0).toFixed(2)}
               </span>
             </div>
           </CardContent>

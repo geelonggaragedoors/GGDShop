@@ -2579,7 +2579,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Customer Transaction Routes
-  app.get("/api/customer-transactions/:customerId", async (req, res) => {
+  // Route for current authenticated user's transactions
+  app.get("/api/customer-transactions", hybridAuth, async (req, res) => {
+    try {
+      const customerId = req.user?.id;
+      if (!customerId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const transactions = await storage.getCustomerTransactions(customerId);
+      res.json(transactions);
+    } catch (error) {
+      console.error("Error fetching customer transactions:", error);
+      res.status(500).json({ message: "Failed to fetch customer transactions" });
+    }
+  });
+
+  // Route for specific customer's transactions (admin use)
+  app.get("/api/customer-transactions/:customerId", hybridAuth, async (req, res) => {
     try {
       const { customerId } = req.params;
       const transactions = await storage.getCustomerTransactions(customerId);
