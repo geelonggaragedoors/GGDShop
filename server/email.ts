@@ -157,11 +157,18 @@ export class EmailService {
     `).join('') || '<tr><td colspan="4" style="padding: 8px; text-align: center;">No items found</td></tr>';
 
     const emailHtml = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+    </style>
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
-        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
-          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
+        <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+          <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+            <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+            <br>
+            <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+          </div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
         <h1 style="margin: 0; font-size: 32px;">Order Confirmation</h1>
         <p style="margin: 10px 0 0 0; font-size: 16px;">Thank you for your purchase!</p>
@@ -222,11 +229,18 @@ export class EmailService {
     console.log('Order:', orderData.orderNumber);
 
     const emailHtml = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+    </style>
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
-        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
-          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
+        <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+          <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+            <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+            <br>
+            <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+          </div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
         <h1 style="margin: 0; font-size: 32px;">Order Being Processed</h1>
         <p style="margin: 10px 0 0 0; font-size: 16px;">We're preparing your order</p>
@@ -263,11 +277,18 @@ export class EmailService {
     console.log('Order:', orderData.orderNumber);
 
     const emailHtml = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+    </style>
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
-        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
-          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
+        <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+          <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+            <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+            <br>
+            <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+          </div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
         <h1 style="margin: 0; font-size: 32px;">Order Shipped! 📦</h1>
         <p style="margin: 10px 0 0 0; font-size: 16px;">Your order is on the way</p>
@@ -305,11 +326,18 @@ export class EmailService {
     console.log('Order:', orderData.orderNumber);
 
     const emailHtml = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+    </style>
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
-        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
-          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
+        <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+          <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+            <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+            <br>
+            <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+          </div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
         <h1 style="margin: 0; font-size: 32px;">Order Delivered! ✅</h1>
         <p style="margin: 10px 0 0 0; font-size: 16px;">Your order has arrived</p>
@@ -347,11 +375,18 @@ export class EmailService {
     console.log('Order:', orderData.orderNumber);
 
     const emailHtml = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+    </style>
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #dc2626; color: white; padding: 30px; text-align: center;">
-        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
-          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 8px 0 0 0; font-size: 14px; color: #fecaca; font-weight: normal;">Your Garage Door Parts Specialist</p>
+        <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+          <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+            <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+            <br>
+            <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+          </div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
         <h1 style="margin: 0; font-size: 32px;">Order Canceled</h1>
         <p style="margin: 10px 0 0 0; font-size: 16px;">Your order has been canceled</p>

@@ -10,6 +10,7 @@ Preferred communication style: Simple, everyday language.
 Email domain: Using geelonggaragedoors.com (verified in SendGrid) instead of .com.au
 Deployment: Site deployed to geelonggaragedoors.com - needs NODE_ENV=production for correct password reset URLs
 Email system: Using SendGrid with API key stored securely in Replit Secrets
+Font preferences: Quicksand medium 500 for "Geelong" in reddish color (#c53030), Raleway black 900 for "GARAGE DOORS" with white background
 Payment system: PayPal-only checkout (handles both PayPal accounts and guest credit card payments)
 Design preference: Blue-only color scheme throughout application
 Business model: E-commerce parts supplier - sells garage door parts for shipping, does NOT provide installation services
