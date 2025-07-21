@@ -12,6 +12,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
+import { useLocation } from "wouter";
 
 interface Notification {
   id: string;
@@ -28,6 +29,7 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
+  const [, navigate] = useLocation();
 
   // Fetch notifications
   const { data: notificationData } = useQuery({
@@ -150,12 +152,45 @@ export default function NotificationBell() {
     );
   };
 
+  const handleNotificationClick = (notification: Notification) => {
+    // Mark as read if not already
+    if (!notification.isRead) {
+      handleMarkAsRead(notification.id);
+    }
+    
+    // Close the popover
+    setIsOpen(false);
+    
+    // Navigate to order if it's a payment notification
+    if (notification.type === 'payment' && notification.data?.orderId) {
+      navigate(`/admin/orders/${notification.data.orderId}`);
+    } else if (notification.type === 'payment' && notification.data?.orderNumber) {
+      // Navigate to orders page and filter by order number
+      navigate(`/admin/orders?search=${notification.data.orderNumber}`);
+    } else {
+      // For other notification types, navigate to relevant page
+      switch (notification.type) {
+        case 'order_new':
+        case 'order_updated':
+          navigate('/admin/orders');
+          break;
+        case 'low_stock':
+          navigate('/admin/products');
+          break;
+        default:
+          navigate('/admin');
+      }
+    }
+  };
+
   const handleMarkAllAsRead = () => {
     markAllAsReadMutation.mutate();
   };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
+      case "payment":
+        return "💰";
       case "order_new":
         return "🆕";
       case "order_updated":
@@ -213,10 +248,10 @@ export default function NotificationBell() {
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 hover:bg-gray-50 cursor-pointer ${
+                  className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
                     !notification.isRead ? "bg-blue-50 border-l-2 border-l-blue-500" : ""
                   }`}
-                  onClick={() => !notification.isRead && handleMarkAsRead(notification.id)}
+                  onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start space-x-3">
                     <span className="text-lg">{getNotificationIcon(notification.type)}</span>
