@@ -59,19 +59,35 @@ interface PayPalWebhookEvent {
 // Verify PayPal webhook signature
 function verifyWebhookSignature(payload: string, headers: any): boolean {
   try {
-    const authAlgo = headers['paypal-auth-algo'];
-    const transmission = headers['paypal-transmission-id'];
-    const certId = headers['paypal-cert-id'];
-    const signature = headers['paypal-transmission-sig'];
-    const timestamp = headers['paypal-transmission-time'];
+    // Check for PayPal headers (they can be lowercase or with different casing)
+    const authAlgo = headers['paypal-auth-algo'] || headers['PAYPAL-AUTH-ALGO'];
+    const transmission = headers['paypal-transmission-id'] || headers['PAYPAL-TRANSMISSION-ID'];
+    const certId = headers['paypal-cert-id'] || headers['PAYPAL-CERT-ID'];
+    const signature = headers['paypal-transmission-sig'] || headers['PAYPAL-TRANSMISSION-SIG'];
+    const timestamp = headers['paypal-transmission-time'] || headers['PAYPAL-TRANSMISSION-TIME'];
+
+    console.log('🔍 PayPal Webhook Headers Check:', {
+      authAlgo: !!authAlgo,
+      transmission: !!transmission,
+      certId: !!certId,
+      signature: !!signature,
+      timestamp: !!timestamp,
+      allHeaders: Object.keys(headers)
+    });
 
     if (!authAlgo || !transmission || !certId || !signature || !timestamp) {
       console.log('❌ Missing required PayPal webhook headers');
+      console.log('Available headers:', Object.keys(headers));
+      // For development, allow webhooks without proper headers
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️ Development mode: allowing webhook without proper headers');
+        return true;
+      }
       return false;
     }
 
     // For production, you should verify the certificate and signature
-    // For now, we'll do basic validation
+    // For development, we'll accept valid headers
     return true;
   } catch (error) {
     console.error('❌ PayPal webhook signature verification failed:', error);

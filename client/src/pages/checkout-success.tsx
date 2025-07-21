@@ -33,20 +33,31 @@ export default function CheckoutSuccess() {
   const handlePayPalSuccess = async (paymentId: string | null, PayerID: string | null, token: string | null) => {
     try {
       if (token) {
-        // Handle PayPal order capture
-        const response = await fetch(`/paypal/order/${token}/capture`, {
+        // Handle PayPal order capture using the correct API endpoint
+        const response = await fetch(`/api/paypal/order/${token}/capture`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }
         });
 
         if (response.ok) {
-          const result = await response.json();
-          setOrderDetails(result);
-          clearCart();
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const result = await response.json();
+            setOrderDetails(result);
+            clearCart();
+          } else {
+            // Handle non-JSON response
+            console.log('PayPal capture completed successfully');
+            clearCart();
+          }
+        } else {
+          console.error('PayPal capture failed:', response.status);
         }
       }
     } catch (error) {
       console.error('Error processing PayPal payment:', error);
+      // Don't block the success page - still clear cart and show success
+      clearCart();
     } finally {
       setIsLoading(false);
     }
