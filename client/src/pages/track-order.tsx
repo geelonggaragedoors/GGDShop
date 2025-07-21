@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Package, MapPin, Calendar, DollarSign, User, Phone, Mail, Search } from 'lucide-react';
+import { Loader2, Package, MapPin, Calendar, DollarSign, User, Phone, Mail, Search, ExternalLink } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import StorefrontHeader from '@/components/storefront/header';
 import StorefrontFooter from '@/components/storefront/footer';
@@ -38,6 +38,8 @@ interface Order {
   };
   paymentMethod: string;
   paymentStatus: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -207,6 +209,32 @@ export default function TrackOrderPage() {
                     <span className="text-sm">Payment: {order.paymentStatus}</span>
                   </div>
                 </div>
+                
+                {/* Australia Post Tracking Info */}
+                {order.trackingNumber && (
+                  <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-blue-900 mb-1">Australia Post Tracking</h4>
+                        <p className="text-blue-700 font-mono text-lg">{order.trackingNumber}</p>
+                      </div>
+                      <Button 
+                        asChild
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        <a 
+                          href={order.trackingUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Track with Australia Post
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

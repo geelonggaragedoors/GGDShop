@@ -6,11 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import DataTable from "@/components/ui/data-table";
 import OrderDetails from "@/components/OrderDetails";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
-import { Search, Eye, Edit, Package } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Search, Eye, Edit, Package, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
@@ -39,6 +43,49 @@ export default function Orders() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Order status updated successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Add tracking number mutation
+  const trackingSchema = z.object({
+    trackingNumber: z.string().length(12, "Tracking number must be exactly 12 digits").regex(/^\d+$/, "Tracking number must contain only digits")
+  });
+
+  const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<string | null>(null);
+  const [isTrackingDialogOpen, setIsTrackingDialogOpen] = useState(false);
+
+  const trackingForm = useForm<z.infer<typeof trackingSchema>>({
+    resolver: zodResolver(trackingSchema),
+    defaultValues: {
+      trackingNumber: ""
+    }
+  });
+
+  const addTrackingMutation = useMutation({
+    mutationFn: async ({ orderId, trackingNumber }: { orderId: string; trackingNumber: string }) => {
+      const response = await fetch(`/api/admin/orders/${orderId}/add-tracking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trackingNumber })
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      toast({ 
+        title: "Success", 
+        description: `Order ${data.orderNumber} has been shipped with tracking ${trackingForm.getValues().trackingNumber}` 
+      });
+      setIsTrackingDialogOpen(false);
+      trackingForm.reset();
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -178,6 +225,18 @@ export default function Orders() {
           >
             <Eye className="w-4 h-4" />
           </Button>
+          {row.original.status !== 'shipped' && row.original.paymentStatus === 'paid' && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setSelectedOrderForTracking(row.original.id);
+                setIsTrackingDialogOpen(true);
+              }}
+            >
+              <Truck className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -256,6 +315,58 @@ export default function Orders() {
           }}
         />
       </Card>
+
+      {/* Australia Post Tracking Dialog */}
+      <Dialog open={isTrackingDialogOpen} onOpenChange={setIsTrackingDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Australia Post Tracking Number</DialogTitle>
+          </DialogHeader>
+          <Form {...trackingForm}>
+            <form onSubmit={trackingForm.handleSubmit((data) => {
+              if (selectedOrderForTracking) {
+                addTrackingMutation.mutate({
+                  orderId: selectedOrderForTracking,
+                  trackingNumber: data.trackingNumber
+                });
+              }
+            })} className="space-y-4">
+              <FormField
+                control={trackingForm.control}
+                name="trackingNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>12-Digit Tracking Number</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="e.g. 997172053728" 
+                        {...field}
+                        maxLength={12}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end space-x-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsTrackingDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={addTrackingMutation.isPending}
+                >
+                  {addTrackingMutation.isPending ? "Shipping..." : "Ship Order"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

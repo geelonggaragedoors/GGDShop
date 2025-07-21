@@ -1061,6 +1061,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         paymentMethod: order.paypalOrderId ? 'PayPal' : 'Credit Card',
         paymentStatus: order.paymentStatus,
+        trackingNumber: order.auspostTrackingNumber,
+        trackingUrl: order.auspostTrackingNumber ? `https://auspost.com.au/mypost/track/details/${order.auspostTrackingNumber}` : null,
         createdAt: order.createdAt,
         updatedAt: order.updatedAt
       };
@@ -1117,6 +1119,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating order status:", error);
       res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  // Add Australia Post tracking number and update to shipped
+  app.post('/api/admin/orders/:id/add-tracking', hybridAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { trackingNumber } = req.body;
+      
+      if (!trackingNumber || trackingNumber.length !== 12) {
+        return res.status(400).json({ message: "Tracking number must be exactly 12 digits" });
+      }
+      
+      // Update order with tracking number and set status to shipped
+      const updatedOrder = await storage.addTrackingNumberAndShip(id, trackingNumber);
+      
+      if (updatedOrder) {
+        try {
+          // Send shipped email with tracking info
+          await emailService.sendOrderShippedEmail(updatedOrder.customerEmail, {
+            ...updatedOrder,
+            trackingNumber: trackingNumber,
+            trackingUrl: `https://auspost.com.au/mypost/track/details/${trackingNumber}`
+          });
+          console.log(`Shipped email sent for order ${updatedOrder.orderNumber} with tracking ${trackingNumber}`);
+        } catch (emailError) {
+          console.error('Error sending shipped email:', emailError);
+        }
+        
+        // Send real-time notification to all staff
+        await notificationService.sendToAllStaff({
+          type: 'order_shipped',
+          title: 'Order Shipped',
+          message: `Order ${updatedOrder.orderNumber} has been shipped with tracking ${trackingNumber}`,
+          data: { orderId: id, orderNumber: updatedOrder.orderNumber, trackingNumber }
+        });
+      }
+      
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error adding tracking number:", error);
+      res.status(500).json({ message: "Failed to add tracking number" });
     }
   });
 

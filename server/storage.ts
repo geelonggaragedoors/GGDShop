@@ -119,6 +119,7 @@ export interface IStorage {
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: string, status: string): Promise<boolean>;
   updateOrder(id: string, updates: Partial<Order>): Promise<boolean>;
+  addTrackingNumberAndShip(id: string, trackingNumber: string): Promise<Order | undefined>;
   addOrderItem(item: InsertOrderItem): Promise<OrderItem>;
 
   // Media operations
@@ -681,6 +682,20 @@ export class DatabaseStorage implements IStorage {
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(orders.id, id));
     return result.rowCount! > 0;
+  }
+
+  async addTrackingNumberAndShip(id: string, trackingNumber: string): Promise<Order | undefined> {
+    const [updatedOrder] = await db
+      .update(orders)
+      .set({
+        auspostTrackingNumber: trackingNumber,
+        status: 'shipped',
+        shippingStatus: 'shipped',
+        updatedAt: new Date()
+      })
+      .where(eq(orders.id, id))
+      .returning();
+    return updatedOrder;
   }
 
   async getOrder(id: string): Promise<Order | undefined> {
