@@ -79,15 +79,19 @@ export default function NotificationBell() {
         try {
           const message = JSON.parse(event.data);
           
-          if (message.type === "notification") {
-            setNotifications(prev => [message.data, ...prev]);
-            
-            // Show browser notification if permission granted
-            if (Notification.permission === "granted") {
-              new Notification(message.data.title, {
-                body: message.data.message,
-                icon: "/favicon.ico",
-              });
+          if (message.type === "notification" && message.data) {
+            // Ensure we only add valid notification objects
+            const notification = message.data;
+            if (notification && typeof notification === 'object' && notification.id && notification.title) {
+              setNotifications(prev => Array.isArray(prev) ? [notification, ...prev] : [notification]);
+              
+              // Show browser notification if permission granted
+              if (Notification.permission === "granted") {
+                new Notification(notification.title, {
+                  body: notification.message,
+                  icon: "/favicon.ico",
+                });
+              }
             }
           } else if (message.type === "auth_success") {
             console.log("WebSocket authentication successful");
@@ -132,7 +136,9 @@ export default function NotificationBell() {
   // Update notifications from query data
   useEffect(() => {
     if (notificationData) {
-      setNotifications(notificationData);
+      // Ensure we have an array, not an object
+      const notificationsArray = Array.isArray(notificationData) ? notificationData : [];
+      setNotifications(notificationsArray);
     }
   }, [notificationData]);
 

@@ -1,0 +1,66 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=akayNdWUV0LD' failed: 
+setupWebSocket @ client:536
+(anonymous) @ client:531
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=akayNdWUV0LD' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555
+chunk-RPCDYKBN.js?v=8da72aaf:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+NotificationBell.tsx:74 Connected to notification WebSocket
+NotificationBell.tsx:93 WebSocket authentication successful
+chunk-WRUEJBIP.js?v=8da72aaf:339 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-WRUEJBIP.js?v=8da72aaf:339
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=8da72aaf:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=8da72aaf:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=8da72aaf:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=8da72aaf:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=8da72aaf:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=8da72aaf:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=8da72aaf:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=8da72aaf:19416
+commitRoot @ chunk-RPCDYKBN.js?v=8da72aaf:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=8da72aaf:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=8da72aaf:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=8da72aaf:18627
+NotificationBell.tsx:247 Warning: Each child in a list should have a unique "key" prop.
+
+Check the render method of `NotificationBell`. See https://reactjs.org/link/warning-keys for more information.
+    at div
+    at NotificationBell (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/NotificationBell.tsx:35:20)
+    at div
+    at div
+    at header
+    at main
+    at div
+    at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:79:22)
+    at AdminRoute (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=E_oKQywG68Oa0YhELnMbG:51:36)
+    at component
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=E_oKQywG68Oa0YhELnMbG:49:42)
+    at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+    at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=8da72aaf:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=8da72aaf:64:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=8da72aaf:2805:3)
+    at App
+printWarning @ react_jsx-dev-runtime.js?v=8da72aaf:64
+error @ react_jsx-dev-runtime.js?v=8da72aaf:48
+validateExplicitKey @ react_jsx-dev-runtime.js?v=8da72aaf:724
+validateChildKeys @ react_jsx-dev-runtime.js?v=8da72aaf:737
+jsxWithValidation @ react_jsx-dev-runtime.js?v=8da72aaf:855
+NotificationBell @ NotificationBell.tsx:247
+renderWithHooks @ chunk-RPCDYKBN.js?v=8da72aaf:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=8da72aaf:14582
+beginWork @ chunk-RPCDYKBN.js?v=8da72aaf:15924
+beginWork$1 @ chunk-RPCDYKBN.js?v=8da72aaf:19753
+performUnitOfWork @ chunk-RPCDYKBN.js?v=8da72aaf:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=8da72aaf:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=8da72aaf:19116
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=8da72aaf:18678
+workLoop @ chunk-RPCDYKBN.js?v=8da72aaf:197
+flushWork @ chunk-RPCDYKBN.js?v=8da72aaf:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=8da72aaf:384
