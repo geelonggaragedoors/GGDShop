@@ -1,0 +1,72 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=YZ7-GIHxjdiI' failed: 
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=YZ7-GIHxjdiI' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+chunk-RPCDYKBN.js?v=8da72aaf:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+/api/admin/dashboard:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+NotificationBell.tsx:67 Connected to notification WebSocket
+NotificationBell.tsx:86 WebSocket authentication successful
+settings.tsx:876 Uncaught ReferenceError: webhookUrl is not defined
+    at Settings (settings.tsx:876:30)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=8da72aaf:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=8da72aaf:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=8da72aaf:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=8da72aaf:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=8da72aaf:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=8da72aaf:19137:13)
+settings.tsx:876 Uncaught ReferenceError: webhookUrl is not defined
+    at Settings (settings.tsx:876:30)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=8da72aaf:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=8da72aaf:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=8da72aaf:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=8da72aaf:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=8da72aaf:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=8da72aaf:19137:13)
+chunk-RPCDYKBN.js?v=8da72aaf:14032 The above error occurred in the <Settings> component:
+
+    at Settings (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/settings.tsx:678:21)
+    at main
+    at div
+    at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:78:22)
+    at AdminRoute (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=-yOt6jUcl-iSZ5IEzaTJg:51:36)
+    at component
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=-yOt6jUcl-iSZ5IEzaTJg:49:42)
+    at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+    at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=8da72aaf:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=8da72aaf:64:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=8da72aaf:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=8da72aaf:14032
+chunk-RPCDYKBN.js?v=8da72aaf:9129 Uncaught ReferenceError: webhookUrl is not defined
+    at Settings (settings.tsx:876:30)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=8da72aaf:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=8da72aaf:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=8da72aaf:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=8da72aaf:19116:15)
+    at recoverFromConcurrentError (chunk-RPCDYKBN.js?v=8da72aaf:18736:28)
+    at performSyncWorkOnRoot (chunk-RPCDYKBN.js?v=8da72aaf:18879:28)
+NotificationBell.tsx:108 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: WebSocket is closed before the connection is established.
+(anonymous) @ NotificationBell.tsx:108
+NotificationBell.tsx:94 WebSocket connection error: Event
+websocket.onerror @ NotificationBell.tsx:94
+NotificationBell.tsx:99 WebSocket closed unexpectedly: 1006 
+websocket.onclose @ NotificationBell.tsx:99
+NotificationBell.tsx:99 WebSocket closed unexpectedly: 1005 
+websocket.onclose @ NotificationBell.tsx:99

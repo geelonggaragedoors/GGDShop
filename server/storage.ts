@@ -778,7 +778,7 @@ export class DatabaseStorage implements IStorage {
         customerName: sql<string>`CONCAT(${customers.firstName}, ' ', ${customers.lastName})`,
       })
       .from(orders)
-      .leftJoin(customers, eq(orders.customerId, customers.id))
+      .leftJoin(customers, sql`${orders.customerId}::uuid = ${customers.id}`)
       .orderBy(desc(orders.createdAt))
       .limit(5);
 

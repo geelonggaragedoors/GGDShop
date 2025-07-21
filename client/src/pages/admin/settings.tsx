@@ -270,14 +270,11 @@ function EmailManagement() {
 
 
 
+  const webhookUrl = `${window.location.protocol}//${window.location.host}/api/paypal/webhook`;
+
   if (isLoading) {
     return <div className="p-6">Loading email settings...</div>;
   }
-
-  const [webhookId, setWebhookId] = useState("");
-  const [copied, setCopied] = useState(false);
-
-  const webhookUrl = `${window.location.protocol}//${window.location.host}/api/paypal/webhook`;
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -418,6 +415,8 @@ function EmailManagement() {
 
 export default function Settings() {
   const { toast } = useToast();
+  const [webhookId, setWebhookId] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["/api/admin/settings"],
