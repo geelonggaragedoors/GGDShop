@@ -41,6 +41,7 @@ import {
   BarChart3,
   Globe,
   Mail,
+  CreditCard,
 } from "lucide-react";
 
 const sidebarItems = [

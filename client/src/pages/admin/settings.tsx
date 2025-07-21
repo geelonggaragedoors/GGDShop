@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
-import { Save, Store, Mail, Shield, Globe, Bell, Settings as SettingsIcon, Users, ShoppingCart, Lock, Package } from "lucide-react";
+import { Save, Store, Mail, Shield, Globe, Bell, Settings as SettingsIcon, Users, ShoppingCart, Lock, Package, CreditCard, Copy, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 
@@ -274,12 +274,43 @@ function EmailManagement() {
     return <div className="p-6">Loading email settings...</div>;
   }
 
+  const [webhookId, setWebhookId] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const webhookUrl = `${window.location.protocol}//${window.location.host}/api/paypal/webhook`;
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Webhook URL copied to clipboard",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast({
+        title: "Copy failed",
+        description: "Please copy the URL manually",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const saveWebhookId = () => {
+    toast({
+      title: "Webhook ID saved",
+      description: "Add this to your Replit Secrets as PAYPAL_WEBHOOK_ID",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="config" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="config">Configuration</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger value="paypal">PayPal Webhooks</TabsTrigger>
         </TabsList>
 
         <TabsContent value="config">
@@ -804,6 +835,128 @@ export default function Settings() {
                   </Button>
                 </form>
               </Form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="paypal" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <CreditCard className="w-5 h-5 text-blue-600" />
+                <CardTitle>PayPal Webhook Configuration</CardTitle>
+              </div>
+              <CardDescription>
+                Configure PayPal webhooks to receive real-time payment notifications
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-blue-900">Webhook Setup Instructions</h3>
+                    <div className="text-sm text-blue-800 space-y-2">
+                      <p>1. Copy the webhook URL below</p>
+                      <p>2. Go to your PayPal Developer Dashboard</p>
+                      <p>3. Create a new webhook with this URL</p>
+                      <p>4. Subscribe to "PAYMENT.CAPTURE.COMPLETED" events</p>
+                      <p>5. Copy the webhook ID and add it to your Replit Secrets as PAYPAL_WEBHOOK_ID</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="webhook-url" className="text-sm font-medium">Webhook URL</Label>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Input
+                      id="webhook-url"
+                      value={webhookUrl}
+                      readOnly
+                      className="font-mono text-sm bg-gray-50"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyToClipboard(webhookUrl)}
+                    >
+                      {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open('https://developer.paypal.com/developer/applications', '_blank')}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Open PayPal Dashboard
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Use this URL when creating your webhook in PayPal Developer Dashboard
+                  </p>
+                </div>
+
+                <div>
+                  <Label htmlFor="webhook-id" className="text-sm font-medium">Webhook ID (Optional)</Label>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Input
+                      id="webhook-id"
+                      value={webhookId}
+                      onChange={(e) => setWebhookId(e.target.value)}
+                      placeholder="Enter webhook ID from PayPal Dashboard"
+                      className="font-mono text-sm"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={saveWebhookId}
+                      disabled={!webhookId.trim()}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Add this as PAYPAL_WEBHOOK_ID in your Replit Secrets for enhanced security
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-1">
+                    <h3 className="font-medium text-yellow-900">Important Notes</h3>
+                    <div className="text-sm text-yellow-800 space-y-1">
+                      <p>• Webhooks are essential for real-time payment processing</p>
+                      <p>• Without webhooks, order status updates may be delayed</p>
+                      <p>• Ensure your webhook endpoint is publicly accessible</p>
+                      <p>• Test the webhook after setup to verify it's working correctly</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+                <div className="text-center">
+                  <h4 className="font-medium text-gray-900 mb-2">Events Subscribed</h4>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-sm font-mono text-green-800">PAYMENT.CAPTURE.COMPLETED</p>
+                    <p className="text-xs text-green-600 mt-1">Triggers when payments are successful</p>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h4 className="font-medium text-gray-900 mb-2">Webhook Status</h4>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm text-blue-800">Ready to receive events</p>
+                    <p className="text-xs text-blue-600 mt-1">Configure in PayPal Dashboard</p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
