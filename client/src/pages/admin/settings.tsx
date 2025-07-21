@@ -268,38 +268,9 @@ function EmailManagement() {
 
   // Template management has been moved to the dedicated Email Management section
 
-
-
-  const webhookUrl = `${window.location.protocol}//${window.location.host}/api/paypal/webhook`;
-
   if (isLoading) {
     return <div className="p-6">Loading email settings...</div>;
   }
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      toast({
-        title: "Copied!",
-        description: "Webhook URL copied to clipboard",
-      });
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      toast({
-        title: "Copy failed",
-        description: "Please copy the URL manually",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const saveWebhookId = () => {
-    toast({
-      title: "Webhook ID saved",
-      description: "Add this to your Replit Secrets as PAYPAL_WEBHOOK_ID",
-    });
-  };
 
   return (
     <div className="space-y-6">
@@ -417,6 +388,33 @@ export default function Settings() {
   const { toast } = useToast();
   const [webhookId, setWebhookId] = useState("");
   const [copied, setCopied] = useState(false);
+  
+  const webhookUrl = `${window.location.protocol}//${window.location.host}/api/paypal/webhook`;
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Webhook URL copied to clipboard",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast({
+        title: "Copy failed",
+        description: "Please copy the URL manually",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const saveWebhookId = () => {
+    toast({
+      title: "Webhook ID saved",
+      description: "Add this to your Replit Secrets as PAYPAL_WEBHOOK_ID",
+    });
+  };
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["/api/admin/settings"],
