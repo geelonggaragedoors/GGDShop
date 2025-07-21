@@ -258,9 +258,8 @@ export default function Orders() {
             </div>
             <div className="flex space-x-3">
               <Button 
-                variant="outline"
                 onClick={() => setIsTrackingDialogOpen(true)}
-                className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2"
               >
                 <Truck className="w-4 h-4 mr-2" />
                 Ship Order
