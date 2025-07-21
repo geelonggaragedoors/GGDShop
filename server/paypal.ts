@@ -82,7 +82,7 @@ export async function getClientToken() {
 
 export async function createPaypalOrder(req: Request, res: Response) {
   try {
-    const { amount, currency, intent, orderId } = req.body;
+    const { amount, currency, intent, orderId, orderNumber } = req.body;
 
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       return res
@@ -104,6 +104,8 @@ export async function createPaypalOrder(req: Request, res: Response) {
         .json({ error: "Invalid intent. Intent is required." });
     }
 
+    console.log('Creating PayPal order with custom_id:', orderId || orderNumber);
+
     const collect = {
       body: {
         intent: intent.toUpperCase(), // PayPal expects uppercase
@@ -113,7 +115,7 @@ export async function createPaypalOrder(req: Request, res: Response) {
               currencyCode: currency,
               value: amount,
             },
-            customId: orderId, // Include our order ID for webhook identification
+            customId: orderId || orderNumber, // Use orderId or orderNumber for webhook identification
           },
         ],
       },
