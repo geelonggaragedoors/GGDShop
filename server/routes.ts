@@ -1148,6 +1148,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('Error sending shipped email:', emailError);
         }
         
+        // Update order with shipping notification timestamp
+        try {
+          await storage.updateOrderTimestamp(id, 'shippingNotificationSentAt', new Date());
+        } catch (timestampError) {
+          console.error('Error updating shipping notification timestamp:', timestampError);
+        }
+        
         // Send real-time notification to all staff
         try {
           await notificationService.broadcastToStaff({

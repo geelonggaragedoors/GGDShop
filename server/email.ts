@@ -1,4 +1,7 @@
 import sgMail from '@sendgrid/mail';
+import { db } from './db';
+import { orders } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
 // Initialize SendGrid
 if (!process.env.SENDGRID_API_KEY) {

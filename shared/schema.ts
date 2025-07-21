@@ -241,6 +241,12 @@ export const orders = pgTable("orders", {
   printedBy: varchar("printed_by"), // Who printed the order
   paidAt: timestamp("paid_at"), // When payment was completed
   paymentFailureReason: text("payment_failure_reason"), // Reason for payment failure
+  shippedAt: timestamp("shipped_at"), // When order was shipped
+  deliveredAt: timestamp("delivered_at"), // When order was delivered
+  cancelledAt: timestamp("cancelled_at"), // When order was cancelled
+  refundedAt: timestamp("refunded_at"), // When order was refunded
+  orderConfirmationSentAt: timestamp("order_confirmation_sent_at"), // When confirmation email was sent
+  shippingNotificationSentAt: timestamp("shipping_notification_sent_at"), // When shipping email was sent
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

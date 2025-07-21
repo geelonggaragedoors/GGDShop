@@ -669,9 +669,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateOrderStatus(id: string, status: string): Promise<boolean> {
+    const now = new Date();
+    const updateData: any = { status, updatedAt: now };
+    
+    // Set specific timestamps based on status
+    if (status === 'cancelled') {
+      updateData.cancelledAt = now;
+    } else if (status === 'delivered') {
+      updateData.deliveredAt = now;
+    }
+    
     const result = await db
       .update(orders)
-      .set({ status, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(orders.id, id));
     return result.rowCount! > 0;
   }
@@ -698,6 +708,40 @@ export class DatabaseStorage implements IStorage {
       .where(eq(orders.id, id))
       .returning();
     return updatedOrder;
+  }
+
+  async updateOrderTimestamp(id: string, field: string, timestamp: Date): Promise<boolean> {
+    try {
+      const updateData: any = { updatedAt: timestamp };
+      updateData[field] = timestamp;
+      
+      const result = await db
+        .update(orders)
+        .set(updateData)
+        .where(eq(orders.id, id));
+      return result.rowCount! > 0;
+    } catch (error) {
+      console.error('Error updating order timestamp:', error);
+      return false;
+    }
+  }
+
+  async updateOrderPaymentStatus(id: string, paymentStatus: string): Promise<boolean> {
+    const now = new Date();
+    const updateData: any = { paymentStatus, updatedAt: now };
+    
+    // Set specific timestamps based on payment status
+    if (paymentStatus === 'paid') {
+      updateData.paidAt = now;
+    } else if (paymentStatus === 'refunded') {
+      updateData.refundedAt = now;
+    }
+    
+    const result = await db
+      .update(orders)
+      .set(updateData)
+      .where(eq(orders.id, id));
+    return result.rowCount! > 0;
   }
 
   async getOrder(id: string): Promise<Order | undefined> {

@@ -656,22 +656,62 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              {/* Order Created */}
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <span>Order placed: {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}</span>
               </div>
-              {order.printedAt && (
+
+              {/* Order Confirmation Email */}
+              {order.orderConfirmationSentAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span>Confirmation email sent: {format(new Date(order.orderConfirmationSentAt), 'dd/MM/yyyy HH:mm')}</span>
+                </div>
+              )}
+
+              {/* Payment Status */}
+              {order.paidAt && (
                 <div className="flex items-center gap-2 text-sm">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Printed: {format(new Date(order.printedAt), 'dd/MM/yyyy HH:mm')}</span>
+                  <span>Payment received: {format(new Date(order.paidAt), 'dd/MM/yyyy HH:mm')}</span>
+                </div>
+              )}
+              
+              {order.paymentStatus === 'failed' && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <div className="flex flex-col">
+                    <span>Payment failed: {format(new Date(order.updatedAt), 'dd/MM/yyyy HH:mm')}</span>
+                    {order.paymentFailureReason && (
+                      <span className="text-red-600 text-xs">Reason: {order.paymentFailureReason}</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {order.refundedAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span>Payment refunded: {format(new Date(order.refundedAt), 'dd/MM/yyyy HH:mm')}</span>
+                </div>
+              )}
+
+              {/* Order Processing */}
+              {order.printedAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span>Order printed: {format(new Date(order.printedAt), 'dd/MM/yyyy HH:mm')}</span>
                   {order.printedBy && <span className="text-gray-500">by {order.printedBy}</span>}
                 </div>
               )}
+
+              {/* Shipping */}
               {order.status === 'shipped' && order.auspostTrackingNumber && order.shippedAt && (
                 <div className="flex items-center gap-2 text-sm">
                   <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   <div className="flex flex-col">
-                    <span>Shipped: {format(new Date(order.shippedAt), 'dd/MM/yyyy HH:mm')}</span>
+                    <span>Order shipped: {format(new Date(order.shippedAt), 'dd/MM/yyyy HH:mm')}</span>
                     <span className="text-gray-500 text-xs">
                       Tracking: {order.auspostTrackingNumber} | 
                       <a 
@@ -686,9 +726,51 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                   </div>
                 </div>
               )}
-              {order.updatedAt && order.updatedAt !== order.createdAt && (
+
+              {order.shippingNotificationSentAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                  <span>Shipping notification sent: {format(new Date(order.shippingNotificationSentAt), 'dd/MM/yyyy HH:mm')}</span>
+                </div>
+              )}
+
+              {/* Delivery Status */}
+              {order.deliveredAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  <span>Order delivered: {format(new Date(order.deliveredAt), 'dd/MM/yyyy HH:mm')}</span>
+                </div>
+              )}
+
+              {/* Cancellation */}
+              {order.cancelledAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                  <span>Order cancelled: {format(new Date(order.cancelledAt), 'dd/MM/yyyy HH:mm')}</span>
+                </div>
+              )}
+
+              {/* Status Changes */}
+              {order.status === 'pending' && (
                 <div className="flex items-center gap-2 text-sm">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                  <span>Status: Pending approval</span>
+                </div>
+              )}
+
+              {order.status === 'processing' && !order.printedAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                  <span>Status: Processing</span>
+                </div>
+              )}
+
+              {/* Last Updated (only if significantly different from other timestamps) */}
+              {order.updatedAt && order.updatedAt !== order.createdAt && 
+               (!order.paidAt || order.updatedAt > order.paidAt) &&
+               (!order.shippedAt || order.updatedAt > order.shippedAt) && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                   <span>Last updated: {format(new Date(order.updatedAt), 'dd/MM/yyyy HH:mm')}</span>
                 </div>
               )}
