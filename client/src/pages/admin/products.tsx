@@ -218,6 +218,20 @@ export default function Products() {
     },
   });
 
+  const deleteSingleProductMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      return apiRequest('DELETE', `/api/admin/products/${productId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      toast({ title: "Product deleted successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    },
+  });
+
   const form = useForm({
     resolver: zodResolver(insertProductSchema),
     defaultValues: {
@@ -531,7 +545,17 @@ export default function Products() {
             >
               {product.freePostage ? '🚚' : '💰'}
             </Button>
-            <Button size="sm" variant="ghost" className="p-1 text-red-600 hover:text-red-700">
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="p-1 text-red-600 hover:text-red-700"
+              onClick={() => {
+                if (confirm(`Are you sure you want to delete "${product.name}"? This action cannot be undone.`)) {
+                  deleteSingleProductMutation.mutate(product.id);
+                }
+              }}
+              disabled={deleteSingleProductMutation.isPending}
+            >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
