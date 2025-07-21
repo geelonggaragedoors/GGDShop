@@ -159,6 +159,7 @@ export class EmailService {
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <img src="https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/logo.png" alt="Geelong Garage Doors" style="max-height: 60px; margin-bottom: 15px;" />
         <h1 style="margin: 0;">Order Confirmation</h1>
         <p style="margin: 10px 0 0 0;">Thank you for your purchase!</p>
       </div>
@@ -220,6 +221,7 @@ export class EmailService {
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <img src="https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/logo.png" alt="Geelong Garage Doors" style="max-height: 60px; margin-bottom: 15px;" />
         <h1 style="margin: 0;">Order Being Processed</h1>
         <p style="margin: 10px 0 0 0;">We're preparing your order</p>
       </div>
@@ -257,6 +259,7 @@ export class EmailService {
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <img src="https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/logo.png" alt="Geelong Garage Doors" style="max-height: 60px; margin-bottom: 15px;" />
         <h1 style="margin: 0;">Order Shipped! 📦</h1>
         <p style="margin: 10px 0 0 0;">Your order is on the way</p>
       </div>
@@ -295,6 +298,7 @@ export class EmailService {
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <img src="https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/logo.png" alt="Geelong Garage Doors" style="max-height: 60px; margin-bottom: 15px;" />
         <h1 style="margin: 0;">Order Delivered! ✅</h1>
         <p style="margin: 10px 0 0 0;">Your order has arrived</p>
       </div>
@@ -333,6 +337,7 @@ export class EmailService {
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #dc2626; color: white; padding: 20px; text-align: center;">
+        <img src="https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/logo.png" alt="Geelong Garage Doors" style="max-height: 60px; margin-bottom: 15px;" />
         <h1 style="margin: 0;">Order Canceled</h1>
         <p style="margin: 10px 0 0 0;">Your order has been canceled</p>
       </div>
