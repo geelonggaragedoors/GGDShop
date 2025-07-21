@@ -147,7 +147,7 @@ export class EmailService {
       customer_name: orderData.customerName || 'Customer',
       order_number: orderData.orderNumber,
       order_date: new Date(orderData.createdAt).toLocaleDateString(),
-      total_amount: orderData.total.toFixed(2),
+      total_amount: parseFloat(orderData.total).toFixed(2),
       shipping_address: orderData.shippingAddress || 'N/A',
       order_items: this.formatOrderItems(orderData.items || [])
     };

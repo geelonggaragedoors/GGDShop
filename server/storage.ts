@@ -615,6 +615,20 @@ export class DatabaseStorage implements IStorage {
     return { orders: ordersList, total };
   }
 
+  async getRecentUnpaidOrders(): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .where(
+        and(
+          eq(orders.paymentStatus, 'pending'),
+          sql`${orders.createdAt} > NOW() - INTERVAL '24 hours'`
+        )
+      )
+      .orderBy(desc(orders.createdAt))
+      .limit(10);
+  }
+
   async getOrderById(id: string): Promise<Order | undefined> {
     const [order] = await db.select().from(orders).where(eq(orders.id, id));
     if (!order) return undefined;

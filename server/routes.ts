@@ -2841,6 +2841,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual order completion endpoint for fixing webhook issues
+  app.post('/api/test-manual-order-completion', hybridAuth, async (req, res) => {
+    try {
+      const { orderId, paypalTransactionId, orderNumber } = req.body;
+      
+      console.log('=== MANUAL ORDER COMPLETION ===');
+      console.log('Order ID:', orderId);
+      console.log('PayPal Transaction ID:', paypalTransactionId);
+      console.log('Order Number:', orderNumber);
+      
+      // Get the order
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+      
+      console.log('Found order:', order.orderNumber, 'Email:', order.customerEmail);
+      
+      // Send order confirmation email
+      await emailService.sendOrderConfirmation(order.customerEmail, {
+        orderNumber: order.orderNumber,
+        customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+        total: order.total,
+        items: order.items || [],
+        paypalTransactionId: paypalTransactionId
+      });
+      
+      // Send staff notification
+      await notificationService.broadcast({
+        title: 'Payment Completed',
+        message: `Order ${order.orderNumber} has been paid via PayPal (${paypalTransactionId})`,
+        type: 'payment',
+        priority: 'high',
+        metadata: { 
+          orderId: order.id, 
+          orderNumber: order.orderNumber,
+          amount: order.total,
+          paypalTransactionId
+        }
+      });
+      
+      console.log('✅ Order completion processed - email sent and notification broadcast');
+      
+      res.json({ 
+        message: 'Order completion processed successfully',
+        emailSent: true,
+        notificationSent: true
+      });
+      
+    } catch (error) {
+      console.error('Manual order completion error:', error);
+      res.status(500).json({ error: 'Failed to process order completion' });
+    }
+  });
+
   // Email Template Management Routes
   app.get('/api/admin/email-templates', hybridAuth, async (req, res) => {
     try {

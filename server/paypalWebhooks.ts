@@ -168,16 +168,32 @@ async function handlePaymentCompleted(event: PayPalWebhookEvent) {
     const customId = event.resource.custom_id; // Our order ID should be here
     const amount = event.resource.amount;
     
+    let order;
+    
     if (!customId) {
-      console.error('❌ No custom_id found in PayPal webhook - cannot identify order');
-      return;
-    }
-
-    // Find the order in our database
-    const order = await storage.getOrderById(customId);
-    if (!order) {
-      console.error('❌ Order not found in database:', customId);
-      return;
+      console.error('❌ No custom_id found - trying fallback method');
+      
+      // Try to find the most recent unpaid order
+      try {
+        const recentOrders = await storage.getRecentUnpaidOrders();
+        if (recentOrders.length > 0) {
+          order = recentOrders[0];
+          console.log(`Using fallback: most recent unpaid order ${order.orderNumber}`);
+        } else {
+          console.error('❌ No recent unpaid orders found');
+          return;
+        }
+      } catch (fallbackError) {
+        console.error('❌ Fallback failed:', fallbackError);
+        return;
+      }
+    } else {
+      // Find the order in our database using custom_id
+      order = await storage.getOrderById(customId);
+      if (!order) {
+        console.error('❌ Order not found in database:', customId);
+        return;
+      }
     }
 
     console.log(`✅ Found order ${order.orderNumber} for PayPal transaction ${paypalOrderId}`);
