@@ -1826,42 +1826,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send order confirmation email
       try {
+        console.log('Attempting to send order confirmation email to:', customer.email);
         const templates = await storage.getEmailTemplates({ 
           templateType: 'customer',
           isActive: true 
         });
+        console.log('Found customer templates:', templates.templates.length);
         
         const orderConfirmationTemplate = templates.templates.find(t => t.name === 'Order Confirmation');
+        console.log('Order confirmation template found:', !!orderConfirmationTemplate);
         
         if (orderConfirmationTemplate) {
           const orderWithItems = {
             ...order,
+            customerEmail: customer.email,
             customerName: `${customerData.firstName} ${customerData.lastName}`,
             items: cartItems,
             total: totals.total
           };
           
-          await emailService.sendOrderConfirmation(orderWithItems, orderConfirmationTemplate);
-          console.log('Order confirmation email sent to:', customer.email);
+          const result = await emailService.sendOrderConfirmation(orderWithItems, orderConfirmationTemplate);
+          console.log('Order confirmation email result:', result);
+          if (result.success) {
+            console.log('✅ Order confirmation email sent successfully to:', customer.email);
+          } else {
+            console.error('❌ Order confirmation email failed:', result.error);
+          }
+        } else {
+          console.warn('⚠️ Order confirmation template not found or not active');
         }
 
         // Send new order alert to staff
+        console.log('Attempting to send new order alert to staff');
         const staffTemplates = await storage.getEmailTemplates({ 
           templateType: 'staff',
           isActive: true 
         });
+        console.log('Found staff templates:', staffTemplates.templates.length);
         
         const staffTemplate = staffTemplates.templates.find(t => t.name === 'New Order Alert');
+        console.log('New order alert template found:', !!staffTemplate);
         if (staffTemplate) {
           const orderWithItems = {
             ...order,
+            customerEmail: customer.email,
             customerName: `${customerData.firstName} ${customerData.lastName}`,
             items: cartItems,
             total: totals.total
           };
           
-          await emailService.sendNewOrderAlert(orderWithItems, staffTemplate, 'orders@geelonggaragedoors.com');
-          console.log('New order alert sent to staff');
+          const result = await emailService.sendNewOrderAlert(orderWithItems, staffTemplate, 'orders@geelonggaragedoors.com');
+          console.log('Staff email result:', result);
+          if (result.success) {
+            console.log('✅ New order alert sent successfully to staff');
+          } else {
+            console.error('❌ Staff email failed:', result.error);
+          }
+        } else {
+          console.warn('⚠️ New Order Alert template not found or not active');
         }
       } catch (emailError) {
         console.error('Failed to send order emails:', emailError);
