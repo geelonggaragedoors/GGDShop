@@ -685,13 +685,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async addTrackingNumberAndShip(id: string, trackingNumber: string): Promise<Order | undefined> {
+    const now = new Date();
     const [updatedOrder] = await db
       .update(orders)
       .set({
         auspostTrackingNumber: trackingNumber,
         status: 'shipped',
         shippingStatus: 'shipped',
-        updatedAt: new Date()
+        shippedAt: now,
+        updatedAt: now
       })
       .where(eq(orders.id, id))
       .returning();

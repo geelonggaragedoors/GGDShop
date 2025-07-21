@@ -667,6 +667,25 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                   {order.printedBy && <span className="text-gray-500">by {order.printedBy}</span>}
                 </div>
               )}
+              {order.status === 'shipped' && order.auspostTrackingNumber && order.shippedAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  <div className="flex flex-col">
+                    <span>Shipped: {format(new Date(order.shippedAt), 'dd/MM/yyyy HH:mm')}</span>
+                    <span className="text-gray-500 text-xs">
+                      Tracking: {order.auspostTrackingNumber} | 
+                      <a 
+                        href={`https://auspost.com.au/mypost/track/details/${order.auspostTrackingNumber}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 ml-1"
+                      >
+                        Track package
+                      </a>
+                    </span>
+                  </div>
+                </div>
+              )}
               {order.updatedAt && order.updatedAt !== order.createdAt && (
                 <div className="flex items-center gap-2 text-sm">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
