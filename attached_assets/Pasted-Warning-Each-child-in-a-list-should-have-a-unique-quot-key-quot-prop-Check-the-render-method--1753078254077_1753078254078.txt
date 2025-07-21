@@ -1,0 +1,47 @@
+Warning: Each child in a list should have a unique &quot;key&quot; prop.
+
+Check the render method of `NotificationBell`. See https://reactjs.org/link/warning-keys for more information.
+    at div
+    at NotificationBell (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/NotificationBell.tsx:35:20)
+    at div
+    at div
+    at header
+    at main
+    at div
+    at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:79:22)
+    at AdminRoute (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=5Niw_0uDiJnWF2lvqdXMS:51:36)
+    at component
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=5Niw_0uDiJnWF2lvqdXMS:49:42)
+    at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+    at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=8da72aaf:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=8da72aaf:64:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=8da72aaf:2805:3)
+    at App
+
+Check the render method of &#x60;NotificationBell&#x60;. See https://reactjs.org/link/warning-keys for more information.
+at div
+at NotificationBell (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/components/NotificationBell.tsx:35:20)
+at div
+at div
+at header
+at main
+at div
+at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:79:22)
+at AdminRoute (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=5Niw_0uDiJnWF2lvqdXMS:51:36)
+at component
+at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:323:16)
+at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:379:17)
+at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?v=5Niw_0uDiJnWF2lvqdXMS:49:42)
+at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=8da72aaf:38:15)
+at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=8da72aaf:64:5)
+at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=8da72aaf:2805:3)
+at App
+at t.value (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
