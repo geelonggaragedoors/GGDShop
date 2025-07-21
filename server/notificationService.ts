@@ -151,6 +151,37 @@ export class NotificationService {
     }
   }
 
+  async broadcastToStaff(notification: { type: string; title: string; message: string; data?: any }) {
+    try {
+      const staffMembers = await storage.getStaffMembers();
+      
+      for (const staff of staffMembers) {
+        // Create database notification
+        await this.createNotification({
+          userId: staff.id,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          data: notification.data || {},
+          isRead: false
+        });
+
+        // Send real-time notification if connected
+        this.broadcastToUser(staff.id, {
+          type: 'notification',
+          data: {
+            type: notification.type,
+            title: notification.title,
+            message: notification.message,
+            data: notification.data
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error broadcasting to staff:', error);
+    }
+  }
+
   private broadcastToUser(userId: string, message: any) {
     const userClients = this.clients.get(userId);
     if (userClients) {

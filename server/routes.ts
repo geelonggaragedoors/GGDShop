@@ -1149,12 +1149,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Send real-time notification to all staff
-        await notificationService.sendToAllStaff({
-          type: 'order_shipped',
-          title: 'Order Shipped',
-          message: `Order ${updatedOrder.orderNumber} has been shipped with tracking ${trackingNumber}`,
-          data: { orderId: id, orderNumber: updatedOrder.orderNumber, trackingNumber }
-        });
+        try {
+          await notificationService.broadcastToStaff({
+            type: 'order_shipped',
+            title: 'Order Shipped',
+            message: `Order ${updatedOrder.orderNumber} has been shipped with tracking ${trackingNumber}`,
+            data: { orderId: id, orderNumber: updatedOrder.orderNumber, trackingNumber }
+          });
+        } catch (notificationError) {
+          console.error('Error sending notification:', notificationError);
+        }
       }
       
       res.json(updatedOrder);
