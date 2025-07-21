@@ -2851,48 +2851,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('PayPal Transaction ID:', paypalTransactionId);
       console.log('Order Number:', orderNumber);
       
-      // Get the order
-      const order = await storage.getOrderById(orderId);
-      if (!order) {
-        return res.status(404).json({ error: 'Order not found' });
-      }
-      
-      console.log('Found order:', order.orderNumber, 'Email:', order.customerEmail);
-      
-      // Send order confirmation email
-      await emailService.sendOrderConfirmation(order.customerEmail, {
-        orderNumber: order.orderNumber,
-        customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-        total: order.total,
-        items: order.items || [],
-        paypalTransactionId: paypalTransactionId
-      });
-      
-      // Send staff notification
-      await notificationService.broadcast({
-        title: 'Payment Completed',
-        message: `Order ${order.orderNumber} has been paid via PayPal (${paypalTransactionId})`,
+      // Create notification directly
+      await storage.createNotification({
+        userId: req.user.id,
         type: 'payment',
-        priority: 'high',
-        metadata: { 
-          orderId: order.id, 
-          orderNumber: order.orderNumber,
-          amount: order.total,
-          paypalTransactionId
-        }
+        title: 'Payment Completed ✅',
+        message: `Order ${orderNumber} has been paid via PayPal (${paypalTransactionId})`,
+        data: { orderId, paypalTransactionId, orderNumber },
+        isRead: false
       });
       
-      console.log('✅ Order completion processed - email sent and notification broadcast');
+      console.log('✅ Notification created successfully');
       
       res.json({ 
         message: 'Order completion processed successfully',
-        emailSent: true,
-        notificationSent: true
+        notificationCreated: true
       });
       
     } catch (error) {
       console.error('Manual order completion error:', error);
       res.status(500).json({ error: 'Failed to process order completion' });
+    }
+  });
+
+  // Test endpoint for fresh order simulation
+  app.post('/api/test-fresh-order-notification', hybridAuth, async (req, res) => {
+    try {
+      // Simulate a fresh order completion notification
+      const testOrderNumber = `GGD-TEST-${Date.now()}`;
+      const testTransactionId = `TEST-${Math.random().toString(36).substring(7).toUpperCase()}`;
+      
+      await storage.createNotification({
+        userId: req.user.id,
+        type: 'payment',
+        title: 'New Order Payment Received',
+        message: `Fresh test order ${testOrderNumber} has been completed via PayPal (${testTransactionId})`,
+        data: { testOrderNumber, testTransactionId },
+        isRead: false
+      });
+      
+      console.log('✅ Test fresh order notification created');
+      
+      res.json({ 
+        message: 'Test notification created successfully',
+        orderNumber: testOrderNumber,
+        transactionId: testTransactionId
+      });
+      
+    } catch (error) {
+      console.error('Test fresh order error:', error);
+      res.status(500).json({ error: 'Failed to create test notification' });
     }
   });
 
