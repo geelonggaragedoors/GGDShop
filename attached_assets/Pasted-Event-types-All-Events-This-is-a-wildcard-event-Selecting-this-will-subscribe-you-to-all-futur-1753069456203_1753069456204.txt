@@ -1,0 +1,383 @@
+Event types:
+
+All Events
+This is a wildcard event. Selecting this will subscribe you to all future events.
+
+
+
+Billing plan
+
+Billing plan activated
+
+Billing plan created
+
+Billing plan deactivated
+
+Billing plan pricing-change activated
+
+Billing plan pricing-change inprogress
+
+Billing plan updated
+
+
+Billing subscription
+
+Billing subscription activated
+
+Billing subscription cancelled
+
+Billing subscription created
+
+Billing subscription expired
+
+Billing subscription payment failed
+
+Billing subscription re-activated
+
+Billing subscription suspended
+
+Billing subscription updated
+
+
+Catalog product
+
+Catalog product created
+
+Catalog product updated
+
+
+Checkout
+
+Checkout checkout buyer-approved
+
+Checkout order approved
+
+Checkout order completed
+
+Checkout order declined
+
+Checkout order saved
+
+Checkout order voided
+
+
+Collection activity
+
+Collection activity executed
+
+
+Compliance process
+
+Compliance process agent-action-initiated
+
+Compliance process completed
+
+Compliance process end-user-action-required
+
+Compliance process exempted
+
+Compliance process failed
+
+Compliance process not-applied
+
+Compliance process system-action-initiated
+
+
+Customer-support chargeback
+
+Customer-support chargeback decision-responded
+
+
+Customer dispute
+
+Customer dispute created
+
+Customer dispute resolved
+
+Customer dispute updated
+
+
+Customer funds-reserve
+
+Customer funds-reserve released
+
+Customer funds-reserve withheld
+
+
+Customer managed-account
+
+Customer managed-account account-created
+
+Customer managed-account account-limit-approached
+
+Customer managed-account account-proactive-notification
+
+Customer managed-account account-status-changed
+
+Customer managed-account account-updated
+
+Customer managed-account configurations-updated
+
+Customer managed-account created
+
+Customer managed-account negative-balance-threshold
+
+Customer managed-account risk-assessed
+
+Customer managed-account updated
+
+
+Customer merchant-balance
+
+Customer merchant-balance changed
+
+
+Customer merchant-integration
+
+Customer merchant-integration capability-updated
+
+Customer merchant-integration product-subscription-updated
+
+Customer merchant-integration seller-already-integrated
+
+Customer merchant-integration seller-consent-granted
+
+Customer merchant-integration seller-email-confirmed
+
+Customer merchant-integration seller-error-bad-request
+
+Customer merchant-integration seller-error-internal-server-error
+
+Customer merchant-integration seller-onboarding-initiated
+
+Customer merchant-integration seller-onboarding-started
+
+
+Customer merchant-migration
+
+Customer merchant-migration billing-agreement-migration accepted
+
+Customer merchant-migration billing-agreement-migration completed
+
+Customer merchant-migration billing-agreement-migration failed
+
+Customer merchant-migration billing-agreement-migration in-progress
+
+
+Customer negative-balance
+
+Customer negative-balance active
+
+Customer negative-balance cleared
+
+Customer negative-balance created
+
+Customer negative-balance recoupment-completed
+
+Customer negative-balance reverse-recoupment-completed
+
+
+Customer partner-financial-account
+
+Customer partner-financial-account debited
+
+
+Customer payout
+
+Customer payout completed
+
+Customer payout failed
+
+
+Customer paypal-account
+
+Customer paypal-account changed
+
+
+Customer profile
+
+Customer profile account-closed
+
+
+Customer user-profile
+
+Customer user-profile password-changed
+
+
+Identity
+
+Identity authorization-consent granted
+
+Identity authorization-consent revoked
+
+
+Invoicing invoice
+
+Invoicing invoice cancelled
+
+Invoicing invoice created
+
+Invoicing invoice paid
+
+Invoicing invoice refunded
+
+Invoicing invoice scheduled
+
+Invoicing invoice updated
+
+
+Loyalty rewards-payout
+
+Loyalty rewards-payout completed
+
+
+Merchant onboarding
+
+Merchant onboarding completed
+
+
+Merchant partner-consent
+
+Merchant partner-consent revoked
+
+
+Payments & Payouts
+
+Payment-networks alternative-payment completed
+
+Payment-tokenization batch-request status-changed
+
+Payment-tokenization metadata changed
+
+Payment-tokenization payment-credential updated
+
+Payment-tokenization token-requestor updated
+
+Payment-tokenization token-status changed
+
+Payment authorization created
+
+Payment authorization voided
+
+Payment capture completed
+
+Payment capture declined
+
+Payment capture denied
+
+Payment capture pending
+
+Payment capture refunded
+
+Payment capture reversed
+
+Payment instrument replaced
+
+Payment instrument updated
+
+Payment order cancelled
+
+Payment order created
+
+Payment payouts-item blocked
+
+Payment payouts-item canceled
+
+Payment payouts-item denied
+
+Payment payouts-item failed
+
+Payment payouts-item held
+
+Payment payouts-item refunded
+
+Payment payouts-item returned
+
+Payment payouts-item succeeded
+
+Payment payouts-item unclaimed
+
+Payment payoutsbatch denied
+
+Payment payoutsbatch processing
+
+Payment payoutsbatch success
+
+Payment refund cancelled
+
+Payment refund completed
+
+Payment refund denied
+
+Payment refund failed
+
+Payment refund pending
+
+Payment sale completed
+
+Payment sale denied
+
+Payment sale pending
+
+Payment sale refunded
+
+Payment sale reversed
+
+Payments customer-payouts completed
+
+Payments customer-payouts created
+
+Payments customer-payouts failed
+
+Payments customer-payouts pending
+
+Payments customer-payouts reversed
+
+Payments payment created
+
+Payment_networks instrument linked-account-failed
+
+Payment_networks instrument linked-account-updated
+
+
+Pricing commission-config
+
+Pricing commission-config created
+
+Pricing commission-config provisioned
+
+Pricing commission-config updated
+
+
+Reporting report
+
+Reporting report available
+
+
+Risk
+
+Risk dispute created
+
+
+Taxes
+
+Taxes reports delivered
+
+Taxes reports generated
+
+
+Vault
+
+Vault credit-card created
+
+Vault credit-card deleted
+
+Vault credit-card updated
+
+Vault payment-token created
+
+Vault payment-token deleted
+
+Vault payment-token deletion-initiated
+
+Vault payment-token updated

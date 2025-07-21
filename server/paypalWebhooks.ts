@@ -132,16 +132,18 @@ async function handlePaymentCompleted(event: PayPalWebhookEvent) {
 
     // Send payment confirmation email to customer
     try {
-      const customer = await storage.getCustomerById(order.customerId);
-      if (customer) {
-        await emailService.sendPaymentConfirmation(customer.email, {
-          orderNumber: order.orderNumber,
-          customerName: `${customer.firstName} ${customer.lastName}`,
-          total: order.total,
-          paypalTransactionId: paypalOrderId,
-          paidAt: new Date()
-        });
-        console.log('✅ Payment confirmation email sent to customer');
+      if (order.customerId) {
+        const customer = await storage.getCustomerById(order.customerId);
+        if (customer) {
+          await emailService.sendPaymentConfirmation(customer.email, {
+            orderNumber: order.orderNumber,
+            customerName: `${customer.firstName} ${customer.lastName}`,
+            total: order.total,
+            paypalTransactionId: paypalOrderId,
+            paidAt: new Date()
+          });
+          console.log('✅ Payment confirmation email sent to customer');
+        }
       }
     } catch (emailError) {
       console.error('❌ Failed to send payment confirmation email:', emailError);
