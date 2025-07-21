@@ -56,6 +56,7 @@ export default function Orders() {
 
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<string | null>(null);
   const [isTrackingDialogOpen, setIsTrackingDialogOpen] = useState(false);
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
   const trackingForm = useForm<z.infer<typeof trackingSchema>>({
     resolver: zodResolver(trackingSchema),
@@ -110,7 +111,7 @@ export default function Orders() {
     }).format(Number(amount));
   };
 
-  const filteredOrders = ordersData?.orders?.filter(order =>
+  const filteredOrders = ordersData?.orders?.filter((order: any) =>
     order.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
     order.customerEmail.toLowerCase().includes(search.toLowerCase())
   ) || [];
@@ -225,26 +226,7 @@ export default function Orders() {
           >
             <Eye className="w-4 h-4" />
           </Button>
-          {row.original.status !== 'shipped' && row.original.paymentStatus === 'paid' && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setSelectedOrderForTracking(row.original.id);
-                setIsTrackingDialogOpen(true);
-              }}
-              className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
-            >
-              <Truck className="w-4 h-4 mr-1" />
-              Ship
-            </Button>
-          )}
-          {row.original.status === 'shipped' && row.original.auspostTrackingNumber && (
-            <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
-              <Truck className="w-3 h-3 mr-1" />
-              Shipped
-            </Badge>
-          )}
+
         </div>
       ),
     },
@@ -275,6 +257,14 @@ export default function Orders() {
               <p className="text-gray-600">Track and manage customer orders</p>
             </div>
             <div className="flex space-x-3">
+              <Button 
+                variant="outline"
+                onClick={() => setIsTrackingDialogOpen(true)}
+                className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+              >
+                <Truck className="w-4 h-4 mr-2" />
+                Ship Order
+              </Button>
               <Button variant="outline">
                 <Package className="w-4 h-4 mr-2" />
                 Export Orders
@@ -333,6 +323,28 @@ export default function Orders() {
               Ship Order with Australia Post
             </DialogTitle>
           </DialogHeader>
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+            <h4 className="font-medium text-sm text-gray-700 mb-2">Select Order to Ship:</h4>
+            <Select
+              value={selectedOrderForTracking || ""}
+              onValueChange={setSelectedOrderForTracking}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose an order to ship..." />
+              </SelectTrigger>
+              <SelectContent>
+                {ordersData?.orders
+                  .filter((order: any) => order.status !== 'shipped' && order.paymentStatus === 'paid')
+                  .map((order: any) => (
+                    <SelectItem key={order.id} value={order.id}>
+                      {order.orderNumber} - {order.customerEmail} - ${order.total}
+                    </SelectItem>
+                  ))
+                }
+              </SelectContent>
+            </Select>
+          </div>
+          
           <Form {...trackingForm}>
             <form onSubmit={trackingForm.handleSubmit((data) => {
               if (selectedOrderForTracking) {
@@ -371,6 +383,7 @@ export default function Orders() {
                   variant="outline" 
                   onClick={() => {
                     setIsTrackingDialogOpen(false);
+                    setSelectedOrderForTracking(null);
                     trackingForm.reset();
                   }}
                   disabled={addTrackingMutation.isPending}
@@ -379,7 +392,7 @@ export default function Orders() {
                 </Button>
                 <Button 
                   type="submit" 
-                  disabled={addTrackingMutation.isPending}
+                  disabled={addTrackingMutation.isPending || !selectedOrderForTracking}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   {addTrackingMutation.isPending ? (
