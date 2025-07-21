@@ -2904,6 +2904,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test proper order confirmation email
+  app.post('/api/test-order-confirmation-email', hybridAuth, async (req, res) => {
+    try {
+      const { customerEmail, orderData } = req.body;
+      
+      console.log('Testing order confirmation email...');
+      const result = await emailService.sendOrderConfirmation(customerEmail, orderData);
+      
+      if (result.success) {
+        res.json({ 
+          message: 'Order confirmation email sent successfully',
+          id: result.id
+        });
+      } else {
+        res.status(500).json({ error: result.error });
+      }
+      
+    } catch (error) {
+      console.error('Test order confirmation error:', error);
+      res.status(500).json({ error: 'Failed to send order confirmation email' });
+    }
+  });
+
   // Email Template Management Routes
   app.get('/api/admin/email-templates', hybridAuth, async (req, res) => {
     try {

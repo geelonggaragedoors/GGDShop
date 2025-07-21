@@ -142,23 +142,72 @@ export class EmailService {
   }
 
   // Business email methods
-  async sendOrderConfirmation(orderData: any, template: any) {
-    const emailData = {
-      customer_name: orderData.customerName || 'Customer',
-      order_number: orderData.orderNumber,
-      order_date: new Date(orderData.createdAt).toLocaleDateString(),
-      total_amount: parseFloat(orderData.total).toFixed(2),
-      shipping_address: orderData.shippingAddress || 'N/A',
-      order_items: this.formatOrderItems(orderData.items || [])
-    };
+  async sendOrderConfirmation(customerEmail: string, orderData: any) {
+    console.log('=== SENDING ORDER CONFIRMATION EMAIL ===');
+    console.log('Customer Email:', customerEmail);
+    console.log('Order Data:', orderData);
 
-    const processedSubject = this.processTemplate(template.subject, emailData);
-    const processedHtml = this.processTemplate(template.htmlContent, emailData);
+    const orderItemsHtml = orderData.items?.map((item: any) => `
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.product?.name || item.name || 'Product'}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${parseFloat(item.price || 0).toFixed(2)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${parseFloat(item.total || item.price * item.quantity || 0).toFixed(2)}</td>
+      </tr>
+    `).join('') || '<tr><td colspan="4" style="padding: 8px; text-align: center;">No items found</td></tr>';
+
+    const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0;">Order Confirmation</h1>
+        <p style="margin: 10px 0 0 0;">Thank you for your purchase!</p>
+      </div>
+      
+      <div style="padding: 20px; background-color: #f9fafb;">
+        <h2 style="color: #1e40af; margin-top: 0;">Order Details</h2>
+        <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+        <p><strong>Customer:</strong> ${orderData.customerName}</p>
+        <p><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
+        ${orderData.paypalTransactionId ? `<p><strong>PayPal Transaction ID:</strong> ${orderData.paypalTransactionId}</p>` : ''}
+      </div>
+
+      <div style="padding: 20px;">
+        <h3 style="color: #1e40af;">Items Ordered</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <thead>
+            <tr style="background-color: #1e40af; color: white;">
+              <th style="padding: 10px; text-align: left;">Item</th>
+              <th style="padding: 10px; text-align: center;">Qty</th>
+              <th style="padding: 10px; text-align: right;">Price</th>
+              <th style="padding: 10px; text-align: right;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orderItemsHtml}
+          </tbody>
+        </table>
+        
+        <div style="text-align: right; font-size: 18px; font-weight: bold; color: #1e40af; border-top: 2px solid #1e40af; padding-top: 10px;">
+          Total: $${parseFloat(orderData.total).toFixed(2)}
+        </div>
+      </div>
+
+      <div style="padding: 20px; background-color: #f0f9ff; border-left: 4px solid #1e40af;">
+        <h3 style="margin-top: 0; color: #1e40af;">What's Next?</h3>
+        <p>Your payment has been processed successfully. We'll prepare your order and send you shipping details shortly.</p>
+        <p>If you have any questions, please don't hesitate to contact us.</p>
+      </div>
+
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+        <p>Thank you for choosing Geelong Garage Doors!</p>
+        <p>This email was sent to ${customerEmail}</p>
+      </div>
+    </div>`;
 
     return this.sendEmail({
-      to: orderData.customerEmail,
-      subject: processedSubject,
-      html: processedHtml
+      to: customerEmail,
+      subject: `Order Confirmation - ${orderData.orderNumber}`,
+      html: emailHtml
     });
   }
 
