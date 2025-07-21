@@ -529,7 +529,7 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="store" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="store" className="flex items-center space-x-2">
             <Store className="w-4 h-4" />
             <span>Store</span>
@@ -546,6 +546,10 @@ export default function Settings() {
           <TabsTrigger value="security" className="flex items-center space-x-2">
             <Shield className="w-4 h-4" />
             <span>Security</span>
+          </TabsTrigger>
+          <TabsTrigger value="paypal" className="flex items-center space-x-2">
+            <CreditCard className="w-4 h-4" />
+            <span>PayPal</span>
           </TabsTrigger>
         </TabsList>
 
