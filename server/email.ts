@@ -158,13 +158,13 @@ export class EmailService {
 
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
-        <div style="margin-bottom: 20px;">
-          <h2 style="margin: 0; color: white; font-size: 24px; letter-spacing: 2px;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 5px 0 0 0; font-size: 12px; color: #bfdbfe;">Your Garage Door Parts Specialist</p>
+      <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
+        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
+          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
-        <h1 style="margin: 0;">Order Confirmation</h1>
-        <p style="margin: 10px 0 0 0;">Thank you for your purchase!</p>
+        <h1 style="margin: 0; font-size: 32px;">Order Confirmation</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px;">Thank you for your purchase!</p>
       </div>
       
       <div style="padding: 20px; background-color: #f9fafb;">
@@ -223,13 +223,13 @@ export class EmailService {
 
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
-        <div style="margin-bottom: 20px;">
-          <h2 style="margin: 0; color: white; font-size: 24px; letter-spacing: 2px;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 5px 0 0 0; font-size: 12px; color: #bfdbfe;">Your Garage Door Parts Specialist</p>
+      <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
+        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
+          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
-        <h1 style="margin: 0;">Order Being Processed</h1>
-        <p style="margin: 10px 0 0 0;">We're preparing your order</p>
+        <h1 style="margin: 0; font-size: 32px;">Order Being Processed</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px;">We're preparing your order</p>
       </div>
       
       <div style="padding: 20px; background-color: #f9fafb;">
@@ -264,13 +264,13 @@ export class EmailService {
 
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
-        <div style="margin-bottom: 20px;">
-          <h2 style="margin: 0; color: white; font-size: 24px; letter-spacing: 2px;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 5px 0 0 0; font-size: 12px; color: #bfdbfe;">Your Garage Door Parts Specialist</p>
+      <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
+        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
+          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
-        <h1 style="margin: 0;">Order Shipped! 📦</h1>
-        <p style="margin: 10px 0 0 0;">Your order is on the way</p>
+        <h1 style="margin: 0; font-size: 32px;">Order Shipped! 📦</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px;">Your order is on the way</p>
       </div>
       
       <div style="padding: 20px; background-color: #f9fafb;">
@@ -306,13 +306,13 @@ export class EmailService {
 
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background-color: #1e40af; color: white; padding: 20px; text-align: center;">
-        <div style="margin-bottom: 20px;">
-          <h2 style="margin: 0; color: white; font-size: 24px; letter-spacing: 2px;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 5px 0 0 0; font-size: 12px; color: #bfdbfe;">Your Garage Door Parts Specialist</p>
+      <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
+        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
+          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #e0f2fe; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
-        <h1 style="margin: 0;">Order Delivered! ✅</h1>
-        <p style="margin: 10px 0 0 0;">Your order has arrived</p>
+        <h1 style="margin: 0; font-size: 32px;">Order Delivered! ✅</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px;">Your order has arrived</p>
       </div>
       
       <div style="padding: 20px; background-color: #f9fafb;">
@@ -348,13 +348,13 @@ export class EmailService {
 
     const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background-color: #dc2626; color: white; padding: 20px; text-align: center;">
-        <div style="margin-bottom: 20px;">
-          <h2 style="margin: 0; color: white; font-size: 24px; letter-spacing: 2px;">GEELONG GARAGE DOORS</h2>
-          <p style="margin: 5px 0 0 0; font-size: 12px; color: white;">Your Garage Door Parts Specialist</p>
+      <div style="background-color: #dc2626; color: white; padding: 30px; text-align: center;">
+        <div style="margin-bottom: 25px; padding: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
+          <h2 style="margin: 0; color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; font-family: Arial, sans-serif;">GEELONG GARAGE DOORS</h2>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #fecaca; font-weight: normal;">Your Garage Door Parts Specialist</p>
         </div>
-        <h1 style="margin: 0;">Order Canceled</h1>
-        <p style="margin: 10px 0 0 0;">Your order has been canceled</p>
+        <h1 style="margin: 0; font-size: 32px;">Order Canceled</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px;">Your order has been canceled</p>
       </div>
       
       <div style="padding: 20px; background-color: #f9fafb;">
