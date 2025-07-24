@@ -891,79 +891,135 @@ export default function Products() {
                           />
                         </div>
 
-                        {/* Weight and Toggles Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                        {/* Weight */}
+                        <FormField
+                          control={form.control}
+                          name="weight"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm">Weight (kg)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  step="0.1" 
+                                  placeholder="85.5" 
+                                  className="max-w-[200px]"
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                                />
+                              </FormControl>
+                              <FormDescription className="text-xs text-gray-500">
+                                For shipping calculations (e.g. 85.5 kg)
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Stock Management & Product Status */}
+                        <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+                          <h4 className="text-sm font-semibold text-gray-900">Stock Management & Product Status</h4>
+                          
+                          {/* Stock Quantity */}
                           <FormField
                             control={form.control}
-                            name="weight"
+                            name="stockQuantity"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm">Weight (kg)</FormLabel>
+                                <FormLabel>Stock Quantity</FormLabel>
                                 <FormControl>
                                   <Input 
+                                    {...field} 
                                     type="number" 
-                                    step="0.1" 
-                                    placeholder="85.5" 
-                                    className="h-9"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                                    placeholder="e.g., 25"
+                                    className="max-w-[200px]"
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                                   />
                                 </FormControl>
-                                <FormDescription className="text-xs text-gray-500">
-                                  For shipping calculations (e.g. 85.5 kg)
-                                </FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
-                          <FormField
-                            control={form.control}
-                            name="isFeatured"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                                <FormLabel className="text-sm">Featured</FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="isActive"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                                <FormLabel className="text-sm">Active</FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="alwaysInStock"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                                <FormLabel className="text-sm">Always In Stock</FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="freePostage"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                                <FormLabel className="text-sm">Free Postage</FormLabel>
-                              </FormItem>
-                            )}
-                          />
+
+                          {/* Product Status Toggles */}
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="alwaysInStock"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">
+                                      Always in Stock
+                                    </FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Shows "In Stock" regardless of quantity
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="isFeatured"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">Featured</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Show on homepage
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="isActive"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">Active</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Visible to customers
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="freePostage"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">Free Postage</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Override shipping costs
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
 
                       {/* Product Images Section */}
@@ -1218,8 +1274,11 @@ export default function Products() {
                           )}
                         />
 
-                        {/* Stock, Weight and Toggles */}
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+                        {/* Stock Management & Product Status */}
+                        <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+                          <h4 className="text-sm font-semibold text-gray-900">Stock Management & Product Status</h4>
+                          
+                          {/* Stock Quantity */}
                           <FormField
                             control={form.control}
                             name="stockQuantity"
@@ -1231,6 +1290,7 @@ export default function Products() {
                                     {...field} 
                                     type="number" 
                                     placeholder="e.g., 25"
+                                    className="max-w-[200px]"
                                     onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                                   />
                                 </FormControl>
@@ -1239,30 +1299,85 @@ export default function Products() {
                             )}
                           />
 
-                          {/* Always in Stock Toggle */}
-                          <FormField
-                            control={form.control}
-                            name="alwaysInStock"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                <div className="space-y-0.5">
-                                  <FormLabel className="text-sm font-medium">
-                                    Always in Stock
-                                  </FormLabel>
-                                  <FormDescription className="text-xs">
-                                    Shows "In Stock" on frontend regardless of quantity
-                                  </FormDescription>
-                                </div>
-                                <FormControl>
-                                  <Switch
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
+                          {/* Product Status Toggles */}
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="alwaysInStock"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">
+                                      Always in Stock
+                                    </FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Shows "In Stock" regardless of quantity
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="isFeatured"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">Featured</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Show on homepage
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="isActive"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">Active</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Visible to customers
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
 
+                            <FormField
+                              control={form.control}
+                              name="freePostage"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-white">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-sm font-medium">Free Postage</FormLabel>
+                                    <FormDescription className="text-xs">
+                                      Override shipping costs
+                                    </FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
 
                         {/* Shipping and Measurements Section */}
@@ -1580,45 +1695,7 @@ export default function Products() {
                           </div>
                         </div>
 
-                        {/* Product Status Toggles */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          <FormField
-                            control={form.control}
-                            name="isFeatured"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                                <FormLabel className="text-sm">Featured</FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="isActive"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                                <FormLabel className="text-sm">Active</FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="alwaysInStock"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                                <FormLabel className="text-sm">Always In Stock</FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+
 
                       {/* Product Images Section - Simplified */}
                       <div className="space-y-3">
@@ -1776,7 +1853,7 @@ export default function Products() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {categories?.map((category) => (
+                {categories?.map((category: any) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
                   </SelectItem>
@@ -1789,7 +1866,7 @@ export default function Products() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Brands</SelectItem>
-                {brands?.map((brand) => (
+                {brands?.map((brand: any) => (
                   <SelectItem key={brand.id} value={brand.id}>
                     {brand.name}
                   </SelectItem>
