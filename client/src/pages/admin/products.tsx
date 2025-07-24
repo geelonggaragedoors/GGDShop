@@ -1817,6 +1817,12 @@ export default function Products() {
                           <Button 
                             type="submit" 
                             disabled={updateProductMutation.isPending}
+                            onClick={() => {
+                              console.log('Update button clicked');
+                              console.log('Form errors:', form.formState.errors);
+                              console.log('Form is valid:', form.formState.isValid);
+                              console.log('Form dirty fields:', form.formState.dirtyFields);
+                            }}
                           >
                             {updateProductMutation.isPending ? "Updating..." : "Update Product"}
                           </Button>
