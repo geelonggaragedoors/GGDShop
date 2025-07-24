@@ -177,70 +177,69 @@ export default function Checkout() {
           continue;
         }
         
-        if (product.weight && product.length && product.width && product.height && product.boxSize) {
-          console.log('Product has shipping dimensions, calculating cost...');
-          const shippingResponse = await fetch('/api/shipping/calculate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              weight: product.weight,
-              length: product.length,
-              width: product.width,
-              height: product.height,
-              boxSize: product.boxSize,
-              toPostcode: postcode
-            })
-          });
+        // Use the shipping cost already calculated and stored in the product
+        if (product.shippingCost && !product.freePostage) {
+          console.log('Using stored shipping cost from product:', product.shippingCost);
+          // Product has pre-calculated shipping cost from edit page
+          const storedShippingCost = parseFloat(product.shippingCost);
+          totalShippingCost += storedShippingCost * item.quantity;
           
-          const shippingData = await shippingResponse.json();
-          console.log('Shipping calculation result:', shippingData);
+          // For breakdown, assume stored cost includes GST
+          const subtotalCost = storedShippingCost / 1.1;
+          const gstCost = storedShippingCost - subtotalCost;
           
-          if (shippingData.isOversized) {
-            hasOversizedItems = true;
-            oversizedMessage = shippingData.oversizedMessage;
-            break;
+          totalSubtotal += subtotalCost * item.quantity;
+          totalGst += gstCost * item.quantity;
+          
+          // For box vs postage split, we need to check the shipping type
+          if (product.boxSize && product.boxSize.includes('satchel')) {
+            // Satchel - all cost is postage (no separate box cost)
+            totalPostage += storedShippingCost * item.quantity;
           } else {
-            // Accumulate actual breakdown values
-            totalPostage += shippingData.postage * item.quantity;
-            totalBoxPrice += shippingData.boxPrice * item.quantity;
-            totalSubtotal += shippingData.subtotal * item.quantity;
-            totalGst += shippingData.gst * item.quantity;
-            totalShippingCost += shippingData.total * item.quantity;
+            // Box shipping - estimate split (most is postage, some is box cost)
+            const estimatedBoxCost = Math.min(storedShippingCost * 0.25, 8.50); // Cap box cost at $8.50
+            const estimatedPostage = storedShippingCost - estimatedBoxCost;
+            totalPostage += estimatedPostage * item.quantity;
+            totalBoxPrice += estimatedBoxCost * item.quantity;
           }
+        } else if (product.customShippingPrice) {
+          console.log('Product has custom shipping price:', product.customShippingPrice);
+          // Product uses custom shipping price (for oversized items)
+          hasOversizedItems = true;
+          oversizedMessage = "This product requires custom shipping. Please call (03) 5221 8999 for a shipping quote.";
+          break;
         } else {
-          console.log('Product missing shipping dimensions:', {
-            weight: product.weight,
-            length: product.length,
-            width: product.width,
-            height: product.height,
-            boxSize: product.boxSize
-          });
-          // For products without shipping dimensions, use default small package
-          console.log('Using default shipping dimensions for product without shipping info');
+          console.log('Product missing shipping cost, using default calculation');
+          // Fallback: calculate shipping for products without stored shipping cost
           const shippingResponse = await fetch('/api/shipping/calculate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              weight: 500, // 500g default
-              length: 22,  // Bx1 dimensions
-              width: 16,
-              height: 7.7,
-              boxSize: 'Bx1',
+              weight: product.weight || 500,
+              length: product.length || 22,
+              width: product.width || 16,
+              height: product.height || 7.7,
+              boxSize: product.boxSize || 'Bx1',
               toPostcode: postcode
             })
           });
           
           if (shippingResponse.ok) {
             const shippingData = await shippingResponse.json();
-            console.log('Default shipping calculation result:', shippingData);
-            // Accumulate actual breakdown values
-            totalPostage += shippingData.postage * item.quantity;
-            totalBoxPrice += shippingData.boxPrice * item.quantity;
-            totalSubtotal += shippingData.subtotal * item.quantity;
-            totalGst += shippingData.gst * item.quantity;
-            totalShippingCost += shippingData.total * item.quantity;
+            console.log('Fallback shipping calculation result:', shippingData);
+            if (shippingData.isOversized) {
+              hasOversizedItems = true;
+              oversizedMessage = shippingData.oversizedMessage;
+              break;
+            } else {
+              totalPostage += shippingData.postage * item.quantity;
+              totalBoxPrice += shippingData.boxPrice * item.quantity;
+              totalSubtotal += shippingData.subtotal * item.quantity;
+              totalGst += shippingData.gst * item.quantity;
+              totalShippingCost += shippingData.total * item.quantity;
+            }
           } else {
-            console.error('Shipping calculation failed:', await shippingResponse.text());
+            console.error('Fallback shipping calculation failed:', await shippingResponse.text());
           }
         }
       }
