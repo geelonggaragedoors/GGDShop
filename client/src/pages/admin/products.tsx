@@ -43,7 +43,96 @@ export default function Products() {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [useCustomShipping, setUseCustomShipping] = useState(false);
   const [customShippingPrice, setCustomShippingPrice] = useState(0);
+  const [suggestedBox, setSuggestedBox] = useState<{id: string, name: string, cost: number, note?: string} | null>(null);
   const { toast } = useToast();
+
+  // Function to suggest Australia Post box based on dimensions
+  const suggestAustraliaPostBox = (length: number, width: number, height: number, weight: number) => {
+    if (!length || !width || !height || !weight) {
+      setSuggestedBox(null);
+      return;
+    }
+
+    // Satchel options (up to 5kg)
+    if (weight <= 5000) {
+      if (length <= 35.5 && width <= 22.5 && height <= 2) {
+        setSuggestedBox({
+          id: 'satchel-small',
+          name: 'Small Satchel',
+          cost: 11.30,
+          note: 'Flat rate up to 5kg'
+        });
+        return;
+      }
+      if (length <= 39 && width <= 27 && height <= 2) {
+        setSuggestedBox({
+          id: 'satchel-medium',
+          name: 'Medium Satchel',
+          cost: 15.30,
+          note: 'Flat rate up to 5kg'
+        });
+        return;
+      }
+      if (length <= 40.5 && width <= 31.5 && height <= 2) {
+        setSuggestedBox({
+          id: 'satchel-large',
+          name: 'Large Satchel',
+          cost: 19.35,
+          note: 'Flat rate up to 5kg'
+        });
+        return;
+      }
+      if (length <= 51 && width <= 44 && height <= 2) {
+        setSuggestedBox({
+          id: 'satchel-extra-large',
+          name: 'Extra Large Satchel',
+          cost: 23.35,
+          note: 'Flat rate up to 5kg'
+        });
+        return;
+      }
+    }
+
+    // Box options (weight-based pricing)
+    if (length <= 20 && width <= 15 && height <= 10) {
+      const estimatedCost = Math.max(8.95, (weight / 1000) * 3.50); // Base rate + weight
+      setSuggestedBox({
+        id: 'box-small',
+        name: 'Small Box',
+        cost: estimatedCost,
+        note: 'Weight-based pricing'
+      });
+      return;
+    }
+    if (length <= 30 && width <= 25 && height <= 15) {
+      const estimatedCost = Math.max(12.95, (weight / 1000) * 4.50);
+      setSuggestedBox({
+        id: 'box-medium',
+        name: 'Medium Box',
+        cost: estimatedCost,
+        note: 'Weight-based pricing'
+      });
+      return;
+    }
+    if (length <= 40 && width <= 30 && height <= 20) {
+      const estimatedCost = Math.max(16.95, (weight / 1000) * 5.50);
+      setSuggestedBox({
+        id: 'box-large',
+        name: 'Large Box',
+        cost: estimatedCost,
+        note: 'Weight-based pricing'
+      });
+      return;
+    }
+
+    // If no standard size fits, suggest custom shipping
+    setSuggestedBox({
+      id: 'custom',
+      name: 'Custom Shipping Required',
+      cost: 0,
+      note: 'Oversized - requires freight quote'
+    });
+  };
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
     queryKey: ["/api/admin/products", { search, categoryId: selectedCategory, brandId: selectedBrand, noWeight: showNoWeight, hasWeight: showWithWeight, limit: pageSize, offset: page * pageSize }],
@@ -316,6 +405,9 @@ export default function Products() {
   const openEditDialog = (product: any) => {
     setEditingProduct(product);
     setIsEditProductOpen(true);
+    setSuggestedBox(null); // Reset suggestion state
+    setUseCustomShipping(Boolean(product.customShippingPrice));
+    setCustomShippingPrice(product.customShippingPrice || 0);
     
     // Pre-populate form with existing product data
     form.reset({
@@ -358,6 +450,9 @@ export default function Products() {
     setEditingProduct(null);
     form.reset();
     setSelectedImages([]);
+    setSuggestedBox(null); // Reset suggestion state
+    setUseCustomShipping(false);
+    setCustomShippingPrice(0);
   };
 
   const handleSelectProduct = (productId: string, checked: boolean) => {
@@ -1131,26 +1226,7 @@ export default function Products() {
                               </FormItem>
                             )}
                           />
-                          <FormField
-                            control={form.control}
-                            name="weight"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Weight (grams)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    step="1"
-                                    placeholder="e.g., 25000"
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                  />
-                                </FormControl>
-                                <FormDescription className="text-xs">Product weight in grams for shipping</FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+
                         </div>
 
                         {/* Shipping and Measurements Section */}
@@ -1171,7 +1247,15 @@ export default function Products() {
                                       type="number" 
                                       step="0.1"
                                       placeholder="e.g., 30.5"
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      onChange={(e) => {
+                                        const value = parseFloat(e.target.value) || 0;
+                                        field.onChange(value);
+                                        // Trigger suggestion when dimensions change
+                                        const width = form.getValues('width') || 0;
+                                        const height = form.getValues('height') || 0;
+                                        const weight = form.getValues('weight') || 0;
+                                        suggestAustraliaPostBox(value, width, height, weight);
+                                      }}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1190,7 +1274,15 @@ export default function Products() {
                                       type="number" 
                                       step="0.1"
                                       placeholder="e.g., 25.0"
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      onChange={(e) => {
+                                        const value = parseFloat(e.target.value) || 0;
+                                        field.onChange(value);
+                                        // Trigger suggestion when dimensions change
+                                        const length = form.getValues('length') || 0;
+                                        const height = form.getValues('height') || 0;
+                                        const weight = form.getValues('weight') || 0;
+                                        suggestAustraliaPostBox(length, value, height, weight);
+                                      }}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -1209,27 +1301,104 @@ export default function Products() {
                                       type="number" 
                                       step="0.1"
                                       placeholder="e.g., 15.0"
-                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      onChange={(e) => {
+                                        const value = parseFloat(e.target.value) || 0;
+                                        field.onChange(value);
+                                        // Trigger suggestion when dimensions change
+                                        const length = form.getValues('length') || 0;
+                                        const width = form.getValues('width') || 0;
+                                        const weight = form.getValues('weight') || 0;
+                                        suggestAustraliaPostBox(length, width, value, weight);
+                                      }}
                                     />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
-                            <div>
-                              <FormLabel>Weight (grams)</FormLabel>
-                              <Input 
-                                type="number" 
-                                step="1"
-                                placeholder="e.g., 5000"
-                                value={form.watch('weight') || ''}
-                                onChange={(e) => form.setValue('weight', parseFloat(e.target.value) || 0)}
-                              />
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Product weight for shipping calculations
-                              </p>
-                            </div>
+                            <FormField
+                              control={form.control}
+                              name="weight"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Weight (grams)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      type="number" 
+                                      step="1"
+                                      placeholder="e.g., 5000"
+                                      onChange={(e) => {
+                                        const value = parseFloat(e.target.value) || 0;
+                                        field.onChange(value);
+                                        // Trigger suggestion when weight changes
+                                        const length = form.getValues('length') || 0;
+                                        const width = form.getValues('width') || 0;
+                                        const height = form.getValues('height') || 0;
+                                        suggestAustraliaPostBox(length, width, height, value);
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormDescription className="text-xs">Product weight for shipping calculations</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </div>
+
+                          {/* Suggested Box Display */}
+                          {suggestedBox && (
+                            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                              <h5 className="text-sm font-medium text-green-800 mb-2">🚛 Australia Post Suggestion</h5>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-sm font-medium text-green-900">{suggestedBox.name}</p>
+                                  <p className="text-xs text-green-700">{suggestedBox.note}</p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-lg font-bold text-green-900">
+                                    ${suggestedBox.cost.toFixed(2)}
+                                  </p>
+                                  {suggestedBox.id !== 'custom' && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-green-700 border-green-300 hover:bg-green-100 mt-1"
+                                      onClick={() => {
+                                        form.setValue('boxSize', suggestedBox.id);
+                                        setUseCustomShipping(suggestedBox.id === 'custom');
+                                        toast({
+                                          title: "Box size selected",
+                                          description: `${suggestedBox.name} has been selected`
+                                        });
+                                      }}
+                                    >
+                                      Select This Box
+                                    </Button>
+                                  )}
+                                  {suggestedBox.id === 'custom' && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-orange-700 border-orange-300 hover:bg-orange-100 mt-1"
+                                      onClick={() => {
+                                        setUseCustomShipping(true);
+                                        form.setValue('boxSize', '');
+                                        toast({
+                                          title: "Custom shipping enabled",
+                                          description: "Please set custom shipping price below"
+                                        });
+                                      }}
+                                    >
+                                      Use Custom Shipping
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
 
                           {/* Australia Post Box Selection */}
                           <div className="mb-4">
@@ -1261,7 +1430,7 @@ export default function Products() {
                             <div className="flex items-center space-x-2 mb-2">
                               <Checkbox 
                                 checked={useCustomShipping}
-                                onCheckedChange={setUseCustomShipping}
+                                onCheckedChange={(checked) => setUseCustomShipping(Boolean(checked))}
                               />
                               <label className="text-sm font-medium text-orange-800">
                                 Use Custom Shipping Price (for oversized items)
@@ -1526,7 +1695,7 @@ export default function Products() {
                   id="noWeight"
                   checked={showNoWeight}
                   onCheckedChange={(checked) => {
-                    setShowNoWeight(checked);
+                    setShowNoWeight(Boolean(checked));
                     if (checked) setShowWithWeight(false); // Ensure mutually exclusive
                   }}
                 />
@@ -1542,7 +1711,7 @@ export default function Products() {
                   id="hasWeight"
                   checked={showWithWeight}
                   onCheckedChange={(checked) => {
-                    setShowWithWeight(checked);
+                    setShowWithWeight(Boolean(checked));
                     if (checked) setShowNoWeight(false); // Ensure mutually exclusive
                   }}
                 />
