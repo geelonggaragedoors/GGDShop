@@ -112,3 +112,16 @@ Business model: E-commerce parts supplier - sells garage door parts for shipping
 - **Build**: Separate build commands for development and production
 
 The architecture emphasizes type safety, performance, and maintainability while providing a solid foundation for e-commerce operations. The hybrid authentication system allows for flexible deployment options, and the modular design enables easy feature additions and modifications.
+
+## Recent Changes (July 2025)
+
+### Australia Post Shipping Integration Fixes
+- **Fixed satchel weight calculation**: Corrected weight comparison from 5000g to 5kg for proper satchel suggestions
+- **Resolved double-click issue**: Shipping type selection now immediately triggers box calculations on first click
+- **Improved calculation logic**: Enhanced shipping calculation function to accept immediate shipping type parameter
+- **Form organization**: Consolidated stock management controls (Stock Quantity, Featured, Active, Always in Stock, Free Postage) into organized sections for both Add and Edit Product forms
+- **UI improvements**: Changed "3D items" to "Bulky items" and removed duplicate form fields
+
+### Stock Management Features
+- **Always in Stock toggle**: When enabled, overrides stock quantity display and shows "In Stock" on frontend regardless of actual quantity
+- **Consolidated admin interface**: All stock-related controls now grouped together with clear descriptions and consistent layout
