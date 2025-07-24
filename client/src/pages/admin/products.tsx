@@ -97,7 +97,7 @@ export default function Products() {
 
     // Box options (weight-based pricing) - only if box type is selected
     if (typeToUse === 'box' && length <= 20 && width <= 15 && height <= 10) {
-      const estimatedCost = Math.max(8.95, (weight / 1000) * 3.50); // Base rate + weight
+      const estimatedCost = Math.max(8.95, weight * 3.50); // Base rate + weight (already in kg)
       setSuggestedBox({
         id: 'box-small',
         name: 'Small Box',
@@ -107,7 +107,7 @@ export default function Products() {
       return;
     }
     if (typeToUse === 'box' && length <= 30 && width <= 25 && height <= 15) {
-      const estimatedCost = Math.max(12.95, (weight / 1000) * 4.50);
+      const estimatedCost = Math.max(12.95, weight * 4.50); // Weight already in kg
       setSuggestedBox({
         id: 'box-medium',
         name: 'Medium Box',
@@ -117,7 +117,7 @@ export default function Products() {
       return;
     }
     if (typeToUse === 'box' && length <= 40 && width <= 30 && height <= 20) {
-      const estimatedCost = Math.max(16.95, (weight / 1000) * 5.50);
+      const estimatedCost = Math.max(16.95, weight * 5.50); // Weight already in kg
       setSuggestedBox({
         id: 'box-large',
         name: 'Large Box',
@@ -1400,7 +1400,7 @@ export default function Products() {
                                   const length = form.getValues('length') || 0;
                                   const width = form.getValues('width') || 0;
                                   const height = form.getValues('height') || 0;
-                                  const weight = form.getValues('weight') || 0;
+                                  const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
                                   if (length && width && height && weight) {
                                     suggestAustraliaPostBox(length, width, height, weight, 'satchel');
                                   }
@@ -1423,7 +1423,7 @@ export default function Products() {
                                   const length = form.getValues('length') || 0;
                                   const width = form.getValues('width') || 0;
                                   const height = form.getValues('height') || 0;
-                                  const weight = form.getValues('weight') || 0;
+                                  const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
                                   if (length && width && height && weight) {
                                     suggestAustraliaPostBox(length, width, height, weight, 'box');
                                   }
@@ -1458,7 +1458,7 @@ export default function Products() {
                                         // Trigger suggestion when dimensions change
                                         const width = form.getValues('width') || 0;
                                         const height = form.getValues('height') || 0;
-                                        const weight = form.getValues('weight') || 0;
+                                        const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
                                         suggestAustraliaPostBox(value, width, height, weight);
                                       }}
                                     />
@@ -1485,7 +1485,7 @@ export default function Products() {
                                         // Trigger suggestion when dimensions change
                                         const length = form.getValues('length') || 0;
                                         const height = form.getValues('height') || 0;
-                                        const weight = form.getValues('weight') || 0;
+                                        const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
                                         suggestAustraliaPostBox(length, value, height, weight);
                                       }}
                                     />
@@ -1512,7 +1512,7 @@ export default function Products() {
                                         // Trigger suggestion when dimensions change
                                         const length = form.getValues('length') || 0;
                                         const width = form.getValues('width') || 0;
-                                        const weight = form.getValues('weight') || 0;
+                                        const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
                                         suggestAustraliaPostBox(length, width, value, weight);
                                       }}
                                     />
@@ -1540,7 +1540,7 @@ export default function Products() {
                                         const length = form.getValues('length') || 0;
                                         const width = form.getValues('width') || 0;
                                         const height = form.getValues('height') || 0;
-                                        suggestAustraliaPostBox(length, width, height, value);
+                                        suggestAustraliaPostBox(length, width, height, value / 1000); // Convert grams to kg
                                       }}
                                     />
                                   </FormControl>
