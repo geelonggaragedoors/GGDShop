@@ -131,8 +131,14 @@ export default function Checkout() {
         state: parsedState
       }));
       setIsGuestCheckout(false);
+      
+      // Calculate shipping costs if postcode is available
+      if (parsedPostcode) {
+        console.log('Auto-calculating shipping for prefilled postcode:', parsedPostcode);
+        calculateShippingCosts(parsedPostcode);
+      }
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, cartItems]);
 
   const handleInputChange = (field: string, value: string) => {
     console.log(`Updating ${field} to:`, value);
