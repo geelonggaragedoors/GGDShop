@@ -376,10 +376,14 @@ export default function Products() {
       console.log('Manual validation result:', isValid);
       
       if (!isValid) {
-        console.error('Form validation failed:', form.formState.errors);
+        console.error('Form validation failed:');
+        console.error('Detailed errors:', JSON.stringify(form.formState.errors, null, 2));
+        Object.keys(form.formState.errors).forEach(key => {
+          console.error(`Field ${key}:`, form.formState.errors[key]);
+        });
         toast({ 
           title: "Validation Error", 
-          description: "Please check the form for errors", 
+          description: `Please check the form for errors: ${Object.keys(form.formState.errors).join(', ')}`, 
           variant: "destructive" 
         });
         return;
