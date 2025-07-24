@@ -1625,30 +1625,7 @@ export default function Products() {
                             </div>
                           )}
 
-                          {/* Australia Post Box Selection */}
-                          <div className="mb-4">
-                            <FormLabel>Australia Post Box Size (Recommended)</FormLabel>
-                            <Select onValueChange={(value) => {
-                              form.setValue('boxSize', value);
-                              setUseCustomShipping(false);
-                            }} value={form.getValues('boxSize') || ''}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select recommended box size based on measurements" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="satchel-small">Small Satchel - $11.30 - 35.5×22.5×2cm (up to 5kg)</SelectItem>
-                                <SelectItem value="satchel-medium">Medium Satchel - $15.30 - 39×27×2cm (up to 5kg)</SelectItem>
-                                <SelectItem value="satchel-large">Large Satchel - $19.35 - 40.5×31.5×2cm (up to 5kg)</SelectItem>
-                                <SelectItem value="satchel-extra-large">Extra Large Satchel - $23.35 - 51×44×2cm (up to 5kg)</SelectItem>
-                                <SelectItem value="box-small">Small Box - Weight Based - 20×15×10cm</SelectItem>
-                                <SelectItem value="box-medium">Medium Box - Weight Based - 30×25×15cm</SelectItem>
-                                <SelectItem value="box-large">Large Box - Weight Based - 40×30×20cm</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Satchels have flat rates up to 5kg. Boxes are calculated by weight.
-                            </p>
-                          </div>
+
 
                           {/* Custom Shipping Option */}
                           <div className="border border-orange-200 bg-orange-50 rounded-md p-3">
