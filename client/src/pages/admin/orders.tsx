@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import DataTable from "@/components/ui/data-table";
 import OrderDetails from "@/components/OrderDetails";
@@ -14,7 +15,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Search, Eye, Edit, Package, Truck, Loader2 } from "lucide-react";
+import { Search, Eye, Edit, Package, Truck, Loader2, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
@@ -57,6 +58,7 @@ export default function Orders() {
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<string | null>(null);
   const [isTrackingDialogOpen, setIsTrackingDialogOpen] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
 
   const trackingForm = useForm<z.infer<typeof trackingSchema>>({
     resolver: zodResolver(trackingSchema),
@@ -87,6 +89,29 @@ export default function Orders() {
       });
       setIsTrackingDialogOpen(false);
       trackingForm.reset();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Delete order mutation
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      toast({ title: "Order deleted successfully" });
+      setOrderToDelete(null);
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -245,6 +270,44 @@ export default function Orders() {
               Shipped
             </Badge>
           )}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                size="sm" 
+                variant="ghost"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                title="Delete this order permanently"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Order</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to permanently delete order #{row.original.orderNumber}? 
+                  This action cannot be undone and will remove all order data including items and customer information.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={() => deleteOrderMutation.mutate(row.original.id)}
+                  className="bg-red-600 hover:bg-red-700"
+                  disabled={deleteOrderMutation.isPending}
+                >
+                  {deleteOrderMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    'Delete Order'
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       ),
     },

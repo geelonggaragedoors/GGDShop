@@ -123,6 +123,7 @@ export interface IStorage {
   updateOrder(id: string, updates: Partial<Order>): Promise<boolean>;
   addTrackingNumberAndShip(id: string, trackingNumber: string): Promise<Order | undefined>;
   addOrderItem(item: InsertOrderItem): Promise<OrderItem>;
+  deleteOrder(id: string): Promise<boolean>;
 
   // Media operations
   getMediaFiles(): Promise<MediaFile[]>;
@@ -786,6 +787,20 @@ export class DatabaseStorage implements IStorage {
   async addOrderItem(item: InsertOrderItem): Promise<OrderItem> {
     const [newItem] = await db.insert(orderItems).values(item).returning();
     return newItem;
+  }
+
+  async deleteOrder(id: string): Promise<boolean> {
+    try {
+      // Delete order items first (due to foreign key constraint)
+      await db.delete(orderItems).where(eq(orderItems.orderId, id));
+      
+      // Delete the order
+      const result = await db.delete(orders).where(eq(orders.id, id));
+      return result.rowCount! > 0;
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      return false;
+    }
   }
 
   // Media operations

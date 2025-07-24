@@ -1286,6 +1286,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete order
+  app.delete('/api/admin/orders/:id', hybridAuth, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      
+      // Check if order exists first
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const success = await storage.deleteOrder(orderId);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete order" });
+      }
+      
+      res.json({ message: "Order deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      res.status(500).json({ message: "Failed to delete order" });
+    }
+  });
+
   // Customer registration (public)
   app.post('/api/customers', async (req, res) => {
     try {
