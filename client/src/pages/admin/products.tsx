@@ -399,6 +399,9 @@ export default function Products() {
         ...data,
         slug,
         images: selectedImages.map(img => img.url),
+        // Convert empty strings to null for optional UUID fields
+        brandId: data.brandId || null,
+        categoryId: data.categoryId || null,
       };
       
       console.log('Final product data to submit:', productData);
