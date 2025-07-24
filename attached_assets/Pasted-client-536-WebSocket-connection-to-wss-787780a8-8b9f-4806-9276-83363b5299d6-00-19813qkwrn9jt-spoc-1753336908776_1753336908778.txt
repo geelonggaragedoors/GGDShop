@@ -1,0 +1,103 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=wYjMoRCqY8-0' failed: 
+setupWebSocket @ client:536
+(anonymous) @ client:531
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=wYjMoRCqY8-0' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555
+chunk-RPCDYKBN.js?v=8da72aaf:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+content.js:208 {}
+NotificationBell.tsx:74 Connected to notification WebSocket
+NotificationBell.tsx:97 WebSocket authentication successful
+chunk-WRUEJBIP.js?v=8da72aaf:339 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-WRUEJBIP.js?v=8da72aaf:339
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=8da72aaf:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=8da72aaf:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=8da72aaf:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=8da72aaf:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=8da72aaf:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=8da72aaf:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=8da72aaf:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=8da72aaf:19416
+commitRoot @ chunk-RPCDYKBN.js?v=8da72aaf:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=8da72aaf:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=8da72aaf:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=8da72aaf:18627
+products.tsx:366 === FORM SUBMISSION START ===
+products.tsx:367 Form data: {name: 'ATA Genuine Spare Part GDO-6V3 DCB03-1.02B-304G To Suit GDO-6V3 EasyRoller', slug: 'ata-genuine-spare-part-gdo-6v3-dcb03-1-02b-304g-to-suit-gdo-6v3-easyroller', sku: 'ATAGE112036', description: '', price: 45, …}
+products.tsx:368 Form errors: {}
+products.tsx:369 Form is valid: false
+products.tsx:370 Selected images: [{…}]
+products.tsx:371 Editing product: 5940f71c-a96c-4d22-bcea-bce45e029605
+products.tsx:376 Manual validation result: true
+products.tsx:407 Final product data to submit: {name: 'ATA Genuine Spare Part GDO-6V3 DCB03-1.02B-304G To Suit GDO-6V3 EasyRoller', slug: 'ata-genuine-spare-part-gdo-6v3-dcb03-1-02b-304g-to-suit-gdo-6v3-easyroller', sku: 'ATAGE112036', description: '', price: 45, …}
+products.tsx:412 Field name: length 74, value: "ATA Genuine Spare Part GDO-6V3 DCB03-1.02B-304G To Suit GDO-6V3 EasyRoller"
+products.tsx:412 Field slug: length 74, value: "ata-genuine-spare-part-gdo-6v3-dcb03-1-02b-304g-to-suit-gdo-6v3-easyroller"
+products.tsx:412 Field sku: length 11, value: "ATAGE112036"
+products.tsx:412 Field description: length 0, value: ""
+products.tsx:412 Field boxSize: length 13, value: "satchel-small"
+products.tsx:412 Field shippingNote: length 0, value: ""
+products.tsx:412 Field categoryId: length 36, value: "8dc0fe5f-94f9-41a1-b584-130e9173fbed"
+products.tsx:412 Field brandId: length 36, value: "d89e1544-6624-48c0-8b84-313d3baac6c9"
+products.tsx:417 Calling UPDATE mutation for product ID: 5940f71c-a96c-4d22-bcea-bce45e029605
+products.tsx:431 === FORM SUBMISSION END ===
+queryClient.ts:15  PUT https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/api/admin/products/5940f71c-a96c-4d22-bcea-bce45e029605 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+update @ api.ts:92
+mutationFn @ products.tsx:208
+fn @ @tanstack_react-query.js?v=8da72aaf:1189
+run @ @tanstack_react-query.js?v=8da72aaf:494
+start @ @tanstack_react-query.js?v=8da72aaf:536
+execute @ @tanstack_react-query.js?v=8da72aaf:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=8da72aaf:2630
+(anonymous) @ @tanstack_react-query.js?v=8da72aaf:3295
+onSubmit @ products.tsx:418
+await in onSubmit
+(anonymous) @ chunk-4BFJKWC4.js?v=8da72aaf:1465
+await in (anonymous)
+callCallback2 @ chunk-RPCDYKBN.js?v=8da72aaf:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=8da72aaf:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=8da72aaf:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=8da72aaf:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=8da72aaf:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=8da72aaf:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=8da72aaf:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=8da72aaf:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=8da72aaf:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=8da72aaf:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=8da72aaf:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=8da72aaf:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=8da72aaf:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=8da72aaf:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=8da72aaf:5449
+products.tsx:218 Update product error: Error: 500: {"message":"Failed to update product"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+onError @ products.tsx:218
+execute @ @tanstack_react-query.js?v=8da72aaf:1254
+await in execute
+mutate @ @tanstack_react-query.js?v=8da72aaf:2630
+(anonymous) @ @tanstack_react-query.js?v=8da72aaf:3295
+onSubmit @ products.tsx:418
+await in onSubmit
+(anonymous) @ chunk-4BFJKWC4.js?v=8da72aaf:1465
+await in (anonymous)
+callCallback2 @ chunk-RPCDYKBN.js?v=8da72aaf:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=8da72aaf:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=8da72aaf:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=8da72aaf:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=8da72aaf:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=8da72aaf:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=8da72aaf:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=8da72aaf:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=8da72aaf:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=8da72aaf:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=8da72aaf:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=8da72aaf:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=8da72aaf:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=8da72aaf:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=8da72aaf:5449
