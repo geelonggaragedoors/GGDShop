@@ -156,6 +156,10 @@ export default function Checkout() {
     setIsCalculatingShipping(true);
     try {
       // For each cart item, calculate shipping based on its dimensions and box size
+      let totalPostage = 0;
+      let totalBoxPrice = 0;
+      let totalSubtotal = 0;
+      let totalGst = 0;
       let totalShippingCost = 0;
       let hasOversizedItems = false;
       let oversizedMessage = '';
@@ -196,7 +200,11 @@ export default function Checkout() {
             oversizedMessage = shippingData.oversizedMessage;
             break;
           } else {
-            // Add to total shipping cost
+            // Accumulate actual breakdown values
+            totalPostage += shippingData.postage * item.quantity;
+            totalBoxPrice += shippingData.boxPrice * item.quantity;
+            totalSubtotal += shippingData.subtotal * item.quantity;
+            totalGst += shippingData.gst * item.quantity;
             totalShippingCost += shippingData.total * item.quantity;
           }
         } else {
@@ -225,6 +233,11 @@ export default function Checkout() {
           if (shippingResponse.ok) {
             const shippingData = await shippingResponse.json();
             console.log('Default shipping calculation result:', shippingData);
+            // Accumulate actual breakdown values
+            totalPostage += shippingData.postage * item.quantity;
+            totalBoxPrice += shippingData.boxPrice * item.quantity;
+            totalSubtotal += shippingData.subtotal * item.quantity;
+            totalGst += shippingData.gst * item.quantity;
             totalShippingCost += shippingData.total * item.quantity;
           } else {
             console.error('Shipping calculation failed:', await shippingResponse.text());
@@ -243,15 +256,12 @@ export default function Checkout() {
           oversizedMessage
         });
       } else {
-        // Calculate total GST and breakdown
-        const subtotal = totalShippingCost / 1.1; // Remove GST to get subtotal
-        const gst = totalShippingCost - subtotal;
-        
+        // Use actual calculated breakdown values
         setShippingCosts({
-          postage: subtotal * 0.7, // Approximate split between postage and box costs
-          boxPrice: subtotal * 0.3,
-          subtotal,
-          gst,
+          postage: totalPostage,
+          boxPrice: totalBoxPrice,
+          subtotal: totalSubtotal,
+          gst: totalGst,
           total: totalShippingCost,
           isOversized: false
         });
@@ -458,7 +468,7 @@ export default function Checkout() {
         totals: {
           subtotal: cartTotal,
           shipping: shippingCost,
-          tax: gst,
+          tax: productGst,
           total: finalTotal
         }
       };
@@ -511,8 +521,8 @@ export default function Checkout() {
 
   // Calculate totals including dynamic Australia Post shipping
   const shippingCost = shippingCosts?.total || 0;
-  const gst = cartTotal * 0.1; // GST on products (shipping GST already included in shippingCosts)
-  const finalTotal = cartTotal + shippingCost + gst;
+  const productGst = cartTotal * 0.1; // GST only on products (shipping GST already included in shippingCosts)
+  const finalTotal = cartTotal + shippingCost + productGst;
 
   if (cartItems.length === 0) {
     return (
@@ -718,6 +728,7 @@ export default function Checkout() {
                     placeholder="Start typing your address..."
                     onAddressSelect={handleAddressSelect}
                     defaultValue={formData.address}
+                    key={formData.address} // Force re-render when address changes
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -979,7 +990,7 @@ export default function Checkout() {
                   </div>
                   <div className="flex justify-between">
                     <span>GST (10%)</span>
-                    <span>${gst.toFixed(2)}</span>
+                    <span>${productGst.toFixed(2)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
@@ -1030,7 +1041,7 @@ export default function Checkout() {
                           totals: {
                             subtotal: cartTotal,
                             shipping: shippingCost,
-                            tax: gst,
+                            tax: productGst,
                             total: finalTotal
                           }
                         }}
