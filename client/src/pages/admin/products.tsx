@@ -26,6 +26,7 @@ export default function Products() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedBrand, setSelectedBrand] = useState<string>("");
+  const [showNoWeight, setShowNoWeight] = useState(false);
   const [page, setPage] = useState(0);
   const [pageSize] = useState(10);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
@@ -42,12 +43,13 @@ export default function Products() {
   const { toast } = useToast();
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
-    queryKey: ["/api/admin/products", { search, categoryId: selectedCategory, brandId: selectedBrand, limit: pageSize, offset: page * pageSize }],
+    queryKey: ["/api/admin/products", { search, categoryId: selectedCategory, brandId: selectedBrand, noWeight: showNoWeight, limit: pageSize, offset: page * pageSize }],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (search) params.append('search', search);
       if (selectedCategory && selectedCategory !== 'all') params.append('categoryId', selectedCategory);
       if (selectedBrand && selectedBrand !== 'all') params.append('brandId', selectedBrand);
+      if (showNoWeight) params.append('noWeight', 'true');
       params.append('limit', pageSize.toString());
       params.append('offset', (page * pageSize).toString());
       
@@ -1448,6 +1450,19 @@ export default function Products() {
                 ))}
               </SelectContent>
             </Select>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="noWeight"
+                checked={showNoWeight}
+                onCheckedChange={setShowNoWeight}
+              />
+              <label
+                htmlFor="noWeight"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                No Weight
+              </label>
+            </div>
           </div>
         </CardContent>
       </Card>
