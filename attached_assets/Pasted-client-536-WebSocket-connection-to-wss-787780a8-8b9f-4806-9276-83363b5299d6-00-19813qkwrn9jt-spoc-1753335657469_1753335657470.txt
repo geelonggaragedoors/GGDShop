@@ -1,0 +1,40 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=AD5mvACznlKU' failed: 
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=AD5mvACznlKU' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+chunk-RPCDYKBN.js?v=8da72aaf:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+content.js:208 Object
+NotificationBell.tsx:74 Connected to notification WebSocket
+NotificationBell.tsx:97 WebSocket authentication successful
+chunk-WRUEJBIP.js?v=8da72aaf:339 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-WRUEJBIP.js?v=8da72aaf:339
+products.tsx:1821 Update button clicked
+products.tsx:1822 Form errors: Object
+products.tsx:1823 Form is valid: false
+products.tsx:1824 Form dirty fields: Object
+products.tsx:366 === FORM SUBMISSION START ===
+products.tsx:367 Form data: Object
+products.tsx:368 Form errors: Object
+products.tsx:369 Form is valid: false
+products.tsx:370 Selected images: Array(1)
+products.tsx:371 Editing product: 88d39f69-262b-48c2-9262-2b8325b43d6a
+products.tsx:375 Form validation failed: Object
+onSubmit @ products.tsx:375
+products.tsx:1821 Update button clicked
+products.tsx:1822 Form errors: Object
+products.tsx:1823 Form is valid: false
+products.tsx:1824 Form dirty fields: Object
+products.tsx:366 === FORM SUBMISSION START ===
+products.tsx:367 Form data: Object
+products.tsx:368 Form errors: Object
+products.tsx:369 Form is valid: false
+products.tsx:370 Selected images: Array(1)
+products.tsx:371 Editing product: 88d39f69-262b-48c2-9262-2b8325b43d6a
+products.tsx:375 Form validation failed: Object[[Prototype]]: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()__proto__: (...)get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()
+onSubmit @ products.tsx:375
+NotificationBell.tsx:110 WebSocket closed unexpectedly: 1006
+websocket.onclose @ NotificationBell.tsx:110
+NotificationBell.tsx:74 Connected to notification WebSocket
+NotificationBell.tsx:97 WebSocket authentication successful

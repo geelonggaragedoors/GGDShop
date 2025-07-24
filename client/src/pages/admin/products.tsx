@@ -362,7 +362,7 @@ export default function Products() {
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log('=== FORM SUBMISSION START ===');
     console.log('Form data:', data);
     console.log('Form errors:', form.formState.errors);
@@ -370,32 +370,49 @@ export default function Products() {
     console.log('Selected images:', selectedImages);
     console.log('Editing product:', editingProduct?.id);
     
-    // Check for validation errors
-    if (!form.formState.isValid) {
-      console.error('Form validation failed:', form.formState.errors);
-      return;
-    }
-    
-    // Auto-generate slug from product name when the form submits
-    const slug = data.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-    
-    const productData = {
-      ...data,
-      slug,
-      images: selectedImages.map(img => img.url),
-    };
-    
-    console.log('Final product data to submit:', productData);
-    
-    if (editingProduct) {
-      console.log('Calling UPDATE mutation for product ID:', editingProduct.id);
-      updateProductMutation.mutate({ id: editingProduct.id, data: productData });
-    } else {
-      console.log('Calling CREATE mutation');
-      createProductMutation.mutate(productData);
+    try {
+      // Manual validation trigger to ensure form is valid
+      const isValid = await form.trigger();
+      console.log('Manual validation result:', isValid);
+      
+      if (!isValid) {
+        console.error('Form validation failed:', form.formState.errors);
+        toast({ 
+          title: "Validation Error", 
+          description: "Please check the form for errors", 
+          variant: "destructive" 
+        });
+        return;
+      }
+      
+      // Auto-generate slug from product name when the form submits
+      const slug = data.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      
+      const productData = {
+        ...data,
+        slug,
+        images: selectedImages.map(img => img.url),
+      };
+      
+      console.log('Final product data to submit:', productData);
+      
+      if (editingProduct) {
+        console.log('Calling UPDATE mutation for product ID:', editingProduct.id);
+        updateProductMutation.mutate({ id: editingProduct.id, data: productData });
+      } else {
+        console.log('Calling CREATE mutation');
+        createProductMutation.mutate(productData);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast({ 
+        title: "Submission Error", 
+        description: "An error occurred while submitting the form", 
+        variant: "destructive" 
+      });
     }
     console.log('=== FORM SUBMISSION END ===');
   };
@@ -1817,12 +1834,6 @@ export default function Products() {
                           <Button 
                             type="submit" 
                             disabled={updateProductMutation.isPending}
-                            onClick={() => {
-                              console.log('Update button clicked');
-                              console.log('Form errors:', form.formState.errors);
-                              console.log('Form is valid:', form.formState.isValid);
-                              console.log('Form dirty fields:', form.formState.dirtyFields);
-                            }}
                           >
                             {updateProductMutation.isPending ? "Updating..." : "Update Product"}
                           </Button>
