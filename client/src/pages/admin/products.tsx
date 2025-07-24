@@ -406,13 +406,6 @@ export default function Products() {
       
       console.log('Final product data to submit:', productData);
       
-      // Log string lengths to identify the issue
-      Object.keys(productData).forEach(key => {
-        if (typeof productData[key] === 'string') {
-          console.log(`Field ${key}: length ${productData[key].length}, value: "${productData[key]}"`);
-        }
-      });
-      
       if (editingProduct) {
         console.log('Calling UPDATE mutation for product ID:', editingProduct.id);
         updateProductMutation.mutate({ id: editingProduct.id, data: productData });

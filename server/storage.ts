@@ -506,18 +506,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined> {
-    // Debug: Log all field lengths before updating
-    console.log('=== SERVER-SIDE UPDATE PRODUCT DEBUG ===');
-    console.log('Product ID:', id);
-    Object.keys(product).forEach(key => {
-      const value = product[key as keyof typeof product];
-      if (typeof value === 'string') {
-        console.log(`Server field ${key}: length ${value.length}, value: "${value}"`);
-      } else {
-        console.log(`Server field ${key}: type ${typeof value}, value:`, value);
-      }
-    });
-    
     const [updatedProduct] = await db
       .update(products)
       .set({ ...product, updatedAt: new Date() })
