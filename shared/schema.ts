@@ -132,8 +132,10 @@ export const products = pgTable("products", {
   length: decimal("length", { precision: 8, scale: 2 }), // in cm
   width: decimal("width", { precision: 8, scale: 2 }), // in cm
   height: decimal("height", { precision: 8, scale: 2 }), // in cm
-  boxSize: varchar("box_size", { length: 10 }), // Australia Post box size (e.g., Bx1, Bx2)
+  boxSize: varchar("box_size", { length: 50 }), // Australia Post box size (e.g., satchel-small, box-medium)
   shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }), // calculated from Australia Post API
+  customShippingPrice: decimal("custom_shipping_price", { precision: 10, scale: 2 }), // fixed shipping price for oversized items
+  shippingNote: varchar("shipping_note"), // special shipping instructions/notes
   freePostage: boolean("free_postage").default(false), // Override shipping cost to be free
   status: varchar("status", { length: 20 }).default("draft"), // draft or published
   images: jsonb("images"), // Array of image URLs
@@ -719,7 +721,6 @@ export const emailLogs = pgTable("email_logs", {
 
 export type EmailLog = typeof emailLogs.$inferSelect;
 export type InsertEmailLog = typeof emailLogs.$inferInsert;
-export type InsertEmailSettingConfig = typeof emailSettingsConfig.$inferInsert;
 
 // Add the missing transaction relation
 export const customerTransactionsRelations = relations(customerTransactions, ({ one }) => ({

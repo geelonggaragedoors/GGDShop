@@ -41,6 +41,8 @@ export default function Products() {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [useCustomShipping, setUseCustomShipping] = useState(false);
+  const [customShippingPrice, setCustomShippingPrice] = useState(0);
   const { toast } = useToast();
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
@@ -252,6 +254,8 @@ export default function Products() {
       width: 0,
       height: 0,
       boxSize: "",
+      customShippingPrice: 0,
+      shippingNote: "",
       isFeatured: false,
       isActive: true,
       alwaysInStock: true,
@@ -327,6 +331,9 @@ export default function Products() {
       length: typeof product.length === 'string' ? parseFloat(product.length) : (product.length || 0),
       width: typeof product.width === 'string' ? parseFloat(product.width) : (product.width || 0),
       height: typeof product.height === 'string' ? parseFloat(product.height) : (product.height || 0),
+      boxSize: product.boxSize || "",
+      customShippingPrice: typeof product.customShippingPrice === 'string' ? parseFloat(product.customShippingPrice) : (product.customShippingPrice || 0),
+      shippingNote: product.shippingNote || "",
       isFeatured: Boolean(product.isFeatured),
       isActive: Boolean(product.isActive),
       alwaysInStock: Boolean(product.alwaysInStock),
@@ -1146,93 +1153,154 @@ export default function Products() {
                           />
                         </div>
 
-                        {/* Australia Post Shipping Box Selection */}
+                        {/* Shipping and Measurements Section */}
                         <div className="border-t pt-4">
-                          <h4 className="text-sm font-medium text-gray-900 mb-3">Australia Post Standard Box Selection</h4>
-                          <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-3">
-                            <div className="text-sm text-green-800">
-                              <p className="font-medium mb-2">Australia Post Box Selection:</p>
-                              <p className="text-xs mb-2">Select a standard box size. Box price and shipping costs will be calculated automatically including 10% GST.</p>
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                                <div><strong>Bx1:</strong> $3.50 - 22×16×7.7cm</div>
-                                <div><strong>Bx2:</strong> $4.25 - 31×22.5×10.2cm</div>
-                                <div><strong>Bx3:</strong> $5.75 - 40×20×18cm</div>
-                                <div><strong>Bx4:</strong> $6.25 - 43×30.5×14cm</div>
-                                <div><strong>Bx5:</strong> $8.50 - 40.5×30×25.5cm</div>
-                                <div><strong>Bx6:</strong> $2.75 - 22×14.5×3.5cm</div>
-                              </div>
-                              <p className="text-xs mt-2 font-medium">
-                                If product is too large for standard boxes, customers will be asked to call (03) 5221 8999 for custom shipping quote.
-                              </p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <h4 className="text-sm font-medium text-gray-900 mb-3">Shipping & Measurements</h4>
+                          
+                          {/* Product Dimensions */}
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
                             <FormField
                               control={form.control}
-                              name="weight"
+                              name="length"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Product Weight (grams)</FormLabel>
+                                  <FormLabel>Length (cm)</FormLabel>
                                   <FormControl>
                                     <Input 
                                       {...field} 
                                       type="number" 
-                                      step="1"
-                                      placeholder="e.g., 5000"
+                                      step="0.1"
+                                      placeholder="e.g., 30.5"
                                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                     />
                                   </FormControl>
-                                  <FormDescription className="text-xs">Weight of the product in grams</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="width"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Width (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      type="number" 
+                                      step="0.1"
+                                      placeholder="e.g., 25.0"
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="height"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Height (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      type="number" 
+                                      step="0.1"
+                                      placeholder="e.g., 15.0"
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    />
+                                  </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
                             <div>
-                              <FormLabel>Australia Post Box Size</FormLabel>
-                              <Select onValueChange={(value) => {
-                                form.setValue('boxSize', value);
-                                // Auto-fill dimensions based on selected box
-                                const boxDimensions: Record<string, { length: number; width: number; height: number }> = {
-                                  'Bx1': { length: 22, width: 16, height: 7.7 },
-                                  'Bx2': { length: 31, width: 22.5, height: 10.2 },
-                                  'Bx3': { length: 40, width: 20, height: 18 },
-                                  'Bx4': { length: 43, width: 30.5, height: 14 },
-                                  'Bx5': { length: 40.5, width: 30, height: 25.5 },
-                                  'Bx6': { length: 22, width: 14.5, height: 3.5 },
-                                  'Bx7': { length: 14.5, width: 12.7, height: 1 },
-                                  'Bx8': { length: 36.3, width: 21.2, height: 6.5 },
-                                };
-                                if (boxDimensions[value]) {
-                                  form.setValue('length', boxDimensions[value].length);
-                                  form.setValue('width', boxDimensions[value].width);
-                                  form.setValue('height', boxDimensions[value].height);
-                                }
-                              }} value={form.getValues('boxSize') || ''}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select standard box size" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Bx1">Bx1 - $3.50 - 22×16×7.7cm (Small)</SelectItem>
-                                  <SelectItem value="Bx2">Bx2 - $4.25 - 31×22.5×10.2cm (Medium)</SelectItem>
-                                  <SelectItem value="Bx3">Bx3 - $5.75 - 40×20×18cm (Long)</SelectItem>
-                                  <SelectItem value="Bx4">Bx4 - $6.25 - 43×30.5×14cm (Wide)</SelectItem>
-                                  <SelectItem value="Bx5">Bx5 - $8.50 - 40.5×30×25.5cm (Large)</SelectItem>
-                                  <SelectItem value="Bx6">Bx6 - $2.75 - 22×14.5×3.5cm (Flat)</SelectItem>
-                                  <SelectItem value="Bx7">Bx7 - $1.95 - 14.5×12.7×1cm (Very Flat)</SelectItem>
-                                  <SelectItem value="Bx8">Bx8 - $4.95 - 36.3×21.2×6.5cm (ToughPak)</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <FormLabel>Weight (grams)</FormLabel>
+                              <Input 
+                                type="number" 
+                                step="1"
+                                placeholder="e.g., 5000"
+                                value={form.watch('weight') || ''}
+                                onChange={(e) => form.setValue('weight', parseFloat(e.target.value) || 0)}
+                              />
                               <p className="text-xs text-muted-foreground mt-1">
-                                Box price will be added to shipping cost automatically
+                                Product weight for shipping calculations
                               </p>
                             </div>
                           </div>
-                          
-                          {/* Hidden dimension fields that get auto-populated */}
-                          <div className="hidden">
-                            <FormField control={form.control} name="length" render={({ field }) => <Input {...field} />} />
-                            <FormField control={form.control} name="width" render={({ field }) => <Input {...field} />} />
-                            <FormField control={form.control} name="height" render={({ field }) => <Input {...field} />} />
+
+                          {/* Australia Post Box Selection */}
+                          <div className="mb-4">
+                            <FormLabel>Australia Post Box Size (Recommended)</FormLabel>
+                            <Select onValueChange={(value) => {
+                              form.setValue('boxSize', value);
+                              setUseCustomShipping(false);
+                            }} value={form.getValues('boxSize') || ''}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select recommended box size based on measurements" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="satchel-small">Small Satchel - $11.30 - 35.5×22.5×2cm (up to 5kg)</SelectItem>
+                                <SelectItem value="satchel-medium">Medium Satchel - $15.30 - 39×27×2cm (up to 5kg)</SelectItem>
+                                <SelectItem value="satchel-large">Large Satchel - $19.35 - 40.5×31.5×2cm (up to 5kg)</SelectItem>
+                                <SelectItem value="satchel-extra-large">Extra Large Satchel - $23.35 - 51×44×2cm (up to 5kg)</SelectItem>
+                                <SelectItem value="box-small">Small Box - Weight Based - 20×15×10cm</SelectItem>
+                                <SelectItem value="box-medium">Medium Box - Weight Based - 30×25×15cm</SelectItem>
+                                <SelectItem value="box-large">Large Box - Weight Based - 40×30×20cm</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Satchels have flat rates up to 5kg. Boxes are calculated by weight.
+                            </p>
+                          </div>
+
+                          {/* Custom Shipping Option */}
+                          <div className="border border-orange-200 bg-orange-50 rounded-md p-3">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <Checkbox 
+                                checked={useCustomShipping}
+                                onCheckedChange={setUseCustomShipping}
+                              />
+                              <label className="text-sm font-medium text-orange-800">
+                                Use Custom Shipping Price (for oversized items)
+                              </label>
+                            </div>
+                            {useCustomShipping && (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                  <FormLabel>Custom Shipping Price (AUD)</FormLabel>
+                                  <Input 
+                                    type="number" 
+                                    step="0.01"
+                                    placeholder="e.g., 45.00"
+                                    value={customShippingPrice || ''}
+                                    onChange={(e) => {
+                                      const price = parseFloat(e.target.value) || 0;
+                                      setCustomShippingPrice(price);
+                                      form.setValue('customShippingPrice', price);
+                                    }}
+                                  />
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Fixed shipping cost for this product
+                                  </p>
+                                </div>
+                                <div>
+                                  <FormLabel>Shipping Note</FormLabel>
+                                  <Input 
+                                    placeholder="e.g., Call for freight quote"
+                                    onChange={(e) => form.setValue('shippingNote', e.target.value)}
+                                  />
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Display note about special shipping requirements
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                            <p className="text-xs text-orange-700 mt-2">
+                              <strong>Note:</strong> If no suitable Australia Post option exists, customers will see "Call (03) 5221 8999 for shipping quote" message.
+                            </p>
                           </div>
                         </div>
 
