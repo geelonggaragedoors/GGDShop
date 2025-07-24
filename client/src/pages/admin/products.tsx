@@ -206,12 +206,56 @@ export default function Products() {
 
   const updateProductMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => api.admin.products.update(id, data),
-    onSuccess: () => {
+    onSuccess: async (updatedProduct) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/counts"] });
-      // Close dialog and reset all state
-      closeEditDialog();
+      
+      // Refresh the form with updated data from server instead of closing dialog
+      if (editingProduct && updatedProduct) {
+        // Fetch the latest product data from the server
+        try {
+          const response = await fetch(`/api/admin/products/${editingProduct.id}`);
+          const latestProduct = await response.json();
+          
+          // Update the editing product state
+          setEditingProduct(latestProduct);
+          
+          // Reset form with the latest data
+          form.reset({
+            name: latestProduct.name || "",
+            slug: latestProduct.slug || "",
+            description: latestProduct.description || "",
+            price: latestProduct.price || 0,
+            categoryId: latestProduct.categoryId || "",
+            brandId: latestProduct.brandId || "",
+            sku: latestProduct.sku || "",
+            stockQuantity: latestProduct.stockQuantity || 0,
+            weight: latestProduct.weight || 0,
+            length: latestProduct.length || 0,
+            width: latestProduct.width || 0,
+            height: latestProduct.height || 0,
+            boxSize: latestProduct.boxSize || "",
+            customShippingPrice: latestProduct.customShippingPrice || 0,
+            shippingNote: latestProduct.shippingNote || "",
+            isFeatured: latestProduct.isFeatured || false,
+            isActive: latestProduct.isActive !== false,
+            alwaysInStock: latestProduct.alwaysInStock !== false,
+            freePostage: latestProduct.freePostage || false,
+          });
+          
+          // Update selected images
+          setSelectedImages(latestProduct.images || []);
+          
+          // Update shipping calculations if dimensions changed
+          if (latestProduct.length && latestProduct.width && latestProduct.height && latestProduct.weight) {
+            suggestAustraliaPostBox(latestProduct.length, latestProduct.width, latestProduct.height, latestProduct.weight);
+          }
+        } catch (error) {
+          console.error("Error fetching updated product:", error);
+        }
+      }
+      
       toast({ title: "Product updated successfully" });
     },
     onError: (error: any) => {
