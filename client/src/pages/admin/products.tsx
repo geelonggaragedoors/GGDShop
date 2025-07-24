@@ -48,14 +48,15 @@ export default function Products() {
   const { toast } = useToast();
 
   // Function to suggest Australia Post box based on dimensions
-  const suggestAustraliaPostBox = (length: number, width: number, height: number, weight: number) => {
-    if (!length || !width || !height || !weight || !shippingType) {
+  const suggestAustraliaPostBox = (length: number, width: number, height: number, weight: number, currentShippingType?: string) => {
+    const typeToUse = currentShippingType || shippingType;
+    if (!length || !width || !height || !weight || !typeToUse) {
       setSuggestedBox(null);
       return;
     }
 
     // Satchel options (up to 5kg) - only if satchel type is selected
-    if (shippingType === 'satchel' && weight <= 5000) {
+    if (typeToUse === 'satchel' && weight <= 5) {
       if (length <= 35.5 && width <= 22.5 && height <= 2) {
         setSuggestedBox({
           id: 'satchel-small',
@@ -95,7 +96,7 @@ export default function Products() {
     }
 
     // Box options (weight-based pricing) - only if box type is selected
-    if (shippingType === 'box' && length <= 20 && width <= 15 && height <= 10) {
+    if (typeToUse === 'box' && length <= 20 && width <= 15 && height <= 10) {
       const estimatedCost = Math.max(8.95, (weight / 1000) * 3.50); // Base rate + weight
       setSuggestedBox({
         id: 'box-small',
@@ -105,7 +106,7 @@ export default function Products() {
       });
       return;
     }
-    if (shippingType === 'box' && length <= 30 && width <= 25 && height <= 15) {
+    if (typeToUse === 'box' && length <= 30 && width <= 25 && height <= 15) {
       const estimatedCost = Math.max(12.95, (weight / 1000) * 4.50);
       setSuggestedBox({
         id: 'box-medium',
@@ -115,7 +116,7 @@ export default function Products() {
       });
       return;
     }
-    if (shippingType === 'box' && length <= 40 && width <= 30 && height <= 20) {
+    if (typeToUse === 'box' && length <= 40 && width <= 30 && height <= 20) {
       const estimatedCost = Math.max(16.95, (weight / 1000) * 5.50);
       setSuggestedBox({
         id: 'box-large',
@@ -127,7 +128,7 @@ export default function Products() {
     }
 
     // If no standard size fits, suggest custom shipping or alternative
-    if (shippingType === 'satchel' && weight > 5000) {
+    if (typeToUse === 'satchel' && weight > 5) {
       setSuggestedBox({
         id: 'suggest-box',
         name: 'Consider Box Shipping Instead',
@@ -495,7 +496,7 @@ export default function Products() {
       cell: ({ row }: any) => (
         <Checkbox
           checked={selectedProducts.includes(row.original.id)}
-          onCheckedChange={(checked) => handleSelectProduct(row.original.id, checked)}
+          onCheckedChange={(checked) => handleSelectProduct(row.original.id, Boolean(checked))}
         />
       ),
     },
@@ -531,7 +532,7 @@ export default function Products() {
       header: "Category",
       accessorKey: "categoryId",
       cell: ({ row }: any) => {
-        const category = categories?.find(c => c.id === row.original.categoryId);
+        const category = categories?.find((c: any) => c.id === row.original.categoryId);
         return <span className="text-gray-600">{category?.name || "—"}</span>;
       },
     },
@@ -539,7 +540,7 @@ export default function Products() {
       header: "Brand",
       accessorKey: "brandId",
       cell: ({ row }: any) => {
-        const brand = brands?.find(b => b.id === row.original.brandId);
+        const brand = brands?.find((b: any) => b.id === row.original.brandId);
         return <span className="text-gray-600">{brand?.name || "—"}</span>;
       },
     },
@@ -1401,7 +1402,7 @@ export default function Products() {
                                   const height = form.getValues('height') || 0;
                                   const weight = form.getValues('weight') || 0;
                                   if (length && width && height && weight) {
-                                    suggestAustraliaPostBox(length, width, height, weight);
+                                    suggestAustraliaPostBox(length, width, height, weight, 'satchel');
                                   }
                                 }}
                               >
@@ -1424,7 +1425,7 @@ export default function Products() {
                                   const height = form.getValues('height') || 0;
                                   const weight = form.getValues('weight') || 0;
                                   if (length && width && height && weight) {
-                                    suggestAustraliaPostBox(length, width, height, weight);
+                                    suggestAustraliaPostBox(length, width, height, weight, 'box');
                                   }
                                 }}
                               >
