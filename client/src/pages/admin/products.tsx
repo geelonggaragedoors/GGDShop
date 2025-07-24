@@ -44,17 +44,18 @@ export default function Products() {
   const [useCustomShipping, setUseCustomShipping] = useState(false);
   const [customShippingPrice, setCustomShippingPrice] = useState(0);
   const [suggestedBox, setSuggestedBox] = useState<{id: string, name: string, cost: number, note?: string} | null>(null);
+  const [shippingType, setShippingType] = useState<'satchel' | 'box' | ''>('');
   const { toast } = useToast();
 
   // Function to suggest Australia Post box based on dimensions
   const suggestAustraliaPostBox = (length: number, width: number, height: number, weight: number) => {
-    if (!length || !width || !height || !weight) {
+    if (!length || !width || !height || !weight || !shippingType) {
       setSuggestedBox(null);
       return;
     }
 
-    // Satchel options (up to 5kg)
-    if (weight <= 5000) {
+    // Satchel options (up to 5kg) - only if satchel type is selected
+    if (shippingType === 'satchel' && weight <= 5000) {
       if (length <= 35.5 && width <= 22.5 && height <= 2) {
         setSuggestedBox({
           id: 'satchel-small',
@@ -93,8 +94,8 @@ export default function Products() {
       }
     }
 
-    // Box options (weight-based pricing)
-    if (length <= 20 && width <= 15 && height <= 10) {
+    // Box options (weight-based pricing) - only if box type is selected
+    if (shippingType === 'box' && length <= 20 && width <= 15 && height <= 10) {
       const estimatedCost = Math.max(8.95, (weight / 1000) * 3.50); // Base rate + weight
       setSuggestedBox({
         id: 'box-small',
@@ -104,7 +105,7 @@ export default function Products() {
       });
       return;
     }
-    if (length <= 30 && width <= 25 && height <= 15) {
+    if (shippingType === 'box' && length <= 30 && width <= 25 && height <= 15) {
       const estimatedCost = Math.max(12.95, (weight / 1000) * 4.50);
       setSuggestedBox({
         id: 'box-medium',
@@ -114,7 +115,7 @@ export default function Products() {
       });
       return;
     }
-    if (length <= 40 && width <= 30 && height <= 20) {
+    if (shippingType === 'box' && length <= 40 && width <= 30 && height <= 20) {
       const estimatedCost = Math.max(16.95, (weight / 1000) * 5.50);
       setSuggestedBox({
         id: 'box-large',
@@ -125,13 +126,22 @@ export default function Products() {
       return;
     }
 
-    // If no standard size fits, suggest custom shipping
-    setSuggestedBox({
-      id: 'custom',
-      name: 'Custom Shipping Required',
-      cost: 0,
-      note: 'Oversized - requires freight quote'
-    });
+    // If no standard size fits, suggest custom shipping or alternative
+    if (shippingType === 'satchel' && weight > 5000) {
+      setSuggestedBox({
+        id: 'suggest-box',
+        name: 'Consider Box Shipping Instead',
+        cost: 0,
+        note: 'Item too heavy for satchel (over 5kg)'
+      });
+    } else {
+      setSuggestedBox({
+        id: 'custom',
+        name: 'Custom Shipping Required',
+        cost: 0,
+        note: 'Oversized - requires freight quote'
+      });
+    }
   };
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
@@ -406,6 +416,7 @@ export default function Products() {
     setEditingProduct(product);
     setIsEditProductOpen(true);
     setSuggestedBox(null); // Reset suggestion state
+    setShippingType(''); // Reset shipping type selection
     setUseCustomShipping(Boolean(product.customShippingPrice));
     setCustomShippingPrice(product.customShippingPrice || 0);
     
@@ -451,6 +462,7 @@ export default function Products() {
     form.reset();
     setSelectedImages([]);
     setSuggestedBox(null); // Reset suggestion state
+    setShippingType(''); // Reset shipping type
     setUseCustomShipping(false);
     setCustomShippingPrice(0);
   };
@@ -1233,6 +1245,59 @@ export default function Products() {
                         <div className="border-t pt-4">
                           <h4 className="text-sm font-medium text-gray-900 mb-3">Shipping & Measurements</h4>
                           
+                          {/* Shipping Type Selection */}
+                          <div className="mb-4">
+                            <label className="text-sm font-medium text-gray-700 mb-2 block">📦 Select Shipping Type First</label>
+                            <div className="grid grid-cols-2 gap-3">
+                              <Button
+                                type="button"
+                                variant={shippingType === 'satchel' ? 'default' : 'outline'}
+                                className={`h-auto p-4 ${shippingType === 'satchel' ? 'bg-blue-600 text-white' : 'border-gray-300'}`}
+                                onClick={() => {
+                                  setShippingType('satchel');
+                                  setSuggestedBox(null);
+                                  // Re-trigger suggestion if measurements exist
+                                  const length = form.getValues('length') || 0;
+                                  const width = form.getValues('width') || 0;
+                                  const height = form.getValues('height') || 0;
+                                  const weight = form.getValues('weight') || 0;
+                                  if (length && width && height && weight) {
+                                    suggestAustraliaPostBox(length, width, height, weight);
+                                  }
+                                }}
+                              >
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold">📮 Satchel</div>
+                                  <div className="text-xs mt-1">Flat items up to 5kg</div>
+                                  <div className="text-xs text-gray-500">Fixed pricing</div>
+                                </div>
+                              </Button>
+                              <Button
+                                type="button"
+                                variant={shippingType === 'box' ? 'default' : 'outline'}
+                                className={`h-auto p-4 ${shippingType === 'box' ? 'bg-blue-600 text-white' : 'border-gray-300'}`}
+                                onClick={() => {
+                                  setShippingType('box');
+                                  setSuggestedBox(null);
+                                  // Re-trigger suggestion if measurements exist
+                                  const length = form.getValues('length') || 0;
+                                  const width = form.getValues('width') || 0;
+                                  const height = form.getValues('height') || 0;
+                                  const weight = form.getValues('weight') || 0;
+                                  if (length && width && height && weight) {
+                                    suggestAustraliaPostBox(length, width, height, weight);
+                                  }
+                                }}
+                              >
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold">📦 Box</div>
+                                  <div className="text-xs mt-1">3D items, any weight</div>
+                                  <div className="text-xs text-gray-500">Weight-based pricing</div>
+                                </div>
+                              </Button>
+                            </div>
+                          </div>
+                          
                           {/* Product Dimensions */}
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
                             <FormField
@@ -1359,7 +1424,7 @@ export default function Products() {
                                   <p className="text-lg font-bold text-green-900">
                                     ${suggestedBox.cost.toFixed(2)}
                                   </p>
-                                  {suggestedBox.id !== 'custom' && (
+                                  {suggestedBox.id !== 'custom' && suggestedBox.id !== 'suggest-box' && (
                                     <Button
                                       type="button"
                                       size="sm"
@@ -1375,6 +1440,24 @@ export default function Products() {
                                       }}
                                     >
                                       Select This Box
+                                    </Button>
+                                  )}
+                                  {suggestedBox.id === 'suggest-box' && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-blue-700 border-blue-300 hover:bg-blue-100 mt-1"
+                                      onClick={() => {
+                                        setShippingType('box');
+                                        setSuggestedBox(null);
+                                        toast({
+                                          title: "Switched to box shipping",
+                                          description: "Now select box measurements for this heavier item"
+                                        });
+                                      }}
+                                    >
+                                      Switch to Box
                                     </Button>
                                   )}
                                   {suggestedBox.id === 'custom' && (
