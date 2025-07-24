@@ -526,7 +526,6 @@ export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-  shippingCost: true, // calculated by API
 }).extend({
   price: z.number().min(0, "Price must be a positive number"),
   weight: z.number().min(0, "Weight must be a positive number").optional(),
@@ -534,6 +533,7 @@ export const insertProductSchema = createInsertSchema(products).omit({
   width: z.number().min(0, "Width must be a positive number").optional(),
   height: z.number().min(0, "Height must be a positive number").optional(),
   boxSize: z.string().optional(),
+  shippingCost: z.string().optional(), // Allow manual setting from product edit page
   stockQuantity: z.number().int().min(0, "Stock quantity must be a non-negative integer"),
   sku: z.string().optional(),
   categoryId: z.string().min(1, "Category is required"),

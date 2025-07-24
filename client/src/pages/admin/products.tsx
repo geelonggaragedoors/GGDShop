@@ -1648,6 +1648,7 @@ export default function Products() {
                                       className="text-green-700 border-green-300 hover:bg-green-100 mt-1"
                                       onClick={() => {
                                         form.setValue('boxSize', suggestedBox.id);
+                                        form.setValue('shippingCost', suggestedBox.cost.toString());
                                         // Only enable custom shipping for oversized items
                                         if (suggestedBox.id === 'custom') {
                                           setUseCustomShipping(true);
