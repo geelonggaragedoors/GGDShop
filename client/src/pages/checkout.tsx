@@ -832,10 +832,13 @@ export default function Checkout() {
                         <span>Postage:</span>
                         <span>${shippingCosts.postage.toFixed(2)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Box cost:</span>
-                        <span>${shippingCosts.boxPrice.toFixed(2)}</span>
-                      </div>
+                      {/* Only show box cost if it's greater than 0 */}
+                      {shippingCosts.boxPrice > 0 && (
+                        <div className="flex justify-between">
+                          <span>Box cost:</span>
+                          <span>${shippingCosts.boxPrice.toFixed(2)}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
                         <span>${shippingCosts.subtotal.toFixed(2)}</span>
