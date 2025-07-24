@@ -1572,9 +1572,17 @@ export default function Products() {
                                       className="text-green-700 border-green-300 hover:bg-green-100 mt-1"
                                       onClick={() => {
                                         form.setValue('boxSize', suggestedBox.id);
-                                        form.setValue('customShippingPrice', suggestedBox.cost);
-                                        setUseCustomShipping(true);
-                                        setCustomShippingPrice(suggestedBox.cost);
+                                        // Only enable custom shipping for oversized items
+                                        if (suggestedBox.id === 'custom') {
+                                          setUseCustomShipping(true);
+                                          form.setValue('customShippingPrice', 0);
+                                          setCustomShippingPrice(0);
+                                        } else {
+                                          // Standard Australia Post option - disable custom shipping
+                                          setUseCustomShipping(false);
+                                          form.setValue('customShippingPrice', 0);
+                                          setCustomShippingPrice(0);
+                                        }
                                         toast({
                                           title: "Box size selected",
                                           description: `${suggestedBox.name} selected with $${suggestedBox.cost.toFixed(2)} shipping cost`
