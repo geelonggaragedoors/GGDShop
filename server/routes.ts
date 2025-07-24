@@ -575,7 +575,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin product management
   app.get('/api/admin/products', hybridAuth, async (req, res) => {
     try {
-      const { categoryId, brandId, search, featured, active, noWeight, limit, offset } = req.query;
+      const { categoryId, brandId, search, featured, active, noWeight, hasWeight, limit, offset } = req.query;
       const params = {
         categoryId: categoryId as string,
         brandId: brandId as string,
@@ -583,6 +583,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         featured: featured === 'true',
         active: active !== 'false',
         noWeight: noWeight === 'true',
+        hasWeight: hasWeight === 'true',
         includeUnpublished: true, // Show all products in admin
         limit: limit ? parseInt(limit as string) : undefined,
         offset: offset ? parseInt(offset as string) : undefined,

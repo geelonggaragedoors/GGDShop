@@ -55,7 +55,7 @@ import {
   type InsertEmailLog,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, asc, like, and, or, count, sql, isNull } from "drizzle-orm";
+import { eq, desc, asc, like, and, or, count, sql, isNull, not } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -88,6 +88,7 @@ export interface IStorage {
     featured?: boolean;
     active?: boolean;
     noWeight?: boolean; // filter products with no weight
+    hasWeight?: boolean; // filter products with weight data
     limit?: number;
     offset?: number;
   }): Promise<{ products: Product[]; total: number }>;
@@ -389,6 +390,7 @@ export class DatabaseStorage implements IStorage {
     featured?: boolean;
     active?: boolean;
     noWeight?: boolean; // filter products with no weight
+    hasWeight?: boolean; // filter products with weight data
     includeUnpublished?: boolean; // for admin panel
     limit?: number;
     offset?: number;
@@ -451,6 +453,15 @@ export class DatabaseStorage implements IStorage {
         or(
           isNull(products.weight),
           eq(products.weight, 0)
+        )
+      );
+    }
+
+    if (params.hasWeight) {
+      conditions.push(
+        and(
+          not(isNull(products.weight)),
+          not(eq(products.weight, 0))
         )
       );
     }
