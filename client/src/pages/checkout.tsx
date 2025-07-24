@@ -195,6 +195,7 @@ export default function Checkout() {
           if (product.boxSize && product.boxSize.includes('satchel')) {
             // Satchel - all cost is postage (no separate box cost)
             totalPostage += storedShippingCost * item.quantity;
+            // No box cost for satchels
           } else {
             // Box shipping - estimate split (most is postage, some is box cost)
             const estimatedBoxCost = Math.min(storedShippingCost * 0.25, 8.50); // Cap box cost at $8.50
