@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import DataTable from "@/components/ui/data-table";
 import { api } from "@/lib/api";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -1219,7 +1219,7 @@ export default function Products() {
                         />
 
                         {/* Stock, Weight and Toggles */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
                           <FormField
                             control={form.control}
                             name="stockQuantity"
@@ -1235,6 +1235,30 @@ export default function Products() {
                                   />
                                 </FormControl>
                                 <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {/* Always in Stock Toggle */}
+                          <FormField
+                            control={form.control}
+                            name="alwaysInStock"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-sm font-medium">
+                                    Always in Stock
+                                  </FormLabel>
+                                  <FormDescription className="text-xs">
+                                    Shows "In Stock" on frontend regardless of quantity
+                                  </FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
                               </FormItem>
                             )}
                           />
@@ -1291,7 +1315,7 @@ export default function Products() {
                               >
                                 <div className="text-center">
                                   <div className="text-lg font-semibold">📦 Box</div>
-                                  <div className="text-xs mt-1">3D items, any weight</div>
+                                  <div className="text-xs mt-1">Bulky items, any weight</div>
                                   <div className="text-xs text-gray-500">Weight-based pricing</div>
                                 </div>
                               </Button>
