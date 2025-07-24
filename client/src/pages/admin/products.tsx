@@ -210,14 +210,13 @@ export default function Products() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/counts"] });
-      setIsEditProductOpen(false);
-      setEditingProduct(null);
-      form.reset();
-      setSelectedImages([]);
+      // Close dialog and reset all state
+      closeEditDialog();
       toast({ title: "Product updated successfully" });
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      console.error("Update product error:", error);
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
     },
   });
 
@@ -364,11 +363,18 @@ export default function Products() {
   });
 
   const onSubmit = (data: any) => {
-    console.log('onSubmit called with data:', data);
+    console.log('=== FORM SUBMISSION START ===');
+    console.log('Form data:', data);
     console.log('Form errors:', form.formState.errors);
     console.log('Form is valid:', form.formState.isValid);
     console.log('Selected images:', selectedImages);
-    console.log('Editing product:', editingProduct);
+    console.log('Editing product:', editingProduct?.id);
+    
+    // Check for validation errors
+    if (!form.formState.isValid) {
+      console.error('Form validation failed:', form.formState.errors);
+      return;
+    }
     
     // Auto-generate slug from product name when the form submits
     const slug = data.name
@@ -383,13 +389,15 @@ export default function Products() {
     };
     
     console.log('Final product data to submit:', productData);
-    console.log('About to call mutation...');
     
     if (editingProduct) {
+      console.log('Calling UPDATE mutation for product ID:', editingProduct.id);
       updateProductMutation.mutate({ id: editingProduct.id, data: productData });
     } else {
+      console.log('Calling CREATE mutation');
       createProductMutation.mutate(productData);
     }
+    console.log('=== FORM SUBMISSION END ===');
   };
 
 
