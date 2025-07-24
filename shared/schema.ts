@@ -537,7 +537,7 @@ export const insertProductSchema = createInsertSchema(products).omit({
   stockQuantity: z.number().int().min(0, "Stock quantity must be a non-negative integer"),
   sku: z.string().optional(),
   categoryId: z.string().min(1, "Category is required"),
-  brandId: z.string().optional(),
+  brandId: z.string().optional().nullable(),
   customShippingPrice: z.number().min(0).optional(),
 });
 
