@@ -1535,7 +1535,7 @@ export default function Products() {
                                         const width = form.getValues('width') || 0;
                                         const height = form.getValues('height') || 0;
                                         const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
-                                        suggestAustraliaPostBox(value, width, height, weight);
+                                        suggestAustraliaPostBox(value, width, height, weight, shippingType);
                                       }}
                                     />
                                   </FormControl>
@@ -1562,7 +1562,7 @@ export default function Products() {
                                         const length = form.getValues('length') || 0;
                                         const height = form.getValues('height') || 0;
                                         const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
-                                        suggestAustraliaPostBox(length, value, height, weight);
+                                        suggestAustraliaPostBox(length, value, height, weight, shippingType);
                                       }}
                                     />
                                   </FormControl>
@@ -1589,7 +1589,7 @@ export default function Products() {
                                         const length = form.getValues('length') || 0;
                                         const width = form.getValues('width') || 0;
                                         const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
-                                        suggestAustraliaPostBox(length, width, value, weight);
+                                        suggestAustraliaPostBox(length, width, value, weight, shippingType);
                                       }}
                                     />
                                   </FormControl>
@@ -1616,7 +1616,7 @@ export default function Products() {
                                         const length = form.getValues('length') || 0;
                                         const width = form.getValues('width') || 0;
                                         const height = form.getValues('height') || 0;
-                                        suggestAustraliaPostBox(length, width, height, value / 1000); // Convert grams to kg
+                                        suggestAustraliaPostBox(length, width, height, value / 1000, shippingType); // Convert grams to kg
                                       }}
                                     />
                                   </FormControl>
