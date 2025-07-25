@@ -1010,7 +1010,16 @@ export default function Products() {
                                     type="number" 
                                     placeholder="e.g., 25"
                                     className="max-w-[200px]"
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (value === '') {
+                                        field.onChange('');
+                                      } else {
+                                        const numValue = parseInt(value, 10);
+                                        field.onChange(isNaN(numValue) ? '' : numValue);
+                                      }
+                                    }}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1246,7 +1255,16 @@ export default function Products() {
                                     type="number" 
                                     step="0.01"
                                     placeholder="e.g., 1550.00"
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (value === '') {
+                                        field.onChange('');
+                                      } else {
+                                        const numValue = parseFloat(value);
+                                        field.onChange(isNaN(numValue) ? '' : numValue);
+                                      }
+                                    }}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1368,7 +1386,16 @@ export default function Products() {
                                     type="number" 
                                     placeholder="e.g., 25"
                                     className="max-w-[200px]"
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                    value={field.value || ''}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (value === '') {
+                                        field.onChange('');
+                                      } else {
+                                        const numValue = parseInt(value, 10);
+                                        field.onChange(isNaN(numValue) ? '' : numValue);
+                                      }
+                                    }}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1528,14 +1555,22 @@ export default function Products() {
                                       type="number" 
                                       step="0.1"
                                       placeholder="e.g., 30.5"
+                                      value={field.value || ''}
                                       onChange={(e) => {
-                                        const value = parseFloat(e.target.value) || 0;
-                                        field.onChange(value);
-                                        // Trigger suggestion when dimensions change
-                                        const width = form.getValues('width') || 0;
-                                        const height = form.getValues('height') || 0;
-                                        const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
-                                        suggestAustraliaPostBox(value, width, height, weight, shippingType);
+                                        const value = e.target.value;
+                                        if (value === '') {
+                                          field.onChange('');
+                                        } else {
+                                          const numValue = parseFloat(value);
+                                          if (!isNaN(numValue)) {
+                                            field.onChange(numValue);
+                                            // Trigger suggestion when dimensions change
+                                            const width = form.getValues('width') || 0;
+                                            const height = form.getValues('height') || 0;
+                                            const weight = (form.getValues('weight') || 0) / 1000;
+                                            suggestAustraliaPostBox(numValue, width, height, weight, shippingType);
+                                          }
+                                        }
                                       }}
                                     />
                                   </FormControl>
@@ -1555,14 +1590,22 @@ export default function Products() {
                                       type="number" 
                                       step="0.1"
                                       placeholder="e.g., 25.0"
+                                      value={field.value || ''}
                                       onChange={(e) => {
-                                        const value = parseFloat(e.target.value) || 0;
-                                        field.onChange(value);
-                                        // Trigger suggestion when dimensions change
-                                        const length = form.getValues('length') || 0;
-                                        const height = form.getValues('height') || 0;
-                                        const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
-                                        suggestAustraliaPostBox(length, value, height, weight, shippingType);
+                                        const value = e.target.value;
+                                        if (value === '') {
+                                          field.onChange('');
+                                        } else {
+                                          const numValue = parseFloat(value);
+                                          if (!isNaN(numValue)) {
+                                            field.onChange(numValue);
+                                            // Trigger suggestion when dimensions change
+                                            const length = form.getValues('length') || 0;
+                                            const height = form.getValues('height') || 0;
+                                            const weight = (form.getValues('weight') || 0) / 1000;
+                                            suggestAustraliaPostBox(length, numValue, height, weight, shippingType);
+                                          }
+                                        }
                                       }}
                                     />
                                   </FormControl>
@@ -1582,14 +1625,22 @@ export default function Products() {
                                       type="number" 
                                       step="0.1"
                                       placeholder="e.g., 15.0"
+                                      value={field.value || ''}
                                       onChange={(e) => {
-                                        const value = parseFloat(e.target.value) || 0;
-                                        field.onChange(value);
-                                        // Trigger suggestion when dimensions change
-                                        const length = form.getValues('length') || 0;
-                                        const width = form.getValues('width') || 0;
-                                        const weight = (form.getValues('weight') || 0) / 1000; // Convert grams to kg
-                                        suggestAustraliaPostBox(length, width, value, weight, shippingType);
+                                        const value = e.target.value;
+                                        if (value === '') {
+                                          field.onChange('');
+                                        } else {
+                                          const numValue = parseFloat(value);
+                                          if (!isNaN(numValue)) {
+                                            field.onChange(numValue);
+                                            // Trigger suggestion when dimensions change
+                                            const length = form.getValues('length') || 0;
+                                            const width = form.getValues('width') || 0;
+                                            const weight = (form.getValues('weight') || 0) / 1000;
+                                            suggestAustraliaPostBox(length, width, numValue, weight, shippingType);
+                                          }
+                                        }
                                       }}
                                     />
                                   </FormControl>
@@ -1609,14 +1660,22 @@ export default function Products() {
                                       type="number" 
                                       step="1"
                                       placeholder="e.g., 5000"
+                                      value={field.value || ''}
                                       onChange={(e) => {
-                                        const value = parseFloat(e.target.value) || 0;
-                                        field.onChange(value);
-                                        // Trigger suggestion when weight changes
-                                        const length = form.getValues('length') || 0;
-                                        const width = form.getValues('width') || 0;
-                                        const height = form.getValues('height') || 0;
-                                        suggestAustraliaPostBox(length, width, height, value / 1000, shippingType); // Convert grams to kg
+                                        const value = e.target.value;
+                                        if (value === '') {
+                                          field.onChange('');
+                                        } else {
+                                          const numValue = parseFloat(value);
+                                          if (!isNaN(numValue)) {
+                                            field.onChange(numValue);
+                                            // Trigger suggestion when weight changes
+                                            const length = form.getValues('length') || 0;
+                                            const width = form.getValues('width') || 0;
+                                            const height = form.getValues('height') || 0;
+                                            suggestAustraliaPostBox(length, width, height, numValue / 1000, shippingType);
+                                          }
+                                        }
                                       }}
                                     />
                                   </FormControl>
@@ -1733,9 +1792,17 @@ export default function Products() {
                                     placeholder="e.g., 45.00"
                                     value={customShippingPrice || ''}
                                     onChange={(e) => {
-                                      const price = parseFloat(e.target.value) || 0;
-                                      setCustomShippingPrice(price);
-                                      form.setValue('customShippingPrice', price);
+                                      const value = e.target.value;
+                                      if (value === '') {
+                                        setCustomShippingPrice('');
+                                        form.setValue('customShippingPrice', '');
+                                      } else {
+                                        const price = parseFloat(value);
+                                        if (!isNaN(price)) {
+                                          setCustomShippingPrice(price);
+                                          form.setValue('customShippingPrice', price);
+                                        }
+                                      }
                                     }}
                                   />
                                   <p className="text-xs text-muted-foreground mt-1">
