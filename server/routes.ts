@@ -2692,6 +2692,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get customer email history
+  app.get("/api/customer-email-history", hybridAuth, async (req, res) => {
+    try {
+      const userEmail = (req.user as any)?.email;
+      if (!userEmail) {
+        return res.status(400).json({ error: "User email not found" });
+      }
+
+      console.log("=== CUSTOMER EMAIL HISTORY DEBUG ===");
+      console.log("User Email:", userEmail);
+
+      const emailLogs = await storage.getEmailLogs({
+        recipientEmail: userEmail,
+        limit: 50,
+        offset: 0,
+      });
+
+      console.log("Email logs found:", emailLogs.logs?.length || 0);
+
+      res.json({ emails: emailLogs.logs || [], total: emailLogs.total || 0 });
+    } catch (error) {
+      console.error("Error fetching customer email history:", error);
+      res.status(500).json({ message: "Failed to fetch customer email history" });
+    }
+  });
+
   // Route for specific customer's transactions (admin use)
   app.get("/api/customer-transactions/:customerId", hybridAuth, async (req, res) => {
     try {

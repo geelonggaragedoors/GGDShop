@@ -6,8 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar, Mail, Package, Receipt, Search, Download, Filter, CreditCard, DollarSign, Clock, PlayCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, Mail, Package, Receipt, Search, Download, Filter, CreditCard, DollarSign, Clock, PlayCircle, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import StorefrontHeader from '@/components/storefront/header';
+import StorefrontFooter from '@/components/storefront/footer';
 
 interface Transaction {
   id: string;
@@ -35,9 +38,27 @@ interface PendingOrder {
   createdAt: Date;
 }
 
+interface EmailLog {
+  id: string;
+  templateId: string;
+  recipientEmail: string;
+  subject: string;
+  status: string;
+  sentAt: Date | null;
+  openedAt: Date | null;
+  clickedAt: Date | null;
+  errorMessage: string | null;
+  createdAt: Date;
+}
+
 interface TransactionResponse {
   transactions: Transaction[];
   pendingOrders: PendingOrder[];
+}
+
+interface EmailHistoryResponse {
+  emails: EmailLog[];
+  total: number;
 }
 
 export default function CustomerTransactions() {
@@ -51,8 +72,14 @@ export default function CustomerTransactions() {
     enabled: !!user?.id,
   });
 
+  const { data: emailHistory, isLoading: emailLoading } = useQuery<EmailHistoryResponse>({
+    queryKey: ['/api/customer-email-history', user?.id],
+    enabled: !!user?.id,
+  });
+
   const transactions = data?.transactions || [];
   const pendingOrders = data?.pendingOrders || [];
+  const emails = emailHistory?.emails || [];
 
   // Enhanced error and success logging
   useEffect(() => {
@@ -211,12 +238,41 @@ export default function CustomerTransactions() {
     window.location.href = `/checkout?resume=${orderId}`;
   };
 
+  const getEmailStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'sent':
+      case 'delivered':
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'failed':
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
+      default:
+        return <Mail className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getEmailStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'sent':
+      case 'delivered':
+        return 'bg-green-100 text-green-800';
+      case 'failed':
+      case 'error':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Transaction History</h1>
-        <p className="text-gray-600">View all your invoices, receipts, and order communications</p>
-      </div>
+    <div className="min-h-screen bg-white">
+      <StorefrontHeader />
+      
+      <div className="container mx-auto p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Transaction History</h1>
+          <p className="text-gray-600">View all your invoices, receipts, and order communications</p>
+        </div>
 
       {/* Pending Orders Section */}
       {pendingOrders.length > 0 && (
@@ -274,142 +330,238 @@ export default function CustomerTransactions() {
         </Card>
       )}
 
-      {/* Filters */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Filters
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="search">Search</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="search"
-                  placeholder="Search transactions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="type">Transaction Type</Label>
-              <select
-                id="type"
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              >
-                <option value="all">All Types</option>
-                <option value="invoice">Invoices</option>
-                <option value="receipt">Payment Receipts</option>
-                <option value="refund">Refunds</option>
-                <option value="credit">Credits</option>
-              </select>
-            </div>
-            <div>
-              <Label>Date Range</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="date"
-                  value={dateRange.start}
-                  onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                  className="flex-1"
-                />
-                <Input
-                  type="date"
-                  value={dateRange.end}
-                  onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Tabs for Transaction History and Email History */}
+        <Tabs defaultValue="transactions" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="transactions" className="flex items-center gap-2">
+              <Receipt className="w-4 h-4" />
+              Transaction History
+            </TabsTrigger>
+            <TabsTrigger value="emails" className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              Email History
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Transaction List */}
-      <div className="space-y-4">
-        {filteredTransactions.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-8">
-              <Mail className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Transactions Found</h3>
-              <p className="text-gray-600">
-                {searchTerm || filterType !== 'all' || dateRange.start || dateRange.end
-                  ? "No transactions match your current filters."
-                  : "You don't have any transactions yet."}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredTransactions.map((transaction: Transaction) => (
-            <Card key={transaction.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1">
-                      {getTransactionIcon(transaction.transactionType)}
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-gray-900">
-                          {getTransactionTitle(transaction.transactionType)}
-                        </h3>
-                        <Badge className={getTransactionTypeColor(transaction.transactionType)}>
-                          {transaction.status}
-                        </Badge>
-                      </div>
-                      <p className="text-gray-700 mb-2">{transaction.documentType}</p>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {format(new Date(transaction.createdAt), 'PPP')}
-                        </span>
-                        <span>Order: {transaction.orderId}</span>
-                        <span>Payment: {transaction.paymentMethod.toUpperCase()}</span>
-                      </div>
+          <TabsContent value="transactions" className="mt-6">
+            {/* Filters */}
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Filter className="w-5 h-5" />
+                  Filter Transactions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="search">Search</Label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="search"
+                        placeholder="Search transactions..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xl font-bold text-blue-600 mb-2">
-                      ${parseFloat(transaction.amount).toFixed(2)}
-                    </div>
-                    <Button
-                      onClick={() => handleDownloadInvoice(transaction)}
-                      size="sm"
-                      variant="outline"
-                      className="flex items-center gap-2"
+                  <div>
+                    <Label htmlFor="type">Transaction Type</Label>
+                    <select
+                      id="type"
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     >
-                      <Download className="w-4 h-4" />
-                      Download
-                    </Button>
+                      <option value="all">All Types</option>
+                      <option value="invoice">Invoices</option>
+                      <option value="receipt">Payment Receipts</option>
+                      <option value="refund">Refunds</option>
+                      <option value="credit">Credits</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Date Range</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="date"
+                        value={dateRange.start}
+                        onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                        className="flex-1"
+                      />
+                      <Input
+                        type="date"
+                        value={dateRange.end}
+                        onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                        className="flex-1"
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))
-        )}
-      </div>
 
-      {/* Summary */}
-      {filteredTransactions.length > 0 && (
-        <Card className="mt-6">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-center text-sm text-gray-600">
-              <span>Total Transactions: {filteredTransactions.length}</span>
-              <span>
-                Total Amount: ${(filteredTransactions as Transaction[]).reduce((sum: number, t: Transaction) => sum + parseFloat(t.amount), 0).toFixed(2)}
-              </span>
+            {/* Transaction List */}
+            <div className="space-y-4">
+              {filteredTransactions.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-8">
+                    <Receipt className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No completed transactions found</h3>
+                    <p className="text-gray-600">
+                      {transactions.length === 0 
+                        ? "You haven't completed any transactions yet." 
+                        : "No completed transactions match your current filters."
+                      }
+                    </p>
+                    {pendingOrders.length > 0 && (
+                      <p className="text-gray-600 mt-2">
+                        However, you have {pendingOrders.length} pending order{pendingOrders.length > 1 ? 's' : ''} above that require payment.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              ) : (
+                filteredTransactions.map((transaction: Transaction) => (
+                  <Card key={transaction.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 mt-1">
+                            {getTransactionIcon(transaction.transactionType)}
+                          </div>
+                          <div className="flex-grow">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-semibold text-gray-900">
+                                {getTransactionTitle(transaction.transactionType)}
+                              </h3>
+                              <Badge className={getTransactionTypeColor(transaction.transactionType)}>
+                                {transaction.status}
+                              </Badge>
+                            </div>
+                            <p className="text-gray-700 mb-2">{transaction.documentType}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-4 h-4" />
+                                {format(new Date(transaction.createdAt), 'PPP')}
+                              </span>
+                              <span>Order: {transaction.orderId}</span>
+                              <span>Payment: {transaction.paymentMethod.toUpperCase()}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xl font-bold text-blue-600 mb-2">
+                            ${parseFloat(transaction.amount).toFixed(2)}
+                          </div>
+                          <Button
+                            onClick={() => handleDownloadInvoice(transaction)}
+                            size="sm"
+                            variant="outline"
+                            className="flex items-center gap-2"
+                          >
+                            <Download className="w-4 h-4" />
+                            Download
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
-          </CardContent>
-        </Card>
-      )}
+
+            {/* Summary */}
+            {filteredTransactions.length > 0 && (
+              <Card className="mt-6">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center text-sm text-gray-600">
+                    <span>Total Transactions: {filteredTransactions.length}</span>
+                    <span>
+                      Total Amount: ${(filteredTransactions as Transaction[]).reduce((sum: number, t: Transaction) => sum + parseFloat(t.amount), 0).toFixed(2)}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="emails" className="mt-6">
+            {/* Email History */}
+            <div className="space-y-4">
+              {emailLoading ? (
+                <Card>
+                  <CardContent className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading email history...</p>
+                  </CardContent>
+                </Card>
+              ) : emails.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-8">
+                    <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No email history found</h3>
+                    <p className="text-gray-600">
+                      You haven't received any email communications yet.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                emails.map((email: EmailLog) => (
+                  <Card key={email.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 mt-1">
+                            {getEmailStatusIcon(email.status)}
+                          </div>
+                          <div className="flex-grow">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-semibold text-gray-900">
+                                {email.subject}
+                              </h3>
+                              <Badge className={getEmailStatusColor(email.status)}>
+                                {email.status}
+                              </Badge>
+                            </div>
+                            <p className="text-gray-700 mb-2">Template: {email.templateId}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-4 h-4" />
+                                {format(new Date(email.createdAt), 'PPP')}
+                              </span>
+                              {email.sentAt && (
+                                <span className="flex items-center gap-1">
+                                  <Send className="w-4 h-4" />
+                                  Sent: {format(new Date(email.sentAt), 'PPp')}
+                                </span>
+                              )}
+                            </div>
+                            {email.errorMessage && (
+                              <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                                <p className="text-sm text-red-700">Error: {email.errorMessage}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-500">
+                            To: {email.recipientEmail}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+      
+      <StorefrontFooter />
     </div>
   );
 }
