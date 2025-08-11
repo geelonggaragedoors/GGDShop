@@ -176,7 +176,7 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* Rating */}
+            {/* Rating - placeholder for future implementation */}
             {reviewsData && (reviewsData as any).total > 0 && (
               <div className="flex items-center space-x-2">
                 <div className="flex items-center">

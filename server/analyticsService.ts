@@ -95,7 +95,7 @@ export class AnalyticsService {
     const sanitizedData = {
       ...data,
       pageSpeed: typeof data.pageSpeed === 'number' ? data.pageSpeed : 
-                 (String(data.pageSpeed) === 'false' || data.pageSpeed === false ? 0 : 
+                 (String(data.pageSpeed) === 'false' ? 0 : 
                   parseInt(String(data.pageSpeed)) || 0),
       mobileUsability: typeof data.mobileUsability === 'boolean' ? data.mobileUsability : 
                       (String(data.mobileUsability) === 'false' ? false : 
