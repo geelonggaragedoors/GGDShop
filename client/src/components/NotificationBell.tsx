@@ -68,18 +68,34 @@ export default function NotificationBell() {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.host;
       
-      // Handle different environments
-      let wsUrl: string;
-      if (host.includes('replit.dev') || host.includes('spock.replit.dev')) {
-        // In Replit environment, use the current host
-        wsUrl = `${protocol}//${host}/ws/notifications`;
-      } else if (host.includes('localhost')) {
-        // In development, ensure port is included
-        const port = window.location.port || '5000';
-        wsUrl = `${protocol}//localhost:${port}/ws/notifications`;
-      } else {
-        // Production or other environments
-        wsUrl = `${protocol}//${host}/ws/notifications`;
+      // Handle different environments with better error checking
+      let wsUrl: string = `${protocol}//${host}/ws/notifications`; // Default fallback
+      
+      try {
+        if (host.includes('replit.dev') || host.includes('spock.replit.dev')) {
+          // In Replit environment, use the current host
+          wsUrl = `${protocol}//${host}/ws/notifications`;
+        } else if (host.includes('localhost')) {
+          // In development, ensure port is included
+          const port = window.location.port || '5000';
+          if (port === 'undefined' || !port) {
+            console.warn('Port is undefined, using default 5000');
+            wsUrl = `${protocol}//localhost:5000/ws/notifications`;
+          } else {
+            wsUrl = `${protocol}//localhost:${port}/ws/notifications`;
+          }
+        } else {
+          // Production or other environments
+          wsUrl = `${protocol}//${host}/ws/notifications`;
+        }
+        
+        // Validate URL before creating WebSocket
+        new URL(wsUrl); // This will throw if URL is invalid
+      } catch (urlError) {
+        console.error('Invalid WebSocket URL constructed:', wsUrl, urlError);
+        console.log('Falling back to hostname with default port');
+        // Fallback to hostname with default port
+        wsUrl = `${protocol}//${window.location.hostname}:5000/ws/notifications`;
       }
       
       console.log('Connecting to WebSocket:', wsUrl);

@@ -94,12 +94,18 @@ export class AnalyticsService {
     // Sanitize numeric fields to prevent type conversion errors
     const sanitizedData = {
       ...data,
-      pageSpeed: typeof data.pageSpeed === 'number' ? data.pageSpeed : 
-                 (String(data.pageSpeed) === 'false' ? 0 : 
-                  parseInt(String(data.pageSpeed)) || 0),
-      mobileUsability: typeof data.mobileUsability === 'boolean' ? data.mobileUsability : 
-                      (String(data.mobileUsability) === 'false' ? false : 
-                       Boolean(data.mobileUsability)),
+      pageSpeed: (() => {
+        if (typeof data.pageSpeed === 'number') return data.pageSpeed;
+        const strValue = String(data.pageSpeed);
+        if (strValue === 'false' || strValue === 'true' || strValue === '') return 0;
+        const parsed = parseInt(strValue);
+        return isNaN(parsed) ? 0 : parsed;
+      })(),
+      mobileUsability: (() => {
+        if (typeof data.mobileUsability === 'boolean') return data.mobileUsability;
+        const strValue = String(data.mobileUsability);
+        return strValue === 'true';
+      })(),
       updatedAt: new Date(),
     };
 
