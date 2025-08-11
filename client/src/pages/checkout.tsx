@@ -453,6 +453,29 @@ export default function Checkout() {
             })
           });
           console.log('Profile updated successfully');
+
+          // Also create/update customer record for authenticated users
+          try {
+            console.log('Creating/updating customer record for authenticated user...');
+            const customerResponse = await fetch('/api/customers/upsert', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: formData.email,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                phone: formData.phone,
+                isActive: true
+              })
+            });
+            
+            if (customerResponse.ok) {
+              console.log('Customer record created/updated successfully');
+            }
+          } catch (customerError) {
+            console.error('Customer record creation error:', customerError);
+            // Continue with order creation even if customer creation fails
+          }
         } catch (profileError) {
           console.error('Profile update error:', profileError);
           // Continue with order creation even if profile update fails

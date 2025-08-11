@@ -1369,6 +1369,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customer upsert (create or update) - used during checkout
+  app.post('/api/customers/upsert', async (req, res) => {
+    try {
+      const { email, firstName, lastName, phone } = req.body;
+      
+      if (!email || !firstName || !lastName) {
+        return res.status(400).json({ message: "Email, first name, and last name are required" });
+      }
+      
+      // Check if customer already exists
+      let customer = await storage.getCustomerByEmail(email);
+      
+      if (customer) {
+        // Update existing customer
+        customer = await storage.updateCustomer(customer.id, {
+          firstName,
+          lastName,
+          phone,
+          isActive: true,
+        });
+        
+        res.json({
+          customer,
+          message: "Customer updated successfully"
+        });
+      } else {
+        // Create new customer
+        const customerData = {
+          email,
+          firstName,
+          lastName,
+          phone,
+          isActive: true,
+        };
+        
+        customer = await storage.createCustomer(customerData);
+        
+        res.status(201).json({
+          customer,
+          message: "Customer created successfully"
+        });
+      }
+      
+    } catch (error) {
+      console.error("Error upserting customer:", error);
+      res.status(500).json({ message: "Failed to create/update customer" });
+    }
+  });
+
   // Admin customer management
   app.get('/api/admin/customers', hybridAuth, async (req, res) => {
     try {
