@@ -470,6 +470,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate order data
       const validOrderData = insertOrderSchema.parse(orderData);
       
+      // Auto-create customer if they don't exist (guest checkout)
+      if (validOrderData.customerEmail && !validOrderData.customerId) {
+        let customer = await storage.getCustomerByEmail(validOrderData.customerEmail);
+        
+        if (!customer) {
+          // Extract name from shipping address or use email as fallback
+          const guestCustomerData = {
+            email: validOrderData.customerEmail,
+            firstName: 'Guest',
+            lastName: 'Customer',
+            isActive: true,
+          };
+          
+          customer = await storage.createCustomer(guestCustomerData);
+          console.log(`✅ Auto-created customer record for: ${validOrderData.customerEmail}`);
+        }
+        
+        // Link order to customer
+        validOrderData.customerId = customer.id;
+      }
+      
       // Create the order
       const order = await storage.createOrder(validOrderData);
       
