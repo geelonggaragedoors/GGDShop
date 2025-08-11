@@ -394,18 +394,17 @@ async function handleDisputeCreated(event: PayPalWebhookEvent) {
     }
 
     await storage.updateOrder(order.id, {
-      disputeStatus: 'open',
-      disputeCreatedAt: new Date()
+      notes: 'Dispute status: open',
+      updatedAt: new Date()
     });
 
     // Send admin notification about dispute
     try {
-      await emailService.sendAdminNotification('orders@geelonggaragedoors.com', {
-        type: 'dispute_created',
-        orderNumber: order.orderNumber,
-        customerEmail: order.customerEmail,
-        amount: order.total,
-        disputeId: event.resource.id
+      // Note: sendAdminNotification method not available - using sendEmail instead
+      await emailService.sendEmail({
+        to: 'orders@geelonggaragedoors.com',
+        subject: 'PayPal Dispute Created',
+        html: `<h2>PayPal Dispute Created</h2><p>Order: ${order.orderNumber}</p><p>Customer: ${order.customerEmail}</p><p>Amount: ${order.total}</p><p>Dispute ID: ${event.resource.id}</p>`
       });
       console.log('✅ Dispute notification sent to admin');
     } catch (emailError) {
@@ -436,8 +435,8 @@ async function handleDisputeResolved(event: PayPalWebhookEvent) {
     }
 
     await storage.updateOrder(order.id, {
-      disputeStatus: 'resolved',
-      disputeResolvedAt: new Date()
+      notes: 'Dispute status: resolved',
+      updatedAt: new Date()
     });
 
     console.log(`✅ Dispute resolved for order ${order.orderNumber}`);

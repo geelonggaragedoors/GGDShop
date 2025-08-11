@@ -255,9 +255,9 @@ export class ImportService {
                 shortDescription: shortDescription,
                 price: price.toString(), // Convert to string as expected by schema
                 weight: weight,
-                length: length,
-                width: width,
-                height: height,
+                length: length.toString(),
+                width: width.toString(),
+                height: height.toString(),
                 stockQuantity: stockQuantity,
                 categoryId: categoryId,
                 brandId: brandId,

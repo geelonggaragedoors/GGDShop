@@ -1264,15 +1264,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send the email
       let result;
       if (type === 'receipt' || type === 'confirmation') {
-        result = await emailService.sendOrderConfirmation(order, template);
+        result = await emailService.sendOrderConfirmation(order.customerEmail, order);
       } else if (type === 'status_update' || type === 'shipped') {
         result = await emailService.sendOrderShippedEmail(order.customerEmail, order);
       }
 
-      if (result.success) {
+      if (result && result.success) {
         res.json({ message: "Email sent successfully" });
       } else {
-        res.status(500).json({ message: "Failed to send email", error: result.error });
+        res.status(500).json({ message: "Failed to send email", error: result?.error });
       }
     } catch (error) {
       console.error("Error sending order email:", error);
@@ -1636,8 +1636,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (order && order.customerEmail) {
           const orderData = {
             orderNumber: order.orderNumber,
-            customerName: order.shippingAddress?.firstName ? 
-              `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 
+            customerName: (order.shippingAddress as any)?.firstName ? 
+              `${(order.shippingAddress as any).firstName} ${(order.shippingAddress as any).lastName}` : 
               'Valued Customer',
             tracking: order.australiaPostTrackingNumber
           };

@@ -127,8 +127,8 @@ export default function WishlistPage() {
                     <div className="space-y-2">
                       <h3 className="font-semibold text-lg leading-tight">{item.name}</h3>
                       
-                      {item.brand && (
-                        <p className="text-sm text-gray-600">{item.brand}</p>
+                      {(item as any).brand && (
+                        <p className="text-sm text-gray-600">{(item as any).brand}</p>
                       )}
                       
                       <div className="flex items-center gap-2">
@@ -150,15 +150,15 @@ export default function WishlistPage() {
                           <span className="text-2xl font-bold text-primary">
                             {formatCurrency(item.price)}
                           </span>
-                          {item.originalPrice && item.originalPrice > item.price && (
+                          {(item as any).originalPrice && (item as any).originalPrice > item.price && (
                             <span className="text-sm text-gray-500 line-through">
-                              {formatCurrency(item.originalPrice)}
+                              {formatCurrency((item as any).originalPrice)}
                             </span>
                           )}
                         </div>
-                        {item.originalPrice && item.originalPrice > item.price && (
+                        {(item as any).originalPrice && (item as any).originalPrice > item.price && (
                           <Badge variant="secondary" className="bg-red-100 text-red-800">
-                            Save {formatCurrency(item.originalPrice - item.price)}
+                            Save {formatCurrency((item as any).originalPrice - item.price)}
                           </Badge>
                         )}
                       </div>
@@ -176,7 +176,7 @@ export default function WishlistPage() {
                           className="w-full"
                           asChild
                         >
-                          <Link href={`/product/${item.slug || item.id}`}>
+                          <Link href={`/product/${(item as any).slug || item.id}`}>
                             View Details
                           </Link>
                         </Button>

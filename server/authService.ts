@@ -215,7 +215,6 @@ export class AuthService {
     try {
       const result = await emailService.sendEmail({
         to: email,
-        from: 'noreply@geelonggaragedoors.com',
         subject: 'Password Reset Request - Geelong Garage Doors',
         html: `
           <h2>Password Reset Request</h2>

@@ -10,9 +10,11 @@ export class AnalyticsService {
     // Check for recent duplicate page view (within 5 seconds for same session and path)
     const recentView = await db.select()
       .from(pageViews)
-      .where(eq((pageViews as any).sessionId, data.sessionId))
-      .where(eq((pageViews as any).path, data.path))
-      .where(gte((pageViews as any).createdAt, new Date(Date.now() - 5000)))
+      .where(and(
+        eq(pageViews.sessionId, data.sessionId),
+        eq(pageViews.path, data.path),
+        gte(pageViews.createdAt, new Date(Date.now() - 5000))
+      ))
       .limit(1);
 
     if (recentView.length === 0) {
@@ -93,11 +95,11 @@ export class AnalyticsService {
     const sanitizedData = {
       ...data,
       pageSpeed: typeof data.pageSpeed === 'number' ? data.pageSpeed : 
-                 (data.pageSpeed === 'false' || data.pageSpeed === false ? 0 : 
+                 (String(data.pageSpeed) === 'false' || data.pageSpeed === false ? 0 : 
                   parseInt(String(data.pageSpeed)) || 0),
-      mobileUsability: typeof data.mobileUsability === 'number' ? data.mobileUsability : 
-                      (data.mobileUsability === 'false' || data.mobileUsability === false ? 0 : 
-                       parseInt(String(data.mobileUsability)) || 0),
+      mobileUsability: typeof data.mobileUsability === 'boolean' ? data.mobileUsability : 
+                      (String(data.mobileUsability) === 'false' ? false : 
+                       Boolean(data.mobileUsability)),
       updatedAt: new Date(),
     };
 

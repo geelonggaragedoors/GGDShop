@@ -82,7 +82,7 @@ export default function FeaturedProducts() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product, index) => (
+            {products.map((product: any, index: number) => (
               <Card key={product.id || index} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group product-card border-0">
               <div className="relative">
                 <a href={`/product/${product.slug}`}>

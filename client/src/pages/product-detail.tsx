@@ -111,7 +111,7 @@ export default function ProductDetail() {
   const rawImage = images[selectedImage] || images[0] || defaultImage;
   const currentImage = getOptimizedImageUrl(rawImage, { width: 800, height: 800, quality: 90 });
   
-  const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, product.stockQuantity));
+  const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, (product as any).stockQuantity || 0));
   const decrementQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
   return (
@@ -171,13 +171,13 @@ export default function ProductDetail() {
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              {product.brand && (
-                <p className="text-lg text-gray-600">by {product.brand.name}</p>
+              {(product as any).brand && (
+                <p className="text-lg text-gray-600">by {String((product as any).brand.name)}</p>
               )}
             </div>
 
             {/* Rating */}
-            {reviewsData && reviewsData.total > 0 && (
+            {reviewsData && (reviewsData as any).total > 0 && (
               <div className="flex items-center space-x-2">
                 <div className="flex items-center">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -187,7 +187,7 @@ export default function ProductDetail() {
                     />
                   ))}
                 </div>
-                <span className="text-sm text-gray-600">({reviewsData.total} review{reviewsData.total > 1 ? 's' : ''})</span>
+                <span className="text-sm text-gray-600">({(reviewsData as any).total} review{(reviewsData as any).total > 1 ? 's' : ''})</span>
               </div>
             )}
 
@@ -208,10 +208,10 @@ export default function ProductDetail() {
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   In Stock
                 </span>
-              ) : product.stockQuantity > 0 ? (
+              ) : (product as any).stockQuantity > 0 ? (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  {product.stockQuantity} in stock
+                  {(product as any).stockQuantity} in stock
                 </span>
               ) : (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
@@ -250,7 +250,7 @@ export default function ProductDetail() {
                     variant="ghost"
                     size="sm"
                     onClick={incrementQuantity}
-                    disabled={!product.alwaysInStock && quantity >= product.stockQuantity}
+                    disabled={!product.alwaysInStock && quantity >= ((product as any).stockQuantity || 0)}
                     className="rounded-l-none"
                   >
                     <Plus className="w-4 h-4" />
@@ -261,7 +261,7 @@ export default function ProductDetail() {
               <div className="flex space-x-3">
                 <Button
                   className="flex-1"
-                  disabled={!product.alwaysInStock && product.stockQuantity === 0}
+                  disabled={!product.alwaysInStock && (product as any).stockQuantity === 0}
                   onClick={handleAddToCart}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
@@ -298,7 +298,7 @@ export default function ProductDetail() {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews ({reviewsData?.total || 0})</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews ({(reviewsData as any)?.total || 0})</TabsTrigger>
             </TabsList>
             
             <TabsContent value="description" className="mt-6">
@@ -338,11 +338,11 @@ export default function ProductDetail() {
                         </div>
                         <div className="flex justify-between">
                           <dt className="text-gray-600">Category:</dt>
-                          <dd className="font-medium">{product.category?.name || 'N/A'}</dd>
+                          <dd className="font-medium">{(product as any).category?.name || 'N/A'}</dd>
                         </div>
                         <div className="flex justify-between">
                           <dt className="text-gray-600">Brand:</dt>
-                          <dd className="font-medium">{product.brand?.name || 'N/A'}</dd>
+                          <dd className="font-medium">{(product as any).brand?.name || 'N/A'}</dd>
                         </div>
                       </dl>
                     </div>
@@ -362,7 +362,7 @@ export default function ProductDetail() {
         </div>
 
         {/* Similar Products */}
-        {similarProducts?.products && similarProducts.products.length > 0 && (
+        {(similarProducts as any)?.products && (similarProducts as any).products.length > 0 && (
           <div className="mt-16">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-2xl font-bold text-gray-900">Similar Products</h3>
@@ -372,7 +372,7 @@ export default function ProductDetail() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-              {similarProducts.products
+              {(similarProducts as any).products
                 .filter((p: any) => p.id !== product.id)
                 .slice(0, 4)
                 .map((similarProduct: any) => (

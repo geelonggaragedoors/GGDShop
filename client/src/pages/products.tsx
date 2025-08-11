@@ -15,7 +15,7 @@ import { getOptimizedImageUrl, generateSrcSet, generateSizes } from "@/lib/image
 import { ImageSkeleton } from "@/components/ui/image-skeleton";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
-import SEOHead from "@/components/SEOHead";
+import { SEOHead } from "@/components/SEOHead";
 import { analytics } from "@/lib/analytics";
 
 export default function Products() {

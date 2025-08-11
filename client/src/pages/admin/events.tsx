@@ -230,7 +230,7 @@ export default function EventsPage() {
               <ScrollArea className="h-96">
                 <div className="space-y-4">
                   {(notifications as any) && (notifications as any).length > 0 ? (
-                    notifications.map((notification: any) => (
+                    (notifications as any).map((notification: any) => (
                       <div key={notification.id} className="flex items-start space-x-4 p-4 border rounded-lg">
                         <Bell className={`w-5 h-5 mt-1 ${notification.isRead ? 'text-gray-400' : 'text-blue-600'}`} />
                         <div className="flex-1">

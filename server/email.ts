@@ -37,7 +37,7 @@ export class EmailService {
       return { success: true, id: result[0].headers['x-message-id'] };
     } catch (error) {
       console.error('Failed to send email via SendGrid:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: String(error) };
     }
   }
   
@@ -471,12 +471,12 @@ export class EmailService {
         </div>
       `;
 
-      return await this.sendEmail({
+      const result = await this.sendEmail({
         to: customerEmail,
-        from: this.fromEmail,
         subject,
         html: htmlContent
       });
+      return result.success;
       
     } catch (error) {
       console.error('❌ Failed to send payment confirmation email:', error);
@@ -528,11 +528,12 @@ export class EmailService {
         </div>
       `;
 
-      return await this.sendEmail({
+      const result = await this.sendEmail({
         to: customerEmail,
         subject,
         html: htmlContent
       });
+      return result.success;
     } catch (error) {
       console.error('❌ Failed to send refund confirmation email:', error);
       return false;

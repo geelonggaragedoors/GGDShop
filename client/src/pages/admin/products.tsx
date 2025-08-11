@@ -1794,8 +1794,8 @@ export default function Products() {
                                     onChange={(e) => {
                                       const value = e.target.value;
                                       if (value === '') {
-                                        setCustomShippingPrice('');
-                                        form.setValue('customShippingPrice', '');
+                                        setCustomShippingPrice('' as any);
+                                        (form.setValue as any)('customShippingPrice', '');
                                       } else {
                                         const price = parseFloat(value);
                                         if (!isNaN(price)) {

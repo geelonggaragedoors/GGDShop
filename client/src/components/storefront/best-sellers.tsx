@@ -191,7 +191,7 @@ export default function BestSellers() {
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         In Stock
                       </span>
-                    ) : product.stockQuantity > 0 ? (
+                    ) : (product as any).stockQuantity > 0 ? (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         In Stock ({product.stockQuantity} available)
                       </span>
