@@ -217,14 +217,45 @@ export class AuthService {
         to: email,
         subject: 'Password Reset Request - Geelong Garage Doors',
         html: `
-          <h2>Password Reset Request</h2>
-          <p>Hello ${user.firstName || 'User'},</p>
-          <p>You requested to reset your password. Click the link below to set a new password:</p>
-          <p><a href="${resetUrl}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Reset Password</a></p>
-          <p>This link will expire in 1 hour.</p>
-          <p>If you didn't request this, please ignore this email.</p>
-          <br>
-          <p>Best regards,<br>Geelong Garage Doors Team</p>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+          </style>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
+              <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+                <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+                  <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+                  <br>
+                  <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+                </div>
+                <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
+              </div>
+              <h1 style="margin: 0; font-size: 32px;">Password Reset Request</h1>
+              <p style="margin: 10px 0 0 0; font-size: 16px;">Secure password reset link</p>
+            </div>
+            
+            <div style="padding: 20px; background-color: #f9fafb;">
+              <h2 style="color: #1e40af; margin-top: 0;">Hello ${user.firstName || 'Valued Customer'},</h2>
+              <p>We received a request to reset your password for your Geelong Garage Doors account.</p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${resetUrl}" style="background: #1e40af; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">Reset Your Password</a>
+              </div>
+              
+              <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+                <p style="margin: 0;"><strong>Important:</strong> This link will expire in 1 hour for security reasons.</p>
+              </div>
+              
+              <p>If you didn't request this password reset, please ignore this email. Your password will remain unchanged.</p>
+              
+              <p>For security reasons, if you continue to receive these emails without requesting them, please contact us immediately.</p>
+            </div>
+
+            <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+              <p>Thank you for choosing Geelong Garage Doors!</p>
+              <p>This email was sent to ${email}</p>
+            </div>
+          </div>
         `,
       });
       
