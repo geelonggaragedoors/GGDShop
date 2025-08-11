@@ -298,6 +298,7 @@ export class DatabaseStorage implements IStorage {
         parentId: categories.parentId,
         sortOrder: categories.sortOrder,
         isActive: categories.isActive,
+        showOnHomepage: categories.showOnHomepage,
         createdAt: categories.createdAt,
         updatedAt: categories.updatedAt,
         productCount: count(products.id),
@@ -453,7 +454,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(
         or(
           isNull(products.weight),
-          eq(products.weight, 0)
+          eq(products.weight, '0')
         )
       );
     }
@@ -462,7 +463,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(
         and(
           not(isNull(products.weight)),
-          not(eq(products.weight, 0))
+          not(eq(products.weight, '0'))
         )
       );
     }
@@ -476,17 +477,13 @@ export class DatabaseStorage implements IStorage {
       .where(whereClause);
 
     // Get products with pagination
-    let query = db.select().from(products).where(whereClause).orderBy(desc(products.createdAt));
-    
-    if (params.limit) {
-      query = query.limit(params.limit);
-    }
-    
-    if (params.offset) {
-      query = query.offset(params.offset);
-    }
-
-    const productsList = await query;
+    const productsList = await db
+      .select()
+      .from(products)
+      .where(whereClause)
+      .orderBy(desc(products.createdAt))
+      .limit(params.limit || 50)
+      .offset(params.offset || 0);
 
     return { products: productsList, total };
   }
@@ -502,14 +499,35 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
-    const [newProduct] = await db.insert(products).values(product).returning();
+    // Convert numeric fields to strings for database storage
+    const productData = {
+      ...product,
+      price: product.price?.toString(),
+      weight: product.weight?.toString(),
+      length: product.length?.toString(),
+      width: product.width?.toString(),
+      height: product.height?.toString(),
+      customShippingPrice: product.customShippingPrice?.toString(),
+    };
+    const [newProduct] = await db.insert(products).values(productData).returning();
     return newProduct;
   }
 
   async updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined> {
+    // Convert numeric fields to strings for database storage
+    const productData = {
+      ...product,
+      price: product.price?.toString(),
+      weight: product.weight?.toString(),
+      length: product.length?.toString(),
+      width: product.width?.toString(),
+      height: product.height?.toString(),
+      customShippingPrice: product.customShippingPrice?.toString(),
+      updatedAt: new Date()
+    };
     const [updatedProduct] = await db
       .update(products)
-      .set({ ...product, updatedAt: new Date() })
+      .set(productData)
       .where(eq(products.id, id))
       .returning();
     return updatedProduct;
@@ -620,21 +638,13 @@ export class DatabaseStorage implements IStorage {
       .where(whereClause);
 
     // Get orders with customer information
-    let query = db
+    const ordersList = await db
       .select()
       .from(orders)
       .where(whereClause)
-      .orderBy(desc(orders.createdAt));
-    
-    if (params.limit) {
-      query = query.limit(params.limit);
-    }
-    
-    if (params.offset) {
-      query = query.offset(params.offset);
-    }
-
-    const ordersList = await query;
+      .orderBy(desc(orders.createdAt))
+      .limit(params.limit || 50)
+      .offset(params.offset || 0);
 
     return { orders: ordersList, total };
   }
@@ -680,10 +690,7 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(products, eq(orderItems.productId, products.id))
       .where(eq(orderItems.orderId, id));
 
-    return {
-      ...order,
-      items
-    };
+    return order as Order & { items: any[] };
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {
@@ -1104,12 +1111,12 @@ export class DatabaseStorage implements IStorage {
       .update(staffInvitations)
       .set({ status: 'accepted', acceptedAt: new Date() })
       .where(and(eq(staffInvitations.token, token), eq(staffInvitations.status, 'pending')));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async deleteStaffInvitation(id: string): Promise<boolean> {
     const result = await db.delete(staffInvitations).where(eq(staffInvitations.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Role operations
@@ -1136,7 +1143,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteRole(id: string): Promise<boolean> {
     const result = await db.delete(roles).where(eq(roles.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Customer review operations
@@ -1148,9 +1155,6 @@ export class DatabaseStorage implements IStorage {
   }): Promise<{ reviews: CustomerReview[]; total: number }> {
     const { isVisible, productId, limit = 10, offset = 0 } = params || {};
 
-    let query = db.select().from(customerReviews);
-    let countQuery = db.select({ count: count() }).from(customerReviews);
-
     const conditions = [];
     if (isVisible !== undefined) {
       conditions.push(eq(customerReviews.isVisible, isVisible));
@@ -1159,14 +1163,20 @@ export class DatabaseStorage implements IStorage {
       conditions.push(eq(customerReviews.productId, productId));
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-      countQuery = countQuery.where(and(...conditions));
-    }
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     const [reviews, totalResult] = await Promise.all([
-      query.orderBy(desc(customerReviews.createdAt)).limit(limit).offset(offset),
-      countQuery
+      db
+        .select()
+        .from(customerReviews)
+        .where(whereClause)
+        .orderBy(desc(customerReviews.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: count() })
+        .from(customerReviews)
+        .where(whereClause)
     ]);
 
     return {
@@ -1226,9 +1236,6 @@ export class DatabaseStorage implements IStorage {
   }): Promise<{ enquiries: Enquiry[]; total: number }> {
     const { status, priority, limit = 50, offset = 0 } = params || {};
 
-    let query = db.select().from(enquiries);
-    let countQuery = db.select({ count: count() }).from(enquiries);
-
     const conditions = [];
     if (status) {
       conditions.push(eq(enquiries.status, status));
@@ -1237,15 +1244,20 @@ export class DatabaseStorage implements IStorage {
       conditions.push(eq(enquiries.priority, priority));
     }
 
-    if (conditions.length > 0) {
-      const whereCondition = conditions.length === 1 ? conditions[0] : and(...conditions);
-      query = query.where(whereCondition);
-      countQuery = countQuery.where(whereCondition);
-    }
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     const [enquiriesResult, totalResult] = await Promise.all([
-      query.orderBy(desc(enquiries.createdAt)).limit(limit).offset(offset),
-      countQuery
+      db
+        .select()
+        .from(enquiries)
+        .where(whereClause)
+        .orderBy(desc(enquiries.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: count() })
+        .from(enquiries)
+        .where(whereClause)
     ]);
 
     return {
@@ -1345,9 +1357,6 @@ export class DatabaseStorage implements IStorage {
   }): Promise<{ logs: EmailLog[]; total: number }> {
     const { limit = 50, offset = 0, status, templateId, recipientEmail, startDate, endDate } = params || {};
 
-    let query = db.select().from(emailLogs);
-    let countQuery = db.select({ count: count() }).from(emailLogs);
-
     const conditions = [];
     if (status) {
       conditions.push(eq(emailLogs.status, status));
@@ -1365,15 +1374,20 @@ export class DatabaseStorage implements IStorage {
       conditions.push(sql`${emailLogs.createdAt} <= ${endDate}`);
     }
 
-    if (conditions.length > 0) {
-      const whereCondition = conditions.length === 1 ? conditions[0] : and(...conditions);
-      query = query.where(whereCondition);
-      countQuery = countQuery.where(whereCondition);
-    }
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     const [logsResult, totalResult] = await Promise.all([
-      query.orderBy(desc(emailLogs.createdAt)).limit(limit).offset(offset),
-      countQuery
+      db
+        .select()
+        .from(emailLogs)
+        .where(whereClause)
+        .orderBy(desc(emailLogs.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: count() })
+        .from(emailLogs)
+        .where(whereClause)
     ]);
 
     return {
@@ -1420,8 +1434,6 @@ export class DatabaseStorage implements IStorage {
     openRate: number;
     clickRate: number;
   }> {
-    let query = db.select().from(emailLogs);
-    
     const conditions = [];
     if (templateId) {
       conditions.push(eq(emailLogs.templateId, templateId));
@@ -1433,12 +1445,12 @@ export class DatabaseStorage implements IStorage {
       conditions.push(sql`${emailLogs.createdAt} <= ${endDate}`);
     }
 
-    if (conditions.length > 0) {
-      const whereCondition = conditions.length === 1 ? conditions[0] : and(...conditions);
-      query = query.where(whereCondition);
-    }
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    const logs = await query;
+    const logs = await db
+      .select()
+      .from(emailLogs)
+      .where(whereClause);
     
     const totalSent = logs.filter(log => log.status === 'sent' || log.status === 'delivered').length;
     const totalDelivered = logs.filter(log => log.status === 'delivered').length;
@@ -1538,7 +1550,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .delete(emailTemplates)
       .where(eq(emailTemplates.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async getDefaultTemplates(): Promise<EmailTemplate[]> {

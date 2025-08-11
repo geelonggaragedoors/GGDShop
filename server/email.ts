@@ -484,6 +484,61 @@ export class EmailService {
     }
   }
 
+  async sendRefundConfirmation(customerEmail: string, orderData: any): Promise<boolean> {
+    try {
+      console.log('📧 Sending refund confirmation email to:', customerEmail);
+      
+      const subject = `Refund Processed - Order ${orderData.orderNumber}`;
+      
+      const htmlContent = `
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+        </style>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
+            <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+              <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+                <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+                <br>
+                <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+              </div>
+              <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
+            </div>
+            <h1 style="margin: 0; font-size: 32px;">Refund Processed</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px;">Your refund has been completed</p>
+          </div>
+          
+          <div style="padding: 20px; background-color: #f9fafb;">
+            <h2 style="color: #1e40af; margin-top: 0;">Hi ${orderData.customerName || 'Valued Customer'},</h2>
+            <p>Your refund has been successfully processed and will appear in your account within 3-5 business days.</p>
+            
+            <div style="background-color: #d1fae5; border-left: 4px solid #059669; padding: 15px; margin: 20px 0;">
+              <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+              <p><strong>Refund Amount:</strong> $${orderData.refundAmount}</p>
+              <p><strong>Refund Date:</strong> ${orderData.refundDate?.toLocaleDateString() || new Date().toLocaleDateString()}</p>
+            </div>
+            
+            <p>The refund will be credited to the original payment method used for this order.</p>
+            <p>If you have any questions about this refund, please contact us.</p>
+          </div>
+
+          <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+            <p>Thank you for choosing Geelong Garage Doors!</p>
+          </div>
+        </div>
+      `;
+
+      return await this.sendEmail({
+        to: customerEmail,
+        subject,
+        html: htmlContent
+      });
+    } catch (error) {
+      console.error('❌ Failed to send refund confirmation email:', error);
+      return false;
+    }
+  }
+
   async sendNewOrderAlert(orderData: any, template: any, staffEmail: string) {
     const emailData = {
       order_number: orderData.orderNumber,

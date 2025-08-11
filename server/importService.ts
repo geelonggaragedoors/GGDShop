@@ -253,7 +253,7 @@ export class ImportService {
                 sku: record.SKU || this.generateSKU(record.Name),
                 description: description,
                 shortDescription: shortDescription,
-                price: price,
+                price: price.toString(), // Convert to string as expected by schema
                 weight: weight,
                 length: length,
                 width: width,
@@ -274,7 +274,8 @@ export class ImportService {
               console.log(`Imported: ${record.Name}`);
 
             } catch (error) {
-              results.errors.push(`Error importing "${record.Name}": ${error.message}`);
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+              results.errors.push(`Error importing "${record.Name}": ${errorMessage}`);
               console.error(`Error importing product ${record.Name}:`, error);
             }
           }
@@ -285,7 +286,8 @@ export class ImportService {
 
     } catch (error) {
       results.success = false;
-      results.errors.push(`File reading error: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      results.errors.push(`File reading error: ${errorMessage}`);
       return results;
     }
   }

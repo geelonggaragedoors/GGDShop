@@ -123,7 +123,7 @@ export async function createPaypalOrder(req: Request, res: Response) {
     };
 
     const { body, ...httpResponse } =
-          await ordersController.createOrder(collect);
+          await ordersController!.createOrder(collect);
 
     const jsonResponse = JSON.parse(String(body));
     const httpStatusCode = httpResponse.statusCode;
@@ -144,7 +144,7 @@ export async function capturePaypalOrder(req: Request, res: Response) {
     };
 
     const { body, ...httpResponse } =
-          await ordersController.captureOrder(collect);
+          await ordersController!.captureOrder(collect);
 
     const jsonResponse = JSON.parse(String(body));
     const httpStatusCode = httpResponse.statusCode;
