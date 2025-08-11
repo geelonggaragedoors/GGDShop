@@ -189,7 +189,7 @@ export default function EmailTemplates() {
       textContent: template.textContent || "",
       templateType: template.templateType,
       category: template.category,
-      isActive: template.isActive,
+      isActive: Boolean(template.isActive),
     });
     setIsEditModalOpen(true);
   };
@@ -327,8 +327,8 @@ export default function EmailTemplates() {
                   <Label htmlFor="content">Email Content</Label>
                   <Textarea
                     id="content"
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    value={formData.htmlContent}
+                    onChange={(e) => setFormData({ ...formData, htmlContent: e.target.value })}
                     className="min-h-[300px] font-mono text-sm"
                     placeholder="Enter your email template content here..."
                     required
@@ -443,7 +443,7 @@ export default function EmailTemplates() {
                       <CardContent className="pt-0">
                         <div className="flex items-center justify-between">
                           <div className="text-sm text-gray-600">
-                            Created: {new Date(template.createdAt).toLocaleDateString()}
+                            Created: {template.createdAt ? new Date(template.createdAt).toLocaleDateString() : 'N/A'}
                           </div>
                           <div className="flex items-center gap-2">
                             <Button

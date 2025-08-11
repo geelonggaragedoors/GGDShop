@@ -213,7 +213,7 @@ export default function Categories() {
     form.reset();
   };
 
-  const filteredCategories = categories?.filter(category =>
+  const filteredCategories = categories?.filter((category: any) =>
     category.name.toLowerCase().includes(search.toLowerCase())
   ) || [];
 

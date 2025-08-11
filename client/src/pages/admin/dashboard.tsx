@@ -184,7 +184,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Revenue"
-          value={`$${stats?.totalRevenue?.toLocaleString() || '0'}`}
+          value={`$${(stats as any)?.totalRevenue?.toLocaleString() || '0'}`}
           icon={DollarSign}
           description="Total sales revenue"
           iconColor="text-white"
@@ -192,7 +192,7 @@ export default function Dashboard() {
         />
         <StatsCard
           title="Total Orders"
-          value={stats?.totalOrders || 0}
+          value={(stats as any)?.totalOrders || 0}
           icon={ShoppingCart}
           description="Orders this month"
           iconColor="text-white"
@@ -200,7 +200,7 @@ export default function Dashboard() {
         />
         <StatsCard
           title="Products"
-          value={counts?.products || 0}
+          value={(counts as any)?.products || 0}
           icon={Package}
           description="Active products"
           iconColor="text-white"
@@ -208,7 +208,7 @@ export default function Dashboard() {
         />
         <StatsCard
           title="Customers"
-          value={stats?.totalCustomers || 0}
+          value={(stats as any)?.totalCustomers || 0}
           icon={Users}
           description="Registered customers"
           iconColor="text-white"
@@ -234,7 +234,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-gray-100">
-              {stats?.recentOrders?.slice(0, 5).map((order: any) => (
+              {(stats as any)?.recentOrders?.slice(0, 5).map((order: any) => (
                 <div 
                   key={order.id} 
                   className="p-4 hover:bg-blue-50/50 cursor-pointer transition-all duration-200 group"
@@ -288,7 +288,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-gray-100">
-              {stats?.topProducts?.slice(0, 5).map((product: any) => (
+              {(stats as any)?.topProducts?.slice(0, 5).map((product: any) => (
                 <div 
                   key={product.id} 
                   className="p-4 hover:bg-purple-50/50 cursor-pointer transition-all duration-200 group"
@@ -470,7 +470,7 @@ export default function Dashboard() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories?.map((category: any) => (
+                        {(categories as any)?.map((category: any) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>

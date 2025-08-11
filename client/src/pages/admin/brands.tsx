@@ -126,7 +126,7 @@ export default function Brands() {
     form.reset();
   };
 
-  const filteredBrands = brands?.filter(brand =>
+  const filteredBrands = brands?.filter((brand: any) =>
     brand.name.toLowerCase().includes(search.toLowerCase())
   ) || [];
 

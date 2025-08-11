@@ -29,12 +29,12 @@ export default function CustomerTransactions() {
   const [filterType, setFilterType] = useState('all');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
-  const { data: transactions = [], isLoading, error } = useQuery({
+  const { data: transactions = [], isLoading, error } = useQuery<Transaction[]>({
     queryKey: ['/api/customer-transactions', user?.id],
     enabled: !!user?.id,
   });
 
-  const filteredTransactions = transactions.filter((transaction: Transaction) => {
+  const filteredTransactions = (transactions as Transaction[]).filter((transaction: Transaction) => {
     const matchesSearch = transaction.transactionType.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          transaction.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          transaction.transactionReference?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -309,7 +309,7 @@ export default function CustomerTransactions() {
             <div className="flex justify-between items-center text-sm text-gray-600">
               <span>Total Transactions: {filteredTransactions.length}</span>
               <span>
-                Total Amount: ${filteredTransactions.reduce((sum, t) => sum + parseFloat(t.amount), 0).toFixed(2)}
+                Total Amount: ${(filteredTransactions as Transaction[]).reduce((sum: number, t: Transaction) => sum + parseFloat(t.amount), 0).toFixed(2)}
               </span>
             </div>
           </CardContent>

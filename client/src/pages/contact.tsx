@@ -97,10 +97,7 @@ export default function Contact() {
 
   const enquiryMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      return await apiRequest("/api/enquiries", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return await apiRequest("POST", "/api/enquiries", data);
     },
     onSuccess: () => {
       toast({

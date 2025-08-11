@@ -99,7 +99,7 @@ export const defaultTemplates = [
           <h3 style="margin: 0 0 15px 0; color: #333;">Order Details</h3>
           <p><strong>Order Number:</strong> {{order_number}}</p>
           <p><strong>Order Date:</strong> {{order_date}}</p>
-          <p><strong>Total Amount:</strong> ${{order_total}}</p>
+          <p><strong>Total Amount:</strong> \${{order_total}}</p>
           <p><strong>Status:</strong> {{order_status}}</p>
         </div>
         
@@ -130,7 +130,7 @@ export const defaultTemplates = [
       Order Details:
       - Order Number: {{order_number}}
       - Order Date: {{order_date}}
-      - Total Amount: ${{order_total}}
+      - Total Amount: \${{order_total}}
       - Status: {{order_status}}
       
       Delivery Address:
@@ -171,7 +171,7 @@ export const defaultTemplates = [
           <h3 style="margin: 0 0 15px 0; color: #333;">Order Information</h3>
           <p><strong>Order Number:</strong> {{order_number}}</p>
           <p><strong>Order Date:</strong> {{order_date}}</p>
-          <p><strong>Total Amount:</strong> ${{order_total}}</p>
+          <p><strong>Total Amount:</strong> \${{order_total}}</p>
           <p><strong>Items:</strong> {{order_items}}</p>
         </div>
         
@@ -198,7 +198,7 @@ export const defaultTemplates = [
       Order Information:
       - Order Number: {{order_number}}
       - Order Date: {{order_date}}
-      - Total Amount: ${{order_total}}
+      - Total Amount: \${{order_total}}
       - Items: {{order_items}}
       
       Customer Details:
@@ -317,7 +317,7 @@ export const defaultTemplates = [
           
           <div style="background: #dbeafe; padding: 15px; border-radius: 8px; flex: 1;">
             <h3 style="margin: 0 0 10px 0; color: #1e40af;">Revenue Today</h3>
-            <p style="font-size: 24px; font-weight: bold; margin: 0; color: #1e40af;">${{revenue_today}}</p>
+            <p style="font-size: 24px; font-weight: bold; margin: 0; color: #1e40af;">\${{revenue_today}}</p>
           </div>
         </div>
         
@@ -325,7 +325,7 @@ export const defaultTemplates = [
           <h3 style="margin: 0 0 15px 0; color: #333;">Monthly Overview</h3>
           <p><strong>Total Users:</strong> {{user_count}}</p>
           <p><strong>Total Orders:</strong> {{order_count}}</p>
-          <p><strong>Monthly Revenue:</strong> ${{revenue_month}}</p>
+          <p><strong>Monthly Revenue:</strong> \${{revenue_month}}</p>
         </div>
         
         <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -345,12 +345,12 @@ export const defaultTemplates = [
       
       Today's Stats:
       - Orders: {{pending_orders}}
-      - Revenue: ${{revenue_today}}
+      - Revenue: \${{revenue_today}}
       
       Monthly Overview:
       - Total Users: {{user_count}}
       - Total Orders: {{order_count}}
-      - Monthly Revenue: ${{revenue_month}}
+      - Monthly Revenue: \${{revenue_month}}
       
       Attention Required:
       - Low Stock Items: {{low_stock_items}}

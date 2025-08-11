@@ -16,6 +16,7 @@ import { getOptimizedImageUrl } from "@/lib/image-optimizer";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 import CustomerReviews from "@/components/storefront/customer-reviews";
+import type { Product } from "@shared/schema";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -30,7 +31,7 @@ export default function ProductDetail() {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  const { data: product, isLoading } = useQuery({
+  const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/slug/${slug}`],
     enabled: !!slug,
   });
@@ -105,7 +106,7 @@ export default function ProductDetail() {
     );
   }
 
-  const images = product.images || [];
+  const images = (product.images as string[]) || [];
   const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800";
   const rawImage = images[selectedImage] || images[0] || defaultImage;
   const currentImage = getOptimizedImageUrl(rawImage, { width: 800, height: 800, quality: 90 });

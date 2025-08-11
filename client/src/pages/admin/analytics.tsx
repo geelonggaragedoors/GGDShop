@@ -107,19 +107,19 @@ export default function Analytics() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {realTimeData?.activeUsers || 0}
+                {(realTimeData as any)?.activeUsers || 0}
               </div>
               <div className="text-sm text-gray-600">Active Users</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">
-                {realTimeData?.recentPageViews?.length || 0}
+                {(realTimeData as any)?.recentPageViews?.length || 0}
               </div>
               <div className="text-sm text-gray-600">Pages Being Viewed</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">
-                {realTimeData?.recentEvents?.length || 0}
+                {(realTimeData as any)?.recentEvents?.length || 0}
               </div>
               <div className="text-sm text-gray-600">Recent Events</div>
             </div>
@@ -135,7 +135,7 @@ export default function Analytics() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Page Views</p>
                 <p className="text-2xl font-bold">
-                  {stats.pageViews?.reduce((sum: number, day: any) => sum + day.count, 0) || 0}
+                  {(stats as any).pageViews?.reduce((sum: number, day: any) => sum + day.count, 0) || 0}
                 </p>
               </div>
               <Eye className="w-8 h-8 text-blue-600" />
@@ -148,7 +148,7 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Sessions</p>
-                <p className="text-2xl font-bold">{stats.totalSessions || 0}</p>
+                <p className="text-2xl font-bold">{(stats as any).totalSessions || 0}</p>
               </div>
               <Users className="w-8 h-8 text-green-600" />
             </div>
@@ -161,7 +161,7 @@ export default function Analytics() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg. Session Duration</p>
                 <p className="text-2xl font-bold">
-                  {Math.floor((stats.avgSessionDuration || 0) / 60)}m {(stats.avgSessionDuration || 0) % 60}s
+                  {Math.floor(((stats as any).avgSessionDuration || 0) / 60)}m {((stats as any).avgSessionDuration || 0) % 60}s
                 </p>
               </div>
               <Clock className="w-8 h-8 text-orange-600" />
@@ -174,7 +174,7 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
-                <p className="text-2xl font-bold">{stats.conversionRate?.toFixed(1) || 0}%</p>
+                <p className="text-2xl font-bold">{((stats as any).conversionRate?.toFixed(1)) || 0}%</p>
               </div>
               <Target className="w-8 h-8 text-purple-600" />
             </div>
@@ -199,7 +199,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={stats.pageViews || []}>
+                <LineChart data={(stats as any).pageViews || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
@@ -217,7 +217,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {stats.topPages?.slice(0, 10).map((page: any, index: number) => (
+                {((stats as any).topPages)?.slice(0, 10).map((page: any, index: number) => (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="font-medium">{page.title || page.path}</div>
@@ -245,7 +245,7 @@ export default function Analytics() {
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={stats.deviceStats || []}
+                      data={(stats as any).deviceStats || []}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
@@ -254,7 +254,7 @@ export default function Analytics() {
                       fill="#8884d8"
                       dataKey="count"
                     >
-                      {(stats.deviceStats || []).map((_: any, index: number) => (
+                      {((stats as any).deviceStats || []).map((_: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -271,7 +271,7 @@ export default function Analytics() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {stats.browserStats?.map((browser: any, index: number) => (
+                  {((stats as any).browserStats)?.map((browser: any, index: number) => (
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div 
@@ -286,7 +286,7 @@ export default function Analytics() {
                           <div
                             className="bg-blue-600 h-2 rounded-full"
                             style={{
-                              width: `${(browser.count / (stats.browserStats?.[0]?.count || 1)) * 100}%`
+                              width: `${(browser.count / (((stats as any).browserStats)?.[0]?.count || 1)) * 100}%`
                             }}
                           ></div>
                         </div>
@@ -305,7 +305,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {stats.countryStats?.map((country: any, index: number) => (
+                {((stats as any).countryStats)?.map((country: any, index: number) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded">
                     <div className="flex items-center gap-2">
                       <Globe className="w-4 h-4" />
@@ -334,13 +334,13 @@ export default function Analytics() {
                   <div>
                     <p className="text-sm text-gray-600">Total Revenue</p>
                     <p className="text-3xl font-bold text-green-600">
-                      ${stats.totalRevenue?.toFixed(2) || '0.00'}
+                      ${((stats as any).totalRevenue)?.toFixed(2) || '0.00'}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Conversion Rate</p>
-                    <p className="text-2xl font-bold">{stats.conversionRate?.toFixed(1) || 0}%</p>
-                    <Progress value={stats.conversionRate || 0} className="mt-2" />
+                    <p className="text-2xl font-bold">{((stats as any).conversionRate)?.toFixed(1) || 0}%</p>
+                    <Progress value={(stats as any).conversionRate || 0} className="mt-2" />
                   </div>
                 </div>
               </CardContent>
@@ -355,17 +355,17 @@ export default function Analytics() {
                   <div className="flex justify-between items-center">
                     <span>Avg. Session Duration</span>
                     <span className="font-bold">
-                      {Math.floor((stats.avgSessionDuration || 0) / 60)}m {(stats.avgSessionDuration || 0) % 60}s
+                      {Math.floor(((stats as any).avgSessionDuration || 0) / 60)}m {((stats as any).avgSessionDuration || 0) % 60}s
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Total Sessions</span>
-                    <span className="font-bold">{stats.totalSessions || 0}</span>
+                    <span className="font-bold">{(stats as any).totalSessions || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Converted Sessions</span>
                     <span className="font-bold text-green-600">
-                      {Math.round((stats.totalSessions || 0) * (stats.conversionRate || 0) / 100)}
+                      {Math.round(((stats as any).totalSessions || 0) * ((stats as any).conversionRate || 0) / 100)}
                     </span>
                   </div>
                 </div>
@@ -381,7 +381,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={stats.conversionFunnel || []}>
+                <BarChart data={(stats as any).conversionFunnel || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="step" />
                   <YAxis />
@@ -400,7 +400,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {stats.topEvents?.slice(0, 15).map((event: any, index: number) => (
+                {((stats as any).topEvents)?.slice(0, 15).map((event: any, index: number) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded">
                     <div>
                       <div className="font-medium">{event.eventType}</div>

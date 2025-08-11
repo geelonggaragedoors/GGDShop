@@ -32,10 +32,7 @@ export default function AdminReviews() {
 
   const toggleVisibilityMutation = useMutation({
     mutationFn: async ({ id, isVisible }: { id: string; isVisible: boolean }) => {
-      await apiRequest(`/api/reviews/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({ isVisible }),
-      });
+      await apiRequest('PUT', `/api/reviews/${id}`, { isVisible });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });
@@ -55,9 +52,7 @@ export default function AdminReviews() {
 
   const deleteReviewMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest(`/api/reviews/${id}`, {
-        method: 'DELETE',
-      });
+      await apiRequest('DELETE', `/api/reviews/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });
@@ -77,10 +72,7 @@ export default function AdminReviews() {
 
   const addResponseMutation = useMutation({
     mutationFn: async ({ id, response }: { id: string; response: string }) => {
-      await apiRequest(`/api/reviews/${id}/response`, {
-        method: 'POST',
-        body: JSON.stringify({ response }),
-      });
+      await apiRequest('POST', `/api/reviews/${id}/response`, { response });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });
@@ -102,10 +94,7 @@ export default function AdminReviews() {
 
   const createReviewMutation = useMutation({
     mutationFn: async (reviewData: typeof newReview) => {
-      await apiRequest('/api/reviews', {
-        method: 'POST',
-        body: JSON.stringify(reviewData),
-      });
+      await apiRequest('POST', '/api/reviews', reviewData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });
@@ -134,9 +123,7 @@ export default function AdminReviews() {
 
   const removeMockReviewsMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest('/api/reviews/mock', {
-        method: 'DELETE',
-      });
+      await apiRequest('DELETE', '/api/reviews/mock');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reviews'] });

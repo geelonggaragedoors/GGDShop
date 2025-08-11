@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { Order } from "@shared/schema";
 import {
   Printer,
   ExternalLink,
@@ -46,7 +47,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
   const { toast } = useToast();
 
   // Fetch detailed order data with product information
-  const { data: order, isLoading: orderLoading } = useQuery({
+  const { data: order, isLoading: orderLoading } = useQuery<Order>({
     queryKey: [`/api/admin/orders/${orderId}`],
     enabled: !!orderId,
   });
@@ -89,7 +90,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
     onSuccess: (data, type) => {
       toast({ 
         title: `${type === 'receipt' ? 'Receipt' : 'Status update'} sent`,
-        description: `Email sent to ${order?.customerEmail || 'customer'}` 
+        description: `Email sent to ${(order as Order)?.customerEmail || 'customer'}` 
       });
     },
     onError: () => {
@@ -121,8 +122,8 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
 
   // Update staffNotes when order data is loaded
   React.useEffect(() => {
-    if (order?.staffNotes) {
-      setStaffNotes(order.staffNotes);
+    if ((order as Order)?.staffNotes) {
+      setStaffNotes((order as Order).staffNotes || "");
     }
   }, [order?.staffNotes]);
 
@@ -151,7 +152,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
   }
 
   const handleStatusUpdate = (field: string, value: string) => {
-    const oldStatus = order[field];
+    const oldStatus = (order as any)[field];
     updateOrderMutation.mutate({ [field]: value });
     
     // Send email notification for status changes
@@ -185,18 +186,20 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
     }
   };
 
-  const copyEmail = () => copyToClipboard(order.customerEmail, "Email");
+  const copyEmail = () => copyToClipboard((order as Order).customerEmail, "Email");
   
   const copyAddress = () => {
-    if (order.shippingAddress) {
-      const addressText = `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}\n${order.shippingAddress.address1}${order.shippingAddress.address2 ? '\n' + order.shippingAddress.address2 : ''}\n${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postcode}\n${order.shippingAddress.country || 'AU'}`;
+    const shippingAddress = (order as any).shippingAddress;
+    if (shippingAddress) {
+      const addressText = `${shippingAddress.firstName} ${shippingAddress.lastName}\n${shippingAddress.address1}${shippingAddress.address2 ? '\n' + shippingAddress.address2 : ''}\n${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.postcode}\n${shippingAddress.country || 'AU'}`;
       copyToClipboard(addressText, "Address");
     }
   };
   
   const copyPhone = () => {
-    if (order.shippingAddress?.phone) {
-      copyToClipboard(order.shippingAddress.phone, "Phone number");
+    const shippingAddress = (order as any).shippingAddress;
+    if (shippingAddress?.phone) {
+      copyToClipboard(shippingAddress.phone, "Phone number");
     }
   };
 
@@ -231,15 +234,15 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
       {/* Header with Actions */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold">Order #{order.orderNumber}</h1>
-          <p className="text-gray-600">Placed on {format(new Date(order.createdAt), 'dd MMMM yyyy \'at\' HH:mm')}</p>
+          <h1 className="text-3xl font-bold">Order #{(order as Order).orderNumber}</h1>
+          <p className="text-gray-600">Placed on {(order as Order).createdAt ? format(new Date((order as Order).createdAt), 'dd MMMM yyyy \'at\' HH:mm') : 'N/A'}</p>
         </div>
         
         <div className="flex gap-2">
           <Button
             variant="outline"
             onClick={() => {
-              const firstProduct = order.items?.[0]?.product;
+              const firstProduct = (order as any).items?.[0]?.product;
               if (firstProduct?.slug) {
                 window.open(`/product/${firstProduct.slug}`, '_blank');
               } else {
@@ -307,7 +310,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                 <div>
                   <label className="text-sm font-medium text-gray-700">Order Status</label>
                   <Select
-                    value={order.status}
+                    value={order.status || ''}
                     onValueChange={(value) => handleStatusUpdate('status', value)}
                   >
                     <SelectTrigger className="mt-1">
@@ -326,7 +329,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                 <div>
                   <label className="text-sm font-medium text-gray-700">Payment Status</label>
                   <Select
-                    value={order.paymentStatus}
+                    value={order.paymentStatus || ''}
                     onValueChange={(value) => handleStatusUpdate('paymentStatus', value)}
                   >
                     <SelectTrigger className="mt-1">
@@ -362,8 +365,8 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
               </div>
               
               <div className="flex gap-2">
-                <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                <Badge className={getStatusColor(order.paymentStatus)}>{order.paymentStatus}</Badge>
+                <Badge className={getStatusColor(order.status || 'pending')}>{order.status || 'pending'}</Badge>
+                <Badge className={getStatusColor(order.paymentStatus || 'pending')}>{order.paymentStatus || 'pending'}</Badge>
                 <Badge className={getStatusColor(order.shippingStatus || 'not_shipped')}>
                   {order.shippingStatus || 'not_shipped'}
                 </Badge>
@@ -381,7 +384,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {order.items?.map((item: any, index: number) => (
+                {((order as any).items)?.map((item: any, index: number) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-4">
                       {item.product?.images?.[0] && (
@@ -518,7 +521,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                 </Button>
               </div>
               
-              {order.shippingAddress && (
+              {order.shippingAddress && typeof order.shippingAddress === 'object' && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -535,18 +538,18 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                     </Button>
                   </div>
                   <div className="bg-gray-50 p-3 rounded text-sm">
-                    <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
-                    <p>{order.shippingAddress.address1}</p>
-                    {order.shippingAddress.address2 && <p>{order.shippingAddress.address2}</p>}
-                    <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postcode}</p>
-                    <p>{order.shippingAddress.country || 'Australia'}</p>
+                    <p>{(order.shippingAddress as any).firstName} {(order.shippingAddress as any).lastName}</p>
+                    <p>{(order.shippingAddress as any).address1}</p>
+                    {(order.shippingAddress as any).address2 && <p>{(order.shippingAddress as any).address2}</p>}
+                    <p>{(order.shippingAddress as any).city}, {(order.shippingAddress as any).state} {(order.shippingAddress as any).postcode}</p>
+                    <p>{(order.shippingAddress as any).country || 'Australia'}</p>
                   </div>
                   
-                  {order.shippingAddress.phone && (
+                  {(order.shippingAddress as any)?.phone && (
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">{order.shippingAddress.phone}</span>
+                        <span className="text-sm">{(order.shippingAddress as any).phone}</span>
                       </div>
                       <Button
                         size="sm"
@@ -591,7 +594,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                     <p className="text-sm font-mono bg-gray-50 p-2 rounded">{order.paypalTransactionId}</p>
                   </div>
                 )}
-                {order.paypalPayerInfo && (
+                {order.paypalPayerInfo && typeof order.paypalPayerInfo === 'object' && (
                   <div>
                     <span className="text-sm font-medium">Payer Info:</span>
                     <div className="text-sm bg-gray-50 p-2 rounded">
