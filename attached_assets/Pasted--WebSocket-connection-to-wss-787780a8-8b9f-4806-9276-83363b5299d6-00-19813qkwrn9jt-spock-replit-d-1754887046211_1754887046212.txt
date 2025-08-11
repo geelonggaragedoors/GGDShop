@@ -1,0 +1,157 @@
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=GSyHBCT2LRQS' failed: 
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) 
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: 
+connect @ /src/components/NotificationBell.tsx:67
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: 
+connect @ /src/components/NotificationBell.tsx:67
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: 
+connect @ /src/components/NotificationBell.tsx:67
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: 
+connect @ /src/components/NotificationBell.tsx:67
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: 
+connect @ /src/components/NotificationBell.tsx:67
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: 
+connect @ /src/components/NotificationBell.tsx:67
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: 
+connect @ /src/components/NotificationBell.tsx:67
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+websocket.onclose @ /src/components/NotificationBell.tsx:98
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket connection closed intentionally
+/api/admin/customers:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+/src/pages/admin/customers.tsx:37 Uncaught TypeError: customers?.filter is not a function
+    at Customers (/src/pages/admin/customers.tsx:37:40)
+    at renderWithHooks (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at HTMLUnknownElement.callCallback2 (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:3674:22)
+    at Object.invokeGuardedCallbackDev (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:3699:24)
+    at invokeGuardedCallback (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:3733:39)
+    at beginWork$1 (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19765:15)
+    at performUnitOfWork (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19198:20)
+    at workLoopSync (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19137:13)
+/src/pages/admin/customers.tsx:37 Uncaught TypeError: customers?.filter is not a function
+    at Customers (/src/pages/admin/customers.tsx:37:40)
+    at renderWithHooks (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at HTMLUnknownElement.callCallback2 (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:3674:22)
+    at Object.invokeGuardedCallbackDev (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:3699:24)
+    at invokeGuardedCallback (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:3733:39)
+    at beginWork$1 (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19765:15)
+    at performUnitOfWork (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19198:20)
+    at workLoopSync (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19137:13)
+ The above error occurred in the <Customers> component:
+
+    at Customers (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/customers.tsx:31:31)
+    at main
+    at div
+    at AdminLayout (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/admin/layout.tsx:79:22)
+    at AdminRoute (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?t=1754884395086&v=XRp53hc9enltR8rwT454G:51:36)
+    at component
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?t=1754884395086&v=XRp53hc9enltR8rwT454G:49:42)
+    at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+    at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=8da72aaf:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=8da72aaf:64:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=8da72aaf:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ /@fs/home/runner/wor…js?v=8da72aaf:14032
+/@fs/home/runner/wor….js?v=8da72aaf:9129 Uncaught TypeError: customers?.filter is not a function
+    at Customers (/src/pages/admin/customers.tsx:37:40)
+    at renderWithHooks (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at beginWork$1 (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19753:22)
+    at performUnitOfWork (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19198:20)
+    at workLoopSync (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19137:13)
+    at renderRootSync (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:19116:15)
+    at recoverFromConcurrentError (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:18736:28)
+    at performSyncWorkOnRoot (/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=8da72aaf:18879:28)
+ WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/ws/notifications' failed: WebSocket is closed before the connection is established.
+(anonymous) @ /src/components/NotificationBell.tsx:115
+ WebSocket connection error: Event
+websocket.onerror @ /src/components/NotificationBell.tsx:94
+ WebSocket connection closed intentionally

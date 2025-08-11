@@ -326,7 +326,7 @@ export default function EventsPage() {
                               {getStatusBadge(email.status)}
                               <span className="text-xs text-gray-500">
                                 {email.sentAt ? formatDistanceToNow(new Date(email.sentAt), { addSuffix: true }) : 
-                                 formatDistanceToNow(new Date(email.createdAt), { addSuffix: true })}
+                                 email.createdAt ? formatDistanceToNow(new Date(email.createdAt), { addSuffix: true }) : 'Unknown'}
                               </span>
                             </div>
                           </div>

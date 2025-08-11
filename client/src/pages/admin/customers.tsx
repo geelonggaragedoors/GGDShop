@@ -19,10 +19,10 @@ export default function Customers() {
     queryFn: api.admin.customers.getAll,
   });
 
-  const filteredCustomers = customers?.filter((customer: any) =>
+  const filteredCustomers = Array.isArray(customers) ? customers.filter((customer: any) =>
     customer.email.toLowerCase().includes(search.toLowerCase()) ||
     `${customer.firstName || ''} ${customer.lastName || ''}`.toLowerCase().includes(search.toLowerCase())
-  ) || [];
+  ) : [];
 
   const columns = [
     {
