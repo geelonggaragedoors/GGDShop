@@ -34,6 +34,21 @@ export default function CustomerTransactions() {
     enabled: !!user?.id,
   });
 
+  // Enhanced error and success logging
+  useEffect(() => {
+    if (error) {
+      console.error("=== FRONTEND TRANSACTION ERROR ===");
+      console.error("Error details:", error);
+      console.error("User data:", { id: user?.id, email: user?.email });
+    }
+    if (transactions && transactions.length >= 0) {
+      console.log("=== FRONTEND TRANSACTION SUCCESS ===");
+      console.log("Transactions received:", transactions);
+      console.log("Transaction count:", transactions.length);
+      console.log("User data:", { id: user?.id, email: user?.email });
+    }
+  }, [error, transactions, user]);
+
   const filteredTransactions = (transactions as Transaction[]).filter((transaction: Transaction) => {
     const matchesSearch = transaction.transactionType.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          transaction.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||

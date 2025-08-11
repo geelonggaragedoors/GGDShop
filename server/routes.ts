@@ -2659,11 +2659,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Route for current authenticated user's transactions
   app.get("/api/customer-transactions", hybridAuth, async (req, res) => {
     try {
-      const customerId = (req.user as any)?.id;
-      if (!customerId) {
+      const userId = (req.user as any)?.id;
+      const userEmail = (req.user as any)?.email;
+      
+      console.log("=== CUSTOMER TRANSACTIONS DEBUG ===");
+      console.log("User ID:", userId);
+      console.log("User Email:", userEmail);
+      
+      if (!userId || !userEmail) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      const transactions = await storage.getCustomerTransactions(customerId);
+      
+      // Find customer record by email since user ID is integer but customer ID is UUID
+      const customer = await storage.getCustomerByEmail(userEmail);
+      console.log("Customer found:", customer);
+      
+      if (!customer) {
+        console.log("No customer record found for email:", userEmail);
+        return res.json([]); // Return empty array if no customer record
+      }
+      
+      const transactions = await storage.getCustomerTransactions(customer.id);
+      console.log("Transactions found:", transactions?.length || 0);
       res.json(transactions);
     } catch (error) {
       console.error("Error fetching customer transactions:", error);
