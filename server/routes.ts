@@ -2676,12 +2676,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!customer) {
         console.log("No customer record found for email:", userEmail);
-        return res.json([]); // Return empty array if no customer record
+        return res.json({ transactions: [], pendingOrders: [] }); // Return empty structure if no customer record
       }
       
       const transactions = await storage.getCustomerTransactions(customer.id);
+      const pendingOrders = await storage.getCustomerPendingOrders(userEmail);
+      
       console.log("Transactions found:", transactions?.length || 0);
-      res.json(transactions);
+      console.log("Pending orders found:", pendingOrders?.length || 0);
+      
+      res.json({ transactions, pendingOrders });
     } catch (error) {
       console.error("Error fetching customer transactions:", error);
       res.status(500).json({ message: "Failed to fetch customer transactions" });

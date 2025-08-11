@@ -1333,6 +1333,19 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(customerTransactions.createdAt));
   }
 
+  async getCustomerPendingOrders(customerEmail: string): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .where(
+        and(
+          eq(orders.customerEmail, customerEmail),
+          eq(orders.paymentStatus, "pending")
+        )
+      )
+      .orderBy(desc(orders.createdAt));
+  }
+
   async getCustomerTransactionById(id: string): Promise<CustomerTransaction | undefined> {
     const [transaction] = await db.select().from(customerTransactions).where(eq(customerTransactions.id, id));
     return transaction;

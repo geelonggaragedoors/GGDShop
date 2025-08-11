@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar, Mail, Package, Receipt, Search, Download, Filter, CreditCard, DollarSign } from 'lucide-react';
+import { Calendar, Mail, Package, Receipt, Search, Download, Filter, CreditCard, DollarSign, Clock, PlayCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Transaction {
@@ -23,16 +23,36 @@ interface Transaction {
   createdAt: Date;
 }
 
+interface PendingOrder {
+  id: string;
+  orderNumber: string;
+  customerEmail: string;
+  status: string;
+  paymentStatus: string;
+  total: string;
+  currency: string;
+  paypalOrderId: string | null;
+  createdAt: Date;
+}
+
+interface TransactionResponse {
+  transactions: Transaction[];
+  pendingOrders: PendingOrder[];
+}
+
 export default function CustomerTransactions() {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
-  const { data: transactions = [], isLoading, error } = useQuery<Transaction[]>({
+  const { data, isLoading, error } = useQuery<TransactionResponse>({
     queryKey: ['/api/customer-transactions', user?.id],
     enabled: !!user?.id,
   });
+
+  const transactions = data?.transactions || [];
+  const pendingOrders = data?.pendingOrders || [];
 
   // Enhanced error and success logging
   useEffect(() => {
@@ -41,13 +61,13 @@ export default function CustomerTransactions() {
       console.error("Error details:", error);
       console.error("User data:", { id: user?.id, email: user?.email });
     }
-    if (transactions && transactions.length >= 0) {
+    if (data) {
       console.log("=== FRONTEND TRANSACTION SUCCESS ===");
-      console.log("Transactions received:", transactions);
-      console.log("Transaction count:", transactions.length);
+      console.log("Transactions received:", transactions.length);
+      console.log("Pending orders received:", pendingOrders.length);
       console.log("User data:", { id: user?.id, email: user?.email });
     }
-  }, [error, transactions, user]);
+  }, [error, data, transactions, pendingOrders, user]);
 
   const filteredTransactions = (transactions as Transaction[]).filter((transaction: Transaction) => {
     const matchesSearch = transaction.transactionType.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -187,12 +207,72 @@ export default function CustomerTransactions() {
     );
   }
 
+  const handleContinuePayment = (orderId: string) => {
+    window.location.href = `/checkout?resume=${orderId}`;
+  };
+
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Transaction History</h1>
         <p className="text-gray-600">View all your invoices, receipts, and order communications</p>
       </div>
+
+      {/* Pending Orders Section */}
+      {pendingOrders.length > 0 && (
+        <Card className="mb-6 border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800">
+              <Clock className="w-5 h-5" />
+              Pending Orders - Continue Payment
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              {pendingOrders.map((order) => (
+                <div key={order.id} className="bg-white p-4 rounded-lg border border-orange-200 flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-2">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Order #{order.orderNumber}</h3>
+                        <p className="text-sm text-gray-600">
+                          Created: {format(new Date(order.createdAt), 'PPP')}
+                        </p>
+                      </div>
+                      <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                        Payment Pending
+                      </Badge>
+                      {order.status === 'shipped' && (
+                        <Badge variant="outline" className="bg-blue-100 text-blue-800">
+                          Already Shipped
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <p>Total: <span className="font-semibold text-gray-900">{order.currency} ${parseFloat(order.total).toFixed(2)}</span></p>
+                      <p>Email: {order.customerEmail}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      onClick={() => handleContinuePayment(order.id)}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Continue Payment
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 p-3 bg-orange-100 rounded-lg">
+              <p className="text-sm text-orange-800">
+                <strong>Important:</strong> These orders are awaiting payment. Click "Continue Payment" to complete your purchase with PayPal.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card className="mb-6">
