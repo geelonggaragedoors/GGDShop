@@ -53,6 +53,9 @@ import {
   emailLogs,
   type EmailLog,
   type InsertEmailLog,
+  customerNotes,
+  type CustomerNote,
+  type InsertCustomerNote,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql, isNull, not } from "drizzle-orm";
@@ -230,6 +233,12 @@ export interface IStorage {
     openRate: number;
     clickRate: number;
   }>;
+
+  // Customer notes operations
+  getCustomerNotes(customerId: string): Promise<Array<CustomerNote & { createdByName: string }>>;
+  createCustomerNote(note: InsertCustomerNote): Promise<CustomerNote>;
+  updateCustomerNote(id: string, note: Partial<InsertCustomerNote>): Promise<CustomerNote | undefined>;
+  deleteCustomerNote(id: string): Promise<boolean>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<{
@@ -1563,6 +1572,55 @@ export class DatabaseStorage implements IStorage {
     for (const template of defaultTemplates) {
       await db.insert(emailTemplates).values(template).onConflictDoNothing();
     }
+  }
+
+  // Customer notes operations
+  async getCustomerNotes(customerId: string): Promise<Array<CustomerNote & { createdByName: string }>> {
+    const result = await db
+      .select({
+        id: customerNotes.id,
+        customerId: customerNotes.customerId,
+        createdBy: customerNotes.createdBy,
+        subject: customerNotes.subject,
+        message: customerNotes.message,
+        attachmentUrl: customerNotes.attachmentUrl,
+        attachmentName: customerNotes.attachmentName,
+        noteType: customerNotes.noteType,
+        isPrivate: customerNotes.isPrivate,
+        createdAt: customerNotes.createdAt,
+        updatedAt: customerNotes.updatedAt,
+        createdByName: sql<string>`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+      })
+      .from(customerNotes)
+      .leftJoin(users, eq(customerNotes.createdBy, users.id))
+      .where(eq(customerNotes.customerId, customerId))
+      .orderBy(desc(customerNotes.createdAt));
+    
+    return result;
+  }
+
+  async createCustomerNote(note: InsertCustomerNote): Promise<CustomerNote> {
+    const [createdNote] = await db
+      .insert(customerNotes)
+      .values(note)
+      .returning();
+    return createdNote;
+  }
+
+  async updateCustomerNote(id: string, note: Partial<InsertCustomerNote>): Promise<CustomerNote | undefined> {
+    const [updatedNote] = await db
+      .update(customerNotes)
+      .set({ ...note, updatedAt: new Date() })
+      .where(eq(customerNotes.id, id))
+      .returning();
+    return updatedNote;
+  }
+
+  async deleteCustomerNote(id: string): Promise<boolean> {
+    const result = await db
+      .delete(customerNotes)
+      .where(eq(customerNotes.id, id));
+    return (result.rowCount || 0) > 0;
   }
 }
 

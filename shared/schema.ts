@@ -725,6 +725,43 @@ export const emailLogs = pgTable("email_logs", {
 export type EmailLog = typeof emailLogs.$inferSelect;
 export type InsertEmailLog = typeof emailLogs.$inferInsert;
 
+// Customer notes table for staff-to-customer communication tracking
+export const customerNotes = pgTable("customer_notes", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  customerId: uuid("customer_id").notNull().references(() => customers.id),
+  createdBy: varchar("created_by").notNull().references(() => users.id),
+  subject: varchar("subject", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  attachmentUrl: varchar("attachment_url"), // For image attachments
+  attachmentName: varchar("attachment_name"),
+  noteType: varchar("note_type").default("general"), // general, follow_up, complaint, etc.
+  isPrivate: boolean("is_private").default(false), // For internal staff notes
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type CustomerNote = typeof customerNotes.$inferSelect;
+export type InsertCustomerNote = typeof customerNotes.$inferInsert;
+
+// Customer note validation schema
+export const insertCustomerNoteSchema = createInsertSchema(customerNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Customer notes relations
+export const customerNotesRelations = relations(customerNotes, ({ one }) => ({
+  customer: one(customers, {
+    fields: [customerNotes.customerId],
+    references: [customers.id],
+  }),
+  createdByUser: one(users, {
+    fields: [customerNotes.createdBy],
+    references: [users.id],
+  }),
+}));
+
 // Add the missing transaction relation
 export const customerTransactionsRelations = relations(customerTransactions, ({ one }) => ({
   customer: one(customers, {

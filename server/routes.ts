@@ -3436,6 +3436,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customer Notes API Routes
+  app.get('/api/admin/customers/:customerId/notes', hybridAuth, async (req, res) => {
+    try {
+      const notes = await storage.getCustomerNotes(req.params.customerId);
+      res.json(notes);
+    } catch (error) {
+      console.error("Error fetching customer notes:", error);
+      res.status(500).json({ message: "Failed to fetch customer notes" });
+    }
+  });
+
+  app.post('/api/admin/customers/:customerId/notes', hybridAuth, async (req, res) => {
+    try {
+      const { insertCustomerNoteSchema } = await import("@shared/schema");
+      const validatedData = insertCustomerNoteSchema.parse({
+        ...req.body,
+        customerId: req.params.customerId,
+        createdBy: (req as any).user.id,
+      });
+      
+      const note = await storage.createCustomerNote(validatedData);
+      
+      // Get the note with the creator name for response
+      const notesWithCreator = await storage.getCustomerNotes(req.params.customerId);
+      const createdNote = notesWithCreator.find(n => n.id === note.id);
+      
+      res.status(201).json(createdNote);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid note data", errors: error.errors });
+      }
+      console.error("Error creating customer note:", error);
+      res.status(500).json({ message: "Failed to create customer note" });
+    }
+  });
+
+  app.put('/api/admin/customers/:customerId/notes/:noteId', hybridAuth, async (req, res) => {
+    try {
+      const { insertCustomerNoteSchema } = await import("@shared/schema");
+      const validatedData = insertCustomerNoteSchema.partial().parse(req.body);
+      const note = await storage.updateCustomerNote(req.params.noteId, validatedData);
+      
+      if (!note) {
+        return res.status(404).json({ message: "Note not found" });
+      }
+      
+      res.json(note);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid note data", errors: error.errors });
+      }
+      console.error("Error updating customer note:", error);
+      res.status(500).json({ message: "Failed to update customer note" });
+    }
+  });
+
+  app.delete('/api/admin/customers/:customerId/notes/:noteId', hybridAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteCustomerNote(req.params.noteId);
+      if (!success) {
+        return res.status(404).json({ message: "Note not found" });
+      }
+      res.json({ message: "Customer note deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting customer note:", error);
+      res.status(500).json({ message: "Failed to delete customer note" });
+    }
+  });
+
   const httpServer = createServer(app);
   
   // Initialize notification service with WebSocket (properly configured to avoid Vite conflicts)
