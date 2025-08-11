@@ -17,7 +17,7 @@ import Customers from "./customers";
 import Media from "./media";
 import Staff from "./staff";
 import Reviews from "./reviews";
-import Enquiries from "./enquiries";
+
 import SettingsPage from "./settings";
 import SiteSettings from "./site-settings";
 import EmailTest from "./email-test";
@@ -33,7 +33,7 @@ import {
   Images,
   UserCheck,
   Star,
-  MessageSquare,
+
   Settings as SettingsIcon,
   Store,
   Bell,
@@ -52,7 +52,6 @@ const sidebarItems = [
   { id: "products", label: "Products", icon: Package, path: "/admin/products" },
   { id: "orders", label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
   { id: "events", label: "Events & Notifications", icon: Activity, path: "/admin/events" },
-  { id: "enquiries", label: "Quote Requests", icon: MessageSquare, path: "/admin/enquiries" },
   { id: "categories", label: "Categories", icon: Tags, path: "/admin/categories" },
   { id: "brands", label: "Brands", icon: Building, path: "/admin/brands" },
   { id: "customers", label: "Customers", icon: Users, path: "/admin/customers" },
@@ -87,8 +86,7 @@ export default function AdminLayout() {
         return { title: "Products", subtitle: "Manage your garage door inventory" };
       case "orders":
         return { title: "Orders", subtitle: "Track and manage customer orders" };
-      case "enquiries":
-        return { title: "Quote Requests", subtitle: "Manage customer enquiries and quote requests" };
+
       case "events":
         return { title: "Events & Notifications", subtitle: "Monitor webhook events, email notifications, and system alerts" };
       case "categories":
@@ -120,8 +118,7 @@ export default function AdminLayout() {
         return <Products />;
       case "orders":
         return <Orders />;
-      case "enquiries":
-        return <Enquiries />;
+
       case "events":
         return <EventsPage />;
       case "categories":
@@ -206,28 +203,7 @@ export default function AdminLayout() {
             })}
           </ul>
         </nav>
-        
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={user?.profileImageUrl || ""} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                {user?.firstName?.[0] || user?.email?.[0] || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <p className="text-sm font-medium">
-                {user?.firstName && user?.lastName 
-                  ? `${user.firstName} ${user.lastName}` 
-                  : user?.email || "User"}
-              </p>
-              <p className="text-xs text-gray-500">{user?.role || "Administrator"}</p>
-            </div>
-            <Button size="sm" variant="ghost" onClick={() => window.location.href = "/api/logout"}>
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
+
       </aside>
 
       {/* Main Content */}
@@ -245,6 +221,27 @@ export default function AdminLayout() {
                 Add Product
               </Button>
               <NotificationBell />
+              
+              {/* User Info and Logout */}
+              <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-gray-200">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={user?.profileImageUrl || ""} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                    {user?.firstName?.[0] || user?.email?.[0] || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">
+                    {user?.firstName && user?.lastName 
+                      ? `${user.firstName} ${user.lastName}` 
+                      : user?.email || "User"}
+                  </p>
+                  <p className="text-xs text-gray-500">{user?.role || "Administrator"}</p>
+                </div>
+                <Button size="sm" variant="ghost" onClick={() => window.location.href = "/api/logout"}>
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </header>
