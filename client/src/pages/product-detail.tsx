@@ -41,7 +41,7 @@ export default function ProductDetail() {
     enabled: !!product?.categoryId,
   });
 
-  const { data: reviewsData } = useQuery({
+  const { data: reviewsData } = useQuery<{ total: number; reviews: any[] }>({
     queryKey: [`/api/reviews`, { productId: product?.id, isVisible: true }],
     enabled: !!product?.id,
   });
@@ -176,8 +176,7 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* Rating - placeholder for future implementation */}
-            {reviewsData && (reviewsData as any).total > 0 && (
+            {reviewsData && reviewsData.total > 0 && (
               <div className="flex items-center space-x-2">
                 <div className="flex items-center">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -187,7 +186,7 @@ export default function ProductDetail() {
                     />
                   ))}
                 </div>
-                <span className="text-sm text-gray-600">({(reviewsData as any).total} review{(reviewsData as any).total > 1 ? 's' : ''})</span>
+                <span className="text-sm text-gray-600">({reviewsData?.total} review{reviewsData && reviewsData.total > 1 ? 's' : ''})</span>
               </div>
             )}
 
