@@ -423,7 +423,7 @@ export default function Products() {
         console.error('Form validation failed:');
         console.error('Detailed errors:', JSON.stringify(form.formState.errors, null, 2));
         Object.keys(form.formState.errors).forEach(key => {
-          console.error(`Field ${key}:`, form.formState.errors[key]);
+          console.error(`Field ${key}:`, (form.formState.errors as any)[key]);
         });
         toast({ 
           title: "Validation Error", 
@@ -1707,7 +1707,7 @@ export default function Products() {
                                       className="text-green-700 border-green-300 hover:bg-green-100 mt-1"
                                       onClick={() => {
                                         form.setValue('boxSize', suggestedBox.id);
-                                        form.setValue('shippingCost', suggestedBox.cost.toString());
+                                        (form.setValue as any)('shippingCost', suggestedBox.cost.toString());
                                         // Only enable custom shipping for oversized items
                                         if (suggestedBox.id === 'custom') {
                                           setUseCustomShipping(true);

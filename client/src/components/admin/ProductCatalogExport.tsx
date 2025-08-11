@@ -132,12 +132,12 @@ export default function ProductCatalogExport() {
       addPageNumber();
 
       // Organize products by category
-      const allProducts = productsData.products.filter((p: Product) => p.isActive !== false);
+      const allProducts = (productsData as any).products.filter((p: any) => p.isActive !== false);
       const productsByCategory = new Map();
       
       // Group products by category
-      allProducts.forEach(product => {
-        const category = categories?.find((c: any) => c.id === product.categoryId);
+      allProducts.forEach((product: any) => {
+        const category = (categories as any)?.find((c: any) => c.id === product.categoryId);
         const categoryName = category?.name || 'Uncategorized';
         
         if (!productsByCategory.has(categoryName)) {
@@ -163,7 +163,7 @@ export default function ProductCatalogExport() {
       let currentPage = 3; // Starting after cover and index
       const categoryPages = new Map();
       
-      for (const [categoryName, products] of productsByCategory) {
+      for (const [categoryName, products] of Array.from(productsByCategory)) {
         categoryPages.set(categoryName, currentPage);
         const productsPerPage = 4;
         const pagesNeeded = Math.ceil(products.length / productsPerPage);
@@ -174,7 +174,7 @@ export default function ProductCatalogExport() {
       pdf.setFontSize(14);
       pdf.setTextColor(51, 51, 51);
       
-      for (const [categoryName, products] of productsByCategory) {
+      for (const [categoryName, products] of Array.from(productsByCategory)) {
         const startPage = categoryPages.get(categoryName);
         const productsPerPage = 4;
         const pagesNeeded = Math.ceil(products.length / productsPerPage);
@@ -200,7 +200,7 @@ export default function ProductCatalogExport() {
       addPageNumber();
 
       // PRODUCT PAGES BY CATEGORY
-      for (const [categoryName, products] of productsByCategory) {
+      for (const [categoryName, products] of Array.from(productsByCategory)) {
         pdf.addPage();
         yPosition = margin;
 
@@ -236,7 +236,7 @@ export default function ProductCatalogExport() {
 
           for (let j = 0; j < pageProducts.length; j++) {
             const product = pageProducts[j];
-            const brand = brands?.find((b: any) => b.id === product.brandId);
+            const brand = (brands as any)?.find((b: any) => b.id === product.brandId);
             const brandName = brand?.name || 'Unknown Brand';
 
             // Calculate position (2 products per row)

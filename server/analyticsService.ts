@@ -12,7 +12,7 @@ export class AnalyticsService {
       .from(pageViews)
       .where(eq((pageViews as any).sessionId, data.sessionId))
       .where(eq((pageViews as any).path, data.path))
-      .where(gte(pageViews.createdAt, new Date(Date.now() - 5000)))
+      .where(gte((pageViews as any).createdAt, new Date(Date.now() - 5000)))
       .limit(1);
 
     if (recentView.length === 0) {

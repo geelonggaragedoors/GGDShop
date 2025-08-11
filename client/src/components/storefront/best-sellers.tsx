@@ -8,7 +8,7 @@ import { Link } from "wouter";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
-import { formatPrice } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export default function BestSellers() {
   const { addToCart } = useCart();
@@ -109,9 +109,9 @@ export default function BestSellers() {
           {products.map((product) => (
             <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
               <div className="relative overflow-hidden rounded-t-lg">
-                {product.images && product.images.length > 0 ? (
+                {(product as any).images && (product as any).images.length > 0 ? (
                   <img
-                    src={product.images[0]}
+                    src={(product as any).images[0]}
                     alt={product.name}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -139,7 +139,7 @@ export default function BestSellers() {
                     />
                   </button>
                   
-                  {!product.alwaysInStock && product.stockQuantity && product.stockQuantity < 5 && (
+                  {!(product as any).alwaysInStock && (product as any).stockQuantity && (product as any).stockQuantity < 5 && (
                     <Badge variant="outline" className="bg-white text-orange-600 border-orange-600">
                       Low Stock
                     </Badge>
