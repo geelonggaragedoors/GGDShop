@@ -2945,7 +2945,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create notification directly
       await storage.createNotification({
-        userId: req.user.id,
+        userId: (req.user as any).id,
         type: 'payment',
         title: 'Payment Completed ✅',
         message: `Order ${orderNumber} has been paid via PayPal (${paypalTransactionId})`,
@@ -2974,7 +2974,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const testTransactionId = `TEST-${Math.random().toString(36).substring(7).toUpperCase()}`;
       
       await storage.createNotification({
-        userId: req.user.id,
+        userId: (req.user as any).id,
         type: 'payment',
         title: 'New Order Payment Received',
         message: `Fresh test order ${testOrderNumber} has been completed via PayPal (${testTransactionId})`,
@@ -3080,7 +3080,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         offset: offset ? parseInt(offset as string) : undefined,
       };
       
-      const result = await storage.getEmailTemplates(params);
+      const result = await storage.getEmailTemplates();
       res.json(result);
     } catch (error) {
       console.error("Error fetching email templates:", error);

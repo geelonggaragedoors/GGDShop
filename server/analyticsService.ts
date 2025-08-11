@@ -10,8 +10,8 @@ export class AnalyticsService {
     // Check for recent duplicate page view (within 5 seconds for same session and path)
     const recentView = await db.select()
       .from(pageViews)
-      .where(eq(pageViews.sessionId, data.sessionId))
-      .where(eq(pageViews.path, data.path))
+      .where(eq((pageViews as any).sessionId, data.sessionId))
+      .where(eq((pageViews as any).path, data.path))
       .where(gte(pageViews.createdAt, new Date(Date.now() - 5000)))
       .limit(1);
 
@@ -28,7 +28,7 @@ export class AnalyticsService {
     // Ensure eventName is provided, fallback to eventType if missing
     const eventData = {
       ...data,
-      eventName: data.eventName || data.eventType || 'unknown_event',
+      eventName: data.eventName || (data as any).eventType || 'unknown_event',
       createdAt: new Date(),
     };
     

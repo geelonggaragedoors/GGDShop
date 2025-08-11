@@ -1069,7 +1069,7 @@ export class DatabaseStorage implements IStorage {
 
   async getEmailTemplate(id: string): Promise<any | undefined> {
     const templates = await this.getEmailTemplates();
-    return templates.find(template => template.id === id);
+    return templates.find((template: any) => template.id === id);
   }
 
 

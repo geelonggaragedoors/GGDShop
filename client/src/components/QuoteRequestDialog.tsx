@@ -28,12 +28,9 @@ export function QuoteRequestDialog({ trigger }: QuoteRequestDialogProps) {
 
   const submitEnquiry = useMutation({
     mutationFn: async (data: typeof formData) => {
-      return await apiRequest("/api/enquiries", {
-        method: "POST",
-        body: JSON.stringify({
-          ...data,
-          source: "website"
-        }),
+      return await apiRequest("POST", "/api/enquiries", {
+        ...data,
+        source: "website"
       });
     },
     onSuccess: () => {

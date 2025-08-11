@@ -72,7 +72,7 @@ export function SEOHead({
     metaTags.forEach(tag => {
       const meta = document.createElement("meta");
       if ('name' in tag) {
-        meta.name = tag.name;
+        meta.name = tag.name || "";
       } else if ('property' in tag) {
         meta.setAttribute('property', tag.property);
       }

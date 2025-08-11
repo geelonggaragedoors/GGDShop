@@ -51,10 +51,7 @@ export default function AdminEnquiries() {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      return await apiRequest(`/api/enquiries/${id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
+      return await apiRequest("PATCH", `/api/enquiries/${id}/status`, { status });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/enquiries"] });
@@ -74,9 +71,7 @@ export default function AdminEnquiries() {
 
   const deleteEnquiryMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest(`/api/enquiries/${id}`, {
-        method: "DELETE",
-      });
+      return await apiRequest("DELETE", `/api/enquiries/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/enquiries"] });
@@ -126,7 +121,7 @@ export default function AdminEnquiries() {
     }
   };
 
-  const enquiries = enquiriesData?.enquiries || [];
+  const enquiries = (enquiriesData as any)?.enquiries || [];
 
   if (isLoading) {
     return (

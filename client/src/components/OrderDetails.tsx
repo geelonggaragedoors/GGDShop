@@ -235,7 +235,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold">Order #{(order as Order).orderNumber}</h1>
-          <p className="text-gray-600">Placed on {(order as Order).createdAt ? format(new Date((order as Order).createdAt), 'dd MMMM yyyy \'at\' HH:mm') : 'N/A'}</p>
+          <p className="text-gray-600">Placed on {(order as Order).createdAt ? format(new Date((order as Order).createdAt!), 'dd MMMM yyyy \'at\' HH:mm') : 'N/A'}</p>
         </div>
         
         <div className="flex gap-2">
@@ -521,7 +521,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                 </Button>
               </div>
               
-              {order.shippingAddress && typeof order.shippingAddress === 'object' && (
+              {order.shippingAddress && typeof order.shippingAddress === 'object' ? (
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -562,7 +562,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                     </div>
                   )}
                 </div>
-              )}
+              ) : null}
             </CardContent>
           </Card>
 
@@ -594,14 +594,14 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                     <p className="text-sm font-mono bg-gray-50 p-2 rounded">{order.paypalTransactionId}</p>
                   </div>
                 )}
-                {order.paypalPayerInfo && typeof order.paypalPayerInfo === 'object' && (
+                {order.paypalPayerInfo && typeof order.paypalPayerInfo === 'object' ? (
                   <div>
                     <span className="text-sm font-medium">Payer Info:</span>
                     <div className="text-sm bg-gray-50 p-2 rounded">
                       <pre>{JSON.stringify(order.paypalPayerInfo, null, 2)}</pre>
                     </div>
                   </div>
-                )}
+                ) : null}
               </CardContent>
             </Card>
           )}
@@ -662,7 +662,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
               {/* Order Created */}
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Order placed: {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}</span>
+                <span>Order placed: {order.createdAt ? format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm') : 'N/A'}</span>
               </div>
 
               {/* Order Confirmation Email */}
@@ -685,7 +685,7 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                 <div className="flex items-center gap-2 text-sm">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                   <div className="flex flex-col">
-                    <span>Payment failed: {format(new Date(order.updatedAt), 'dd/MM/yyyy HH:mm')}</span>
+                    <span>Payment failed: {order.updatedAt ? format(new Date(order.updatedAt), 'dd/MM/yyyy HH:mm') : 'N/A'}</span>
                     {order.paymentFailureReason && (
                       <span className="text-red-600 text-xs">Reason: {order.paymentFailureReason}</span>
                     )}
