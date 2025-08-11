@@ -21,7 +21,7 @@ import { format } from "date-fns";
 
 export default function Orders() {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [pageSize] = useState(20);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
