@@ -1,10 +1,15 @@
-export function getOptimizedImageUrl(src: string, options: {
+export function getOptimizedImageUrl(src: string | null | undefined, options: {
   width?: number;
   height?: number;
   quality?: number;
   format?: 'webp' | 'jpg' | 'png';
 } = {}): string {
   const { width = 800, height, quality = 80, format = 'webp' } = options;
+  
+  // Handle null, undefined, or empty string
+  if (!src || typeof src !== 'string') {
+    return "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600";
+  }
   
   // For local uploaded images (starts with /uploads/), return as-is
   // The browser will resolve relative URLs correctly
@@ -35,7 +40,13 @@ export function getOptimizedImageUrl(src: string, options: {
   return src;
 }
 
-export function generateSrcSet(src: string, sizes: number[] = [400, 800, 1200]): string {
+export function generateSrcSet(src: string | null | undefined, sizes: number[] = [400, 800, 1200]): string {
+  // Handle null, undefined, or empty string
+  if (!src || typeof src !== 'string') {
+    const fallbackUrl = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600";
+    return fallbackUrl;
+  }
+  
   // For local uploaded images, just return the single source
   if (src.startsWith('/uploads/')) {
     return src;

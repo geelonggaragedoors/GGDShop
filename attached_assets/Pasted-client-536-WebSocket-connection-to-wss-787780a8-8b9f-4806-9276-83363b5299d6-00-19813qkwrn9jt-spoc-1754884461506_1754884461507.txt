@@ -1,0 +1,56 @@
+client:536 WebSocket connection to 'wss://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/?token=GSyHBCT2LRQS' failed: 
+setupWebSocket @ client:536
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=GSyHBCT2LRQS' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+chunk-RPCDYKBN.js?v=8da72aaf:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+image-optimizer.ts:11 Uncaught TypeError: Cannot read properties of null (reading 'startsWith')
+    at getOptimizedImageUrl (image-optimizer.ts:11:11)
+    at getProductImage (products.tsx:85:12)
+    at products.tsx:313:34
+    at Array.map (<anonymous>)
+    at Products (products.tsx:307:27)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=8da72aaf:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=8da72aaf:3699:24)
+image-optimizer.ts:11 Uncaught TypeError: Cannot read properties of null (reading 'startsWith')
+    at getOptimizedImageUrl (image-optimizer.ts:11:11)
+    at getProductImage (products.tsx:85:12)
+    at products.tsx:313:34
+    at Array.map (<anonymous>)
+    at Products (products.tsx:307:27)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=8da72aaf:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=8da72aaf:3699:24)
+chunk-RPCDYKBN.js?v=8da72aaf:14032 The above error occurred in the <Products> component:
+
+    at Products (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/pages/products.tsx:36:27)
+    at Route (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:323:16)
+    at Switch (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=8da72aaf:379:17)
+    at Router (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/App.tsx?t=1754884395086&v=EcQVTbqOvcnv8n8th80BN:49:42)
+    at WishlistProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/WishlistContext.tsx:20:36)
+    at CartProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/src/contexts/CartContext.tsx:20:32)
+    at Provider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=8da72aaf:38:15)
+    at TooltipProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=8da72aaf:64:5)
+    at QueryClientProvider (https://787780a8-8b9f-4806-9276-83363b5299d6-00-19813qkwrn9jt.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=8da72aaf:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=8da72aaf:14032
+chunk-RPCDYKBN.js?v=8da72aaf:9129 Uncaught TypeError: Cannot read properties of null (reading 'startsWith')
+    at getOptimizedImageUrl (image-optimizer.ts:11:11)
+    at getProductImage (products.tsx:85:12)
+    at products.tsx:313:34
+    at Array.map (<anonymous>)
+    at Products (products.tsx:307:27)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=8da72aaf:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=8da72aaf:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=8da72aaf:15924:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=8da72aaf:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=8da72aaf:19198:20)

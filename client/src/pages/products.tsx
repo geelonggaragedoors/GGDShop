@@ -81,7 +81,16 @@ export default function Products() {
 
   const getProductImage = (product: any) => {
     const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600";
-    const imageUrl = product.images && product.images.length > 0 ? product.images[0] : defaultImage;
+    let imageUrl = defaultImage;
+    
+    // Safe check for product images
+    if (product && product.images && Array.isArray(product.images) && product.images.length > 0) {
+      const firstImage = product.images[0];
+      if (firstImage && typeof firstImage === 'string' && firstImage.trim() !== '') {
+        imageUrl = firstImage;
+      }
+    }
+    
     return getOptimizedImageUrl(imageUrl, { width: 400, height: 300, quality: 85 });
   };
 
