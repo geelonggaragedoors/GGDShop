@@ -24,6 +24,7 @@ import {
   Users
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
+import type { EmailLog } from "@shared/schema";
 
 export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,6 +36,17 @@ export default function EventsPage() {
     queryKey: ["/api/notifications"],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
+
+  // Fetch real email logs
+  const { data: emailLogsData, isLoading: emailLogsLoading } = useQuery<{ 
+    logs: EmailLog[]; 
+    total: number 
+  }>({
+    queryKey: ["/api/admin/email-logs"],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  const emailEvents = emailLogsData?.logs || [];
 
   // Mock webhook events data (you'll need to create an API endpoint for this)
   const webhookEvents = [
@@ -59,27 +71,6 @@ export default function EventsPage() {
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
       status: "processed",
       customerEmail: "another@example.com"
-    }
-  ];
-
-  const emailEvents = [
-    {
-      id: "1",
-      type: "payment_confirmation",
-      recipient: "customer@example.com",
-      subject: "Payment Confirmed - Order #ORD-2024-001",
-      status: "delivered",
-      timestamp: new Date(Date.now() - 1000 * 60 * 35),
-      orderId: "ORD-2024-001"
-    },
-    {
-      id: "2",
-      type: "order_confirmation", 
-      recipient: "another@example.com",
-      subject: "Order Confirmation - Order #ORD-2024-002",
-      status: "delivered",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2.5),
-      orderId: "ORD-2024-002"
     }
   ];
 
@@ -319,42 +310,69 @@ export default function EventsPage() {
             <CardContent>
               <ScrollArea className="h-96">
                 <div className="space-y-4">
-                  {emailEvents.map((email) => (
-                    <div key={email.id} className="flex items-start space-x-4 p-4 border rounded-lg">
-                      <Mail className="w-5 h-5 mt-1 text-blue-600" />
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-gray-900">{email.subject}</h4>
-                          <div className="flex items-center space-x-2">
-                            {getStatusBadge(email.status)}
-                            <span className="text-xs text-gray-500">
-                              {formatDistanceToNow(email.timestamp, { addSuffix: true })}
-                            </span>
+                  {emailLogsLoading ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <Mail className="w-12 h-12 mx-auto mb-4 text-gray-300 animate-spin" />
+                      <p>Loading email logs...</p>
+                    </div>
+                  ) : emailEvents.length > 0 ? (
+                    emailEvents.map((email) => (
+                      <div key={email.id} className="flex items-start space-x-4 p-4 border rounded-lg">
+                        <Mail className="w-5 h-5 mt-1 text-blue-600" />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-gray-900">{email.subject}</h4>
+                            <div className="flex items-center space-x-2">
+                              {getStatusBadge(email.status)}
+                              <span className="text-xs text-gray-500">
+                                {email.sentAt ? formatDistanceToNow(new Date(email.sentAt), { addSuffix: true }) : 
+                                 formatDistanceToNow(new Date(email.createdAt), { addSuffix: true })}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-600">Type:</span>
-                            <span className="ml-1 font-medium capitalize">{email.type.replace('_', ' ')}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Recipient:</span>
-                            <span className="ml-1 font-medium text-xs">{email.recipient}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Order:</span>
-                            <span className="ml-1 font-medium">{email.orderId}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Timestamp:</span>
-                            <span className="ml-1 font-medium text-xs">
-                              {format(email.timestamp, 'MMM d, yyyy h:mm a')}
-                            </span>
+                          <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-600">Template:</span>
+                              <span className="ml-1 font-medium capitalize">
+                                {email.templateName || email.templateId || 'Unknown'}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Recipient:</span>
+                              <span className="ml-1 font-medium text-xs">{email.recipientEmail}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Recipient Name:</span>
+                              <span className="ml-1 font-medium">{email.recipientName || 'N/A'}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Sent At:</span>
+                              <span className="ml-1 font-medium text-xs">
+                                {email.sentAt ? format(new Date(email.sentAt), 'MMM d, yyyy h:mm a') : 'Not sent yet'}
+                              </span>
+                            </div>
+                            {email.resendId && (
+                              <div className="col-span-2">
+                                <span className="text-gray-600">Resend ID:</span>
+                                <span className="ml-1 font-medium text-xs font-mono">{email.resendId}</span>
+                              </div>
+                            )}
+                            {email.errorMessage && (
+                              <div className="col-span-2">
+                                <span className="text-gray-600">Error:</span>
+                                <span className="ml-1 font-medium text-xs text-red-600">{email.errorMessage}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Mail className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No email logs found</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </ScrollArea>
             </CardContent>

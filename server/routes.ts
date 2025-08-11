@@ -3183,6 +3183,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email Logs API Routes
+  app.get('/api/admin/email-logs', hybridAuth, async (req, res) => {
+    try {
+      const { status, templateId, recipientEmail, startDate, endDate, limit, offset } = req.query;
+      const params = {
+        status: status as string,
+        templateId: templateId as string,
+        recipientEmail: recipientEmail as string,
+        startDate: startDate ? new Date(startDate as string) : undefined,
+        endDate: endDate ? new Date(endDate as string) : undefined,
+        limit: limit ? parseInt(limit as string) : 50,
+        offset: offset ? parseInt(offset as string) : 0,
+      };
+      
+      const result = await storage.getEmailLogs(params);
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching email logs:", error);
+      res.status(500).json({ message: "Failed to fetch email logs" });
+    }
+  });
+
   const httpServer = createServer(app);
   
   // Initialize notification service with WebSocket (properly configured to avoid Vite conflicts)
