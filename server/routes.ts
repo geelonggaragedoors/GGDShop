@@ -2370,36 +2370,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // expiresAt removed to match schema
       });
 
-      // Send invitation email using SendGrid
+      // Send invitation email using Resend
       try {
-        const templates = await storage.getEmailTemplates();
+        const invitationData = {
+          ...invitation,
+          inviteLink: `${process.env.NODE_ENV === 'production' ? 'https://geelonggaragedoors.com' : req.protocol + '://' + req.get('host')}/admin/accept-invitation?token=${token}`,
+          expiryDays: 7,
+          role: invitation.role
+        };
         
-        const invitationTemplate = templates.find((t: any) => t.name === 'Staff Invitation');
-        
-        if (invitationTemplate) {
-          const invitationData = {
-            ...invitation,
-            inviteLink: `${process.env.NODE_ENV === 'production' ? 'https://geelonggaragedoors.com' : req.protocol + '://' + req.get('host')}/admin/accept-invitation?token=${token}`,
-            expiryDays: 7,
-            role: invitation.role
-          };
-          
-          await emailService.sendStaffInvitation(invitationData, invitationTemplate);
-          console.log('Staff invitation email sent to:', invitation.email);
-        } else {
-          // Fallback to basic email if template not found
-          await emailService.sendEmail({
-            to: invitation.email,
-            subject: 'Staff Invitation - Geelong Garage Doors',
-            html: `
-              <h2>You've been invited to join Geelong Garage Doors</h2>
-              <p>You have been invited to join our team as a ${invitation.role}.</p>
-              <p>Please click the link below to accept the invitation:</p>
-              <a href="${process.env.NODE_ENV === 'production' ? 'https://geelonggaragedoors.com' : req.protocol + '://' + req.get('host')}/admin/accept-invitation?token=${token}">Accept Invitation</a>
-              <p>This invitation will expire in 7 days.</p>
-            `
-          });
-        }
+        // Use Resend for staff invitations
+        await emailService.sendStaffInvitationViaResend(invitationData);
+        console.log('Staff invitation email sent to:', invitation.email, 'via Resend');
       } catch (emailError) {
         console.error('Failed to send invitation email:', emailError);
         // Don't fail the invitation creation if email fails

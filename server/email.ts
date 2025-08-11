@@ -1,4 +1,5 @@
 import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 import { db } from './db';
 import { orders } from '@shared/schema';
 import { eq } from 'drizzle-orm';
@@ -9,6 +10,15 @@ if (!process.env.SENDGRID_API_KEY) {
 } else {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   console.log('SendGrid API key configured successfully');
+}
+
+// Initialize Resend
+let resend: Resend | null = null;
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+  console.log('Resend API key configured successfully');
+} else {
+  console.error('RESEND_API_KEY environment variable is not set');
 }
 
 interface EmailOptions {
@@ -629,6 +639,69 @@ export class EmailService {
       subject: processedSubject,
       html: processedHtml
     });
+  }
+
+  async sendStaffInvitationViaResend(invitationData: any) {
+    console.log('=== SENDING STAFF INVITATION VIA RESEND ===');
+    console.log('To:', invitationData.email);
+    console.log('Role:', invitationData.role);
+    console.log('Invite Link:', invitationData.inviteLink);
+    
+    if (!resend) {
+      console.error('Resend not initialized - RESEND_API_KEY missing');
+      throw new Error('Resend not configured');
+    }
+
+    const emailHtml = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@900&display=swap');
+    </style>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #1e40af; color: white; padding: 30px; text-align: center;">
+        <div style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px;">
+          <div style="margin: 0; font-size: 28px; letter-spacing: 2px; line-height: 1.2;">
+            <span style="color: #c53030; font-family: 'Quicksand', Arial, sans-serif; font-weight: 500;">Geelong</span>
+            <br>
+            <span style="color: #1a202c; font-family: 'Raleway', Arial, sans-serif; font-weight: 900; letter-spacing: 4px;">GARAGE DOORS</span>
+          </div>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568; font-weight: normal;">Your Garage Door Parts Specialist</p>
+        </div>
+        <h1 style="margin: 0; font-size: 32px;">Staff Invitation</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px;">You're invited to join our team!</p>
+      </div>
+      
+      <div style="padding: 20px; background-color: #f9fafb;">
+        <h2 style="color: #1e40af; margin-top: 0;">Welcome to Geelong Garage Doors!</h2>
+        <p>You have been invited to join our team as a <strong>${invitationData.role}</strong>.</p>
+        
+        <div style="background-color: #e0f2fe; border-left: 4px solid #1e40af; padding: 15px; margin: 20px 0; text-align: center;">
+          <a href="${invitationData.inviteLink}" style="background-color: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Accept Invitation</a>
+        </div>
+        
+        <p><strong>Important:</strong> This invitation will expire in ${invitationData.expiryDays || 7} days.</p>
+        <p>If you have any questions, please contact your administrator.</p>
+      </div>
+
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">
+        <p>Thank you for joining Geelong Garage Doors!</p>
+        <p>This email was sent to ${invitationData.email}</p>
+      </div>
+    </div>`;
+
+    try {
+      const result = await resend.emails.send({
+        from: 'admin@geelonggaragedoors.com',
+        to: invitationData.email,
+        subject: `Staff Invitation - Geelong Garage Doors`,
+        html: emailHtml
+      });
+
+      console.log('Staff invitation email sent successfully via Resend:', result.data?.id);
+      return { success: true, id: result.data?.id };
+    } catch (error) {
+      console.error('Failed to send staff invitation via Resend:', error);
+      throw error;
+    }
   }
 
   async sendStaffInvitation(invitationData: any, template: any) {
