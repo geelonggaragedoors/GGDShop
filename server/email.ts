@@ -26,14 +26,14 @@ interface EmailOptions {
 export class EmailService {
   async sendEmail(options: EmailOptions) {
     console.log('=== SENDING EMAIL VIA SENDGRID ===');
-    console.log('From: admin@geelonggaragedoors.com.au');
+    console.log('From: admin@geelonggaragedoors.com');
     console.log('To:', options.to);
     console.log('Subject:', options.subject);
     
     try {
       const msg: any = {
         to: options.to,
-        from: 'admin@geelonggaragedoors.com.au',
+        from: 'admin@geelonggaragedoors.com',
         subject: options.subject,
         html: options.html,
       };
