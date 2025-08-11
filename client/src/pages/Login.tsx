@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,21 +51,26 @@ export default function Login() {
       
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const user = data.user;
       const isStaffOrAdmin = user.role && ['admin', 'manager', 'staff'].includes(user.role);
+      
+      // Invalidate auth queries to refresh user state
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       
       toast({
         title: "Login Successful",
         description: `Welcome back to Geelong Garage Doors!`,
       });
       
-      // Route based on user type
-      if (isStaffOrAdmin) {
-        setLocation("/admin");
-      } else {
-        setLocation("/"); // Customers go to main storefront
-      }
+      // Route based on user type with a short delay to ensure state updates
+      setTimeout(() => {
+        if (isStaffOrAdmin) {
+          setLocation("/admin");
+        } else {
+          setLocation("/"); // Customers go to main storefront
+        }
+      }, 100);
     },
     onError: (error: any) => {
       const errorMessage = error.message || "Login failed. Please try again.";

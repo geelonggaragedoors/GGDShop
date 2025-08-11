@@ -2709,7 +2709,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/analytics/seo", async (req, res) => {
     try {
-      await analyticsService.updateSEOMetrics(req.body);
+      // Validate and sanitize data before passing to analytics service
+      const seoData = req.body;
+      
+      // Ensure numeric fields are properly handled
+      if (seoData.pageSpeed !== undefined) {
+        seoData.pageSpeed = typeof seoData.pageSpeed === 'number' ? seoData.pageSpeed : 
+                            (isNaN(Number(seoData.pageSpeed)) ? 0 : Number(seoData.pageSpeed));
+      }
+      
+      if (seoData.mobileUsability !== undefined) {
+        seoData.mobileUsability = Boolean(seoData.mobileUsability);
+      }
+      
+      await analyticsService.updateSEOMetrics(seoData);
       res.status(200).json({ success: true });
     } catch (error) {
       console.error("Analytics SEO error:", error);
