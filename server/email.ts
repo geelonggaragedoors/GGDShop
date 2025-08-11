@@ -15,22 +15,32 @@ interface EmailOptions {
   to: string;
   subject: string;
   html: string;
+  attachments?: Array<{
+    content: string;
+    filename: string;
+    type: string;
+    disposition: string;
+  }>;
 }
 
 export class EmailService {
   async sendEmail(options: EmailOptions) {
     console.log('=== SENDING EMAIL VIA SENDGRID ===');
-    console.log('From: orders@geelonggaragedoors.com');
+    console.log('From: admin@geelonggaragedoors.com.au');
     console.log('To:', options.to);
     console.log('Subject:', options.subject);
     
     try {
-      const msg = {
+      const msg: any = {
         to: options.to,
-        from: 'orders@geelonggaragedoors.com',
+        from: 'admin@geelonggaragedoors.com.au',
         subject: options.subject,
         html: options.html,
       };
+
+      if (options.attachments && options.attachments.length > 0) {
+        msg.attachments = options.attachments;
+      }
 
       const result = await sgMail.send(msg);
       console.log('Email sent successfully via SendGrid:', result[0].statusCode);

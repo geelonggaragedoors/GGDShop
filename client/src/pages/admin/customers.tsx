@@ -1,18 +1,29 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import DataTable from "@/components/ui/data-table";
 import { api } from "@/lib/api";
-import { Search, Eye, Mail, Phone } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Search, Eye, Mail, Phone, Send, Loader2, Paperclip } from "lucide-react";
 import { format } from "date-fns";
 
 export default function Customers() {
   const [search, setSearch] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailForm, setEmailForm] = useState({
+    subject: "",
+    message: "",
+    attachment: null as File | null
+  });
+  const { toast } = useToast();
 
   const { data: customers, isLoading } = useQuery({
     queryKey: ["/api/admin/customers"],
@@ -162,13 +173,174 @@ export default function Customers() {
               )}
             </DialogContent>
           </Dialog>
-          <Button size="sm" variant="ghost">
-            <Mail className="w-4 h-4" />
-          </Button>
+          <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                size="sm" 
+                variant="ghost"
+                onClick={() => setSelectedCustomer(row.original)}
+              >
+                <Mail className="w-4 h-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Email Customer</DialogTitle>
+              </DialogHeader>
+              {selectedCustomer && (
+                <div className="space-y-4">
+                  <div className="text-sm text-gray-600">
+                    Sending to: <span className="font-medium">{selectedCustomer.email}</span>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Subject</Label>
+                    <Input
+                      id="subject"
+                      value={emailForm.subject}
+                      onChange={(e) => setEmailForm(prev => ({ ...prev, subject: e.target.value }))}
+                      placeholder="Enter email subject..."
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                      id="message"
+                      value={emailForm.message}
+                      onChange={(e) => setEmailForm(prev => ({ ...prev, message: e.target.value }))}
+                      placeholder="Enter your message..."
+                      rows={6}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="attachment">Attachment (optional)</Label>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        id="attachment"
+                        type="file"
+                        accept="image/*,.pdf,.doc,.docx"
+                        onChange={(e) => setEmailForm(prev => ({ 
+                          ...prev, 
+                          attachment: e.target.files?.[0] || null 
+                        }))}
+                        className="flex-1"
+                      />
+                      {emailForm.attachment && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEmailForm(prev => ({ ...prev, attachment: null }))}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                    {emailForm.attachment && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Paperclip className="w-3 h-3 mr-1" />
+                        {emailForm.attachment.name}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setEmailDialogOpen(false)}
+                      disabled={sendEmailMutation.isPending}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSendEmail}
+                      disabled={sendEmailMutation.isPending || !emailForm.subject || !emailForm.message}
+                    >
+                      {sendEmailMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Email
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       ),
     },
   ];
+
+  // Email customer mutation
+  const sendEmailMutation = useMutation({
+    mutationFn: async ({ customer, subject, message, attachment }: { 
+      customer: any; 
+      subject: string; 
+      message: string; 
+      attachment: File | null;
+    }) => {
+      const formData = new FormData();
+      formData.append('to', customer.email);
+      formData.append('subject', subject);
+      formData.append('message', message);
+      if (attachment) {
+        formData.append('attachment', attachment);
+      }
+      
+      const response = await fetch('/api/admin/send-customer-email', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Email sent",
+        description: "Your email has been sent successfully.",
+      });
+      setEmailDialogOpen(false);
+      setEmailForm({ subject: "", message: "", attachment: null });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to send email",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSendEmail = () => {
+    if (!selectedCustomer || !emailForm.subject || !emailForm.message) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in subject and message fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    sendEmailMutation.mutate({
+      customer: selectedCustomer,
+      subject: emailForm.subject,
+      message: emailForm.message,
+      attachment: emailForm.attachment,
+    });
+  };
 
   return (
     <div className="p-6">

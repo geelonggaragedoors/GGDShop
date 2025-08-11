@@ -58,6 +58,29 @@ const csvUpload = multer({
     }
   },
 });
+
+// Configure multer for email attachments
+const emailUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Allow images, PDFs, and common document types
+    const allowedTypes = [
+      'image/',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (allowedTypes.some(type => file.mimetype.startsWith(type))) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only images, PDFs, and Word documents are allowed!'));
+    }
+  },
+});
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
 import { authService } from "./authService";
@@ -3060,6 +3083,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Email test error:', error);
       res.status(500).json({ error: 'Failed to send test email' });
+    }
+  });
+
+  // Send email to customer with optional attachment
+  app.post('/api/admin/send-customer-email', hybridAuth, emailUpload.single('attachment'), async (req, res) => {
+    console.log('=== SEND CUSTOMER EMAIL ENDPOINT ===');
+    console.log('Request body:', req.body);
+    console.log('File attachment:', req.file ? `${req.file.originalname} (${req.file.size} bytes)` : 'None');
+    
+    try {
+      const { to, subject, message } = req.body;
+      
+      if (!to || !subject || !message) {
+        return res.status(400).json({ error: 'Email address, subject, and message are required' });
+      }
+      
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(to)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
+      
+      // Prepare email options
+      const emailOptions: any = {
+        to,
+        subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+            <div style="background: #1e2871; color: white; padding: 20px; text-align: center;">
+              <h1 style="margin: 0; font-size: 24px;">Geelong Garage Doors</h1>
+            </div>
+            <div style="padding: 30px; background: #f9f9f9;">
+              <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${message.replace(/\n/g, '<br>')}
+              </div>
+            </div>
+            <div style="background: #f0f0f0; padding: 20px; text-align: center; font-size: 12px; color: #666;">
+              <p>This email was sent from Geelong Garage Doors</p>
+              <p><a href="mailto:admin@geelonggaragedoors.com.au" style="color: #1e2871;">admin@geelonggaragedoors.com.au</a></p>
+            </div>
+          </div>
+        `
+      };
+      
+      // Handle attachment if present
+      if (req.file) {
+        emailOptions.attachments = [{
+          content: req.file.buffer.toString('base64'),
+          filename: req.file.originalname,
+          type: req.file.mimetype,
+          disposition: 'attachment'
+        }];
+      }
+      
+      console.log('Sending customer email to:', to);
+      const result = await emailService.sendEmail(emailOptions);
+      
+      if (result.success) {
+        // Log the email sending for admin records
+        console.log(`✅ Customer email sent successfully to ${to}, subject: "${subject}"`);
+        
+        // TODO: Could add email log entry to database here for audit trail
+        // await storage.logEmailEvent({
+        //   type: 'customer_communication',
+        //   recipient: to,
+        //   subject: subject,
+        //   sentBy: req.user.id || req.user.claims?.sub,
+        //   hasAttachment: !!req.file
+        // });
+        
+        res.json({ message: 'Email sent successfully', id: result.id });
+      } else {
+        console.error(`❌ Failed to send customer email to ${to}:`, result.error);
+        res.status(500).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Customer email error:', error);
+      res.status(500).json({ error: 'Failed to send customer email' });
     }
   });
 
