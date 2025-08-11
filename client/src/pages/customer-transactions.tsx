@@ -265,10 +265,10 @@ export default function CustomerTransactions() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <StorefrontHeader />
       
-      <div className="container mx-auto p-6">
+      <div className="max-w-4xl mx-auto py-8 px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Transaction History</h1>
           <p className="text-gray-600">View all your invoices, receipts, and order communications</p>

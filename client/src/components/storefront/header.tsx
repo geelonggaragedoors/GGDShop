@@ -133,6 +133,12 @@ export default function StorefrontHeader() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link href="/transactions" className="cursor-pointer">
+                      <Receipt className="mr-2 h-4 w-4" />
+                      <span>Transaction History</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link href="/track-order" className="cursor-pointer">
                       <Package className="mr-2 h-4 w-4" />
                       <span>Track Order</span>
