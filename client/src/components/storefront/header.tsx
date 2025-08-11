@@ -100,7 +100,7 @@ export default function StorefrontHeader() {
                   <Button variant="ghost" size="sm" className="relative hidden sm:flex items-center space-x-2 px-3">
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={user?.profileImageUrl || undefined} alt={user?.firstName || user?.email} />
-                      <AvatarFallback className="text-xs">
+                      <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full text-xs bg-[#2b3990]">
                         {user?.firstName ? user.firstName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
