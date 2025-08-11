@@ -102,7 +102,7 @@ export interface IStorage {
   updateProductStatusAndShipping(id: string, shippingCost: number): Promise<Product | undefined>;
 
   // Customer operations
-  getCustomers(): Promise<Customer[]>;
+  getCustomers(): Promise<Array<Customer & { orderCount: number; totalSpent: string }>>;
   getCustomerById(id: string): Promise<Customer | undefined>;
   getCustomerByEmail(email: string): Promise<Customer | undefined>;
   createCustomer(customer: InsertCustomer): Promise<Customer>;
@@ -584,8 +584,29 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Customer operations
-  async getCustomers(): Promise<Customer[]> {
-    return db.select().from(customers).where(eq(customers.isActive, true)).orderBy(desc(customers.createdAt));
+  async getCustomers(): Promise<Array<Customer & { orderCount: number; totalSpent: string }>> {
+    const result = await db
+      .select({
+        id: customers.id,
+        email: customers.email,
+        passwordHash: customers.passwordHash,
+        firstName: customers.firstName,
+        lastName: customers.lastName,
+        phone: customers.phone,
+        company: customers.company,
+        isActive: customers.isActive,
+        createdAt: customers.createdAt,
+        updatedAt: customers.updatedAt,
+        orderCount: sql<number>`CAST(COUNT(${orders.id}) AS INTEGER)`,
+        totalSpent: sql<string>`COALESCE(SUM(CAST(${orders.total} AS DECIMAL)), 0)`
+      })
+      .from(customers)
+      .leftJoin(orders, eq(orders.customerEmail, customers.email))
+      .where(eq(customers.isActive, true))
+      .groupBy(customers.id, customers.email, customers.passwordHash, customers.firstName, customers.lastName, customers.phone, customers.company, customers.isActive, customers.createdAt, customers.updatedAt)
+      .orderBy(desc(customers.createdAt));
+    
+    return result;
   }
 
   async getCustomerById(id: string): Promise<Customer | undefined> {

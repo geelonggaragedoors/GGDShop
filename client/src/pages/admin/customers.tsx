@@ -58,6 +58,18 @@ export default function Customers() {
       ),
     },
     {
+      header: "Orders",
+      accessorKey: "orders",
+      cell: ({ row }: any) => (
+        <div className="text-center">
+          <p className="font-medium text-gray-900">{row.original.orderCount || 0}</p>
+          <p className="text-sm text-gray-500">
+            ${parseFloat(row.original.totalSpent || '0').toFixed(2)}
+          </p>
+        </div>
+      ),
+    },
+    {
       header: "Joined",
       accessorKey: "createdAt",
       cell: ({ row }: any) => (
@@ -136,6 +148,12 @@ export default function Customers() {
                           <Badge variant={selectedCustomer.isActive ? "default" : "secondary"}>
                             {selectedCustomer.isActive ? "Active" : "Inactive"}
                           </Badge>
+                        </p>
+                        <p>
+                          <span className="font-medium">Orders:</span> {selectedCustomer.orderCount || 0}
+                        </p>
+                        <p>
+                          <span className="font-medium">Total Spent:</span> ${parseFloat(selectedCustomer.totalSpent || '0').toFixed(2)}
                         </p>
                       </div>
                     </div>
