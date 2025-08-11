@@ -66,8 +66,23 @@ export default function NotificationBell() {
 
     const connect = () => {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${protocol}//${window.location.host}/ws/notifications`;
+      const host = window.location.host;
       
+      // Handle different environments
+      let wsUrl: string;
+      if (host.includes('replit.dev') || host.includes('spock.replit.dev')) {
+        // In Replit environment, use the current host
+        wsUrl = `${protocol}//${host}/ws/notifications`;
+      } else if (host.includes('localhost')) {
+        // In development, ensure port is included
+        const port = window.location.port || '5000';
+        wsUrl = `${protocol}//localhost:${port}/ws/notifications`;
+      } else {
+        // Production or other environments
+        wsUrl = `${protocol}//${host}/ws/notifications`;
+      }
+      
+      console.log('Connecting to WebSocket:', wsUrl);
       websocket = new WebSocket(wsUrl);
       
       websocket.onopen = () => {
