@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { trackViewContent as fbTrackViewContent, trackAddToCart as fbTrackAddToCart, trackInitiateCheckout, trackPurchase as fbTrackPurchase, sendEventToServer } from '../lib/facebookTracking';
 
 interface AnalyticsSettings {
   googleAnalyticsEnabled: boolean;
@@ -18,6 +19,8 @@ interface AnalyticsContextType {
   trackPurchase: (transactionId: string, value: number, currency?: string, items?: any[]) => void;
   trackAddToCart: (itemId: string, itemName: string, value: number, quantity?: number) => void;
   trackConversion: (conversionName: string, value?: number) => void;
+  trackViewContent: (productData: {contentId: string, contentName: string, contentCategory?: string, value?: number, currency?: string}) => void;
+  trackCheckoutInitiated: (checkoutData: {value: number, currency?: string, contentIds: string[], numItems?: number}) => void;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextType | null>(null);
@@ -25,7 +28,7 @@ const AnalyticsContext = createContext<AnalyticsContextType | null>(null);
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
-    fbq?: (...args: any[]) => void;
+    fbq?: any;
     dataLayer?: any[];
   }
 }
@@ -45,9 +48,9 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    if (allSettings && allSettings.analytics) {
+    if (allSettings && (allSettings as any).analytics) {
       // Convert site settings to analytics settings
-      const analyticsData = allSettings.analytics as any;
+      const analyticsData = (allSettings as any).analytics as any;
       const analyticsSettings: AnalyticsSettings = {
         googleAnalyticsEnabled: analyticsData.enableGoogleAnalytics === true || analyticsData.enableGoogleAnalytics === 'true',
         googleAnalyticsId: analyticsData.googleAnalyticsId || '',
@@ -74,7 +77,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       // Initialize dataLayer exactly as Google recommends
       window.dataLayer = window.dataLayer || [];
       function gtag(...args: any[]) {
-        window.dataLayer?.push(arguments);
+        window.dataLayer?.push(args);
       }
       window.gtag = gtag;
       
@@ -114,32 +117,10 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
     }
   }, [settings?.googleAnalyticsEnabled, settings?.googleAnalyticsId, scriptsLoaded.ga]);
 
-  // Load Facebook Pixel
+  // Load Facebook Pixel - now handled in HTML head for better performance
   useEffect(() => {
     if (settings?.facebookPixelEnabled && settings.facebookPixelId && !scriptsLoaded.fb) {
-      console.log('Loading Facebook Pixel with ID:', settings.facebookPixelId);
-      
-      // Create Facebook Pixel script
-      const fbScript = document.createElement('script');
-      fbScript.innerHTML = `
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window, document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '${settings.facebookPixelId}');
-        fbq('track', 'PageView');
-      `;
-      document.head.appendChild(fbScript);
-
-      // Create noscript fallback
-      const noscript = document.createElement('noscript');
-      noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${settings.facebookPixelId}&ev=PageView&noscript=1" />`;
-      document.head.appendChild(noscript);
-
+      console.log('Facebook Pixel already loaded in HTML head with ID:', settings.facebookPixelId);
       setScriptsLoaded(prev => ({ ...prev, fb: true }));
     }
   }, [settings?.facebookPixelEnabled, settings?.facebookPixelId, scriptsLoaded.fb]);
@@ -201,14 +182,22 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       window.gtag('event', 'purchase', purchaseData);
     }
 
-    // Facebook Pixel Purchase Event
+    // Facebook Pixel + Conversions API dual tracking
     if (settings.facebookPixelEnabled && window.fbq) {
-      window.fbq('track', 'Purchase', {
+      const eventId = fbTrackPurchase({
         value: value,
         currency: currency,
-        content_ids: items?.map(item => item.item_id),
-        content_type: 'product',
+        contentIds: items?.map(item => item.item_id) || [],
+        contents: items?.map(item => ({
+          id: item.item_id,
+          quantity: item.quantity || 1,
+          item_price: item.price || value,
+        })),
+        numItems: items?.length,
       });
+
+      // Note: Purchase events are handled server-side in the order creation endpoint
+      // This ensures proper deduplication with the server-side Conversions API
     }
 
     console.log('Purchase tracked:', purchaseData);
@@ -233,14 +222,23 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       window.gtag('event', 'add_to_cart', cartData);
     }
 
-    // Facebook Pixel
+    // Facebook Pixel + Conversions API dual tracking
     if (settings.facebookPixelEnabled && window.fbq) {
-      window.fbq('track', 'AddToCart', {
+      const eventId = fbTrackAddToCart({
+        contentId: itemId,
+        contentName: itemName,
         value: value,
+        quantity: quantity,
         currency: 'AUD',
-        content_ids: [itemId],
-        content_name: itemName,
-        content_type: 'product',
+      });
+
+      // Send to server for Conversions API
+      sendEventToServer('AddToCart', eventId, {
+        contentId: itemId,
+        contentName: itemName,
+        value: value,
+        quantity: quantity,
+        pageUrl: window.location.href,
       });
     }
 
@@ -272,12 +270,81 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
     console.log('Conversion tracked:', conversionData);
   };
 
+  const trackViewContent = (productData: {contentId: string, contentName: string, contentCategory?: string, value?: number, currency?: string}) => {
+    if (!settings?.ecommerceTrackingEnabled) return;
+
+    // Facebook Pixel + Conversions API dual tracking
+    if (settings.facebookPixelEnabled && window.fbq) {
+      const eventId = fbTrackViewContent(productData);
+
+      // Send to server for Conversions API
+      sendEventToServer('ViewContent', eventId, {
+        contentId: productData.contentId,
+        contentName: productData.contentName,
+        contentCategory: productData.contentCategory,
+        value: productData.value,
+        pageUrl: window.location.href,
+      });
+    }
+
+    // Google Analytics
+    if (settings.googleAnalyticsEnabled && window.gtag) {
+      window.gtag('event', 'view_item', {
+        currency: productData.currency || 'AUD',
+        value: productData.value,
+        items: [{
+          item_id: productData.contentId,
+          item_name: productData.contentName,
+          item_category: productData.contentCategory || 'Garage Door Parts',
+          price: productData.value,
+        }],
+      });
+    }
+
+    console.log('View content tracked:', productData);
+  };
+
+  const trackCheckoutInitiated = (checkoutData: {value: number, currency?: string, contentIds: string[], numItems?: number}) => {
+    if (!settings?.ecommerceTrackingEnabled) return;
+
+    // Facebook Pixel + Conversions API dual tracking
+    if (settings.facebookPixelEnabled && window.fbq) {
+      const eventId = trackInitiateCheckout(checkoutData);
+
+      // Send to server for Conversions API
+      sendEventToServer('InitiateCheckout', eventId, {
+        value: checkoutData.value,
+        currency: checkoutData.currency || 'AUD',
+        items: checkoutData.contentIds,
+        pageUrl: window.location.href,
+      });
+    }
+
+    // Google Analytics
+    if (settings.googleAnalyticsEnabled && window.gtag) {
+      window.gtag('event', 'begin_checkout', {
+        currency: checkoutData.currency || 'AUD',
+        value: checkoutData.value,
+        items: checkoutData.contentIds.map((id, index) => ({
+          item_id: id,
+          item_name: `Product ${id}`,
+          item_category: 'Garage Door Parts',
+          quantity: 1,
+        })),
+      });
+    }
+
+    console.log('Checkout initiated tracked:', checkoutData);
+  };
+
   const contextValue: AnalyticsContextType = {
     settings,
     trackEvent,
     trackPurchase,
     trackAddToCart,
     trackConversion,
+    trackViewContent,
+    trackCheckoutInitiated,
   };
 
   return (

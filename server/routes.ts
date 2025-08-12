@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import facebookConversionsAPI from "./facebookConversionsApi";
 import { setupAuth } from "./replitAuth";
 import { authRoutes } from "./authRoutes";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
@@ -531,6 +532,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.addOrderItem(orderItem);
         }
       }
+
+      // Track Facebook Conversions API Purchase Event
+      try {
+        if (items && Array.isArray(items) && order.total) {
+          const userData = {
+            email: order.customerEmail,
+            clientIp: req.ip,
+            userAgent: req.get('User-Agent'),
+            fbp: req.cookies?._fbp,
+            fbc: req.cookies?._fbc,
+          };
+
+          const orderItemsData = items.map((item: any) => ({
+            id: item.productId,
+            title: item.title || item.name || 'Product',
+            category: item.category || 'Garage Door Parts',
+            price: parseFloat(item.price),
+            quantity: parseInt(item.quantity)
+          }));
+
+          await facebookConversionsAPI.trackPurchase(
+            userData,
+            {
+              orderId: order.orderNumber,
+              total: parseFloat(order.total),
+              currency: 'AUD',
+              items: orderItemsData
+            },
+            `${req.protocol}://${req.get('host')}/checkout/success`,
+            `purchase_${order.orderNumber}_${Date.now()}`
+          );
+        }
+      } catch (error) {
+        console.error('Facebook Conversions API Purchase tracking failed:', error);
+      }
       
       res.status(201).json({ order });
     } catch (error) {
@@ -547,6 +583,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       clientId: process.env.PAYPAL_CLIENT_ID
     });
+  });
+
+  // Facebook Conversions API server-side event tracking endpoint
+  app.post('/api/facebook/track-event', async (req, res) => {
+    try {
+      const { eventType, eventId, data, userData: clientUserData } = req.body;
+      
+      // Prepare user data from request
+      const userData = {
+        clientIp: req.ip,
+        userAgent: req.get('User-Agent'),
+        fbp: req.cookies?._fbp,
+        fbc: req.cookies?._fbc,
+        ...clientUserData
+      };
+      
+      let success = false;
+      
+      switch (eventType) {
+        case 'ViewContent':
+          success = await facebookConversionsAPI.trackViewContent(
+            userData,
+            {
+              id: data.contentId,
+              title: data.contentName,
+              category: data.contentCategory,
+              price: data.value
+            },
+            data.pageUrl,
+            eventId
+          );
+          break;
+          
+        case 'AddToCart':
+          success = await facebookConversionsAPI.trackAddToCart(
+            userData,
+            {
+              id: data.contentId,
+              title: data.contentName,
+              category: data.contentCategory,
+              price: data.value,
+              quantity: data.quantity || 1
+            },
+            data.pageUrl,
+            eventId
+          );
+          break;
+          
+        case 'InitiateCheckout':
+          success = await facebookConversionsAPI.trackInitiateCheckout(
+            userData,
+            {
+              total: data.value,
+              currency: data.currency || 'AUD',
+              items: data.items || []
+            },
+            data.pageUrl,
+            eventId
+          );
+          break;
+          
+        case 'Lead':
+          success = await facebookConversionsAPI.trackLead(
+            userData,
+            {
+              value: data.value,
+              currency: data.currency || 'AUD',
+              contentCategory: data.contentCategory
+            },
+            data.pageUrl,
+            eventId
+          );
+          break;
+          
+        default:
+          return res.status(400).json({ error: 'Unsupported event type' });
+      }
+      
+      res.json({ success });
+    } catch (error) {
+      console.error('Facebook server-side event tracking error:', error);
+      res.status(500).json({ error: 'Failed to track event' });
+    }
   });
 
   // Customer registration (public)
