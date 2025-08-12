@@ -3233,7 +3233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Main sitemap index (for large sites with 500+ products)
+  // Main sitemap with all products (no limit)
   app.get('/sitemap.xml', async (req, res) => {
     try {
       const [categories, productCount] = await Promise.all([
@@ -3245,8 +3245,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? 'https://geelonggaragedoors.com' 
         : `${req.protocol}://${req.get('host')}`;
 
-      // If we have more than 500 products, use sitemap index
-      if (productCount > 500) {
+      // If we have more than 1000 products, use sitemap index for better performance
+      if (productCount > 1000) {
         let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
@@ -3275,8 +3275,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.set('Cache-Control', 'public, max-age=86400');
         res.send(sitemapIndex);
       } else {
-        // Use single sitemap for smaller sites
-        const products = await storage.getProducts({ includeUnpublished: false, limit: 500 });
+        // Use single sitemap for all products (no limit)
+        const products = await storage.getProducts({ includeUnpublished: false });
         
         let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -3289,7 +3289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         <lastmod>${new Date().toISOString()}</lastmod>
     </url>
 
-    <!-- Main Pages -->
+    <!-- Public Category Pages -->
     <url>
         <loc>${baseUrl}/categories</loc>
         <changefreq>weekly</changefreq>
@@ -3333,9 +3333,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         sitemapXml += `
     
-    <!-- Dynamic Product Pages -->`;
+    <!-- All Published Product Pages -->`;
 
-        // Add all published products (under 500)
+        // Add ALL published products (no limit)
         products.products?.forEach(product => {
           sitemapXml += `
     <url>
@@ -3362,7 +3362,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Pages sitemap (for sitemap index approach)
+  // Public pages sitemap (excludes admin/internal pages)
   app.get('/sitemap-pages.xml', async (req, res) => {
     try {
       const categories = await storage.getCategories();
@@ -3381,7 +3381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         <lastmod>${new Date().toISOString()}</lastmod>
     </url>
 
-    <!-- Main Pages -->
+    <!-- Public Pages Only (excludes admin, auth, internal pages) -->
     <url>
         <loc>${baseUrl}/categories</loc>
         <changefreq>weekly</changefreq>
@@ -3449,8 +3449,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const products = await storage.getProducts({ 
         categoryId: category.id, 
-        includeUnpublished: false, 
-        limit: 1000 
+        includeUnpublished: false
       });
 
       const baseUrl = process.env.NODE_ENV === 'production' 
