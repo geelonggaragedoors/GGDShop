@@ -549,7 +549,7 @@ export default function Settings() {
     });
   };
 
-  const { data: settings, isLoading } = useQuery({
+  const { data: settingsData, isLoading } = useQuery({
     queryKey: ["/api/admin/settings"],
     queryFn: () => fetch('/api/admin/settings').then(res => res.json()),
   });
@@ -636,6 +636,22 @@ export default function Settings() {
     },
   });
 
+  // Populate analytics form with existing settings
+  useEffect(() => {
+    if (settingsData?.analytics) {
+      analyticsForm.reset({
+        googleAnalyticsId: settingsData.analytics.googleAnalyticsId || "",
+        facebookPixelId: settingsData.analytics.facebookPixelId || "",
+        googleTagManagerId: settingsData.analytics.googleTagManagerId || "",
+        enableGoogleAnalytics: settingsData.analytics.enableGoogleAnalytics || false,
+        enableFacebookPixel: settingsData.analytics.enableFacebookPixel || false,
+        enableGoogleTagManager: settingsData.analytics.enableGoogleTagManager || false,
+        enableConversionTracking: settingsData.analytics.enableConversionTracking !== false,
+        enableEcommerceTracking: settingsData.analytics.enableEcommerceTracking !== false,
+      });
+    }
+  }, [settingsData, analyticsForm]);
+
   const onStoreSubmit = (data: any) => {
     updateSettingsMutation.mutate({ section: 'store', data });
   };
@@ -657,7 +673,23 @@ export default function Settings() {
   };
 
   const onAnalyticsSubmit = (data: any) => {
-    updateSettingsMutation.mutate({ section: 'analytics', data });
+    updateSettingsMutation.mutate({ section: 'analytics', data }, {
+      onSuccess: () => {
+        toast({
+          title: "Success",
+          description: "Analytics settings saved successfully! Changes will take effect on the next page load.",
+        });
+        // Invalidate settings cache to refresh data
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/settings'] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to save analytics settings",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   if (isLoading) {
