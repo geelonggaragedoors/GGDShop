@@ -45,17 +45,18 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    if (allSettings?.analytics) {
+    if (allSettings && allSettings.analytics) {
       // Convert site settings to analytics settings
+      const analyticsData = allSettings.analytics as any;
       const analyticsSettings: AnalyticsSettings = {
-        googleAnalyticsEnabled: allSettings.analytics.enableGoogleAnalytics === true || false,
-        googleAnalyticsId: allSettings.analytics.googleAnalyticsId || '',
-        facebookPixelEnabled: allSettings.analytics.enableFacebookPixel === true || false,
-        facebookPixelId: allSettings.analytics.facebookPixelId || '',
-        googleTagManagerEnabled: allSettings.analytics.enableGoogleTagManager === true || false,
-        googleTagManagerId: allSettings.analytics.googleTagManagerId || '',
-        ecommerceTrackingEnabled: allSettings.analytics.enableEcommerceTracking === true || false,
-        conversionTrackingEnabled: allSettings.analytics.enableConversionTracking === true || false,
+        googleAnalyticsEnabled: analyticsData.enableGoogleAnalytics === true || analyticsData.enableGoogleAnalytics === 'true',
+        googleAnalyticsId: analyticsData.googleAnalyticsId || '',
+        facebookPixelEnabled: analyticsData.enableFacebookPixel === true || analyticsData.enableFacebookPixel === 'true',
+        facebookPixelId: analyticsData.facebookPixelId || '',
+        googleTagManagerEnabled: analyticsData.enableGoogleTagManager === true || analyticsData.enableGoogleTagManager === 'true',
+        googleTagManagerId: analyticsData.googleTagManagerId || '',
+        ecommerceTrackingEnabled: analyticsData.enableEcommerceTracking !== false && analyticsData.enableEcommerceTracking !== 'false',
+        conversionTrackingEnabled: analyticsData.enableConversionTracking !== false && analyticsData.enableConversionTracking !== 'false',
       };
       setSettings(analyticsSettings);
     }
@@ -66,24 +67,35 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
     if (settings?.googleAnalyticsEnabled && settings.googleAnalyticsId && !scriptsLoaded.ga) {
       console.log('Loading Google Analytics with ID:', settings.googleAnalyticsId);
       
-      // Create gtag script
-      const gtagScript = document.createElement('script');
-      gtagScript.async = true;
-      gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`;
-      document.head.appendChild(gtagScript);
-
-      // Initialize gtag
+      // Initialize dataLayer first
       window.dataLayer = window.dataLayer || [];
+      
+      // Create gtag function
       const gtag = (...args: any[]) => {
         window.dataLayer?.push(args);
       };
       window.gtag = gtag;
       
+      // Initialize gtag with current date
       gtag('js', new Date());
+      
+      // Configure Google Analytics
       gtag('config', settings.googleAnalyticsId, {
         page_title: document.title,
         page_location: window.location.href,
       });
+      
+      // Create and load the gtag script
+      const gtagScript = document.createElement('script');
+      gtagScript.async = true;
+      gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`;
+      gtagScript.onload = () => {
+        console.log('Google Analytics script loaded successfully');
+      };
+      gtagScript.onerror = () => {
+        console.error('Failed to load Google Analytics script');
+      };
+      document.head.appendChild(gtagScript);
 
       setScriptsLoaded(prev => ({ ...prev, ga: true }));
     }

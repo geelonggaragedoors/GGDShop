@@ -677,10 +677,14 @@ export default function Settings() {
       onSuccess: () => {
         toast({
           title: "Success",
-          description: "Analytics settings saved successfully! Changes will take effect on the next page load.",
+          description: "Analytics settings saved successfully! The page will refresh to activate the new settings.",
         });
         // Invalidate settings cache to refresh data
         queryClient.invalidateQueries({ queryKey: ['/api/admin/settings'] });
+        // Refresh the page after a short delay to allow the toast to show
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       },
       onError: (error: any) => {
         toast({
