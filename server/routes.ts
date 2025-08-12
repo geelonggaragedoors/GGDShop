@@ -3233,6 +3233,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Dynamic sitemap.xml generation
+  app.get('/sitemap.xml', async (req, res) => {
+    try {
+      const [categories, products] = await Promise.all([
+        storage.getCategories(),
+        storage.getProducts({ status: 'published', limit: 1000 })
+      ]);
+
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://geelonggaragedoors.com' 
+        : `${req.protocol}://${req.get('host')}`;
+
+      let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+    <!-- Homepage -->
+    <url>
+        <loc>${baseUrl}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+
+    <!-- Main Pages -->
+    <url>
+        <loc>${baseUrl}/categories</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${baseUrl}/products</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${baseUrl}/search</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${baseUrl}/quote-request</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+
+    <!-- Dynamic Category Pages -->`;
+
+      // Add active categories
+      categories.filter(cat => cat.isActive).forEach(category => {
+        sitemapXml += `
+    <url>
+        <loc>${baseUrl}/category/${category.slug}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <lastmod>${category.updatedAt ? category.updatedAt.toISOString() : new Date().toISOString()}</lastmod>
+    </url>`;
+      });
+
+      sitemapXml += `
+    
+    <!-- Dynamic Product Pages -->`;
+
+      // Add published products
+      products.products?.slice(0, 500).forEach(product => { // Limit to 500 products for performance
+        sitemapXml += `
+    <url>
+        <loc>${baseUrl}/product/${product.slug}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+        <lastmod>${product.updatedAt ? product.updatedAt.toISOString() : new Date().toISOString()}</lastmod>
+    </url>`;
+      });
+
+      sitemapXml += `
+
+</urlset>`;
+
+      res.set('Content-Type', 'application/xml');
+      res.set('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+      res.send(sitemapXml);
+      
+    } catch (error) {
+      console.error('Error generating dynamic sitemap:', error);
+      // Fallback to static sitemap file
+      res.sendFile('sitemap.xml', { root: './public' });
+    }
+  });
+
   // Test all order status emails
   app.post('/api/test-order-status-emails', hybridAuth, async (req, res) => {
     try {
