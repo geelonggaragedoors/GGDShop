@@ -3233,14 +3233,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Dynamic sitemap.xml generation
+  // Main sitemap index (for large sites with 500+ products)
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      const [categories, products] = await Promise.all([
+      const [categories, productCount] = await Promise.all([
         storage.getCategories(),
-        storage.getProducts({ status: 'published', limit: 1000 })
+        storage.getProducts({ includeUnpublished: false, limit: 1 }).then(result => result.total || 0)
       ]);
 
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://geelonggaragedoors.com' 
+        : `${req.protocol}://${req.get('host')}`;
+
+      // If we have more than 500 products, use sitemap index
+      if (productCount > 500) {
+        let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+    <!-- Main pages sitemap -->
+    <sitemap>
+        <loc>${baseUrl}/sitemap-pages.xml</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </sitemap>
+
+    <!-- Category-based product sitemaps -->`;
+
+        // Create a sitemap for each active category
+        categories.filter(cat => cat.isActive).forEach(category => {
+          sitemapIndex += `
+    <sitemap>
+        <loc>${baseUrl}/sitemap-category-${category.slug}.xml</loc>
+        <lastmod>${category.updatedAt ? category.updatedAt.toISOString() : new Date().toISOString()}</lastmod>
+    </sitemap>`;
+        });
+
+        sitemapIndex += `
+
+</sitemapindex>`;
+
+        res.set('Content-Type', 'application/xml');
+        res.set('Cache-Control', 'public, max-age=86400');
+        res.send(sitemapIndex);
+      } else {
+        // Use single sitemap for smaller sites
+        const products = await storage.getProducts({ includeUnpublished: false, limit: 500 });
+        
+        let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+    <!-- Homepage -->
+    <url>
+        <loc>${baseUrl}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+
+    <!-- Main Pages -->
+    <url>
+        <loc>${baseUrl}/categories</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${baseUrl}/products</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${baseUrl}/search</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+    
+    <url>
+        <loc>${baseUrl}/quote-request</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+
+    <!-- Dynamic Category Pages -->`;
+
+        // Add active categories
+        categories.filter(cat => cat.isActive).forEach(category => {
+          sitemapXml += `
+    <url>
+        <loc>${baseUrl}/category/${category.slug}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <lastmod>${category.updatedAt ? category.updatedAt.toISOString() : new Date().toISOString()}</lastmod>
+    </url>`;
+        });
+
+        sitemapXml += `
+    
+    <!-- Dynamic Product Pages -->`;
+
+        // Add all published products (under 500)
+        products.products?.forEach(product => {
+          sitemapXml += `
+    <url>
+        <loc>${baseUrl}/product/${product.slug}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+        <lastmod>${product.updatedAt ? product.updatedAt.toISOString() : new Date().toISOString()}</lastmod>
+    </url>`;
+        });
+
+        sitemapXml += `
+
+</urlset>`;
+
+        res.set('Content-Type', 'application/xml');
+        res.set('Cache-Control', 'public, max-age=86400');
+        res.send(sitemapXml);
+      }
+      
+    } catch (error) {
+      console.error('Error generating dynamic sitemap:', error);
+      // Fallback to static sitemap file
+      res.sendFile('sitemap.xml', { root: './public' });
+    }
+  });
+
+  // Pages sitemap (for sitemap index approach)
+  app.get('/sitemap-pages.xml', async (req, res) => {
+    try {
+      const categories = await storage.getCategories();
       const baseUrl = process.env.NODE_ENV === 'production' 
         ? 'https://geelonggaragedoors.com' 
         : `${req.protocol}://${req.get('host')}`;
@@ -3285,7 +3410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         <lastmod>${new Date().toISOString()}</lastmod>
     </url>
 
-    <!-- Dynamic Category Pages -->`;
+    <!-- Category Pages -->`;
 
       // Add active categories
       categories.filter(cat => cat.isActive).forEach(category => {
@@ -3299,11 +3424,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       sitemapXml += `
-    
-    <!-- Dynamic Product Pages -->`;
 
-      // Add published products
-      products.products?.slice(0, 500).forEach(product => { // Limit to 500 products for performance
+</urlset>`;
+
+      res.set('Content-Type', 'application/xml');
+      res.set('Cache-Control', 'public, max-age=86400');
+      res.send(sitemapXml);
+      
+    } catch (error) {
+      console.error('Error generating pages sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
+  // Category-specific product sitemaps
+  app.get('/sitemap-category-:categorySlug.xml', async (req, res) => {
+    try {
+      const { categorySlug } = req.params;
+      const category = await storage.getCategoryBySlug(categorySlug);
+      
+      if (!category) {
+        return res.status(404).send('Category not found');
+      }
+
+      const products = await storage.getProducts({ 
+        categoryId: category.id, 
+        includeUnpublished: false, 
+        limit: 1000 
+      });
+
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://geelonggaragedoors.com' 
+        : `${req.protocol}://${req.get('host')}`;
+
+      let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+
+      // Add products for this category
+      products.products?.forEach(product => {
         sitemapXml += `
     <url>
         <loc>${baseUrl}/product/${product.slug}</loc>
@@ -3318,13 +3476,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 </urlset>`;
 
       res.set('Content-Type', 'application/xml');
-      res.set('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+      res.set('Cache-Control', 'public, max-age=86400');
       res.send(sitemapXml);
       
     } catch (error) {
-      console.error('Error generating dynamic sitemap:', error);
-      // Fallback to static sitemap file
-      res.sendFile('sitemap.xml', { root: './public' });
+      console.error('Error generating category sitemap:', error);
+      res.status(500).send('Error generating category sitemap');
     }
   });
 
