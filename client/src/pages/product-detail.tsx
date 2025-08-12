@@ -281,7 +281,7 @@ export default function ProductDetail() {
             <div className="space-y-3 pt-4 border-t border-gray-200">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Truck className="w-4 h-4" />
-                <span>Free shipping on orders over $100</span>
+                <span>Fast shipping on orders over $100</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Shield className="w-4 h-4" />
