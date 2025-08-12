@@ -3233,24 +3233,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Main sitemap with all products (no limit)
+  // Production-ready dynamic sitemap with ALL products from database
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      const [categories, productCount] = await Promise.all([
+      console.log('🗺️  Generating dynamic sitemap with ALL products...');
+      
+      // Fetch all data in parallel for better performance
+      const [categories, products] = await Promise.all([
         storage.getCategories(),
-        storage.getProducts({ includeUnpublished: false, limit: 1 }).then(result => result.total || 0)
+        storage.getProducts({ includeUnpublished: false }) // No limit - get ALL products
       ]);
 
       const baseUrl = process.env.NODE_ENV === 'production' 
         ? 'https://geelonggaragedoors.com' 
         : `${req.protocol}://${req.get('host')}`;
 
-      // If we have more than 1000 products, use sitemap index for better performance
-      if (productCount > 1000) {
+      console.log(`📊 Found ${products.products?.length || 0} published products and ${categories.length} categories`);
+
+      // Use sitemap index for sites with many products (>50,000 URLs total)
+      const totalUrls = (products.products?.length || 0) + categories.length + 5; // +5 for main pages
+      
+      if (totalUrls > 50000) {
+        // Generate sitemap index for very large sites
         let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
-    <!-- Main pages sitemap -->
+    <!-- Main pages and categories sitemap -->
     <sitemap>
         <loc>${baseUrl}/sitemap-pages.xml</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
@@ -3258,26 +3266,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     <!-- Category-based product sitemaps -->`;
 
-        // Create a sitemap for each active category
-        categories.filter(cat => cat.isActive).forEach(category => {
-          sitemapIndex += `
+        // Create a sitemap for each active category with products
+        for (const category of categories.filter(cat => cat.isActive)) {
+          const categoryProducts = await storage.getProducts({ 
+            categoryId: category.id, 
+            includeUnpublished: false 
+          });
+          
+          if (categoryProducts.products && categoryProducts.products.length > 0) {
+            sitemapIndex += `
     <sitemap>
         <loc>${baseUrl}/sitemap-category-${category.slug}.xml</loc>
         <lastmod>${category.updatedAt ? category.updatedAt.toISOString() : new Date().toISOString()}</lastmod>
     </sitemap>`;
-        });
+          }
+        }
 
         sitemapIndex += `
 
 </sitemapindex>`;
 
         res.set('Content-Type', 'application/xml');
-        res.set('Cache-Control', 'public, max-age=86400');
+        res.set('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
         res.send(sitemapIndex);
       } else {
-        // Use single sitemap for all products (no limit)
-        const products = await storage.getProducts({ includeUnpublished: false });
-        
+        // Single sitemap with ALL products dynamically generated
         let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
@@ -3289,7 +3302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         <lastmod>${new Date().toISOString()}</lastmod>
     </url>
 
-    <!-- Public Category Pages -->
+    <!-- Public Pages Only (excludes admin, auth, internal) -->
     <url>
         <loc>${baseUrl}/categories</loc>
         <changefreq>weekly</changefreq>
@@ -3318,9 +3331,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         <lastmod>${new Date().toISOString()}</lastmod>
     </url>
 
-    <!-- Dynamic Category Pages -->`;
+    <!-- Dynamic Category Pages (active only) -->`;
 
-        // Add active categories
+        // Add all active categories from database
         categories.filter(cat => cat.isActive).forEach(category => {
           sitemapXml += `
     <url>
@@ -3333,32 +3346,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         sitemapXml += `
     
-    <!-- All Published Product Pages -->`;
+    <!-- ALL Published Products (dynamically generated from database) -->`;
 
-        // Add ALL published products (no limit)
-        products.products?.forEach(product => {
-          sitemapXml += `
+        // Add ALL published products with no limits
+        if (products.products && products.products.length > 0) {
+          products.products.forEach(product => {
+            sitemapXml += `
     <url>
         <loc>${baseUrl}/product/${product.slug}</loc>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
         <lastmod>${product.updatedAt ? product.updatedAt.toISOString() : new Date().toISOString()}</lastmod>
     </url>`;
-        });
+          });
+        }
 
         sitemapXml += `
 
 </urlset>`;
 
+        console.log(`✅ Generated sitemap with ${totalUrls} total URLs`);
+
         res.set('Content-Type', 'application/xml');
-        res.set('Cache-Control', 'public, max-age=86400');
+        res.set('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
         res.send(sitemapXml);
       }
       
     } catch (error) {
-      console.error('Error generating dynamic sitemap:', error);
-      // Fallback to static sitemap file
-      res.sendFile('sitemap.xml', { root: './public' });
+      console.error('❌ Error generating dynamic sitemap:', error);
+      res.status(500).set('Content-Type', 'text/plain').send('Error generating sitemap - please try again later');
     }
   });
 
