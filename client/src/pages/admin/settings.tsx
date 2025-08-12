@@ -623,6 +623,19 @@ export default function Settings() {
     },
   });
 
+  const analyticsForm = useForm({
+    defaultValues: {
+      googleAnalyticsId: "",
+      facebookPixelId: "",
+      googleTagManagerId: "",
+      enableGoogleAnalytics: false,
+      enableFacebookPixel: false,
+      enableGoogleTagManager: false,
+      enableConversionTracking: true,
+      enableEcommerceTracking: true,
+    },
+  });
+
   const onStoreSubmit = (data: any) => {
     updateSettingsMutation.mutate({ section: 'store', data });
   };
@@ -641,6 +654,10 @@ export default function Settings() {
 
   const onSecuritySubmit = (data: any) => {
     updateSettingsMutation.mutate({ section: 'security', data });
+  };
+
+  const onAnalyticsSubmit = (data: any) => {
+    updateSettingsMutation.mutate({ section: 'analytics', data });
   };
 
   if (isLoading) {
@@ -662,7 +679,7 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="store" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="store" className="flex items-center space-x-2">
             <Store className="w-4 h-4" />
             <span>Store</span>
@@ -679,6 +696,10 @@ export default function Settings() {
           <TabsTrigger value="email-test" className="flex items-center space-x-2">
             <Send className="w-4 h-4" />
             <span>Email Test</span>
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center space-x-2">
+            <Globe className="w-4 h-4" />
+            <span>Analytics</span>
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center space-x-2">
             <Shield className="w-4 h-4" />
@@ -970,6 +991,214 @@ export default function Settings() {
                   <Button type="submit" disabled={updateSettingsMutation.isPending}>
                     <Save className="w-4 h-4 mr-2" />
                     Save Security Settings
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Globe className="w-5 h-5" />
+                <span>Analytics & Tracking</span>
+              </CardTitle>
+              <CardDescription>
+                Configure Google Analytics, Facebook Pixel, and other tracking codes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...analyticsForm}>
+                <form onSubmit={analyticsForm.handleSubmit(onAnalyticsSubmit)} className="space-y-6">
+                  
+                  {/* Google Analytics Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Google Analytics</h4>
+                        <p className="text-sm text-gray-600">Track website traffic and user behavior</p>
+                      </div>
+                      <FormField
+                        control={analyticsForm.control}
+                        name="enableGoogleAnalytics"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <FormField
+                      control={analyticsForm.control}
+                      name="googleAnalyticsId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Google Analytics Measurement ID</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="G-XXXXXXXXXX"
+                              disabled={!analyticsForm.watch('enableGoogleAnalytics')}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Your GA4 Measurement ID (starts with G-)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Facebook Pixel Section */}
+                  <div className="space-y-4 pt-6 border-t">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Facebook Pixel</h4>
+                        <p className="text-sm text-gray-600">Track conversions for Facebook ads</p>
+                      </div>
+                      <FormField
+                        control={analyticsForm.control}
+                        name="enableFacebookPixel"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <FormField
+                      control={analyticsForm.control}
+                      name="facebookPixelId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Facebook Pixel ID</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="123456789012345"
+                              disabled={!analyticsForm.watch('enableFacebookPixel')}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Your Facebook Pixel ID (15-16 digit number)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Google Tag Manager Section */}
+                  <div className="space-y-4 pt-6 border-t">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Google Tag Manager</h4>
+                        <p className="text-sm text-gray-600">Manage all tracking codes from one place</p>
+                      </div>
+                      <FormField
+                        control={analyticsForm.control}
+                        name="enableGoogleTagManager"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <FormField
+                      control={analyticsForm.control}
+                      name="googleTagManagerId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Google Tag Manager Container ID</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="GTM-XXXXXXX"
+                              disabled={!analyticsForm.watch('enableGoogleTagManager')}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Your GTM Container ID (starts with GTM-)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Tracking Options */}
+                  <div className="space-y-4 pt-6 border-t">
+                    <h4 className="font-medium text-gray-900">Tracking Options</h4>
+                    <div className="space-y-4">
+                      <FormField
+                        control={analyticsForm.control}
+                        name="enableEcommerceTracking"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between">
+                            <div>
+                              <FormLabel>E-commerce Tracking</FormLabel>
+                              <FormDescription>
+                                Track purchases, cart additions, and checkout events
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={analyticsForm.control}
+                        name="enableConversionTracking"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between">
+                            <div>
+                              <FormLabel>Conversion Tracking</FormLabel>
+                              <FormDescription>
+                                Track quote requests and contact form submissions
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Info Box */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Globe className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div className="space-y-2">
+                        <h4 className="font-medium text-blue-900">Analytics Setup Guide</h4>
+                        <div className="text-sm text-blue-800 space-y-1">
+                          <p><strong>Google Analytics:</strong> Create a GA4 property and copy the Measurement ID</p>
+                          <p><strong>Facebook Pixel:</strong> Create a pixel in Facebook Business Manager</p>
+                          <p><strong>Google Tag Manager:</strong> Create a container and copy the Container ID</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Analytics Settings
                   </Button>
                 </form>
               </Form>

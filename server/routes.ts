@@ -1580,6 +1580,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Settings routes
   app.get("/api/admin/settings", hybridAuth, async (req, res) => {
     try {
+      // Get analytics settings from database
+      const analyticsSettings = await storage.getSiteSettings();
+      const analyticsMap: Record<string, any> = {};
+      analyticsSettings.forEach(setting => {
+        if (setting.key.startsWith('analytics_')) {
+          const key = setting.key.replace('analytics_', '');
+          analyticsMap[key] = setting.value === 'true' || (setting.value !== 'false' && setting.value !== '' && setting.value);
+        }
+      });
+
       const settings = {
         store: {
           storeName: "Geelong Garage Doors",
@@ -1611,6 +1621,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           sessionTimeout: "24",
           twoFactorAuth: false,
           backupFrequency: "daily",
+        },
+        analytics: {
+          googleAnalyticsId: analyticsMap.googleAnalyticsId || "",
+          facebookPixelId: analyticsMap.facebookPixelId || "",
+          googleTagManagerId: analyticsMap.googleTagManagerId || "",
+          enableGoogleAnalytics: analyticsMap.enableGoogleAnalytics === true,
+          enableFacebookPixel: analyticsMap.enableFacebookPixel === true,
+          enableGoogleTagManager: analyticsMap.enableGoogleTagManager === true,
+          enableConversionTracking: analyticsMap.enableConversionTracking !== false,
+          enableEcommerceTracking: analyticsMap.enableEcommerceTracking !== false,
         }
       };
       res.json(settings);
@@ -1622,7 +1642,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/admin/settings", hybridAuth, async (req, res) => {
     try {
-      res.json({ message: "Settings updated successfully", ...req.body });
+      const { section, data } = req.body;
+      
+      if (section === 'analytics') {
+        // Save analytics settings to database
+        for (const [key, value] of Object.entries(data)) {
+          const settingKey = `analytics_${key}`;
+          const settingValue = typeof value === 'boolean' ? value.toString() : String(value || '');
+          
+          // Try to update existing setting or create new one
+          const existingSetting = await storage.getSiteSettingByKey(settingKey);
+          if (existingSetting) {
+            await storage.updateSiteSetting(settingKey, settingValue);
+          } else {
+            await storage.createSiteSetting({
+              key: settingKey,
+              value: settingValue,
+              description: `Analytics setting for ${key}`
+            });
+          }
+        }
+      }
+      
+      res.json({ message: "Settings updated successfully", section, data });
     } catch (error) {
       console.error("Error updating settings:", error);
       res.status(500).json({ message: "Failed to update settings" });

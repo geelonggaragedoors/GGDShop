@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
+import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
@@ -78,14 +79,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <Toaster />
-            <Router />
-          </WishlistProvider>
-        </CartProvider>
-      </TooltipProvider>
+      <AnalyticsProvider>
+        <TooltipProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <Toaster />
+              <Router />
+            </WishlistProvider>
+          </CartProvider>
+        </TooltipProvider>
+      </AnalyticsProvider>
     </QueryClientProvider>
   );
 }
