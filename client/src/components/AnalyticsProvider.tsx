@@ -67,35 +67,48 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
     if (settings?.googleAnalyticsEnabled && settings.googleAnalyticsId && !scriptsLoaded.ga) {
       console.log('Loading Google Analytics with ID:', settings.googleAnalyticsId);
       
-      // Initialize dataLayer first
-      window.dataLayer = window.dataLayer || [];
+      // Remove any existing Google Analytics scripts first
+      const existingScripts = document.querySelectorAll('script[src*="googletagmanager.com/gtag/js"]');
+      existingScripts.forEach(script => script.remove());
       
-      // Create gtag function
-      const gtag = (...args: any[]) => {
-        window.dataLayer?.push(args);
-      };
+      // Initialize dataLayer exactly as Google recommends
+      window.dataLayer = window.dataLayer || [];
+      function gtag(...args: any[]) {
+        window.dataLayer?.push(arguments);
+      }
       window.gtag = gtag;
       
-      // Initialize gtag with current date
+      // Initialize with current date
       gtag('js', new Date());
       
       // Configure Google Analytics
-      gtag('config', settings.googleAnalyticsId, {
-        page_title: document.title,
-        page_location: window.location.href,
-      });
+      gtag('config', settings.googleAnalyticsId);
       
-      // Create and load the gtag script
-      const gtagScript = document.createElement('script');
-      gtagScript.async = true;
-      gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`;
-      gtagScript.onload = () => {
+      // Create the script tag exactly as Google provides it
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`;
+      
+      // Add to head before any other scripts
+      const firstScript = document.head.querySelector('script');
+      if (firstScript) {
+        document.head.insertBefore(script, firstScript);
+      } else {
+        document.head.appendChild(script);
+      }
+      
+      script.onload = () => {
         console.log('Google Analytics script loaded successfully');
+        // Trigger a page view immediately after loading
+        gtag('config', settings.googleAnalyticsId, {
+          page_title: document.title,
+          page_location: window.location.href,
+        });
       };
-      gtagScript.onerror = () => {
+      
+      script.onerror = () => {
         console.error('Failed to load Google Analytics script');
       };
-      document.head.appendChild(gtagScript);
 
       setScriptsLoaded(prev => ({ ...prev, ga: true }));
     }
