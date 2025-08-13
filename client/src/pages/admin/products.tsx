@@ -481,8 +481,17 @@ export default function Products() {
   };
 
   const selectImage = (image: any) => {
-    if (!selectedImages.find(img => img.id === image.id)) {
-      setSelectedImages(prev => [...prev, image]);
+    const imageObj = {
+      id: image.id || image.filename,
+      url: image.url,
+      filename: image.filename,
+      originalName: image.originalName || image.filename,
+      alt: image.filename,
+      size: image.size
+    };
+    
+    if (!selectedImages.find(img => img.id === imageObj.id)) {
+      setSelectedImages(prev => [...prev, imageObj]);
     }
   };
 
