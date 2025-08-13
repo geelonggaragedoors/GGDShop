@@ -838,6 +838,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update product image order
+  app.put('/api/admin/products/:id/images/reorder', hybridAuth, async (req, res) => {
+    try {
+      const { images } = req.body;
+      
+      if (!Array.isArray(images)) {
+        return res.status(400).json({ message: "Images must be an array" });
+      }
+      
+      const product = await storage.updateProduct(req.params.id, { images });
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      res.json({ message: "Image order updated successfully", images: product.images });
+    } catch (error) {
+      console.error("Error reordering product images:", error);
+      res.status(500).json({ message: "Failed to reorder images" });
+    }
+  });
+
   app.put('/api/admin/products/:id', hybridAuth, async (req, res) => {
     try {
       const productData = insertProductSchema.partial().parse(req.body);

@@ -21,6 +21,7 @@ import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X } from "lucide
 import { FileUpload } from "@/components/FileUpload";
 import { ProductImport } from "@/components/admin/ProductImport";
 import ProductCatalogExport from "@/components/admin/ProductCatalogExport";
+import ImageReorder from "@/components/ImageReorder";
 
 export default function Products() {
   const [search, setSearch] = useState("");
@@ -1895,28 +1896,15 @@ export default function Products() {
                           }))}
                         />
 
-                        {/* Selected Images Display */}
+                        {/* Image Reordering Section */}
                         {selectedImages.length > 0 && (
                           <div>
                             <p className="text-sm font-medium mb-2">Selected Images ({selectedImages.length})</p>
-                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                              {selectedImages.map((image) => (
-                                <div key={image.id} className="relative group">
-                                  <img
-                                    src={image.url}
-                                    alt={image.filename}
-                                    className="w-full h-16 object-cover rounded border"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => removeSelectedImage(image.id)}
-                                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
+                            <ImageReorder
+                              images={selectedImages}
+                              onReorder={setSelectedImages}
+                              onRemove={removeSelectedImage}
+                            />
                           </div>
                         )}
 
