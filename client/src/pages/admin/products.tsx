@@ -245,8 +245,20 @@ export default function Products() {
             freePostage: latestProduct.freePostage || false,
           });
           
-          // Update selected images
-          setSelectedImages(latestProduct.images || []);
+          // Update selected images - convert URLs back to image objects
+          if (latestProduct.images && latestProduct.images.length > 0) {
+            const imageObjects = latestProduct.images.map((url: string, index: number) => ({
+              id: `updated-${index}`,
+              url: url,
+              filename: `Image ${index + 1}`,
+              originalName: `Image ${index + 1}`,
+              alt: `Image ${index + 1}`,
+              size: 0
+            }));
+            setSelectedImages(imageObjects);
+          } else {
+            setSelectedImages([]);
+          }
           
           // Update shipping calculations if dimensions changed
           if (latestProduct.length && latestProduct.width && latestProduct.height && latestProduct.weight) {
