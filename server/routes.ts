@@ -212,10 +212,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('Processing background removal for:', imageUrl);
 
+      // Convert relative URL to full URL if needed
+      let fullImageUrl = imageUrl;
+      if (imageUrl.startsWith('/uploads/') || imageUrl.startsWith('/api/')) {
+        // For local uploaded files, construct the full URL
+        const protocol = req.secure ? 'https' : 'http';
+        const host = req.get('host');
+        fullImageUrl = `${protocol}://${host}${imageUrl}`;
+        console.log('Converted relative URL to full URL:', fullImageUrl);
+      }
+
       // Fetch the image from the URL
-      const imageResponse = await fetch(imageUrl);
+      const imageResponse = await fetch(fullImageUrl);
       if (!imageResponse.ok) {
-        throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+        throw new Error(`Failed to fetch image: ${imageResponse.status} from ${fullImageUrl}`);
       }
 
       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
