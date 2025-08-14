@@ -212,39 +212,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('Processing background removal for:', imageUrl);
 
-      // Convert relative URL to full URL if needed
-      let fullImageUrl = imageUrl;
-      if (imageUrl.startsWith('/uploads/') || imageUrl.startsWith('/api/')) {
-        // For local uploaded files, construct the full URL
-        const protocol = req.secure ? 'https' : 'http';
-        const host = req.get('host');
-        fullImageUrl = `${protocol}://${host}${imageUrl}`;
-        console.log('Converted relative URL to full URL:', fullImageUrl);
-      }
-
       // Fetch the image from the URL
-      console.log('Attempting to fetch image from:', fullImageUrl);
-      const imageResponse = await fetch(fullImageUrl);
+      const imageResponse = await fetch(imageUrl);
       if (!imageResponse.ok) {
-        throw new Error(`Failed to fetch image: ${imageResponse.status} from ${fullImageUrl}`);
+        throw new Error(`Failed to fetch image: ${imageResponse.status}`);
       }
 
       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
       const filename = imageUrl.split('/').pop() || 'image.png';
-      console.log('Image fetched successfully, buffer size:', imageBuffer.length, 'bytes');
 
       // Remove background using OpenAI
-      console.log('Starting OpenAI background removal process...');
       const processedImageBuffer = await removeImageBackground({
         imageBuffer,
         originalFilename: filename
       });
-      console.log('OpenAI processing completed, result buffer size:', processedImageBuffer.length, 'bytes');
 
-      // Save the processed image as PNG to preserve transparency
+      // Save the processed image
       const result = await fileStorage.saveFile(
         processedImageBuffer,
-        `bg-removed-${filename.replace(/\.[^/.]+$/, ".png")}`, // Force PNG extension for transparency
+        `bg-removed-${filename}`,
         'image/png'
       );
 

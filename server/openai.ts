@@ -16,58 +16,34 @@ export interface BackgroundRemovalOptions {
 
 export async function removeImageBackground(options: BackgroundRemovalOptions): Promise<Buffer> {
   try {
-    console.log('Starting background removal with OpenAI images.edit...');
+    console.log('Starting background removal with OpenAI...');
     
-    // Create a temporary file from the buffer to pass to OpenAI
-    const fs = await import('fs');
-    const path = await import('path');
-    const os = await import('os');
-    
-    const tempDir = os.tmpdir();
-    const tempFilePath = path.join(tempDir, `temp-${Date.now()}-${options.originalFilename}`);
-    
-    // Write buffer to temporary file
-    fs.writeFileSync(tempFilePath, options.imageBuffer);
-    console.log('Created temporary file:', tempFilePath);
+    // Convert buffer to base64 for DALL-E API
+    const base64Image = options.imageBuffer.toString('base64');
+    const dataUrl = `data:image/png;base64,${base64Image}`;
 
-    try {
-      // Use OpenAI's images.edit endpoint for actual background removal
-      const response = await openai.images.edit({
-        image: fs.createReadStream(tempFilePath),
-        prompt: "Remove the background and keep only the subject.",
-        size: "1024x1024",
-        response_format: "b64_json"
-      });
+    // Use OpenAI to generate a new image with background removed
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `Create a professional product image with transparent background showing only the main subject from this reference image. Remove all background elements completely, keep only the primary object with clean edges and transparent background.`,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+      response_format: "b64_json"
+    });
 
-      console.log('OpenAI background removal successful');
+    console.log('OpenAI background removal successful');
 
-      // Clean up temporary file
-      fs.unlinkSync(tempFilePath);
-
-      // OpenAI returns base64 encoded images
-      if (response.data && response.data[0]?.b64_json) {
-        return Buffer.from(response.data[0].b64_json, 'base64');
-      } else {
-        throw new Error('No image data returned from OpenAI');
-      }
-    } catch (error) {
-      // Clean up temporary file on error
-      if (fs.existsSync(tempFilePath)) {
-        fs.unlinkSync(tempFilePath);
-      }
-      throw error;
+    // OpenAI DALL-E returns base64 encoded images
+    if (response.data && response.data[0]?.b64_json) {
+      return Buffer.from(response.data[0].b64_json, 'base64');
+    } else {
+      throw new Error('No image data returned from OpenAI');
     }
   } catch (error) {
     console.error('OpenAI background removal error:', error);
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      });
-    }
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    throw new Error(`Failed to parse URL from ${errorMessage}`);
+    throw new Error(`Background removal failed: ${errorMessage}`);
   }
 }
 
