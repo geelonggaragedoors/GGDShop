@@ -46,7 +46,7 @@ export default function Products() {
   const [customShippingPrice, setCustomShippingPrice] = useState(0);
   const [suggestedBox, setSuggestedBox] = useState<{id: string, name: string, cost: number, note?: string} | null>(null);
   const [shippingType, setShippingType] = useState<'satchel' | 'box' | ''>('');
-  const [processingBackgroundRemoval, setProcessingBackgroundRemoval] = useState<string | null>(null);
+
   const { toast } = useToast();
 
   // Function to suggest Australia Post box based on dimensions
@@ -395,43 +395,7 @@ export default function Products() {
     },
   });
 
-  // AI Background removal mutation
-  const removeBackgroundMutation = useMutation({
-    mutationFn: async (imageUrl: string) => {
-      const response = await apiRequest('POST', '/api/remove-background', { imageUrl });
-      return response.json();
-    },
-    onSuccess: (data: { newUrl: string; originalUrl: string }, variables: string) => {
-      // Replace the original image with the background-removed version
-      setSelectedImages(prev => prev.map(img => 
-        img.url === variables 
-          ? { ...img, url: data.newUrl }
-          : img
-      ));
-      
-      // Also update the editing product if we're in edit mode
-      if (editingProduct) {
-        setEditingProduct((prev: any) => ({
-          ...prev,
-          images: prev.images?.map((url: string) => 
-            url === variables ? data.newUrl : url
-          ) || []
-        }));
-      }
-      
-      toast({ 
-        title: "Background removed successfully", 
-        description: "The image background has been removed using AI" 
-      });
-    },
-    onError: (error: any) => {
-      toast({ 
-        title: "Background removal failed", 
-        description: error.message, 
-        variant: "destructive" 
-      });
-    },
-  });
+
 
   const form = useForm({
     resolver: zodResolver(insertProductSchema),
@@ -550,15 +514,7 @@ export default function Products() {
     setSelectedImages(prev => prev.filter(img => img.id !== imageId));
   };
 
-  // Handle AI background removal
-  const handleRemoveBackground = async (imageUrl: string) => {
-    setProcessingBackgroundRemoval(imageUrl);
-    try {
-      await removeBackgroundMutation.mutateAsync(imageUrl);
-    } finally {
-      setProcessingBackgroundRemoval(null);
-    }
-  };
+
 
   const openEditDialog = (product: any) => {
     console.log('Opening edit dialog for product:', product.name, 'with images:', product.images);
@@ -1257,22 +1213,7 @@ export default function Products() {
                                     alt={image.alt || image.originalName}
                                     className="w-full h-12 object-cover rounded border"
                                   />
-                                  <div className="absolute -top-1 -right-1 flex gap-1 opacity-0 group-hover:opacity-100">
-                                    <Button
-                                      type="button"
-                                      variant="secondary"
-                                      size="sm"
-                                      className="h-4 w-4 p-0 bg-blue-500 hover:bg-blue-600 text-white"
-                                      onClick={() => handleRemoveBackground(image.url)}
-                                      disabled={processingBackgroundRemoval === image.url}
-                                      title="Remove background with AI"
-                                    >
-                                      {processingBackgroundRemoval === image.url ? (
-                                        <div className="h-2 w-2 border border-white border-t-transparent rounded-full animate-spin" />
-                                      ) : (
-                                        <Wand2 className="h-2 w-2" />
-                                      )}
-                                    </Button>
+                                  <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100">
                                     <Button
                                       type="button"
                                       variant="destructive"
@@ -2019,8 +1960,6 @@ export default function Products() {
                               images={selectedImages}
                               onReorder={setSelectedImages}
                               onRemove={removeSelectedImage}
-                              onRemoveBackground={handleRemoveBackground}
-                              processingBackgroundRemoval={processingBackgroundRemoval}
                             />
                           </div>
                         )}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { GripVertical, Eye, X, Wand2 } from 'lucide-react';
+import { GripVertical, Eye, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
@@ -8,13 +8,11 @@ interface ImageReorderProps {
   images: { id: string; url: string; filename?: string; originalName?: string; alt?: string; size?: number }[];
   onReorder: (newOrder: { id: string; url: string; filename?: string; originalName?: string; alt?: string; size?: number }[]) => void;
   onRemove?: (imageId: string) => void;
-  onRemoveBackground?: (imageUrl: string) => Promise<void>;
-  processingBackgroundRemoval?: string | null;
   className?: string;
   showPreview?: boolean;
 }
 
-export function ImageReorder({ images, onReorder, onRemove, onRemoveBackground, processingBackgroundRemoval, className = '', showPreview = true }: ImageReorderProps) {
+export function ImageReorder({ images, onReorder, onRemove, className = '', showPreview = true }: ImageReorderProps) {
   const [localImages, setLocalImages] = useState([...images]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -51,31 +49,12 @@ export function ImageReorder({ images, onReorder, onRemove, onRemoveBackground, 
         </div>
         
         <div className="flex items-center space-x-3 p-3 bg-white border rounded-lg border-gray-200">
-          <div className="relative group">
+          <div className="relative">
             <img
               src={image.url}
               alt={image.alt || image.filename || 'Product image'}
               className="w-16 h-16 object-cover rounded-lg border border-gray-200"
             />
-            
-            {/* AI Background Removal Button */}
-            {onRemoveBackground && (
-              <button
-                type="button"
-                onClick={() => onRemoveBackground(image.url)}
-                disabled={processingBackgroundRemoval === image.url}
-                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-200 rounded-lg group"
-                title="Remove background with AI"
-              >
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  {processingBackgroundRemoval === image.url ? (
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Wand2 size={20} className="text-white" />
-                  )}
-                </div>
-              </button>
-            )}
           </div>
 
           <div className="flex-1">
@@ -180,22 +159,7 @@ export function ImageReorder({ images, onReorder, onRemove, onRemoveBackground, 
                         </p>
                       </div>
 
-                      {onRemoveBackground && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600"
-                          onClick={() => onRemoveBackground(image.url)}
-                          disabled={processingBackgroundRemoval === image.url}
-                          title="Remove background with AI"
-                        >
-                          {processingBackgroundRemoval === image.url ? (
-                            <div className="h-3 w-3 border border-blue-500 border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <Wand2 size={14} />
-                          )}
-                        </Button>
-                      )}
+
 
                       {onRemove && (
                         <Button

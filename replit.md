@@ -113,7 +113,16 @@ Business model: E-commerce parts supplier - sells garage door parts for shipping
 
 The architecture emphasizes type safety, performance, and maintainability while providing a solid foundation for e-commerce operations. The hybrid authentication system allows for flexible deployment options, and the modular design enables easy feature additions and modifications.
 
-## Recent Changes (July 2025)
+## Recent Changes (August 2025)
+
+### AI Background Removal Tool Removal (August 14, 2025)
+- **Completely removed AI background removal functionality** from ImageReorder component as requested by user - "does not work well"
+- **Cleaned up all related code**: removed processingBackgroundRemoval state, handleRemoveBackground function, onRemoveBackground props
+- **Restored original ImageReorder behavior**: component now works exactly as it did before AI tools were introduced
+- **Fixed single image display issue**: ImageReorder now properly displays single images with standard controls (preview, remove)
+- **Maintained all existing functionality**: drag/drop reordering, image preview, image removal all work as before
+
+## Previous Changes (July 2025)
 
 ### Australia Post Shipping Integration Fixes
 - **Fixed satchel weight calculation**: Corrected weight comparison from 5000g to 5kg for proper satchel suggestions
