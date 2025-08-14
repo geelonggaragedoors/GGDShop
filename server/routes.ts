@@ -241,10 +241,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       console.log('OpenAI processing completed, result buffer size:', processedImageBuffer.length, 'bytes');
 
-      // Save the processed image
+      // Save the processed image as PNG to preserve any transparency
       const result = await fileStorage.saveFile(
         processedImageBuffer,
-        `bg-removed-${filename}`,
+        `ai-professional-${filename.replace(/\.[^/.]+$/, ".png")}`, // Force PNG extension
         'image/png'
       );
 
