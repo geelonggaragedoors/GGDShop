@@ -65,7 +65,7 @@ export function ImageReorder({ images, onReorder, onRemove, onRemoveBackground, 
                 onClick={() => onRemoveBackground(image.url)}
                 disabled={processingBackgroundRemoval === image.url}
                 className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-200 rounded-lg group"
-                title="Remove background with AI"
+                title="Generate professional product photo with AI"
               >
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {processingBackgroundRemoval === image.url ? (
@@ -187,7 +187,7 @@ export function ImageReorder({ images, onReorder, onRemove, onRemoveBackground, 
                           className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600"
                           onClick={() => onRemoveBackground(image.url)}
                           disabled={processingBackgroundRemoval === image.url}
-                          title="Remove background with AI"
+                          title="Generate professional product photo with AI"
                         >
                           {processingBackgroundRemoval === image.url ? (
                             <div className="h-3 w-3 border border-blue-500 border-t-transparent rounded-full animate-spin" />

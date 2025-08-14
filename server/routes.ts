@@ -223,6 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Fetch the image from the URL
+      console.log('Attempting to fetch image from:', fullImageUrl);
       const imageResponse = await fetch(fullImageUrl);
       if (!imageResponse.ok) {
         throw new Error(`Failed to fetch image: ${imageResponse.status} from ${fullImageUrl}`);
@@ -230,12 +231,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
       const filename = imageUrl.split('/').pop() || 'image.png';
+      console.log('Image fetched successfully, buffer size:', imageBuffer.length, 'bytes');
 
       // Remove background using OpenAI
+      console.log('Starting OpenAI background removal process...');
       const processedImageBuffer = await removeImageBackground({
         imageBuffer,
         originalFilename: filename
       });
+      console.log('OpenAI processing completed, result buffer size:', processedImageBuffer.length, 'bytes');
 
       // Save the processed image
       const result = await fileStorage.saveFile(
