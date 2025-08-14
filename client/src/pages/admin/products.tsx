@@ -864,7 +864,17 @@ export default function Products() {
                                     placeholder="1599.00" 
                                     className="h-9"
                                     value={field.value || ""}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (value === "" || value === ".") {
+                                        field.onChange(0);
+                                      } else {
+                                        const numValue = parseFloat(value);
+                                        if (!isNaN(numValue)) {
+                                          field.onChange(numValue);
+                                        }
+                                      }
+                                    }}
                                   />
                                 </FormControl>
                                 <FormDescription className="text-xs text-gray-500">
@@ -905,7 +915,17 @@ export default function Products() {
                                     placeholder="25" 
                                     className="h-9"
                                     value={field.value || ""}
-                                    onChange={(e) => field.onChange(e.target.value === "" ? 0 : parseInt(e.target.value))}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (value === "") {
+                                        field.onChange(0);
+                                      } else {
+                                        const numValue = parseInt(value);
+                                        if (!isNaN(numValue)) {
+                                          field.onChange(numValue);
+                                        }
+                                      }
+                                    }}
                                   />
                                 </FormControl>
                                 <FormDescription className="text-xs text-gray-500">
@@ -1580,8 +1600,8 @@ export default function Products() {
                                       value={field.value || ''}
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        if (value === '') {
-                                          field.onChange('');
+                                        if (value === '' || value === '.') {
+                                          field.onChange(0);
                                         } else {
                                           const numValue = parseFloat(value);
                                           if (!isNaN(numValue)) {
@@ -1615,8 +1635,8 @@ export default function Products() {
                                       value={field.value || ''}
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        if (value === '') {
-                                          field.onChange('');
+                                        if (value === '' || value === '.') {
+                                          field.onChange(0);
                                         } else {
                                           const numValue = parseFloat(value);
                                           if (!isNaN(numValue)) {
@@ -1650,8 +1670,8 @@ export default function Products() {
                                       value={field.value || ''}
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        if (value === '') {
-                                          field.onChange('');
+                                        if (value === '' || value === '.') {
+                                          field.onChange(0);
                                         } else {
                                           const numValue = parseFloat(value);
                                           if (!isNaN(numValue)) {
@@ -1685,8 +1705,8 @@ export default function Products() {
                                       value={field.value || ''}
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        if (value === '') {
-                                          field.onChange('');
+                                        if (value === '' || value === '.') {
+                                          field.onChange(0);
                                         } else {
                                           const numValue = parseFloat(value);
                                           if (!isNaN(numValue)) {
@@ -1815,9 +1835,9 @@ export default function Products() {
                                     value={customShippingPrice || ''}
                                     onChange={(e) => {
                                       const value = e.target.value;
-                                      if (value === '') {
-                                        setCustomShippingPrice('' as any);
-                                        (form.setValue as any)('customShippingPrice', '');
+                                      if (value === '' || value === '.') {
+                                        setCustomShippingPrice(0);
+                                        form.setValue('customShippingPrice', 0);
                                       } else {
                                         const price = parseFloat(value);
                                         if (!isNaN(price)) {
