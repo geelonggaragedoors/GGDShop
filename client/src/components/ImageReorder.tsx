@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { GripVertical, Eye, X } from 'lucide-react';
+import { GripVertical, Eye, X, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
@@ -8,11 +8,13 @@ interface ImageReorderProps {
   images: { id: string; url: string; filename?: string; originalName?: string; alt?: string; size?: number }[];
   onReorder: (newOrder: { id: string; url: string; filename?: string; originalName?: string; alt?: string; size?: number }[]) => void;
   onRemove?: (imageId: string) => void;
+  onRemoveBackground?: (imageUrl: string) => Promise<void>;
+  processingBackgroundRemoval?: string | null;
   className?: string;
   showPreview?: boolean;
 }
 
-export function ImageReorder({ images, onReorder, onRemove, className = '', showPreview = true }: ImageReorderProps) {
+export function ImageReorder({ images, onReorder, onRemove, onRemoveBackground, processingBackgroundRemoval, className = '', showPreview = true }: ImageReorderProps) {
   const [localImages, setLocalImages] = useState([...images]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -89,6 +91,23 @@ export function ImageReorder({ images, onReorder, onRemove, className = '', show
                           {index === 0 ? 'Main Image' : 'Additional Image'}
                         </p>
                       </div>
+
+                      {onRemoveBackground && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600"
+                          onClick={() => onRemoveBackground(image.url)}
+                          disabled={processingBackgroundRemoval === image.url}
+                          title="Remove background with AI"
+                        >
+                          {processingBackgroundRemoval === image.url ? (
+                            <div className="h-3 w-3 border border-blue-500 border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Wand2 size={14} />
+                          )}
+                        </Button>
+                      )}
 
                       {onRemove && (
                         <Button

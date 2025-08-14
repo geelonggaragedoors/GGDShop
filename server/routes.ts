@@ -8,6 +8,7 @@ import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./payp
 import { handlePayPalWebhook } from "./paypalWebhooks";
 import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes, calculateTotalShippingCost } from "./australiaPost";
 import { fileStorage } from "./fileStorage";
+import { removeImageBackground } from "./openai";
 import { 
   insertProductSchema, 
   insertCategorySchema, 
@@ -197,6 +198,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error uploading category image:', error);
       res.status(500).json({ error: 'Failed to upload category image' });
+    }
+  });
+
+  // AI Background removal endpoint
+  app.post('/api/remove-background', hybridAuth, async (req, res) => {
+    try {
+      const { imageUrl } = req.body;
+      
+      if (!imageUrl) {
+        return res.status(400).json({ error: 'Image URL is required' });
+      }
+
+      console.log('Processing background removal for:', imageUrl);
+
+      // Fetch the image from the URL
+      const imageResponse = await fetch(imageUrl);
+      if (!imageResponse.ok) {
+        throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+      }
+
+      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+      const filename = imageUrl.split('/').pop() || 'image.png';
+
+      // Remove background using OpenAI
+      const processedImageBuffer = await removeImageBackground({
+        imageBuffer,
+        originalFilename: filename
+      });
+
+      // Save the processed image
+      const result = await fileStorage.saveFile(
+        processedImageBuffer,
+        `bg-removed-${filename}`,
+        'image/png'
+      );
+
+      console.log('Background removal completed, new URL:', result.url);
+      res.json({ 
+        success: true, 
+        originalUrl: imageUrl,
+        newUrl: result.url,
+        filename: result.filename
+      });
+
+    } catch (error) {
+      console.error('Error in background removal:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: `Background removal failed: ${errorMessage}` });
     }
   });
 
