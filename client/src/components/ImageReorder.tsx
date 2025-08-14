@@ -34,8 +34,96 @@ export function ImageReorder({ images, onReorder, onRemove, onRemoveBackground, 
     onReorder(items);
   };
 
-  if (!images || images.length <= 1) {
+  if (!images || images.length === 0) {
     return null;
+  }
+
+  // For single images, show a simplified version without drag/drop but with AI tools
+  if (images.length === 1) {
+    const image = images[0];
+    return (
+      <div className={`space-y-2 ${className}`}>
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-gray-700">
+            Product Image
+          </p>
+          <span className="text-xs text-gray-500">1 image</span>
+        </div>
+        
+        <div className="flex items-center space-x-3 p-3 bg-white border rounded-lg border-gray-200">
+          <div className="relative group">
+            <img
+              src={image.url}
+              alt={image.alt || image.filename || 'Product image'}
+              className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+            />
+            
+            {/* AI Background Removal Button */}
+            {onRemoveBackground && (
+              <button
+                type="button"
+                onClick={() => onRemoveBackground(image.url)}
+                disabled={processingBackgroundRemoval === image.url}
+                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-200 rounded-lg group"
+                title="Remove background with AI"
+              >
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {processingBackgroundRemoval === image.url ? (
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Wand2 size={20} className="text-white" />
+                  )}
+                </div>
+              </button>
+            )}
+          </div>
+
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-900">
+              {image.originalName || image.filename || 'Product Image'}
+            </p>
+            <p className="text-xs text-gray-500">
+              {image.size ? `${Math.round(image.size / 1024)}KB` : 'Image file'}
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {showPreview && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Eye size={16} />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Image Preview</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex justify-center">
+                    <img
+                      src={image.url}
+                      alt={image.alt || image.filename || 'Product image'}
+                      className="max-w-full max-h-[70vh] object-contain rounded-lg"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+
+            {onRemove && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onRemove(image.id)}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <X size={16} />
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

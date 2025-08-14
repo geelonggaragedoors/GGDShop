@@ -2026,10 +2026,15 @@ export default function Products() {
                         )}
 
                         {/* Debug info for troubleshooting */}
-                        {editingProduct && (
+                        {editingProduct && selectedImages.length > 0 && (
                           <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
                             Debug: Product has {editingProduct.images?.length || 0} images, 
                             selectedImages has {selectedImages.length} items
+                            {selectedImages.length === 1 && (
+                              <div className="mt-1">
+                                Single image: {selectedImages[0]?.filename || selectedImages[0]?.originalName}
+                              </div>
+                            )}
                           </div>
                         )}
 
