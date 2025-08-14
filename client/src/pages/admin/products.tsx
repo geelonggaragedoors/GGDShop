@@ -398,7 +398,8 @@ export default function Products() {
   // AI Background removal mutation
   const removeBackgroundMutation = useMutation({
     mutationFn: async (imageUrl: string) => {
-      return apiRequest('POST', '/api/remove-background', { imageUrl });
+      const response = await apiRequest('POST', '/api/remove-background', { imageUrl });
+      return response.json();
     },
     onSuccess: (data: { newUrl: string; originalUrl: string }, variables: string) => {
       // Replace the original image with the background-removed version
@@ -407,6 +408,17 @@ export default function Products() {
           ? { ...img, url: data.newUrl }
           : img
       ));
+      
+      // Also update the editing product if we're in edit mode
+      if (editingProduct) {
+        setEditingProduct((prev: any) => ({
+          ...prev,
+          images: prev.images?.map((url: string) => 
+            url === variables ? data.newUrl : url
+          ) || []
+        }));
+      }
+      
       toast({ 
         title: "Background removed successfully", 
         description: "The image background has been removed using AI" 
@@ -549,6 +561,7 @@ export default function Products() {
   };
 
   const openEditDialog = (product: any) => {
+    console.log('Opening edit dialog for product:', product.name, 'with images:', product.images);
     setEditingProduct(product);
     setIsEditProductOpen(true);
     setSuggestedBox(null); // Reset suggestion state
@@ -579,17 +592,24 @@ export default function Products() {
       freePostage: Boolean(product.freePostage),
     });
     
-    // Pre-populate selected images if they exist
-    if (product.images && product.images.length > 0) {
-      const imageObjects = product.images.map((url: string, index: number) => ({
-        id: `existing-${index}`,
-        url: url,
-        filename: `Image ${index + 1}`,
-      }));
-      setSelectedImages(imageObjects);
-    } else {
-      setSelectedImages([]);
-    }
+    // Pre-populate selected images if they exist - force it with a small delay to ensure state updates
+    setTimeout(() => {
+      if (product.images && product.images.length > 0) {
+        const imageObjects = product.images.map((url: string, index: number) => ({
+          id: `existing-${index}-${Date.now()}`,
+          url: url,
+          filename: `Image ${index + 1}`,
+          originalName: `Image ${index + 1}`,
+          alt: `Image ${index + 1}`,
+          size: 0
+        }));
+        console.log('Setting selectedImages to:', imageObjects);
+        setSelectedImages(imageObjects);
+      } else {
+        console.log('No images found, setting empty array');
+        setSelectedImages([]);
+      }
+    }, 100);
   };
 
   const closeEditDialog = () => {
@@ -2002,6 +2022,14 @@ export default function Products() {
                               onRemoveBackground={handleRemoveBackground}
                               processingBackgroundRemoval={processingBackgroundRemoval}
                             />
+                          </div>
+                        )}
+
+                        {/* Debug info for troubleshooting */}
+                        {editingProduct && (
+                          <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                            Debug: Product has {editingProduct.images?.length || 0} images, 
+                            selectedImages has {selectedImages.length} items
                           </div>
                         )}
 
