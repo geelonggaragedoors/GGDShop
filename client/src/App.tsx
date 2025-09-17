@@ -71,6 +71,7 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/transactions" component={CustomerTransactions} />
+      <Route path="/pickup/ebay-geelong" component={PickupEbay} />
       <Route path="/pickup" component={PickupEbay} />
       <Route path="/delivery" component={DeliveryEbay} />
       <Route path="/admin" component={() => <AdminRoute component={AdminLayout} />} />
