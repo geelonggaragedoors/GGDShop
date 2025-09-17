@@ -19,8 +19,8 @@ export default function DeliveryEbay() {
   return (
     <div className="min-h-screen bg-white">
       <SEOHead
-        title="eBay Order Delivery - Geelong Garage Doors"
-        description="Delivery address and instructions for eBay orders from Geelong Garage Doors"
+        title="Factory Delivery - Geelong Garage Doors"
+        description="Delivery address and instructions for factory deliveries to Geelong Garage Doors"
         noIndex={true}
       />
       
@@ -31,10 +31,10 @@ export default function DeliveryEbay() {
         <div className="container mx-auto px-4 text-center">
           <Package className="w-16 h-16 mx-auto mb-6" />
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            eBay Order Delivery
+            Factory Delivery
           </h1>
           <p className="text-xl mb-8 max-w-3xl mx-auto leading-relaxed">
-            Delivery location and instructions for your eBay order from Geelong Garage Doors
+            Delivery location and instructions for factory deliveries to Geelong Garage Doors
           </p>
         </div>
       </section>
@@ -89,10 +89,10 @@ export default function DeliveryEbay() {
                         <AlertCircle className="w-5 h-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
                         <div className="text-amber-800">
                           <p className="font-semibold mb-2" data-testid="text-call-ahead">
-                            Please call ahead on {phoneNumber}
+                            Please call the office 30 minutes before delivery on {phoneNumber}
                           </p>
                           <p className="text-sm">
-                            This ensures someone is available to receive your delivery.
+                            This ensures someone is available to receive your factory delivery.
                           </p>
                         </div>
                       </div>
@@ -119,7 +119,7 @@ export default function DeliveryEbay() {
                     <div className="pt-4 border-t">
                       <h4 className="font-semibold mb-2">What to have ready:</h4>
                       <ul className="space-y-1 text-gray-600">
-                        <li>• eBay order confirmation or order number</li>
+                        <li>• Delivery documentation or order number</li>
                         <li>• Photo ID for verification</li>
                         <li>• Clear access for delivery vehicle</li>
                       </ul>
@@ -150,8 +150,8 @@ export default function DeliveryEbay() {
                     </div>
                     <div className="mt-4 text-sm text-gray-600">
                       <p>
-                        <strong>For eBay orders only.</strong> This delivery location is specifically 
-                        for customers who have purchased garage door parts through our eBay store.
+                        <strong>For factory deliveries only.</strong> This delivery location is specifically 
+                        for delivery drivers dropping off materials to Geelong Garage Doors.
                       </p>
                     </div>
                   </CardContent>
@@ -167,7 +167,7 @@ export default function DeliveryEbay() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Need Help?</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            If you have any questions about your delivery or need to arrange 
+            If you have any questions about your factory delivery or need to arrange 
             an alternative time, please don't hesitate to contact us.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
