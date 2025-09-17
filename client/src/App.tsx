@@ -27,6 +27,7 @@ import SetupPassword from "@/pages/SetupPassword";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import CustomerTransactions from "@/pages/customer-transactions";
+import PickupEbay from "@/pages/pickup-ebay";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -69,6 +70,7 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/transactions" component={CustomerTransactions} />
+      <Route path="/pickup/ebay-geelong" component={PickupEbay} />
       <Route path="/admin" component={() => <AdminRoute component={AdminLayout} />} />
       <Route path="/admin/:path*" component={() => <AdminRoute component={AdminLayout} />} />
       <Route component={NotFound} />

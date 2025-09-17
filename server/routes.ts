@@ -89,6 +89,12 @@ import { authService } from "./authService";
 import { emailService } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Add X-Robots-Tag header for pickup page
+  app.use("/pickup/ebay-geelong", (req, res, next) => {
+    res.set('X-Robots-Tag', 'noindex, nofollow');
+    next();
+  });
+  
   // Setup authentication
   await setupAuth(app);
 
