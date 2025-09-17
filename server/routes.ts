@@ -90,12 +90,12 @@ import { emailService } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add X-Robots-Tag header for pickup and delivery pages
-  app.use("/pickup/ebay-geelong", (req, res, next) => {
+  app.use("/pickup", (req, res, next) => {
     res.set('X-Robots-Tag', 'noindex, nofollow');
     next();
   });
   
-  app.use("/delivery/ebay-geelong", (req, res, next) => {
+  app.use("/delivery", (req, res, next) => {
     res.set('X-Robots-Tag', 'noindex, nofollow');
     next();
   });
