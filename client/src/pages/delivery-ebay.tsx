@@ -11,16 +11,16 @@ import {
   AlertCircle
 } from "lucide-react";
 
-export default function PickupEbay() {
-  const pickupAddress = "36 Little Myers St, Geelong VIC 3220";
+export default function DeliveryEbay() {
+  const deliveryAddress = "36 Little Myers St, Geelong VIC 3220";
   const phoneNumber = "(03) 5221 9222";
   const mapEmbedUrl = "https://maps.google.com/maps?width=100%&height=400&hl=en&q=36%20Little%20Myers%20Street,%20Geelong%20VIC%203220&t=&z=15&ie=UTF8&iwloc=B&output=embed";
 
   return (
     <div className="min-h-screen bg-white">
       <SEOHead
-        title="eBay Order Pickup - Geelong Garage Doors"
-        description="Pickup address and instructions for eBay orders from Geelong Garage Doors"
+        title="eBay Order Delivery - Geelong Garage Doors"
+        description="Delivery address and instructions for eBay orders from Geelong Garage Doors"
         noIndex={true}
       />
       
@@ -31,33 +31,33 @@ export default function PickupEbay() {
         <div className="container mx-auto px-4 text-center">
           <Package className="w-16 h-16 mx-auto mb-6" />
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            eBay Order Pickup
+            eBay Order Delivery
           </h1>
           <p className="text-xl mb-8 max-w-3xl mx-auto leading-relaxed">
-            Pickup location and instructions for your eBay order from Geelong Garage Doors
+            Delivery location and instructions for your eBay order from Geelong Garage Doors
           </p>
         </div>
       </section>
 
-      {/* Pickup Information */}
+      {/* Delivery Information */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8">
               
-              {/* Pickup Details */}
+              {/* Delivery Details */}
               <div className="space-y-6">
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <MapPin className="w-6 h-6 mr-2 text-[#2b3990]" />
-                      Pickup Address
+                      Delivery Address
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="p-4 bg-gray-50 rounded-lg">
-                      <p className="text-lg font-semibold" data-testid="text-pickup-address">
-                        {pickupAddress}
+                      <p className="text-lg font-semibold" data-testid="text-delivery-address">
+                        {deliveryAddress}
                       </p>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -65,7 +65,7 @@ export default function PickupEbay() {
                         asChild 
                         size="lg" 
                         className="bg-[#2b3990] hover:bg-[#1e2871]"
-                        data-testid="button-call-pickup"
+                        data-testid="button-call-delivery"
                       >
                         <a href={`tel:${phoneNumber}`}>
                           <Phone className="w-5 h-5 mr-2" />
@@ -80,7 +80,7 @@ export default function PickupEbay() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Clock className="w-6 h-6 mr-2 text-[#2b3990]" />
-                      Pickup Instructions
+                      Delivery Instructions
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -92,14 +92,14 @@ export default function PickupEbay() {
                             Please call ahead on {phoneNumber}
                           </p>
                           <p className="text-sm">
-                            This ensures someone is available to assist with your pickup.
+                            This ensures someone is available to receive your delivery.
                           </p>
                         </div>
                       </div>
                     </div>
                     
                     <div className="space-y-3">
-                      <h4 className="font-semibold">Pickup Hours:</h4>
+                      <h4 className="font-semibold">Delivery Hours:</h4>
                       <ul className="space-y-2 text-gray-600">
                         <li className="flex justify-between">
                           <span>Monday - Friday:</span>
@@ -117,11 +117,11 @@ export default function PickupEbay() {
                     </div>
 
                     <div className="pt-4 border-t">
-                      <h4 className="font-semibold mb-2">What to bring:</h4>
+                      <h4 className="font-semibold mb-2">What to have ready:</h4>
                       <ul className="space-y-1 text-gray-600">
                         <li>• eBay order confirmation or order number</li>
                         <li>• Photo ID for verification</li>
-                        <li>• Vehicle suitable for item transport</li>
+                        <li>• Clear access for delivery vehicle</li>
                       </ul>
                     </div>
                   </CardContent>
@@ -144,13 +144,13 @@ export default function PickupEbay() {
                         src={mapEmbedUrl}
                         allowFullScreen
                         referrerPolicy="no-referrer-when-downgrade"
-                        title="Pickup Location Map"
-                        data-testid="map-pickup-location"
+                        title="Delivery Location Map"
+                        data-testid="map-delivery-location"
                       />
                     </div>
                     <div className="mt-4 text-sm text-gray-600">
                       <p>
-                        <strong>For eBay orders only.</strong> This pickup location is specifically 
+                        <strong>For eBay orders only.</strong> This delivery location is specifically 
                         for customers who have purchased garage door parts through our eBay store.
                       </p>
                     </div>
@@ -167,7 +167,7 @@ export default function PickupEbay() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Need Help?</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            If you have any questions about your pickup or need to arrange 
+            If you have any questions about your delivery or need to arrange 
             an alternative time, please don't hesitate to contact us.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -175,7 +175,7 @@ export default function PickupEbay() {
               asChild 
               size="lg" 
               className="bg-[#2b3990] hover:bg-[#1e2871]"
-              data-testid="button-contact-pickup"
+              data-testid="button-contact-delivery"
             >
               <a href={`tel:${phoneNumber}`}>
                 <Phone className="w-5 h-5 mr-2" />
