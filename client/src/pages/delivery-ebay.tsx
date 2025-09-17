@@ -107,7 +107,7 @@ export default function DeliveryEbay() {
                         </li>
                         <li className="flex justify-between">
                           <span>Saturday:</span>
-                          <span className="font-medium">By appointment only</span>
+                          <span className="font-medium">Closed</span>
                         </li>
                         <li className="flex justify-between">
                           <span>Sunday:</span>
