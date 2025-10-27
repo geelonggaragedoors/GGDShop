@@ -1,0 +1,226 @@
+/api/auth/user:1  Failed to load resource: the server responded with a status of 401 ()
+/api/admin/settings:1  Failed to load resource: the server responded with a status of 401 ()
+capig.datah04.com/events/cb88aae3b3c8ec028eb115356394c245ee2304aa9bf79da853311131293323cb:1  Failed to load resource: the server responded with a status of 404 ()
+/api/auth/login:1  Failed to load resource: the server responded with a status of 400 ()
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket connection closed intentionally
+/api/site-settings/hero_image_url:1  Failed to load resource: the server responded with a status of 404 ()
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+/api/site-settings/hero_title:1  Failed to load resource: the server responded with a status of 404 ()
+/api/site-settings/hero_subtitle:1  Failed to load resource: the server responded with a status of 404 ()
+ Connected to notification WebSocket
+ WebSocket authentication successful
+/api/site-settings/hero_image_position_custom:1  Failed to load resource: the server responded with a status of 404 ()
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ WebSocket connection closed intentionally
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+ Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+ Connected to notification WebSocket
+ WebSocket authentication successful
+ WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 WebSocket connection closed intentionally
+capig.datah04.com/events/cb88aae3b3c8ec028eb115356394c245ee2304aa9bf79da853311131293323cb:1  Failed to load resource: the server responded with a status of 404 ()
+capig.datah04.com/events/cb88aae3b3c8ec028eb115356394c245ee2304aa9bf79da853311131293323cb:1  Failed to load resource: the server responded with a status of 404 ()
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 WebSocket connection closed intentionally
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 WebSocket connection closed intentionally
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:543 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ index-DDuCH1a4.js:543
+/api/admin/import/woocommerce:1  Failed to load resource: the server responded with a status of 524 ()
+index-DDuCH1a4.js:635 Import error: Error: Import failed: 524
+    at c (index-DDuCH1a4.js:635:49401)
+c @ index-DDuCH1a4.js:635
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
+index-DDuCH1a4.js:555 WebSocket closed unexpectedly: 1006
+g.onclose @ index-DDuCH1a4.js:555
+index-DDuCH1a4.js:555 Connecting to WebSocket: wss://geelonggaragedoors.com/ws/notifications
+index-DDuCH1a4.js:555 Connected to notification WebSocket
+index-DDuCH1a4.js:555 WebSocket authentication successful
