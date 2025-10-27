@@ -334,6 +334,11 @@ export class ImportService {
 
       console.log(`Import complete - Total imported: ${aggregateResults.imported}, Total skipped: ${aggregateResults.skipped}, Total errors: ${aggregateResults.errors.length}`);
 
+      // Set success to false if any errors occurred
+      if (aggregateResults.errors.length > 0) {
+        aggregateResults.success = false;
+      }
+
     } catch (error) {
       aggregateResults.success = false;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

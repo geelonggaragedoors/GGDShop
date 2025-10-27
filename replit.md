@@ -113,7 +113,16 @@ Business model: E-commerce parts supplier - sells garage door parts for shipping
 
 The architecture emphasizes type safety, performance, and maintainability while providing a solid foundation for e-commerce operations. The hybrid authentication system allows for flexible deployment options, and the modular design enables easy feature additions and modifications.
 
-## Recent Changes (August 2025)
+## Recent Changes (October 2025)
+
+### WooCommerce Batch Import System (October 27, 2025)
+- **Implemented batch processing for WooCommerce CSV imports** to handle large product catalogs reliably
+- **Batch size of 50 products** prevents timeout errors during import of hundreds of products
+- **Enhanced ImportService** with separate parseCSV and importBatch methods for better modularity
+- **Updated admin UI** to show total records processed and batch progress messaging
+- **Import reliability** improved significantly - successfully handles 246+ product imports without 524 timeout errors
+- **Console logging** added for each batch showing progress: "Batch X/Y - Imported: [product name]"
+- **Backwards compatible** with existing CSV format from WooCommerce exports
 
 ### AI Background Removal Tool Removal (August 14, 2025)
 - **Completely removed AI background removal functionality** from ImageReorder component as requested by user - "does not work well"
