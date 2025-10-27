@@ -11,6 +11,7 @@ interface ImportResults {
   imported: number;
   skipped: number;
   errors: string[];
+  totalRecords?: number;
 }
 
 export function ProductImport() {
@@ -153,7 +154,10 @@ export function ProductImport() {
           <div className="space-y-2">
             <Progress value={50} className="w-full" />
             <p className="text-sm text-gray-600 text-center">
-              Processing CSV file and downloading images...
+              Processing products in batches (50 at a time)...
+            </p>
+            <p className="text-xs text-gray-500 text-center">
+              This may take several minutes for large imports. Please wait...
             </p>
           </div>
         )}
@@ -161,6 +165,14 @@ export function ProductImport() {
         {/* Results */}
         {results && (
           <div className="space-y-4">
+            {results.totalRecords && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Processed {results.totalRecords} total records from CSV file
+                </AlertDescription>
+              </Alert>
+            )}
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="flex items-center justify-center mb-2">
@@ -220,10 +232,12 @@ export function ProductImport() {
           <p className="font-semibold">Instructions:</p>
           <ul className="list-disc list-inside space-y-1">
             <li>Export your products from WooCommerce as CSV</li>
+            <li>Products are processed in batches of 50 for reliability</li>
             <li>The import will automatically create categories and brands</li>
             <li>Product images will be downloaded from the URLs in the CSV</li>
             <li>Duplicate products (same name) will be skipped</li>
             <li>All prices, descriptions, and stock levels will be imported</li>
+            <li>Large imports may take several minutes - please be patient</li>
           </ul>
         </div>
       </CardContent>
