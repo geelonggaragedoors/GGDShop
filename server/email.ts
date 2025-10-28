@@ -35,28 +35,35 @@ interface EmailOptions {
 
 export class EmailService {
   async sendEmail(options: EmailOptions) {
-    console.log('=== SENDING EMAIL VIA SENDGRID ===');
+    console.log('=== SENDING EMAIL VIA RESEND ===');
     console.log('From: admin@geelonggaragedoors.com');
     console.log('To:', options.to);
     console.log('Subject:', options.subject);
     
+    if (!resend) {
+      console.error('Resend is not configured');
+      return { success: false, error: 'Resend API key not configured' };
+    }
+    
     try {
-      const msg: any = {
+      const emailData: any = {
+        from: 'Geelong Garage Doors <admin@geelonggaragedoors.com>',
         to: options.to,
-        from: 'admin@geelonggaragedoors.com',
         subject: options.subject,
         html: options.html,
       };
 
+      // Note: Resend handles attachments differently than SendGrid
+      // If needed in the future, we can add attachment support
       if (options.attachments && options.attachments.length > 0) {
-        msg.attachments = options.attachments;
+        console.warn('Attachments are not yet supported with Resend');
       }
 
-      const result = await sgMail.send(msg);
-      console.log('Email sent successfully via SendGrid:', result[0].statusCode);
-      return { success: true, id: result[0].headers['x-message-id'] };
+      const result = await resend.emails.send(emailData);
+      console.log('Email sent successfully via Resend:', result.data?.id);
+      return { success: true, id: result.data?.id || 'unknown' };
     } catch (error) {
-      console.error('Failed to send email via SendGrid:', error);
+      console.error('Failed to send email via Resend:', error);
       return { success: false, error: String(error) };
     }
   }
