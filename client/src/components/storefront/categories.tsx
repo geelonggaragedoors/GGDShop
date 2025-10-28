@@ -50,7 +50,7 @@ export default function Categories() {
         <h3 className="text-3xl font-bold text-center mb-12 text-gray-900">Shop by Category</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {displayCategories.map((category: any) => (
-            <Link key={category.id} href={`/products/${category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}`}>
+            <Link key={category.id} href={`/product-category/${category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <div className="group cursor-pointer category-card">
                 <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
                   <div className="relative">
@@ -73,7 +73,7 @@ export default function Categories() {
           {/* Fallback categories if no data */}
           {(!categories || categories.length === 0) && (
             <>
-              <Link href="/products/residential-doors">
+              <Link href="/product-category/residential-doors">
                 <div className="group cursor-pointer category-card">
                   <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
                     <div className="relative">
@@ -92,7 +92,7 @@ export default function Categories() {
                 </div>
               </Link>
               
-              <Link href="/products/commercial-doors">
+              <Link href="/product-category/commercial-doors">
                 <div className="group cursor-pointer category-card">
                   <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
                     <div className="relative">
@@ -111,7 +111,7 @@ export default function Categories() {
                 </div>
               </Link>
               
-              <Link href="/products/parts-accessories">
+              <Link href="/product-category/parts-accessories">
                 <div className="group cursor-pointer category-card">
                   <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
                     <div className="relative">
@@ -130,7 +130,7 @@ export default function Categories() {
                 </div>
               </Link>
               
-              <Link href="/products/repairs-maintenance">
+              <Link href="/product-category/repairs-maintenance">
                 <div className="group cursor-pointer category-card">
                   <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
                     <div className="relative">

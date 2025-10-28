@@ -87,6 +87,7 @@ import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
 import { authService } from "./authService";
 import { emailService } from "./email";
+import { sitemapService } from "./sitemapService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add X-Robots-Tag header for pickup and delivery pages
@@ -103,6 +104,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/delivery", (req, res, next) => {
     res.set('X-Robots-Tag', 'noindex, nofollow');
     next();
+  });
+  
+  // 301 redirect for old category URLs to match WordPress structure
+  // Redirect /products/:categorySlug to /product-category/:categorySlug
+  app.get("/products/:categorySlug", (req, res, next) => {
+    const { categorySlug } = req.params;
+    // Only redirect if there's a category slug (not the main /products page)
+    if (categorySlug && categorySlug !== 'undefined') {
+      // Preserve query parameters to maintain SEO equity and marketing URLs
+      const queryString = req.url.split('?')[1];
+      const redirectUrl = queryString 
+        ? `/product-category/${categorySlug}?${queryString}`
+        : `/product-category/${categorySlug}`;
+      return res.redirect(301, redirectUrl);
+    }
+    next();
+  });
+
+  // XML Sitemap for SEO
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const sitemap = await sitemapService.generateSitemap();
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error) {
+      console.error('Error generating sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
   });
   
   // Setup authentication

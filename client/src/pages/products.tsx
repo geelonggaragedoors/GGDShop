@@ -17,9 +17,13 @@ import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 import { SEOHead } from "@/components/SEOHead";
 import { analytics } from "@/lib/analytics";
+import { generateItemListSchema, generateBreadcrumbSchema } from "@/lib/schema-generator";
 
 export default function Products() {
-  const [match, params] = useRoute("/products/:categorySlug?");
+  // Handle both /product-category/:categorySlug and /products routes
+  const [categoryMatch, categoryParams] = useRoute("/product-category/:categorySlug");
+  const [productsMatch] = useRoute("/products");
+  const params = categoryMatch ? categoryParams : null;
   const [location, setLocation] = useLocation();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -116,8 +120,47 @@ export default function Products() {
     });
   };
 
+  // Determine page title and breadcrumbs based on route
+  const currentCategory = params?.categorySlug 
+    ? categories?.find((cat: any) => cat.slug === params.categorySlug) 
+    : null;
+  const pageTitle = currentCategory?.name || "All Products";
+
+  // Generate schema.org structured data
+  const itemListSchema = products.length > 0 
+    ? generateItemListSchema(products as any, pageTitle, window.location.origin)
+    : null;
+
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    currentCategory 
+      ? [
+          { name: 'Home', url: '/' },
+          { name: 'Products', url: '/products' },
+          { name: currentCategory.name, url: `/product-category/${currentCategory.slug}` }
+        ]
+      : [
+          { name: 'Home', url: '/' },
+          { name: 'Products', url: '/products' }
+        ],
+    window.location.origin
+  );
+
+  const combinedSchema = itemListSchema 
+    ? [itemListSchema, breadcrumbSchema]
+    : [breadcrumbSchema];
+
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title={`${pageTitle} | Geelong Garage Doors`}
+        description={`Shop ${pageTitle.toLowerCase()} at Geelong Garage Doors. Quality garage door parts and accessories with fast shipping across Australia.`}
+        keywords={`${pageTitle}, garage door parts, garage door accessories, ${currentCategory?.name || 'garage doors'}`}
+        canonicalUrl={currentCategory 
+          ? `${window.location.origin}/product-category/${currentCategory.slug}`
+          : `${window.location.origin}/products`
+        }
+        structuredData={combinedSchema}
+      />
       <StorefrontHeader />
       
       {/* Breadcrumb */}

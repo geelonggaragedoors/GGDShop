@@ -16,6 +16,8 @@ import { getOptimizedImageUrl } from "@/lib/image-optimizer";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 import CustomerReviews from "@/components/storefront/customer-reviews";
+import { SEOHead } from "@/components/SEOHead";
+import { generateProductSchema, generateBreadcrumbSchema } from "@/lib/schema-generator";
 import type { Product } from "@shared/schema";
 
 export default function ProductDetail() {
@@ -114,8 +116,32 @@ export default function ProductDetail() {
   const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, (product as any).stockQuantity || 0));
   const decrementQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
+  // Generate schema.org structured data
+  const productSchema = generateProductSchema(
+    product as any,
+    reviewsData?.reviews || [],
+    window.location.origin
+  );
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Products', url: '/products' },
+    { name: product.name, url: `/product/${product.slug}` }
+  ]);
+
+  // Combine multiple schemas
+  const combinedSchema = [productSchema, breadcrumbSchema];
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOHead
+        title={`${product.name} | Geelong Garage Doors`}
+        description={product.shortDescription || product.description || `Buy ${product.name} from Geelong Garage Doors. Quality garage door parts and accessories with fast shipping across Australia.`}
+        keywords={`${product.name}, garage door parts, ${(product as any).brand?.name || ''}, ${(product as any).category?.name || ''}`}
+        ogImage={images[0] || defaultImage}
+        canonicalUrl={`${window.location.origin}/product/${product.slug}`}
+        structuredData={combinedSchema}
+      />
       <StorefrontHeader />
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}

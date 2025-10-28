@@ -11,6 +11,7 @@ import StorefrontFooter from "@/components/storefront/footer";
 import { useAuth } from "@/hooks/useAuth";
 import { SEOHead } from "@/components/SEOHead";
 import { analytics } from "@/lib/analytics";
+import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/schema-generator";
 
 export default function Home() {
   const [showAdmin, setShowAdmin] = useState(false);
@@ -29,24 +30,10 @@ export default function Home() {
     analytics.trackPageView();
   }, []);
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Geelong Garage Doors",
-    "image": "https://geelonggaragedoors.com.au/logo.png",
-    "description": "Professional garage door installation, repair and maintenance services in Geelong and surrounding areas. Quality products, expert installation, competitive prices.",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Geelong",
-      "addressRegion": "Victoria",
-      "addressCountry": "AU"
-    },
-    "telephone": "+61-3-xxxx-xxxx",
-    "url": "https://geelonggaragedoors.com.au",
-    "openingHours": "Mo-Fr 08:00-17:00, Sa 09:00-15:00",
-    "priceRange": "$$",
-    "areaServed": ["Geelong", "Torquay", "Lara", "Drysdale", "Portarlington", "Ocean Grove"]
-  };
+  // Generate comprehensive schema.org structured data
+  const organizationSchema = generateOrganizationSchema(window.location.origin);
+  const websiteSchema = generateWebSiteSchema(window.location.origin);
+  const structuredData = [organizationSchema, websiteSchema];
 
   return (
     <>

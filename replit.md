@@ -115,6 +115,21 @@ The architecture emphasizes type safety, performance, and maintainability while 
 
 ## Recent Changes (October 2025)
 
+### Comprehensive SEO Implementation for WordPress/WooCommerce Migration (October 28, 2025)
+- **Complete URL Structure Migration**: Changed category URLs from `/products/:categorySlug` to `/product-category/:categorySlug` to match WordPress/WooCommerce exactly
+- **301 Redirects Implemented**: Added permanent redirects from old category URLs to new ones, preserving query parameters for SEO equity and marketing URLs
+- **WordPress-Compatible Slug Generation**: Implemented faithful recreation of WordPress's `sanitize_title()` function with proper transliteration (e.g., "Café" → "cafe"), HTML entity handling, and character normalization
+- **Schema.org Structured Data**:
+  - Product schema with Offer, price, availability, SKU, brand, and category
+  - BreadcrumbList schema on all product and category pages
+  - Organization + WebSite schema on homepage with search functionality
+  - AggregateRating schema for products with reviews (star ratings in search results)
+  - ItemList schema for product listing and category pages
+- **XML Sitemap Generation**: Dynamic `/sitemap.xml` endpoint with proper priority/changefreq values for all products, categories, and static pages
+- **Enhanced SEO Meta Tags**: Product-specific descriptions from shortDescription, proper canonical URLs, and Open Graph images for social sharing
+- **Domain Accuracy**: Corrected all URLs to use canonical domain (geelonggaragedoors.com.au) throughout sitemap and schema
+- **SEO Benefits**: Rich snippets in Google (price, availability, ratings), improved click-through rates, preserved rankings through exact URL matching
+
 ### WooCommerce Batch Import System (October 27, 2025)
 - **Implemented batch processing for WooCommerce CSV imports** to handle large product catalogs reliably
 - **Batch size of 50 products** prevents timeout errors during import of hundreds of products

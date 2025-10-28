@@ -64,7 +64,8 @@ function Router() {
       <Route path="/checkout" component={Checkout} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/product/:slug" component={ProductDetail} />
-      <Route path="/products/:categorySlug?" component={Products} />
+      <Route path="/product-category/:categorySlug" component={Products} />
+      <Route path="/products" component={Products} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
       <Route path="/setup-password" component={SetupPassword} />

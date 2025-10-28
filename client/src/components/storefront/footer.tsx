@@ -27,10 +27,10 @@ export default function StorefrontFooter() {
           <div>
             <h6 className="text-white font-semibold mb-4">Products</h6>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/products?category=residential-doors" className="hover:text-white transition-colors">Residential Doors</Link></li>
-              <li><Link href="/products?category=commercial-doors" className="hover:text-white transition-colors">Commercial Doors</Link></li>
-              <li><Link href="/products?category=parts-accessories" className="hover:text-white transition-colors">Parts & Accessories</Link></li>
-              <li><Link href="/products?category=smart-openers" className="hover:text-white transition-colors">Smart Openers</Link></li>
+              <li><Link href="/product-category/residential-doors" className="hover:text-white transition-colors">Residential Doors</Link></li>
+              <li><Link href="/product-category/commercial-doors" className="hover:text-white transition-colors">Commercial Doors</Link></li>
+              <li><Link href="/product-category/parts-accessories" className="hover:text-white transition-colors">Parts & Accessories</Link></li>
+              <li><Link href="/product-category/smart-openers" className="hover:text-white transition-colors">Smart Openers</Link></li>
             </ul>
           </div>
           
