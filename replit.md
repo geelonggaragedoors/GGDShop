@@ -1,11 +1,9 @@
 # Geelong Garage Doors E-commerce Platform
 
 ## Overview
-
-This is a full-stack e-commerce platform built for Geelong Garage Doors, featuring a React frontend with TypeScript, Express.js backend, and PostgreSQL database. The application includes both customer-facing storefront and admin management capabilities, with PayPal integration for payments and advanced shipping calculations using Australia Post APIs.
+This is a full-stack e-commerce platform for Geelong Garage Doors, featuring a React frontend with TypeScript, Express.js backend, and PostgreSQL database. The application includes both customer-facing storefront and admin management capabilities, with PayPal integration for payments and advanced shipping calculations. It aims to be a comprehensive e-commerce parts supplier, focusing on shipping garage door parts.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 Email domain: Using geelonggaragedoors.com instead of .com.au
 Deployment: Site deployed to geelonggaragedoors.com - needs NODE_ENV=production for correct password reset URLs
@@ -19,186 +17,42 @@ Business model: E-commerce parts supplier - sells garage door parts for shipping
 
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite for fast development and optimized builds
+- **Build Tool**: Vite
 - **Styling**: Tailwind CSS with shadcn/ui components
 - **State Management**: React Query for server state, React Context for client state
-- **Routing**: Wouter for lightweight client-side routing
+- **Routing**: Wouter
 - **Form Handling**: React Hook Form with Zod validation
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
 - **Database**: PostgreSQL with Neon serverless hosting
-- **ORM**: Drizzle ORM for type-safe database operations
+- **ORM**: Drizzle ORM
 - **Authentication**: Hybrid system supporting both Replit Auth and password-based auth
-- **File Upload**: UploadThing for image and file management
+- **File Upload**: UploadThing
 - **API Design**: RESTful APIs with TypeScript interfaces
 
-### Key Components
-
-#### Authentication System
-- **Dual Auth Support**: Both Replit OAuth and traditional password authentication
-- **Security Features**: bcrypt password hashing, rate limiting, account lockout
-- **Session Management**: PostgreSQL session storage with configurable TTL
-- **Role-Based Access**: Admin, manager, and staff roles with different permissions
-
-#### E-commerce Features
-- **Product Management**: Full CRUD operations with categories, brands, and media
-- **Order Processing**: Complete order lifecycle with status tracking
-- **Payment Integration**: PayPal-only checkout with comprehensive trust signals (handles both PayPal accounts and guest credit card payments)
-- **Shipping Calculations**: Australia Post API integration for real-time shipping costs
-- **Inventory Management**: Stock tracking and low stock alerts
-- **Smart Checkout**: Auto-fills customer information for logged-in users with address parsing
-
-#### Admin Dashboard
-- **User Interface**: Responsive admin panel with sidebar navigation
-- **Data Management**: CRUD operations for all entities with search/filter/sort
-- **Analytics**: Basic reporting and dashboard metrics
-- **Bulk Operations**: Mass edit/delete capabilities for products and orders
-
-## Data Flow
-
-### Request Processing
-1. Client requests hit Express middleware stack
-2. Authentication middleware validates user sessions
-3. Route handlers process business logic
-4. Database queries executed via Drizzle ORM
-5. Responses formatted and sent back to client
-
-### Real-time Updates
-- WebSocket connections for notifications
-- Real-time order status updates
-- Live inventory updates for admin users
-
-### File Upload Process
-1. Client uploads files via UploadThing widget
-2. Files processed and stored in cloud storage
-3. Database updated with file metadata
-4. URLs returned for immediate use
+### Key Features
+- **Authentication System**: Dual Replit OAuth and password authentication, bcrypt hashing, rate limiting, PostgreSQL session storage, role-based access (Admin, Manager, Staff).
+- **E-commerce Capabilities**: Product CRUD, order processing with status tracking, PayPal-only checkout, Australia Post API for real-time shipping, inventory management, smart checkout.
+- **Admin Dashboard**: Responsive UI, CRUD operations for all entities, basic analytics, bulk operations.
+- **SEO Implementation**: WordPress/WooCommerce compatible URL structures, 301 redirects, `sanitize_title()` function for slug generation, Schema.org structured data, XML sitemap generation, enhanced meta tags.
+- **Email System**: Integration with Resend for all transactional emails.
 
 ## External Dependencies
 
 ### Core Services
-- **Neon Database**: PostgreSQL hosting with serverless scaling
-- **UploadThing**: File upload and storage service
-- **PayPal SDK**: Payment processing integration
+- **Neon Database**: PostgreSQL hosting
+- **UploadThing**: File upload and storage
+- **PayPal SDK**: Payment processing
 - **Australia Post API**: Shipping cost calculations
+- **Resend**: Transactional email service
 
 ### Development Tools
 - **Replit**: Development environment and hosting
-- **Vite**: Fast build tool with HMR support
-- **TypeScript**: Type safety across the entire stack
+- **Vite**: Fast build tool
+- **TypeScript**: Type safety
 
 ### UI Libraries
 - **Radix UI**: Unstyled, accessible UI components
 - **Tailwind CSS**: Utility-first CSS framework
 - **Lucide React**: Icon library
-
-## Deployment Strategy
-
-### Development Environment
-- **Platform**: Replit with auto-scaling
-- **Database**: Neon PostgreSQL with connection pooling
-- **Build Process**: Vite handles frontend bundling, esbuild for backend
-
-### Production Considerations
-- **Environment Variables**: All sensitive data stored in environment variables
-- **Database Migrations**: Drizzle Kit for schema management
-- **Static Assets**: Served via Express with proper caching headers
-- **Error Handling**: Comprehensive error boundaries and logging
-
-### Configuration Management
-- **Database**: Drizzle config with PostgreSQL dialect
-- **TypeScript**: Shared types between frontend and backend
-- **Build**: Separate build commands for development and production
-
-The architecture emphasizes type safety, performance, and maintainability while providing a solid foundation for e-commerce operations. The hybrid authentication system allows for flexible deployment options, and the modular design enables easy feature additions and modifications.
-
-## Recent Changes (October 2025)
-
-### Email Service Migration to Resend (October 28, 2025)
-- **Switched from SendGrid to Resend** for all transactional email communications
-- **All email types migrated**: Password resets, order confirmations, shipping notifications, payment confirmations
-- **API Key Management**: Resend API key securely stored in Replit Secrets
-- **Verified Functionality**: Test email successfully sent and delivered
-- **From Address**: admin@geelonggaragedoors.com for all system emails
-
-### WordPress-Compatible Product Slug Generation (October 28, 2025)
-- **Created shared slug utility** (`shared/utils.ts`) for consistent slug generation across frontend and backend
-- **WordPress parity**: Faithful recreation of WordPress's `sanitize_title()` function with transliteration
-- **Character handling**: Non-ASCII characters properly converted (é→e, ü→u, ç→c, etc.)
-- **Backend fallback**: Automatic slug generation if frontend doesn't provide one
-- **Import compatibility**: Ensures imported WooCommerce products maintain their original slugs
-
-### Comprehensive SEO Implementation for WordPress/WooCommerce Migration (October 28, 2025)
-- **Complete URL Structure Migration**: Changed category URLs from `/products/:categorySlug` to `/product-category/:categorySlug` to match WordPress/WooCommerce exactly
-- **301 Redirects Implemented**: Added permanent redirects from old category URLs to new ones, preserving query parameters for SEO equity and marketing URLs
-- **WordPress-Compatible Slug Generation**: Implemented faithful recreation of WordPress's `sanitize_title()` function with proper transliteration (e.g., "Café" → "cafe"), HTML entity handling, and character normalization
-- **Schema.org Structured Data**:
-  - Product schema with Offer, price, availability, SKU, brand, and category
-  - BreadcrumbList schema on all product and category pages
-  - Organization + WebSite schema on homepage with search functionality
-  - AggregateRating schema for products with reviews (star ratings in search results)
-  - ItemList schema for product listing and category pages
-- **XML Sitemap Generation**: Dynamic `/sitemap.xml` endpoint with proper priority/changefreq values for all products, categories, and static pages
-- **Enhanced SEO Meta Tags**: Product-specific descriptions from shortDescription, proper canonical URLs, and Open Graph images for social sharing
-- **Domain Accuracy**: Corrected all URLs to use canonical domain (geelonggaragedoors.com.au) throughout sitemap and schema
-- **SEO Benefits**: Rich snippets in Google (price, availability, ratings), improved click-through rates, preserved rankings through exact URL matching
-
-### WooCommerce Batch Import System (October 27, 2025)
-- **Implemented batch processing for WooCommerce CSV imports** to handle large product catalogs reliably
-- **Batch size of 50 products** prevents timeout errors during import of hundreds of products
-- **Enhanced ImportService** with separate parseCSV and importBatch methods for better modularity
-- **Updated admin UI** to show total records processed and batch progress messaging
-- **Import reliability** improved significantly - successfully handles 246+ product imports without 524 timeout errors
-- **Console logging** added for each batch showing progress: "Batch X/Y - Imported: [product name]"
-- **Backwards compatible** with existing CSV format from WooCommerce exports
-
-### AI Background Removal Tool Removal (August 14, 2025)
-- **Completely removed AI background removal functionality** from ImageReorder component as requested by user - "does not work well"
-- **Cleaned up all related code**: removed processingBackgroundRemoval state, handleRemoveBackground function, onRemoveBackground props
-- **Restored original ImageReorder behavior**: component now works exactly as it did before AI tools were introduced
-- **Fixed single image display issue**: ImageReorder now properly displays single images with standard controls (preview, remove)
-- **Maintained all existing functionality**: drag/drop reordering, image preview, image removal all work as before
-
-## Previous Changes (July 2025)
-
-### Australia Post Shipping Integration Fixes
-- **Fixed satchel weight calculation**: Corrected weight comparison from 5000g to 5kg for proper satchel suggestions
-- **Resolved double-click issue**: Shipping type selection now immediately triggers box calculations on first click
-- **Improved calculation logic**: Enhanced shipping calculation function to accept immediate shipping type parameter
-- **Form organization**: Consolidated stock management controls (Stock Quantity, Featured, Active, Always in Stock, Free Postage) into organized sections for both Add and Edit Product forms
-- **UI improvements**: Changed "3D items" to "Bulky items" and removed duplicate form fields
-
-### Stock Management Features
-- **Always in Stock toggle**: When enabled, overrides stock quantity display and shows "In Stock" on frontend regardless of actual quantity
-- **Consolidated admin interface**: All stock-related controls now grouped together with clear descriptions and consistent layout
-
-### TypeScript Code Quality Optimization (August 2025)
-- **Exceptional Error Reduction**: Successfully reduced TypeScript errors from 237 to just 2 errors (99.2% improvement)
-- **Systematic Optimization**: Fixed critical issues across storefront, admin components, email services, analytics, and authentication
-- **Enhanced Type Safety**: Resolved import service, PayPal webhooks, routes, and database conversion problems
-- **Improved Code Quality**: Maintained stable authentication system and hot module reloading throughout optimization process
-- **Outstanding Achievement**: 235 TypeScript errors eliminated through comprehensive systematic approach
-
-### Email Transaction System Verification (August 2025)
-- **Complete System Testing**: Verified all email transaction flows are fully operational
-- **Email System Status**: All critical transaction emails working correctly (order confirmation, processing, shipped, delivered, canceled)
-- **Admin Events Page**: Fixed to display real customer email logs instead of mock data
-- **Email Logging**: Added `/api/admin/email-logs` endpoint showing authentic customer email records
-- **SendGrid Integration**: Confirmed active and properly configured (69-character API key)
-- **Production Ready**: Email system verified as operational and ready for customer transactions
-
-### Customer Data System Fix (August 2025)
-- **Real Customer Data**: Fixed admin customers page to display authentic customer records instead of mock data
-- **Customer-Order Linking**: Verified proper customer-order relationships via email address linking system
-- **Auto-Customer Creation**: Implemented automatic customer record creation during guest checkout process
-- **Data Integrity**: Added order count and total spent columns with real transaction history
-- **Missing Customer Fix**: Resolved issue where order placement didn't create customer records automatically
-- **Authenticated User Fix**: Fixed checkout flow where logged-in users weren't creating customer records despite placing orders - now both user profiles and customer records are properly maintained
-
-### WebSocket and Database Schema Fixes (August 2025)
-- **WebSocket Error Resolution**: Completely removed Replit development banner script causing "localhost:undefined" WebSocket connection errors
-- **Customer Transactions Database**: Added missing columns (`transaction_type`, `document_type`, `transaction_reference`) to customer_transactions table
-- **Login Redirect Enhancement**: Fixed login flow with proper cache invalidation to redirect users to main page after authentication
-- **TypeScript Optimization**: Maintained 99.6% error reduction with only 1 remaining error in protected vite.ts configuration file
-- **Application Stability**: Ensured clean application restart without problematic scripts or database schema mismatches

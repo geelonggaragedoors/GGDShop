@@ -371,8 +371,14 @@ export class AuthService {
       })
       .where(eq(users.id, staffId));
 
-    // Send reset email
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+    // Send reset email - use deployed domain if available
+    const isProduction = process.env.NODE_ENV === 'production' || 
+      process.env.REPLIT_DEPLOYMENT === 'true' || 
+      process.env.RAILWAY_ENVIRONMENT === 'production';
+    
+    const baseUrl = process.env.BASE_URL || 
+      (isProduction ? 'https://geelonggaragedoors.com' : 'http://localhost:5000');
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
     
     await emailService.sendEmail({
       to: staff.email!,
