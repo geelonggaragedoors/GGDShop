@@ -50,6 +50,7 @@ import {
   type InsertEmailSettingConfig,
   type MenuItem,
   type InsertMenuItem,
+  type MenuItemWithCategory,
   customerTransactions,
   type CustomerTransaction,
   type InsertCustomerTransaction,
@@ -81,8 +82,8 @@ export interface IStorage {
   deleteCategory(id: string): Promise<boolean>;
 
   // Menu items operations
-  getMenuItems(): Promise<MenuItem[]>;
-  getAllMenuItems(): Promise<MenuItem[]>;
+  getMenuItems(): Promise<MenuItemWithCategory[]>;
+  getAllMenuItems(): Promise<MenuItemWithCategory[]>;
   createMenuItem(menuItem: InsertMenuItem): Promise<MenuItem>;
   updateMenuItem(id: string, menuItem: Partial<InsertMenuItem>): Promise<MenuItem | undefined>;
   deleteMenuItem(id: string): Promise<boolean>;
@@ -382,19 +383,49 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Menu Items operations
-  async getMenuItems(): Promise<MenuItem[]> {
-    return db
-      .select()
+  async getMenuItems(): Promise<MenuItemWithCategory[]> {
+    const items = await db
+      .select({
+        id: menuItems.id,
+        label: menuItems.label,
+        type: menuItems.type,
+        categoryId: menuItems.categoryId,
+        customUrl: menuItems.customUrl,
+        parentId: menuItems.parentId,
+        sortOrder: menuItems.sortOrder,
+        isVisible: menuItems.isVisible,
+        createdAt: menuItems.createdAt,
+        updatedAt: menuItems.updatedAt,
+        category: categories,
+      })
       .from(menuItems)
+      .leftJoin(categories, eq(menuItems.categoryId, categories.id))
       .where(eq(menuItems.isVisible, true))
       .orderBy(asc(menuItems.sortOrder), asc(menuItems.label));
+    
+    return items;
   }
 
-  async getAllMenuItems(): Promise<MenuItem[]> {
-    return db
-      .select()
+  async getAllMenuItems(): Promise<MenuItemWithCategory[]> {
+    const items = await db
+      .select({
+        id: menuItems.id,
+        label: menuItems.label,
+        type: menuItems.type,
+        categoryId: menuItems.categoryId,
+        customUrl: menuItems.customUrl,
+        parentId: menuItems.parentId,
+        sortOrder: menuItems.sortOrder,
+        isVisible: menuItems.isVisible,
+        createdAt: menuItems.createdAt,
+        updatedAt: menuItems.updatedAt,
+        category: categories,
+      })
       .from(menuItems)
+      .leftJoin(categories, eq(menuItems.categoryId, categories.id))
       .orderBy(asc(menuItems.sortOrder), asc(menuItems.label));
+    
+    return items;
   }
 
   async createMenuItem(menuItem: InsertMenuItem): Promise<MenuItem> {

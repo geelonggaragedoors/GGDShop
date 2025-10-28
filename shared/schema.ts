@@ -791,6 +791,7 @@ export const customerTransactionsRelations = relations(customerTransactions, ({ 
 // Menu Items types and schemas
 export type MenuItem = typeof menuItems.$inferSelect;
 export type InsertMenuItem = typeof menuItems.$inferInsert;
+export type MenuItemWithCategory = MenuItem & { category: Category | null };
 
 export const insertMenuItemSchema = createInsertSchema(menuItems).omit({
   id: true,

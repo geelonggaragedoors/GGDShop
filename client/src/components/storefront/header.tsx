@@ -12,6 +12,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/hooks/useAuth";
 import AdminSwitcher from "@/components/AdminSwitcher";
 import SearchDropdown from "@/components/storefront/SearchDropdown";
+import type { MenuItemWithCategory } from "@shared/schema";
 
 export default function StorefrontHeader() {
   const { cartCount, cartTotal } = useCart();
@@ -22,9 +23,8 @@ export default function StorefrontHeader() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [, setLocation] = useLocation();
 
-  const { data: categories } = useQuery({
-    queryKey: ["/api/categories"],
-    queryFn: api.categories.getAll,
+  const { data: menuItems } = useQuery<MenuItemWithCategory[]>({
+    queryKey: ["/api/menu-items"],
   });
 
   const handleSearch = (query: string) => {
@@ -232,45 +232,57 @@ export default function StorefrontHeader() {
             <li><Link href="/" className="text-gray-700 hover:text-primary transition-colors">Home</Link></li>
             <li><Link href="/products" className="text-gray-700 hover:text-primary transition-colors">All Products</Link></li>
             
-            {/* Main Categories with Dropdown Menus */}
-            {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
-              const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
+            {/* Custom Menu Items */}
+            {menuItems?.filter((item) => !item.parentId && item.isVisible).map((item) => {
+              const childItems = menuItems.filter((child) => child.parentId === item.id && child.isVisible);
+              
+              // Get the link URL based on menu item type
+              const getMenuLink = (menuItem: MenuItemWithCategory) => {
+                if (menuItem.type === 'category' && menuItem.category) {
+                  return `/product-category/${menuItem.category.slug}`;
+                } else if (menuItem.type === 'custom' && menuItem.customUrl) {
+                  return menuItem.customUrl;
+                }
+                return '#';
+              };
               
               return (
                 <li 
-                  key={category.id}
+                  key={item.id}
                   className="relative"
-                  onMouseEnter={() => setHoveredCategory(category.id)}
+                  onMouseEnter={() => setHoveredCategory(item.id)}
                   onMouseLeave={() => setHoveredCategory(null)}
                 >
-                  <Link 
-                    href={`/products/${category.slug}`} 
-                    className="text-gray-700 hover:text-primary font-bold transition-colors flex items-center"
-                  >
-                    {category.name}
-                    {subcategories.length > 0 && (
-                      <ChevronDown className="w-3 h-3 ml-1" />
-                    )}
-                  </Link>
+                  {item.type === 'group' ? (
+                    <button 
+                      className="text-gray-700 hover:text-primary font-bold transition-colors flex items-center"
+                    >
+                      {item.label}
+                      {childItems.length > 0 && (
+                        <ChevronDown className="w-3 h-3 ml-1" />
+                      )}
+                    </button>
+                  ) : (
+                    <Link 
+                      href={getMenuLink(item)} 
+                      className="text-gray-700 hover:text-primary font-bold transition-colors flex items-center"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
                   
-                  {/* Dropdown Menu for Subcategories */}
-                  {subcategories.length > 0 && hoveredCategory === category.id && (
+                  {/* Dropdown Menu for Child Items */}
+                  {childItems.length > 0 && hoveredCategory === item.id && (
                     <div className="absolute left-0 top-full pt-2 z-50">
                       <div className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-48 py-2">
                         <div className="py-2">
-                          <Link
-                            href={`/products/${category.slug}`}
-                            className="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 transition-colors"
-                          >
-                            View All {category.name}
-                          </Link>
-                          {subcategories.map((subcategory: any) => (
+                          {childItems.map((childItem) => (
                             <Link
-                              key={subcategory.id}
-                              href={`/products/${subcategory.slug}`}
+                              key={childItem.id}
+                              href={getMenuLink(childItem)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 transition-colors"
                             >
-                              {subcategory.name}
+                              {childItem.label}
                             </Link>
                           ))}
                         </div>
@@ -304,26 +316,44 @@ export default function StorefrontHeader() {
                   <li>
                     <div className="text-gray-900 font-semibold py-2 mb-2 border-b border-gray-100">Shop</div>
                     <ul className="space-y-2 ml-4">
-                      {categories?.filter((category: any) => !category.parentId && category.isActive).map((category: any) => {
-                        const subcategories = categories.filter((sub: any) => sub.parentId === category.id && sub.isActive);
+                      {menuItems?.filter((item) => !item.parentId && item.isVisible).map((item) => {
+                        const childItems = menuItems.filter((child) => child.parentId === item.id && child.isVisible);
+                        
+                        // Get the link URL based on menu item type
+                        const getMenuLink = (menuItem: MenuItemWithCategory) => {
+                          if (menuItem.type === 'category' && menuItem.category) {
+                            return `/product-category/${menuItem.category.slug}`;
+                          } else if (menuItem.type === 'custom' && menuItem.customUrl) {
+                            return menuItem.customUrl;
+                          }
+                          return '#';
+                        };
                         
                         return (
-                          <li key={category.id}>
-                            <Link 
-                              href={`/products/${category.slug}`}
-                              className="block text-gray-600 hover:text-primary transition-colors py-1"
-                            >
-                              {category.name}
-                            </Link>
-                            {subcategories.length > 0 && (
+                          <li key={item.id}>
+                            {item.type === 'group' ? (
+                              <span className="block text-gray-600 font-medium py-1">
+                                {item.label}
+                              </span>
+                            ) : (
+                              <Link 
+                                href={getMenuLink(item)}
+                                className="block text-gray-600 hover:text-primary transition-colors py-1"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                {item.label}
+                              </Link>
+                            )}
+                            {childItems.length > 0 && (
                               <ul className="ml-4 mt-1 space-y-1">
-                                {subcategories.map((subcategory: any) => (
-                                  <li key={subcategory.id}>
+                                {childItems.map((childItem) => (
+                                  <li key={childItem.id}>
                                     <Link 
-                                      href={`/products/${subcategory.slug}`}
+                                      href={getMenuLink(childItem)}
                                       className="block text-gray-500 hover:text-primary transition-colors py-1 text-sm"
+                                      onClick={() => setIsMobileMenuOpen(false)}
                                     >
-                                      {subcategory.name}
+                                      {childItem.label}
                                     </Link>
                                   </li>
                                 ))}
@@ -332,14 +362,6 @@ export default function StorefrontHeader() {
                           </li>
                         );
                       })}
-                      <li>
-                        <Link 
-                          href="/products"
-                          className="block text-primary font-medium hover:text-primary/80 transition-colors py-1"
-                        >
-                          View All Products
-                        </Link>
-                      </li>
                     </ul>
                   </li>
                   
