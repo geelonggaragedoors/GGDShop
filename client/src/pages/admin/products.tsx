@@ -16,6 +16,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
+import { generateSlug } from "@shared/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X, Wand2 } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
@@ -449,11 +450,8 @@ export default function Products() {
         return;
       }
       
-      // Auto-generate slug from product name when the form submits
-      const slug = data.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
+      // Auto-generate WordPress-compatible slug from product name
+      const slug = generateSlug(data.name);
       
       const productData = {
         ...data,

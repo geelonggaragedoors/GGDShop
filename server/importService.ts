@@ -7,6 +7,7 @@ import { db } from './db';
 import { products, categories, brands } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 import { fileStorage } from './fileStorage';
+import { generateSlug } from '../shared/utils';
 
 interface WooCommerceProduct {
   ID: string;
@@ -30,32 +31,9 @@ interface WooCommerceProduct {
 }
 
 export class ImportService {
-  // Generate WordPress-compatible slugs to match WooCommerce exactly
-  // Faithfully replicates WordPress's sanitize_title() function
+  // Use shared WordPress-compatible slug generation utility
   private generateWordPressSlug(title: string): string {
-    // Transliteration map for common non-ASCII characters
-    const translitMap: { [key: string]: string } = {
-      'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a', 'æ': 'ae',
-      'ç': 'c', 'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e', 'ì': 'i', 'í': 'i',
-      'î': 'i', 'ï': 'i', 'ñ': 'n', 'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o',
-      'ö': 'o', 'ø': 'o', 'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u', 'ý': 'y',
-      'ÿ': 'y', 'ß': 'ss', 'œ': 'oe'
-    };
-
-    return title
-      .toLowerCase()
-      .trim()
-      // Transliterate non-ASCII characters (e.g., Café → cafe)
-      .split('').map(char => translitMap[char] || char).join('')
-      // Remove HTML entities
-      .replace(/&amp;/g, '')
-      .replace(/&[a-z]+;/g, '')
-      // Replace non-alphanumeric characters with hyphens
-      .replace(/[^a-z0-9]+/g, '-')
-      // Remove consecutive hyphens
-      .replace(/-+/g, '-')
-      // Trim hyphens from start and end
-      .replace(/^-+|-+$/g, '');
+    return generateSlug(title);
   }
 
   private async downloadImage(url: string): Promise<{ filename: string; url: string } | null> {

@@ -88,6 +88,7 @@ import { analyticsService } from "./analyticsService";
 import { authService } from "./authService";
 import { emailService } from "./email";
 import { sitemapService } from "./sitemapService";
+import { generateSlug } from "../shared/utils";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add X-Robots-Tag header for pickup and delivery pages
@@ -864,6 +865,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .toUpperCase();
         req.body.sku = `${namePrefix}${timestamp}`;
         console.log("Generated SKU:", req.body.sku);
+      }
+      
+      // Handle empty slug values - generate WordPress-compatible slug
+      if (!req.body.slug || req.body.slug === "") {
+        req.body.slug = generateSlug(req.body.name);
+        console.log("Generated slug:", req.body.slug);
       }
       
       const productData = insertProductSchema.parse(req.body);
