@@ -18,7 +18,8 @@ import {
   insertStaffInvitationSchema,
   insertRoleSchema,
   insertCustomerReviewSchema,
-  insertEnquirySchema
+  insertEnquirySchema,
+  insertMenuItemSchema
 } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
@@ -1241,6 +1242,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: error.message });
       }
       res.status(500).json({ message: "Failed to delete category" });
+    }
+  });
+
+  // Menu Items Management (Custom Navigation Menu)
+  // Public endpoint to get visible menu items for storefront
+  app.get('/api/menu-items', async (req, res) => {
+    try {
+      const menuItems = await storage.getMenuItems();
+      res.json(menuItems);
+    } catch (error) {
+      console.error("Error fetching menu items:", error);
+      res.status(500).json({ message: "Failed to fetch menu items" });
+    }
+  });
+
+  // Admin endpoint to get all menu items (including hidden ones)
+  app.get('/api/admin/menu-items', hybridAuth, async (req, res) => {
+    try {
+      const menuItems = await storage.getAllMenuItems();
+      res.json(menuItems);
+    } catch (error) {
+      console.error("Error fetching menu items:", error);
+      res.status(500).json({ message: "Failed to fetch menu items" });
+    }
+  });
+
+  // Create new menu item
+  app.post('/api/admin/menu-items', hybridAuth, async (req, res) => {
+    try {
+      const menuItemData = insertMenuItemSchema.parse(req.body);
+      const menuItem = await storage.createMenuItem(menuItemData);
+      res.status(201).json(menuItem);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid menu item data", errors: error.errors });
+      }
+      console.error("Error creating menu item:", error);
+      res.status(500).json({ message: "Failed to create menu item" });
+    }
+  });
+
+  // Update menu item
+  app.put('/api/admin/menu-items/:id', hybridAuth, async (req, res) => {
+    try {
+      const menuItemData = insertMenuItemSchema.partial().parse(req.body);
+      const menuItem = await storage.updateMenuItem(req.params.id, menuItemData);
+      if (!menuItem) {
+        return res.status(404).json({ message: "Menu item not found" });
+      }
+      res.json(menuItem);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid menu item data", errors: error.errors });
+      }
+      console.error("Error updating menu item:", error);
+      res.status(500).json({ message: "Failed to update menu item" });
+    }
+  });
+
+  // Delete menu item
+  app.delete('/api/admin/menu-items/:id', hybridAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteMenuItem(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Menu item not found" });
+      }
+      res.json({ message: "Menu item deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting menu item:", error);
+      res.status(500).json({ message: "Failed to delete menu item" });
+    }
+  });
+
+  // Bulk reorder menu items
+  app.put('/api/admin/menu-items/reorder', hybridAuth, async (req, res) => {
+    try {
+      const { items } = req.body; // Array of { id, sortOrder }
+      if (!Array.isArray(items)) {
+        return res.status(400).json({ message: "Items must be an array" });
+      }
+      await storage.reorderMenuItems(items);
+      res.json({ message: "Menu items reordered successfully" });
+    } catch (error) {
+      console.error("Error reordering menu items:", error);
+      res.status(500).json({ message: "Failed to reorder menu items" });
     }
   });
 

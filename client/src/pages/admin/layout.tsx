@@ -17,7 +17,7 @@ import Customers from "./customers";
 import Media from "./media";
 import Staff from "./staff";
 import Reviews from "./reviews";
-
+import MenuManager from "./menu-manager";
 import SettingsPage from "./settings";
 import SiteSettings from "./site-settings";
 import EmailTest from "./email-test";
@@ -33,7 +33,7 @@ import {
   Images,
   UserCheck,
   Star,
-
+  Menu,
   Settings as SettingsIcon,
   Store,
   Bell,
@@ -53,6 +53,7 @@ const sidebarItems = [
   { id: "orders", label: "Orders", icon: ShoppingCart, path: "/admin/orders" },
   { id: "events", label: "Events & Notifications", icon: Activity, path: "/admin/events" },
   { id: "categories", label: "Categories", icon: Tags, path: "/admin/categories" },
+  { id: "menu-manager", label: "Menu Manager", icon: Menu, path: "/admin/menu-manager" },
   { id: "brands", label: "Brands", icon: Building, path: "/admin/brands" },
   { id: "customers", label: "Customers", icon: Users, path: "/admin/customers" },
   { id: "reviews", label: "Reviews", icon: Star, path: "/admin/reviews" },
@@ -91,6 +92,8 @@ export default function AdminLayout() {
         return { title: "Events & Notifications", subtitle: "Monitor webhook events, email notifications, and system alerts" };
       case "categories":
         return { title: "Categories", subtitle: "Organize your product categories" };
+      case "menu-manager":
+        return { title: "Menu Manager", subtitle: "Customize navigation menu (SEO-friendly)" };
       case "brands":
         return { title: "Brands", subtitle: "Manage product brands and manufacturers" };
       case "customers":
@@ -123,6 +126,8 @@ export default function AdminLayout() {
         return <EventsPage />;
       case "categories":
         return <Categories />;
+      case "menu-manager":
+        return <MenuManager />;
       case "brands":
         return <Brands />;
       case "customers":

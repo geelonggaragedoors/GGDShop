@@ -16,6 +16,7 @@ import {
   siteSettings,
   emailTemplates,
   emailSettingsConfig,
+  menuItems,
   type User,
   type UpsertUser,
   type Category,
@@ -47,6 +48,8 @@ import {
   type InsertEmailTemplate,
   type EmailSettingConfig,
   type InsertEmailSettingConfig,
+  type MenuItem,
+  type InsertMenuItem,
   customerTransactions,
   type CustomerTransaction,
   type InsertCustomerTransaction,
@@ -76,6 +79,14 @@ export interface IStorage {
   createCategory(category: InsertCategory): Promise<Category>;
   updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category | undefined>;
   deleteCategory(id: string): Promise<boolean>;
+
+  // Menu items operations
+  getMenuItems(): Promise<MenuItem[]>;
+  getAllMenuItems(): Promise<MenuItem[]>;
+  createMenuItem(menuItem: InsertMenuItem): Promise<MenuItem>;
+  updateMenuItem(id: string, menuItem: Partial<InsertMenuItem>): Promise<MenuItem | undefined>;
+  deleteMenuItem(id: string): Promise<boolean>;
+  reorderMenuItems(items: Array<{ id: string; sortOrder: number }>): Promise<void>;
 
   // Brand operations
   getBrands(): Promise<Brand[]>;
@@ -368,6 +379,61 @@ export class DatabaseStorage implements IStorage {
     
     const result = await db.delete(categories).where(eq(categories.id, id));
     return result.rowCount! > 0;
+  }
+
+  // Menu Items operations
+  async getMenuItems(): Promise<MenuItem[]> {
+    return db
+      .select()
+      .from(menuItems)
+      .where(eq(menuItems.isVisible, true))
+      .orderBy(asc(menuItems.sortOrder), asc(menuItems.label));
+  }
+
+  async getAllMenuItems(): Promise<MenuItem[]> {
+    return db
+      .select()
+      .from(menuItems)
+      .orderBy(asc(menuItems.sortOrder), asc(menuItems.label));
+  }
+
+  async createMenuItem(menuItem: InsertMenuItem): Promise<MenuItem> {
+    const [newMenuItem] = await db.insert(menuItems).values(menuItem).returning();
+    return newMenuItem;
+  }
+
+  async updateMenuItem(id: string, menuItem: Partial<InsertMenuItem>): Promise<MenuItem | undefined> {
+    const [updatedMenuItem] = await db
+      .update(menuItems)
+      .set({ ...menuItem, updatedAt: new Date() })
+      .where(eq(menuItems.id, id))
+      .returning();
+    return updatedMenuItem;
+  }
+
+  async deleteMenuItem(id: string): Promise<boolean> {
+    // Check if menu item has children (submenu items)
+    const childrenCount = await db
+      .select({ count: count() })
+      .from(menuItems)
+      .where(eq(menuItems.parentId, id));
+    
+    if (childrenCount[0]?.count > 0) {
+      throw new Error(`Cannot delete menu item. It has ${childrenCount[0].count} submenu item(s). Please move or delete all submenu items first.`);
+    }
+    
+    const result = await db.delete(menuItems).where(eq(menuItems.id, id));
+    return result.rowCount! > 0;
+  }
+
+  async reorderMenuItems(items: Array<{ id: string; sortOrder: number }>): Promise<void> {
+    // Update sort order for each item in a transaction
+    for (const item of items) {
+      await db
+        .update(menuItems)
+        .set({ sortOrder: item.sortOrder, updatedAt: new Date() })
+        .where(eq(menuItems.id, item.id));
+    }
   }
 
   // Brand operations
