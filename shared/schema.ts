@@ -104,6 +104,20 @@ export const categories = pgTable("categories", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Menu Items table - Custom navigation menu structure
+export const menuItems = pgTable("menu_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  label: varchar("label", { length: 255 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // 'category', 'custom', 'group'
+  categoryId: uuid("category_id"), // Links to category if type is 'category'
+  customUrl: varchar("custom_url"), // Custom URL if type is 'custom'
+  parentId: uuid("parent_id"), // For nested menus (dropdown items)
+  sortOrder: integer("sort_order").default(0).notNull(),
+  isVisible: boolean("is_visible").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Brands table
 export const brands = pgTable("brands", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -773,3 +787,13 @@ export const customerTransactionsRelations = relations(customerTransactions, ({ 
     references: [orders.id],
   }),
 }));
+
+// Menu Items types and schemas
+export type MenuItem = typeof menuItems.$inferSelect;
+export type InsertMenuItem = typeof menuItems.$inferInsert;
+
+export const insertMenuItemSchema = createInsertSchema(menuItems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
