@@ -37,6 +37,7 @@ Business model: E-commerce parts supplier - sells garage door parts for shipping
 - **Admin Dashboard**: Responsive UI, CRUD operations for all entities, basic analytics, bulk operations.
 - **SEO Implementation**: WordPress/WooCommerce compatible URL structures, 301 redirects, `sanitize_title()` function for slug generation, Schema.org structured data, XML sitemap generation, enhanced meta tags.
 - **Email System**: Integration with Resend for all transactional emails.
+- **Custom Menu System**: Admin-editable navigation menu separate from category structure, supports nested dropdowns, category links, and custom URLs. Pre-populated with "Option 2" structure (Doors dropdown, Motors & Openers, New Parts, Refurbished, Second Hand, Clearance Sale) for clean UX while preserving SEO-friendly category URLs.
 
 ## External Dependencies
 
