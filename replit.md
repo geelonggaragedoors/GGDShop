@@ -7,9 +7,9 @@ This is a full-stack e-commerce platform built for Geelong Garage Doors, featuri
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
-Email domain: Using geelonggaragedoors.com (verified in SendGrid) instead of .com.au
+Email domain: Using geelonggaragedoors.com instead of .com.au
 Deployment: Site deployed to geelonggaragedoors.com - needs NODE_ENV=production for correct password reset URLs
-Email system: Using SendGrid with API key stored securely in Replit Secrets
+Email system: Using Resend for all transactional emails (password resets, order confirmations, shipping notifications) with API key stored securely in Replit Secrets
 Font preferences: Quicksand medium 500 for "Geelong" in reddish color (#c53030), Raleway black 900 for "GARAGE DOORS" with white background
 Payment system: PayPal-only checkout (handles both PayPal accounts and guest credit card payments)
 Design preference: Blue-only color scheme throughout application
@@ -114,6 +114,20 @@ Business model: E-commerce parts supplier - sells garage door parts for shipping
 The architecture emphasizes type safety, performance, and maintainability while providing a solid foundation for e-commerce operations. The hybrid authentication system allows for flexible deployment options, and the modular design enables easy feature additions and modifications.
 
 ## Recent Changes (October 2025)
+
+### Email Service Migration to Resend (October 28, 2025)
+- **Switched from SendGrid to Resend** for all transactional email communications
+- **All email types migrated**: Password resets, order confirmations, shipping notifications, payment confirmations
+- **API Key Management**: Resend API key securely stored in Replit Secrets
+- **Verified Functionality**: Test email successfully sent and delivered
+- **From Address**: admin@geelonggaragedoors.com for all system emails
+
+### WordPress-Compatible Product Slug Generation (October 28, 2025)
+- **Created shared slug utility** (`shared/utils.ts`) for consistent slug generation across frontend and backend
+- **WordPress parity**: Faithful recreation of WordPress's `sanitize_title()` function with transliteration
+- **Character handling**: Non-ASCII characters properly converted (é→e, ü→u, ç→c, etc.)
+- **Backend fallback**: Automatic slug generation if frontend doesn't provide one
+- **Import compatibility**: Ensures imported WooCommerce products maintain their original slugs
 
 ### Comprehensive SEO Implementation for WordPress/WooCommerce Migration (October 28, 2025)
 - **Complete URL Structure Migration**: Changed category URLs from `/products/:categorySlug` to `/product-category/:categorySlug` to match WordPress/WooCommerce exactly
