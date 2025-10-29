@@ -329,52 +329,95 @@ export default function SiteSettings() {
                         </div>
                         
                         {/* Quick Preset Buttons */}
-                        <div className="mt-3 flex gap-2 flex-wrap">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleImagePositionChange(50, 0)}
-                            className="text-xs"
-                          >
-                            Top Center
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleImagePositionChange(50, 50)}
-                            className="text-xs"
-                          >
-                            Center
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleImagePositionChange(50, 100)}
-                            className="text-xs"
-                          >
-                            Bottom Center
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleImagePositionChange(0, 50)}
-                            className="text-xs"
-                          >
-                            Left Center
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleImagePositionChange(100, 50)}
-                            className="text-xs"
-                          >
-                            Right Center
-                          </Button>
+                        <div className="mt-3 space-y-2">
+                          <div className="text-xs font-medium text-gray-600 mb-1">Quick Positions:</div>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(0, 0)}
+                              className="text-xs"
+                            >
+                              Left Top
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(50, 0)}
+                              className="text-xs"
+                            >
+                              Top Center
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(100, 0)}
+                              className="text-xs"
+                            >
+                              Right Top
+                            </Button>
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(0, 50)}
+                              className="text-xs"
+                            >
+                              Left
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(50, 50)}
+                              className="text-xs"
+                            >
+                              Center
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(100, 50)}
+                              className="text-xs"
+                            >
+                              Right
+                            </Button>
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(0, 100)}
+                              className="text-xs"
+                            >
+                              Left Bottom
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(50, 100)}
+                              className="text-xs"
+                            >
+                              Bottom Center
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImagePositionChange(100, 100)}
+                              className="text-xs"
+                            >
+                              Right Bottom
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
