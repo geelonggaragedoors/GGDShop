@@ -221,7 +221,7 @@ export default function SiteSettings() {
                           className="relative h-48 rounded-lg overflow-hidden border-2 border-gray-300 cursor-move"
                           style={{
                             backgroundImage: `url('${formData[setting.key]}')`,
-                            backgroundSize: 'cover',
+                            backgroundSize: formData['hero_image_zoom'] ? `${formData['hero_image_zoom']}%` : 'cover',
                             backgroundPosition: formData['hero_image_position_custom'] || '50% 50%',
                             backgroundRepeat: 'no-repeat'
                           }}
@@ -275,7 +275,7 @@ export default function SiteSettings() {
                         </div>
                         
                         {/* Position Controls */}
-                        <div className="mt-3 grid grid-cols-2 gap-4">
+                        <div className="mt-3 grid grid-cols-3 gap-4">
                           <div>
                             <Label className="text-xs text-gray-600">Horizontal Position</Label>
                             <input
@@ -307,6 +307,23 @@ export default function SiteSettings() {
                               <span>Top</span>
                               <span>Center</span>
                               <span>Bottom</span>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <Label className="text-xs text-gray-600">Zoom Level</Label>
+                            <input
+                              type="range"
+                              min="50"
+                              max="200"
+                              value={formData['hero_image_zoom'] || '100'}
+                              onChange={(e) => handleInputChange('hero_image_zoom', e.target.value)}
+                              className="w-full mt-1"
+                            />
+                            <div className="flex justify-between text-xs text-gray-400 mt-1">
+                              <span>Out</span>
+                              <span>{formData['hero_image_zoom'] || '100'}%</span>
+                              <span>In</span>
                             </div>
                           </div>
                         </div>
