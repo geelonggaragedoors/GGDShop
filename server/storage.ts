@@ -63,6 +63,8 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, like, and, or, count, sql, isNull, not } from "drizzle-orm";
+import * as fs from "fs";
+import * as path from "path";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -646,6 +648,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProduct(id: string): Promise<boolean> {
+    // Get product to retrieve image paths before deletion
+    const product = await this.getProductById(id);
+    
+    if (product && product.images) {
+      const imageArray = product.images as string[];
+      
+      // Delete each image file
+      for (const imagePath of imageArray) {
+        if (imagePath && imagePath.startsWith('/uploads/')) {
+          const filePath = path.join(process.cwd(), imagePath.substring(1));
+          try {
+            await fs.promises.unlink(filePath);
+          } catch (error) {
+            // Image file might not exist, continue anyway
+            console.log(`Could not delete image ${filePath}:`, error);
+          }
+        }
+      }
+    }
+    
+    // Delete the product from database
     const result = await db.delete(products).where(eq(products.id, id));
     return result.rowCount! > 0;
   }
