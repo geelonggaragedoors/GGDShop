@@ -24,26 +24,42 @@ interface Product {
 const loadImageAsBase64 = (url: string): Promise<string | null> => {
   return new Promise((resolve) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    
+    // Only set crossOrigin for external URLs
+    const isSameOrigin = url.startsWith('/') || url.startsWith(window.location.origin);
+    if (!isSameOrigin) {
+      img.crossOrigin = 'anonymous';
+    }
     
     img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      // Set canvas size
-      canvas.width = img.width;
-      canvas.height = img.height;
-      
-      // Draw image
-      ctx?.drawImage(img, 0, 0);
-      
-      // Get base64 data
-      const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-      resolve(dataURL);
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          console.error('Failed to get canvas context');
+          resolve(null);
+          return;
+        }
+        
+        // Set canvas size
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw image
+        ctx.drawImage(img, 0, 0);
+        
+        // Get base64 data
+        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+        resolve(dataURL);
+      } catch (error) {
+        console.error('Error converting image to base64:', error);
+        resolve(null);
+      }
     };
     
-    img.onerror = () => {
-      console.error('Failed to load image:', url);
+    img.onerror = (error) => {
+      console.error('Failed to load image:', url, error);
       resolve(null);
     };
     
@@ -255,10 +271,25 @@ export default function ProductCatalogExport() {
 
             if (hasImages) {
               const firstImagePath = product.images[0];
-              const imageUrl = `${window.location.origin}${firstImagePath}`;
+              
+              // Construct proper image URL
+              let imageUrl: string;
+              if (firstImagePath.startsWith('http://') || firstImagePath.startsWith('https://')) {
+                // Already absolute URL
+                imageUrl = firstImagePath;
+              } else if (firstImagePath.startsWith('/')) {
+                // Relative path from root
+                imageUrl = `${window.location.origin}${firstImagePath}`;
+              } else {
+                // Relative path without leading slash
+                imageUrl = `${window.location.origin}/${firstImagePath}`;
+              }
+              
+              console.log(`Loading image: ${imageUrl}`);
               const imageBase64 = await loadImageAsBase64(imageUrl);
 
               if (imageBase64) {
+                console.log(`Successfully loaded image: ${imageUrl}`);
                 const img = new Image();
                 img.src = imageBase64;
 
