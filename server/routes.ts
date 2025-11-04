@@ -1197,7 +1197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             newPrice = value;
           }
 
-          await storage.updateProduct(productId, { price: newPrice.toString() });
+          await storage.updateProduct(productId, { price: newPrice });
           successCount++;
         } catch (error) {
           console.error(`Failed to update product ${productId}:`, error);

@@ -34,7 +34,7 @@ Business model: E-commerce parts supplier - sells garage door parts for shipping
 ### Key Features
 - **Authentication System**: Dual Replit OAuth and password authentication, bcrypt hashing, rate limiting, PostgreSQL session storage, role-based access (Admin, Manager, Staff).
 - **E-commerce Capabilities**: Product CRUD, order processing with status tracking, PayPal-only checkout, Australia Post API for real-time shipping, inventory management, smart checkout.
-- **Admin Dashboard**: Responsive UI, CRUD operations for all entities, basic analytics, bulk operations.
+- **Admin Dashboard**: Responsive UI, CRUD operations for all entities, basic analytics, comprehensive bulk operations with Quick Actions dropdown (Brand assignment, Price updates with increase/decrease/set modes, Stock updates, Publication toggle, Active status toggle, Free shipping toggle).
 - **SEO Implementation**: WordPress/WooCommerce compatible URL structures, 301 redirects, `sanitize_title()` function for slug generation, Schema.org structured data, XML sitemap generation, enhanced meta tags.
 - **Email System**: Integration with Resend for all transactional emails.
 - **Custom Menu System**: Admin-editable navigation menu separate from category structure, supports nested dropdowns, category links, and custom URLs. Pre-populated with "Option 2" structure (Doors dropdown, Motors & Openers, New Parts, Refurbished, Second Hand, Clearance Sale) for clean UX while preserving SEO-friendly category URLs.
