@@ -21,50 +21,75 @@ interface Product {
 }
 
 // Helper function to load image and return base64 data
-const loadImageAsBase64 = (url: string): Promise<string | null> => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    
-    // Only set crossOrigin for external URLs
+const loadImageAsBase64 = async (url: string): Promise<string | null> => {
+  try {
+    // Use fetch for same-origin images to avoid CORS issues
     const isSameOrigin = url.startsWith('/') || url.startsWith(window.location.origin);
-    if (!isSameOrigin) {
-      img.crossOrigin = 'anonymous';
-    }
     
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        if (!ctx) {
-          console.error('Failed to get canvas context');
-          resolve(null);
-          return;
-        }
-        
-        // Set canvas size
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // Draw image
-        ctx.drawImage(img, 0, 0);
-        
-        // Get base64 data
-        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-        resolve(dataURL);
-      } catch (error) {
-        console.error('Error converting image to base64:', error);
-        resolve(null);
+    if (isSameOrigin) {
+      // Fetch the image as a blob
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error('Failed to fetch image:', url, response.status);
+        return null;
       }
-    };
-    
-    img.onerror = (error) => {
-      console.error('Failed to load image:', url, error);
-      resolve(null);
-    };
-    
-    img.src = url;
-  });
+      
+      const blob = await response.blob();
+      
+      // Convert blob to base64
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result as string;
+          resolve(base64);
+        };
+        reader.onerror = () => {
+          console.error('Failed to read blob:', url);
+          resolve(null);
+        };
+        reader.readAsDataURL(blob);
+      });
+    } else {
+      // For external URLs, use Image element with crossOrigin
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            if (!ctx) {
+              console.error('Failed to get canvas context');
+              resolve(null);
+              return;
+            }
+            
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+            resolve(dataURL);
+          } catch (error) {
+            console.error('Error converting image to base64:', error);
+            resolve(null);
+          }
+        };
+        
+        img.onerror = (error) => {
+          console.error('Failed to load image:', url, error);
+          resolve(null);
+        };
+        
+        img.src = url;
+      });
+    }
+  } catch (error) {
+    console.error('Error loading image:', url, error);
+    return null;
+  }
 };
 
 export default function ProductCatalogExport() {
