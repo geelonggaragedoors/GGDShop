@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { getFirstImage, handleImageError } from "@/lib/imageUtils";
 
 export default function BestSellers() {
   const { addToCart } = useCart();
@@ -109,17 +110,12 @@ export default function BestSellers() {
           {products.map((product) => (
             <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
               <div className="relative overflow-hidden rounded-t-lg">
-                {(product as any).images && (product as any).images.length > 0 ? (
-                  <img
-                    src={(product as any).images[0]}
-                    alt={product.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <ShoppingCart className="w-16 h-16 text-gray-400" />
-                  </div>
-                )}
+                <img
+                  src={getFirstImage((product as any).images, 'product')}
+                  alt={product.name}
+                  onError={(e) => handleImageError(e, 'product')}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
                 
                 <div className="absolute top-4 left-4">
                   <Badge className="bg-red-500 text-white">Best Seller</Badge>

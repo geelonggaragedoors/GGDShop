@@ -1,5 +1,5 @@
 import { writeFile, mkdir, readFile, unlink } from 'fs/promises';
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { nanoid } from 'nanoid';
 
@@ -14,9 +14,16 @@ export class FileStorageService {
     this.ensureUploadDir();
   }
 
-  private async ensureUploadDir() {
-    if (!existsSync(this.uploadDir)) {
-      await mkdir(this.uploadDir, { recursive: true });
+  private ensureUploadDir() {
+    try {
+      if (!existsSync(this.uploadDir)) {
+        mkdirSync(this.uploadDir, { recursive: true });
+        console.log('✅ Created uploads directory:', this.uploadDir);
+      } else {
+        console.log('✅ Uploads directory exists:', this.uploadDir);
+      }
+    } catch (error) {
+      console.error('❌ Error creating uploads directory:', error);
     }
   }
 

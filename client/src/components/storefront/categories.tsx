@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { Link } from "wouter";
+import { getImageUrl, handleImageError } from "@/lib/imageUtils";
 
 const categoryImages = {
   "residential": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600",
@@ -15,7 +16,13 @@ export default function Categories() {
     queryFn: api.categories.getAll,
   });
 
-  const getImageForCategory = (categoryName: string) => {
+  const getImageForCategory = (categoryName: string, categoryImage?: string) => {
+    // If category has an image, use it with proper URL handling
+    if (categoryImage) {
+      return getImageUrl(categoryImage, 'category');
+    }
+    
+    // Otherwise use fallback based on category name
     const name = categoryName.toLowerCase();
     if (name.includes('residential')) return categoryImages.residential;
     if (name.includes('commercial')) return categoryImages.commercial;
@@ -55,8 +62,9 @@ export default function Categories() {
                 <Card className="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-xl border-0">
                   <div className="relative">
                     <img 
-                      src={category.image || getImageForCategory(category.name)}
+                      src={getImageForCategory(category.name, category.image)}
                       alt={category.name}
+                      onError={(e) => handleImageError(e, 'category')}
                       className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
