@@ -1141,6 +1141,200 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk update brand
+  app.post('/api/admin/products/bulk-update-brand', hybridAuth, async (req, res) => {
+    try {
+      const { productIds, brandId } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+
+      let successCount = 0;
+      for (const productId of productIds) {
+        try {
+          await storage.updateProduct(productId, { brandId });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to update product ${productId}:`, error);
+        }
+      }
+
+      res.json({
+        success: true,
+        updated: successCount,
+        total: productIds.length
+      });
+    } catch (error: any) {
+      console.error("Bulk update brand error:", error);
+      res.status(500).json({ message: "Failed to update brand" });
+    }
+  });
+
+  // Bulk update price
+  app.post('/api/admin/products/bulk-update-price', hybridAuth, async (req, res) => {
+    try {
+      const { productIds, action, value } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+
+      let successCount = 0;
+      for (const productId of productIds) {
+        try {
+          const product = await storage.getProductById(productId);
+          if (!product) continue;
+
+          const currentPrice = parseFloat(product.price || '0');
+          let newPrice = currentPrice;
+
+          if (action === 'increase') {
+            newPrice = currentPrice * (1 + value / 100);
+          } else if (action === 'decrease') {
+            newPrice = currentPrice * (1 - value / 100);
+          } else if (action === 'set') {
+            newPrice = value;
+          }
+
+          await storage.updateProduct(productId, { price: newPrice.toString() });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to update product ${productId}:`, error);
+        }
+      }
+
+      res.json({
+        success: true,
+        updated: successCount,
+        total: productIds.length
+      });
+    } catch (error: any) {
+      console.error("Bulk update price error:", error);
+      res.status(500).json({ message: "Failed to update prices" });
+    }
+  });
+
+  // Bulk update stock
+  app.post('/api/admin/products/bulk-update-stock', hybridAuth, async (req, res) => {
+    try {
+      const { productIds, quantity } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+
+      let successCount = 0;
+      for (const productId of productIds) {
+        try {
+          await storage.updateProduct(productId, { stockQuantity: quantity });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to update product ${productId}:`, error);
+        }
+      }
+
+      res.json({
+        success: true,
+        updated: successCount,
+        total: productIds.length
+      });
+    } catch (error: any) {
+      console.error("Bulk update stock error:", error);
+      res.status(500).json({ message: "Failed to update stock" });
+    }
+  });
+
+  // Bulk toggle publish
+  app.post('/api/admin/products/bulk-toggle-publish', hybridAuth, async (req, res) => {
+    try {
+      const { productIds, status } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+
+      let successCount = 0;
+      for (const productId of productIds) {
+        try {
+          await storage.updateProduct(productId, { status });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to update product ${productId}:`, error);
+        }
+      }
+
+      res.json({
+        success: true,
+        updated: successCount,
+        total: productIds.length
+      });
+    } catch (error: any) {
+      console.error("Bulk toggle publish error:", error);
+      res.status(500).json({ message: "Failed to update publication status" });
+    }
+  });
+
+  // Bulk toggle active
+  app.post('/api/admin/products/bulk-toggle-active', hybridAuth, async (req, res) => {
+    try {
+      const { productIds, isActive } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+
+      let successCount = 0;
+      for (const productId of productIds) {
+        try {
+          await storage.updateProduct(productId, { isActive });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to update product ${productId}:`, error);
+        }
+      }
+
+      res.json({
+        success: true,
+        updated: successCount,
+        total: productIds.length
+      });
+    } catch (error: any) {
+      console.error("Bulk toggle active error:", error);
+      res.status(500).json({ message: "Failed to update status" });
+    }
+  });
+
+  // Bulk toggle shipping
+  app.post('/api/admin/products/bulk-toggle-shipping', hybridAuth, async (req, res) => {
+    try {
+      const { productIds, freePostage } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: "Product IDs array is required" });
+      }
+
+      let successCount = 0;
+      for (const productId of productIds) {
+        try {
+          await storage.updateProduct(productId, { freePostage });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to update product ${productId}:`, error);
+        }
+      }
+
+      res.json({
+        success: true,
+        updated: successCount,
+        total: productIds.length
+      });
+    } catch (error: any) {
+      console.error("Bulk toggle shipping error:", error);
+      res.status(500).json({ message: "Failed to update shipping" });
+    }
+  });
+
   // Update product status (publish/unpublish)
   app.patch('/api/admin/products/:id/status', hybridAuth, async (req, res) => {
     try {

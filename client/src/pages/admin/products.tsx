@@ -18,7 +18,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
 import { generateSlug } from "@shared/utils";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X, Wand2 } from "lucide-react";
+import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X, Wand2, ChevronDown, DollarSign, Package, Eye, Activity, Truck } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { FileUpload } from "@/components/FileUpload";
 import { ProductImport } from "@/components/admin/ProductImport";
 import ProductCatalogExport from "@/components/admin/ProductCatalogExport";
@@ -47,6 +48,15 @@ export default function Products() {
   const [customShippingPrice, setCustomShippingPrice] = useState(0);
   const [suggestedBox, setSuggestedBox] = useState<{id: string, name: string, cost: number, note?: string} | null>(null);
   const [shippingType, setShippingType] = useState<'satchel' | 'box' | ''>('');
+  
+  // Quick Actions dialogs
+  const [quickActionBrand, setQuickActionBrand] = useState(false);
+  const [quickActionPrice, setQuickActionPrice] = useState(false);
+  const [quickActionStock, setQuickActionStock] = useState(false);
+  const [selectedBulkBrand, setSelectedBulkBrand] = useState("");
+  const [bulkPriceAction, setBulkPriceAction] = useState<'increase' | 'decrease' | 'set'>('increase');
+  const [bulkPriceValue, setBulkPriceValue] = useState(0);
+  const [bulkStockValue, setBulkStockValue] = useState(0);
 
   const { toast } = useToast();
 
@@ -396,7 +406,75 @@ export default function Products() {
     },
   });
 
+  // Quick Actions Mutations
+  const bulkUpdateBrandMutation = useMutation({
+    mutationFn: async ({ productIds, brandId }: { productIds: string[]; brandId: string }) => {
+      return apiRequest('POST', '/api/admin/products/bulk-update-brand', { productIds, brandId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      setSelectedProducts([]);
+      setQuickActionBrand(false);
+      toast({ title: "Brand updated successfully" });
+    }
+  });
 
+  const bulkUpdatePriceMutation = useMutation({
+    mutationFn: async ({ productIds, action, value }: { productIds: string[]; action: string; value: number }) => {
+      return apiRequest('POST', '/api/admin/products/bulk-update-price', { productIds, action, value });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      setSelectedProducts([]);
+      setQuickActionPrice(false);
+      toast({ title: "Prices updated successfully" });
+    }
+  });
+
+  const bulkUpdateStockMutation = useMutation({
+    mutationFn: async ({ productIds, quantity }: { productIds: string[]; quantity: number }) => {
+      return apiRequest('POST', '/api/admin/products/bulk-update-stock', { productIds, quantity });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      setSelectedProducts([]);
+      setQuickActionStock(false);
+      toast({ title: "Stock updated successfully" });
+    }
+  });
+
+  const bulkTogglePublishMutation = useMutation({
+    mutationFn: async ({ productIds, status }: { productIds: string[]; status: 'published' | 'draft' }) => {
+      return apiRequest('POST', '/api/admin/products/bulk-toggle-publish', { productIds, status });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      setSelectedProducts([]);
+      toast({ title: "Publication status updated" });
+    }
+  });
+
+  const bulkToggleActiveMutation = useMutation({
+    mutationFn: async ({ productIds, isActive }: { productIds: string[]; isActive: boolean }) => {
+      return apiRequest('POST', '/api/admin/products/bulk-toggle-active', { productIds, isActive });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      setSelectedProducts([]);
+      toast({ title: "Status updated successfully" });
+    }
+  });
+
+  const bulkToggleShippingMutation = useMutation({
+    mutationFn: async ({ productIds, freePostage }: { productIds: string[]; freePostage: boolean }) => {
+      return apiRequest('POST', '/api/admin/products/bulk-toggle-shipping', { productIds, freePostage });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      setSelectedProducts([]);
+      toast({ title: "Shipping updated successfully" });
+    }
+  });
 
   const form = useForm({
     resolver: zodResolver(insertProductSchema),
@@ -2117,6 +2195,56 @@ export default function Products() {
                 </Button>
               </div>
               <div className="flex items-center space-x-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="border-blue-300 text-blue-900">
+                      <Wand2 className="w-4 h-4 mr-2" />
+                      Quick Actions
+                      <ChevronDown className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem onClick={() => setQuickActionBrand(true)}>
+                      <Package className="w-4 h-4 mr-2" />
+                      Assign Brand
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setQuickActionPrice(true)}>
+                      <DollarSign className="w-4 h-4 mr-2" />
+                      Update Prices
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setQuickActionStock(true)}>
+                      <Package className="w-4 h-4 mr-2" />
+                      Update Stock
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => bulkTogglePublishMutation.mutate({ productIds: selectedProducts, status: 'published' })}>
+                      <Eye className="w-4 h-4 mr-2" />
+                      Publish Selected
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => bulkTogglePublishMutation.mutate({ productIds: selectedProducts, status: 'draft' })}>
+                      <Eye className="w-4 h-4 mr-2 opacity-50" />
+                      Unpublish Selected
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => bulkToggleActiveMutation.mutate({ productIds: selectedProducts, isActive: true })}>
+                      <Activity className="w-4 h-4 mr-2" />
+                      Activate Selected
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => bulkToggleActiveMutation.mutate({ productIds: selectedProducts, isActive: false })}>
+                      <Activity className="w-4 h-4 mr-2 opacity-50" />
+                      Deactivate Selected
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => bulkToggleShippingMutation.mutate({ productIds: selectedProducts, freePostage: true })}>
+                      <Truck className="w-4 h-4 mr-2" />
+                      Enable Free Shipping
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => bulkToggleShippingMutation.mutate({ productIds: selectedProducts, freePostage: false })}>
+                      <Truck className="w-4 h-4 mr-2 opacity-50" />
+                      Disable Free Shipping
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button
                   variant="destructive"
                   size="sm"
@@ -2187,28 +2315,130 @@ export default function Products() {
         </DialogContent>
       </Dialog>
 
+      {/* Quick Action: Assign Brand */}
+      <Dialog open={quickActionBrand} onOpenChange={setQuickActionBrand}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Assign Brand to {selectedProducts.length} Products</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Select value={selectedBulkBrand} onValueChange={setSelectedBulkBrand}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select brand" />
+              </SelectTrigger>
+              <SelectContent>
+                {brands?.map((brand: any) => (
+                  <SelectItem key={brand.id} value={brand.id}>
+                    {brand.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex space-x-2">
+              <Button 
+                onClick={() => {
+                  if (selectedBulkBrand) {
+                    bulkUpdateBrandMutation.mutate({ productIds: selectedProducts, brandId: selectedBulkBrand });
+                  }
+                }}
+                disabled={!selectedBulkBrand || bulkUpdateBrandMutation.isPending}
+                className="flex-1"
+              >
+                Apply to Selected
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setQuickActionBrand(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Quick Action: Update Prices */}
+      <Dialog open={quickActionPrice} onOpenChange={setQuickActionPrice}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Update Prices for {selectedProducts.length} Products</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Select value={bulkPriceAction} onValueChange={(v: any) => setBulkPriceAction(v)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="increase">Increase by %</SelectItem>
+                <SelectItem value="decrease">Decrease by %</SelectItem>
+                <SelectItem value="set">Set fixed price</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="number"
+              step={bulkPriceAction === 'set' ? '0.01' : '1'}
+              placeholder={bulkPriceAction === 'set' ? 'Enter price' : 'Enter percentage'}
+              value={bulkPriceValue}
+              onChange={(e) => setBulkPriceValue(parseFloat(e.target.value) || 0)}
+            />
+            <div className="flex space-x-2">
+              <Button 
+                onClick={() => {
+                  bulkUpdatePriceMutation.mutate({ 
+                    productIds: selectedProducts, 
+                    action: bulkPriceAction, 
+                    value: bulkPriceValue 
+                  });
+                }}
+                disabled={bulkUpdatePriceMutation.isPending}
+                className="flex-1"
+              >
+                Apply to Selected
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setQuickActionPrice(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Quick Action: Update Stock */}
+      <Dialog open={quickActionStock} onOpenChange={setQuickActionStock}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Update Stock for {selectedProducts.length} Products</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              type="number"
+              placeholder="Enter stock quantity"
+              value={bulkStockValue}
+              onChange={(e) => setBulkStockValue(parseInt(e.target.value) || 0)}
+            />
+            <div className="flex space-x-2">
+              <Button 
+                onClick={() => {
+                  bulkUpdateStockMutation.mutate({ 
+                    productIds: selectedProducts, 
+                    quantity: bulkStockValue 
+                  });
+                }}
+                disabled={bulkUpdateStockMutation.isPending}
+                className="flex-1"
+              >
+                Apply to Selected
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setQuickActionStock(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Products Table */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Products</CardTitle>
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsBulkImportOpen(true)}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Bulk Import
-              </Button>
-              <Button 
-                size="sm"
-                onClick={() => setIsAddProductOpen(true)}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Product
-              </Button>
-            </div>
           </div>
         </CardHeader>
         <CardContent>
