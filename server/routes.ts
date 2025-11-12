@@ -2,16 +2,15 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import facebookConversionsAPI from "./facebookConversionsApi";
-import { setupAuth } from "./replitAuth";
 import { authRoutes } from "./authRoutes";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { handlePayPalWebhook } from "./paypalWebhooks";
 import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes, calculateTotalShippingCost } from "./australiaPost";
 import { fileStorage } from "./fileStorage";
 import { removeImageBackground } from "./openai";
-import { 
-  insertProductSchema, 
-  insertCategorySchema, 
+import {
+  insertProductSchema,
+  insertCategorySchema,
   insertBrandSchema,
   insertCustomerSchema,
   insertOrderSchema,
@@ -137,33 +136,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Setup authentication
-  await setupAuth(app);
 
   // Hybrid authentication middleware - supports both password and Replit Auth
   const hybridAuth = async (req: any, res: any, next: any) => {
-    console.log('=== HYBRID AUTH DEBUG ===');
-    console.log('req.isAuthenticated():', req.isAuthenticated());
-    console.log('req.user:', req.user);
-    console.log('req.session:', req.session);
-    console.log('req.sessionID:', req.sessionID);
-    console.log('req.headers.cookie:', req.headers.cookie);
-    
-    // Check if user is authenticated via session (password auth)
-    if (req.isAuthenticated() && req.user) {
-      // Check if it's a password-authenticated user (has email directly)
-      if (req.user.email) {
-        console.log('✓ Password-authenticated user found');
-        return next();
-      }
-      // Check if it's a Replit Auth user (has claims)
-      if (req.user.claims && req.user.claims.sub) {
-        console.log('✓ Replit Auth user found');
-        return next();
-      }
+    if (req.isAuthenticated() && req.user && req.user.email) {
+      return next();
     }
-    
-    console.log('✗ No valid authentication found');
-    // Not authenticated
     return res.status(401).json({ message: "Unauthorized" });
   };
 
@@ -2868,9 +2846,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get admin ID from authenticated user
       let adminId: string;
-      if (req.user?.claims?.sub) {
-        adminId = req.user.claims.sub;
-      } else if (req.user?.id) {
+      if (req.user?.id) {
         adminId = req.user.id;
       } else {
         return res.status(401).json({ message: "Unauthorized - admin authentication required" });
@@ -2891,9 +2867,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get admin ID from authenticated user
       let adminId: string;
-      if (req.user?.claims?.sub) {
-        adminId = req.user.claims.sub;
-      } else if (req.user?.id) {
+      if (req.user?.id) {
         adminId = req.user.id;
       } else {
         return res.status(401).json({ message: "Unauthorized - admin authentication required" });
@@ -2926,7 +2900,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
       
       // Get correct user ID from hybrid auth system
-      const invitedBy = req.user?.claims?.sub || req.user?.id || 'unknown';
+      const invitedBy = req.user?.id || 'unknown';
       
       const invitation = await storage.createStaffInvitation({
         ...validatedData
@@ -3473,7 +3447,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/reviews/:id/response', hybridAuth, async (req, res) => {
     try {
       const { response } = req.body;
-      const adminId = (req as any).user.claims.sub;
+      const adminId = (req as any).user.id;
       
       if (!response) {
         return res.status(400).json({ message: "Response is required" });

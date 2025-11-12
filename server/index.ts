@@ -1,11 +1,14 @@
 import dotenv from "dotenv";
+// Load environment variables
+dotenv.config();
+
 import express, { type Request, Response, NextFunction } from "express";
 import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-
-// Load environment variables
-dotenv.config();
+import passport from "passport";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 
 // Verify SendGrid API key is loaded
 if (!process.env.SENDGRID_API_KEY) {
@@ -82,6 +85,30 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+  const pgStore = connectPg(session);
+  const sessionStore = new pgStore({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: true,
+    ttl: sessionTtl,
+    tableName: "sessions",
+  });
+  app.use(session({
+    secret: process.env.SESSION_SECRET!,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    name: 'ggd.sid',
+    cookie: {
+      httpOnly: true,
+      secure: false, // Allow in development
+      sameSite: 'lax',
+      maxAge: sessionTtl,
+    },
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
