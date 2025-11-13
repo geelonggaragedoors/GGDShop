@@ -18,9 +18,6 @@ if (!process.env.SENDGRID_API_KEY) {
   console.log('✅ SendGrid API key loaded successfully');
 }
 
-// Set UploadThing environment variable
-process.env.UPLOADTHING_TOKEN = 'eyJhcGlLZXkiOiJza19saXZlXzA2MTI4MjRkNDkwZGY1ZTVjY2RkMGNlMWJhYzY2ZWI3YzVkYzdiZmY1NWVhMWY3YmU5NzhhYzQ1M2E5NTRlZWUiLCJhcHBJZCI6ImUydWNibmYxbnQiLCJyZWdpb25zIjpbInNlYTEiXX0=';
-
 const app = express();
 
 // Add compression middleware for faster response times
