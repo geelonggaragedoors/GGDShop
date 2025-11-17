@@ -97,14 +97,18 @@ export class AnalyticsService {
       pageSpeed: (() => {
         if (typeof data.pageSpeed === 'number') return data.pageSpeed;
         const strValue = String(data.pageSpeed);
-        if (strValue === 'false' || strValue === 'true' || strValue === '') return 0;
+        // Handle string values that should be null or numbers
+        if (strValue === 'false' || strValue === 'true' || strValue === '' || strValue === 'null') return null;
         const parsed = parseInt(strValue);
-        return isNaN(parsed) ? 0 : parsed;
+        return isNaN(parsed) ? null : parsed;
       })(),
       mobileUsability: (() => {
         if (typeof data.mobileUsability === 'boolean') return data.mobileUsability;
         const strValue = String(data.mobileUsability);
-        return strValue === 'true';
+        // Handle string values that should be null or boolean
+        if (strValue === 'true') return true;
+        if (strValue === 'false' || strValue === '' || strValue === 'null') return null;
+        return Boolean(strValue);
       })(),
       updatedAt: new Date(),
     };
