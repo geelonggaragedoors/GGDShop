@@ -274,6 +274,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Provide legacy /api/login endpoint that proxies to the new auth router
+  app.post('/api/login', (req, res, next) => {
+    req.url = '/login';
+    return authRoutes(req, res, next);
+  });
+
   // Enhanced authentication routes
   app.use('/api/auth', authRoutes);
 
