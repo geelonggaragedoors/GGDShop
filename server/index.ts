@@ -13,10 +13,33 @@ import connectPg from "connect-pg-simple";
 // Verify SendGrid API key is loaded
 if (!process.env.SENDGRID_API_KEY) {
   console.log('⚠️  SENDGRID_API_KEY not found in environment variables');
-  console.log('   Please add it to your Replit Secrets for email functionality');
+  console.log('   Please add it to your Railway environment variables for email functionality');
 } else {
   console.log('✅ SendGrid API key loaded successfully');
 }
+
+// Add startup error logging
+process.on('uncaughtException', (error) => {
+  console.error('🚨 UNCAUGHT EXCEPTION:', error);
+  console.error('Stack trace:', error.stack);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🚨 UNHANDLED REJECTION:', reason);
+  console.error('Promise:', promise);
+});
+
+// Add startup logging
+console.log('🚀 APPLICATION STARTING UP...');
+console.log('Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
+  PORT: process.env.PORT,
+  DATABASE_URL: process.env.DATABASE_URL ? '***CONFIGURED***' : 'NOT SET',
+  BASE_URL: process.env.BASE_URL,
+  RAILWAY_ENVIRONMENT: process.env.RAILWAY_ENVIRONMENT,
+});
+
+console.log('📊 STARTUP COMPLETE - Server should be running');
 
 const app = express();
 

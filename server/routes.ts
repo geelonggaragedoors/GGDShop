@@ -3302,13 +3302,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const seoData = req.body;
       
       // Ensure numeric fields are properly handled
-      if (seoData.pageSpeed !== undefined) {
-        seoData.pageSpeed = typeof seoData.pageSpeed === 'number' ? seoData.pageSpeed : 
-                            (isNaN(Number(seoData.pageSpeed)) ? 0 : Number(seoData.pageSpeed));
+      if (seoData.pageSpeed !== undefined && seoData.pageSpeed !== null) {
+        const numericValue = Number(seoData.pageSpeed);
+        seoData.pageSpeed = Number.isFinite(numericValue) ? numericValue : null;
+      } else {
+        seoData.pageSpeed = null;
       }
       
-      if (seoData.mobileUsability !== undefined) {
-        seoData.mobileUsability = Boolean(seoData.mobileUsability);
+      if (seoData.mobileUsability !== undefined && seoData.mobileUsability !== null) {
+        if (seoData.mobileUsability === true || seoData.mobileUsability === 'true') {
+          seoData.mobileUsability = true;
+        } else if (seoData.mobileUsability === false || seoData.mobileUsability === 'false') {
+          seoData.mobileUsability = false;
+        } else {
+          seoData.mobileUsability = null;
+        }
+      } else {
+        seoData.mobileUsability = null;
       }
       
       await analyticsService.updateSEOMetrics(seoData);
