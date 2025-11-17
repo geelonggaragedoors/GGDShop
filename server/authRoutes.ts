@@ -81,9 +81,21 @@ router.post('/login', async (req: Request, res: Response) => {
         }
         
         const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = user;
-        res.json({ 
-          user: userResponse,
-          message: 'Login successful' 
+        
+        // Create minimal user object for session to avoid serialization issues
+        const sessionUser = {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          isActive: user.isActive,
+          emailVerified: user.emailVerified
+        };
+        
+        res.json({
+          user: sessionUser,
+          message: 'Login successful'
         });
       });
     });
@@ -183,7 +195,18 @@ router.get('/profile', requireAuth, async (req: Request, res: Response) => {
     const user = req.user as any;
     const { passwordHash, resetPasswordToken, emailVerificationToken, ...userResponse } = user;
     
-    res.json({ user: userResponse });
+    // Create minimal user object for session to avoid serialization issues
+    const sessionUser = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      isActive: user.isActive,
+      emailVerified: user.emailVerified
+    };
+    
+    res.json({ user: sessionUser });
     
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to fetch profile' });

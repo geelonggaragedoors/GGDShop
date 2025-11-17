@@ -205,8 +205,8 @@ export class AuthService {
       process.env.REPLIT_DEPLOYMENT === 'true' || 
       process.env.RAILWAY_ENVIRONMENT === 'production';
     
-    const baseUrl = process.env.BASE_URL || 
-      (isProduction ? 'https://geelonggaragedoors.com' : 'http://localhost:5000');
+    const baseUrl = process.env.BASE_URL ||
+      (isProduction ? 'https://ggdshop-production.up.railway.app' : 'http://localhost:5000');
     const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
     
     console.log('Sending password reset email to:', email);
@@ -376,8 +376,8 @@ export class AuthService {
       process.env.REPLIT_DEPLOYMENT === 'true' || 
       process.env.RAILWAY_ENVIRONMENT === 'production';
     
-    const baseUrl = process.env.BASE_URL || 
-      (isProduction ? 'https://geelonggaragedoors.com' : 'http://localhost:5000');
+    const baseUrl = process.env.BASE_URL ||
+      (isProduction ? 'https://ggdshop-production.up.railway.app' : 'http://localhost:5000');
     const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
     
     await emailService.sendEmail({
