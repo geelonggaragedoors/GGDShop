@@ -6,16 +6,18 @@ import express, { type Request, Response, NextFunction } from "express";
 import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import "./passport"; // Import passport configuration
 import passport from "passport";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import path from "path";
 
-// Verify SendGrid API key is loaded
-if (!process.env.SENDGRID_API_KEY) {
-  console.log('⚠️  SENDGRID_API_KEY not found in environment variables');
-  console.log('   Please add it to your Railway environment variables for email functionality');
+// Verify Resend API key is loaded
+if (!process.env.RESEND_API_KEY) {
+  console.log('⚠️  RESEND_API_KEY not found in environment variables');
+  console.log('   Please add it to your environment variables for email functionality');
 } else {
-  console.log('✅ SendGrid API key loaded successfully');
+  console.log('✅ Resend API key loaded successfully');
 }
 
 // Add startup error logging
@@ -72,6 +74,17 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.static('public'));
 
 // Serve uploaded files from uploads directory
+console.log('📁 Setting up uploads static serving...');
+console.log('   Current working directory:', process.cwd());
+console.log('   Uploads path:', path.resolve('uploads'));
+
+// Debug middleware for uploads requests
+app.use('/uploads', (req, res, next) => {
+  console.log(`🖼️ Upload request: ${req.method} ${req.url}`);
+  console.log('   Full path requested:', path.resolve('uploads', req.url.substring(1)));
+  next();
+});
+
 app.use('/uploads', express.static('uploads'));
 
 app.use((req, res, next) => {
@@ -151,11 +164,8 @@ app.use((req, res, next) => {
 
   // Use Railway's PORT or default to 5000 for local development
   const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+  // Use a Windows-friendly listen signature
+  server.listen(port, () => {
     log(`serving on port ${port}`);
   });
 })();

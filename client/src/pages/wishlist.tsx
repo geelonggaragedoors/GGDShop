@@ -10,6 +10,7 @@ import { formatCurrency } from '@/lib/utils';
 import { Link } from 'wouter';
 import StorefrontHeader from '@/components/storefront/header';
 import StorefrontFooter from '@/components/storefront/footer';
+import { getFirstImage, handleImageError } from '@/lib/imageUtils';
 
 export default function WishlistPage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -110,9 +111,10 @@ export default function WishlistPage() {
                 <Card key={item.id} className="overflow-hidden">
                   <div className="aspect-square relative">
                     <img 
-                      src={item.image || '/placeholder-product.jpg'} 
+                      src={getFirstImage((item as any).images || item.image, 'product')} 
                       alt={item.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => handleImageError(e, 'product')}
                     />
                     <Button
                       variant="ghost"

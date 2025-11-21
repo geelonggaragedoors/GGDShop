@@ -159,9 +159,17 @@ export default function AdminLayout() {
         <div className="p-6 border-b">
           <div className="flex justify-center">
             <img 
-              src="/logo.png"
+              src="/assets/logo-pdfs.png"
               alt="Geelong Garage Doors" 
               className="h-10 w-auto"
+              onError={(e) => {
+                // Fallback to a text logo if image fails to load
+                e.currentTarget.style.display = 'none';
+                const textLogo = document.createElement('div');
+                textLogo.className = 'text-xl font-bold text-blue-600';
+                textLogo.textContent = 'Geelong Garage Doors';
+                e.currentTarget.parentNode?.appendChild(textLogo);
+              }}
             />
           </div>
         </div>
@@ -221,10 +229,6 @@ export default function AdminLayout() {
               <p className="text-gray-600">{pageInfo.subtitle}</p>
             </div>
             <div className="flex items-center space-x-4">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Product
-              </Button>
               <NotificationBell />
               
               {/* User Info and Logout */}

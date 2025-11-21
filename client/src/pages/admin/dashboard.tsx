@@ -17,6 +17,7 @@ import { insertProductSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Link } from "wouter";
+import { getFirstImage, handleImageError } from "@/lib/imageUtils";
 import {
   DollarSign,
   ShoppingCart,
@@ -298,9 +299,10 @@ export default function Dashboard() {
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 group-hover:scale-110 transition-transform">
                         <img 
-                          src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=80&h=80&fit=crop&crop=center"} 
+                          src={getFirstImage(product.images, 'product')} 
                           alt={product.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => handleImageError(e, 'product')}
                         />
                       </div>
                       <div>

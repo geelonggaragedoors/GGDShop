@@ -1,6 +1,8 @@
 // Schema.org JSON-LD structured data generator for SEO
 // Generates rich snippets for Google search results
 
+import { getFirstImage } from './imageUtils';
+
 interface Product {
   id: string;
   name: string;
@@ -42,9 +44,7 @@ export function generateProductSchema(
   baseUrl: string = window.location.origin
 ) {
   const productUrl = `${baseUrl}/product/${product.slug}`;
-  const imageUrl = product.images && product.images.length > 0 
-    ? product.images[0] 
-    : `${baseUrl}/default-product-image.jpg`;
+  const imageUrl = getFirstImage(product.images, 'product');
 
   // Calculate aggregate rating if reviews exist
   let aggregateRating;
@@ -205,9 +205,7 @@ export function generateItemListSchema(
       "position": index + 1,
       "url": `${baseUrl}/product/${product.slug}`,
       "name": product.name,
-      "image": product.images && product.images.length > 0 
-        ? product.images[0] 
-        : `${baseUrl}/default-product-image.jpg`
+      "image": getFirstImage(product.images, 'product')
     }))
   };
 }

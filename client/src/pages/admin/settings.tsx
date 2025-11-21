@@ -132,7 +132,7 @@ function EmailTestTab() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Provider:</span>
-                <span>SendGrid</span>
+                <span>Resend</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Status:</span>

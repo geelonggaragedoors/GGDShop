@@ -1,16 +1,7 @@
-import sgMail from '@sendgrid/mail';
 import { Resend } from 'resend';
 import { db } from './db';
 import { orders } from '@shared/schema';
 import { eq } from 'drizzle-orm';
-
-// Initialize SendGrid
-if (!process.env.SENDGRID_API_KEY) {
-  console.error('SENDGRID_API_KEY environment variable is not set');
-} else {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  console.log('SendGrid API key configured successfully');
-}
 
 // Initialize Resend
 let resend: Resend | null = null;
@@ -53,8 +44,7 @@ export class EmailService {
         html: options.html,
       };
 
-      // Note: Resend handles attachments differently than SendGrid
-      // If needed in the future, we can add attachment support
+      // Note: Attachment support can be added to Resend in the future if needed
       if (options.attachments && options.attachments.length > 0) {
         console.warn('Attachments are not yet supported with Resend');
       }

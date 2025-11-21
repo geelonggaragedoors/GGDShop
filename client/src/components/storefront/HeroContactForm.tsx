@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { UploadButton } from "@/lib/uploadthing";
+// UploadThing removed - using local uploads
 import { Upload, Send, Loader2 } from "lucide-react";
 
 const contactFormSchema = z.object({
@@ -280,37 +280,56 @@ export function HeroContactForm() {
                           '--ut-button-hover-bg': '#1e2871'
                         } as React.CSSProperties}
                       >
-                        <UploadButton
-                          endpoint="imageUploader"
-                          onBeforeUploadBegin={(files) => {
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={async (e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length === 0) return;
+                            
                             setIsUploading(true);
-                            return files; // Allow multiple files
-                          }}
-                          onClientUploadComplete={(res) => {
-                            setIsUploading(false);
-                            if (res && res.length > 0) {
-                              const newUrls = res.map(file => file.url);
+                            
+                            try {
+                              const uploadPromises = files.map(async (file) => {
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                
+                                const response = await fetch('/api/upload', {
+                                  method: 'POST',
+                                  body: formData,
+                                });
+                                
+                                if (!response.ok) {
+                                  throw new Error(`Failed to upload ${file.name}`);
+                                }
+                                
+                                const result = await response.json();
+                                return result.file?.url || result.url;
+                              });
+                              
+                              const newUrls = await Promise.all(uploadPromises);
                               const allImages = [...uploadedImages, ...newUrls];
                               setUploadedImages(allImages);
                               form.setValue("imageUrls", allImages);
+                              
                               toast({
                                 title: "Images uploaded",
-                                description: `${res.length} image(s) attached successfully`,
+                                description: `${files.length} image(s) attached successfully`,
                               });
+                            } catch (error) {
+                              toast({
+                                title: "Upload failed",
+                                description: error instanceof Error ? error.message : 'Upload failed',
+                                variant: "destructive",
+                              });
+                            } finally {
+                              setIsUploading(false);
+                              // Reset the input
+                              e.target.value = '';
                             }
                           }}
-                          onUploadError={(error: Error) => {
-                            setIsUploading(false);
-                            toast({
-                              title: "Upload failed",
-                              description: error.message,
-                              variant: "destructive",
-                            });
-                          }}
-                          className="ut-button:text-xs ut-button:h-6 ut-button:px-3 ut-button:rounded ut-button:font-medium ut-allowed-content:hidden"
-                          content={{
-                            button: "📷 Upload Images"
-                          }}
+                          className="block w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-[#2b3990] file:text-white hover:file:bg-[#1e2871] file:cursor-pointer cursor-pointer"
                         />
                       </div>
                       <p className="text-xs text-gray-500">Multiple images allowed (4MB max each)</p>

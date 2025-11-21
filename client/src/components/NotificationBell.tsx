@@ -77,9 +77,9 @@ export default function NotificationBell() {
           wsUrl = `${protocol}//${host}/ws/notifications`;
         } else if (host.includes('localhost')) {
           // In development, ensure port is included
-          const port = window.location.port || '5000';
-          if (port === 'undefined' || !port) {
-            console.warn('Port is undefined, using default 5000');
+          const port = window.location.port;
+          if (!port || port === 'undefined' || port === '') {
+            console.warn('Port is undefined or empty, using default 5000');
             wsUrl = `${protocol}//localhost:5000/ws/notifications`;
           } else {
             wsUrl = `${protocol}//localhost:${port}/ws/notifications`;

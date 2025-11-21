@@ -104,9 +104,9 @@ export default function SimpleHeader() {
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-3">
-                <a href="/api/login" className="hover:text-primary transition-colors">Sign In</a>
+                <a href="/login" className="hover:text-primary transition-colors">Sign In</a>
                 <span className="text-gray-300">|</span>
-                <a href="/api/login" className="hover:text-primary transition-colors">Create Account</a>
+                <a href="/signup" className="hover:text-primary transition-colors">Create Account</a>
               </div>
             )}
             <Link href="/track-order" className="hover:text-primary transition-colors">Track Order</Link>

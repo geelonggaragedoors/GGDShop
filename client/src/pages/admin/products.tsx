@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema } from "@shared/schema";
 import { generateSlug } from "@shared/utils";
 import { useToast } from "@/hooks/use-toast";
+import { getFirstImage, handleImageError, normalizeImageUrl } from "@/lib/imageUtils";
 import { Upload, Plus, Search, Edit, Trash2, Image, FolderPlus, X, Wand2, ChevronDown, DollarSign, Package, Eye, Activity, Truck } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { FileUpload } from "@/components/FileUpload";
@@ -534,7 +535,7 @@ export default function Products() {
       const productData = {
         ...data,
         slug,
-        images: selectedImages.map(img => img.url),
+        images: selectedImages.map(img => normalizeImageUrl(img.url, 'product')),
         // Convert empty strings to null for optional UUID fields
         brandId: data.brandId || null,
         categoryId: data.categoryId || null,
@@ -629,7 +630,7 @@ export default function Products() {
       if (product.images && product.images.length > 0) {
         const imageObjects = product.images.map((url: string, index: number) => ({
           id: `existing-${index}-${Date.now()}`,
-          url: url,
+          url: normalizeImageUrl(url, 'product'),
           filename: `Image ${index + 1}`,
           originalName: `Image ${index + 1}`,
           alt: `Image ${index + 1}`,
@@ -692,20 +693,13 @@ export default function Products() {
       accessorKey: "name",
       cell: ({ row }: any) => {
         const product = row.original;
-        const firstImage = Array.isArray(product.images) && product.images.length > 0 
-          ? product.images[0] 
-          : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center";
-        
         return (
           <div className="flex items-center space-x-3">
             <img 
-              src={firstImage}
+              src={getFirstImage(product.images, 'product')}
               alt={product.name}
               className="w-12 h-12 object-cover rounded-lg"
-              onError={(e) => {
-                // Fallback to placeholder if image fails to load
-                e.currentTarget.src = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center";
-              }}
+              onError={(e) => handleImageError(e, 'product')}
             />
             <div>
               <p className="font-medium text-gray-900">{product.name}</p>

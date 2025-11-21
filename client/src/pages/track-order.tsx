@@ -10,6 +10,7 @@ import { Loader2, Package, MapPin, Calendar, DollarSign, User, Phone, Mail, Sear
 import { formatCurrency } from '@/lib/utils';
 import StorefrontHeader from '@/components/storefront/header';
 import StorefrontFooter from '@/components/storefront/footer';
+import { normalizeImageUrl, handleImageError } from '@/lib/imageUtils';
 
 interface Order {
   id: string;
@@ -249,9 +250,10 @@ export default function TrackOrderPage() {
                     <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
                       {item.image && (
                         <img 
-                          src={item.image} 
+                          src={normalizeImageUrl(item.image, 'product')} 
                           alt={item.name} 
                           className="w-16 h-16 object-cover rounded"
+                          onError={(e) => handleImageError(e, 'product')}
                         />
                       )}
                       <div className="flex-1">

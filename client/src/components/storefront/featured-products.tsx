@@ -8,6 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
 import { getOptimizedImageUrl, generateSrcSet, generateSizes } from "@/lib/image-optimizer";
+import { getFirstImage, handleImageError } from "@/lib/imageUtils";
 
 export default function FeaturedProducts() {
   const { addToCart } = useCart();
@@ -18,6 +19,10 @@ export default function FeaturedProducts() {
     queryKey: ["/api/products", { featured: true, limit: 4 }],
     queryFn: () => api.products.getAll({ featured: true, limit: 4 }),
   });
+
+  // Debug logging
+  console.log('Featured products data:', productsData);
+  console.log('Featured products loading:', isLoading);
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);
@@ -82,22 +87,25 @@ export default function FeaturedProducts() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product: any, index: number) => (
-              <Card key={product.id || index} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group product-card border-0">
-              <div className="relative">
-                <a href={`/product/${product.slug}`}>
-                  <img 
-                    src={getOptimizedImageUrl(
-                      product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300",
-                      { width: 400, height: 300, quality: 85 }
-                    )}
-                    srcSet={generateSrcSet(product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64", [300, 400, 600])}
-                    sizes={generateSizes([
-                      { size: '(max-width: 768px)', width: 300 },
-                      { size: '(max-width: 1200px)', width: 400 },
-                      { size: '100vw', width: 400 }
-                    ])}
-                    alt={product.name || 'Product image'}
+            {products.map((product: any, index: number) => {
+              // First get the normalized image URL, then optimize it
+              const normalizedImageUrl = getFirstImage(product.images, 'product');
+              const imageUrl = getOptimizedImageUrl(normalizedImageUrl, { width: 400, height: 300, quality: 85 });
+              
+              return (
+                <Card key={product.id || index} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group product-card border-0">
+                <div className="relative">
+                  <a href={`/product/${product.slug}`}>
+                    <img 
+                      src={imageUrl}
+                      srcSet={generateSrcSet(normalizedImageUrl, [300, 400, 600])}
+                      sizes={generateSizes([
+                        { size: '(max-width: 768px)', width: 300 },
+                        { size: '(max-width: 1200px)', width: 400 },
+                        { size: '100vw', width: 400 }
+                      ])}
+                      alt={product.name || 'Product image'}
+                      onError={(e) => handleImageError(e, 'product')}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     loading={index < 4 ? "eager" : "lazy"}
                     decoding="async"
@@ -160,7 +168,8 @@ export default function FeaturedProducts() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+              );
+            })}
           </div>
         )}
       </div>

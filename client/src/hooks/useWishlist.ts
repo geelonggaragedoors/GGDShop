@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getFirstImage } from "@/lib/imageUtils";
 
 export interface WishlistItem {
   id: string;
@@ -41,7 +42,7 @@ export function useWishlist() {
           productId: product.id,
           name: product.name,
           price: parseFloat(product.price),
-          image: product.images?.[0],
+          image: getFirstImage(product.images, 'product'),
           sku: product.sku
         }];
       }

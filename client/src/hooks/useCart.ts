@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getFirstImage } from "@/lib/imageUtils";
 
 export interface CartItem {
   id: string;
@@ -47,7 +48,7 @@ export function useCart() {
           name: product.name,
           price: parseFloat(product.price),
           quantity,
-          image: product.images?.[0],
+          image: getFirstImage(product.images, 'product'),
           sku: product.sku
         }];
       }

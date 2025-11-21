@@ -8,6 +8,7 @@ import { products, categories, brands } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 import { fileStorage } from './fileStorage';
 import { generateSlug } from '../shared/utils';
+import { normalizeImageArray } from './imageUtils';
 
 interface WooCommerceProduct {
   ID: string;
@@ -141,15 +142,16 @@ export class ImportService {
   private cleanHtml(html: string): string {
     if (!html) return '';
     
+    // Don't clean HTML - let the frontend handle it properly
+    // Just decode basic HTML entities and clean up literal \n
     return html
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/\\n/g, '\n') // Convert literal \n to actual line breaks
       .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
-      .replace(/&nbsp;/g, ' ')
-      .replace(/\s+/g, ' ')
+      .replace(/&apos;/g, "'")
       .trim();
   }
 
@@ -271,7 +273,7 @@ export class ImportService {
           stockQuantity: stockQuantity,
           categoryId: categoryId,
           brandId: brandId,
-          images: imageUrls,
+          images: normalizeImageArray(imageUrls),
           isActive: record.Published === '1',
           isFeatured: record['Is featured?'] === '1',
           status: 'published',

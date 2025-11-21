@@ -13,6 +13,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
 import { getOptimizedImageUrl } from "@/lib/image-optimizer";
+import { getFirstImage, normalizeImageUrl, normalizeImageArray, handleImageError } from "@/lib/imageUtils";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
 import CustomerReviews from "@/components/storefront/customer-reviews";
@@ -108,10 +109,11 @@ export default function ProductDetail() {
     );
   }
 
-  const images = (product.images as string[]) || [];
-  const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800";
-  const rawImage = images[selectedImage] || images[0] || defaultImage;
-  const currentImage = getOptimizedImageUrl(rawImage, { width: 800, height: 800, quality: 90 });
+  // Use shared helper to normalize all images in the array with robust JSON string handling
+  const normalizedImages = normalizeImageArray(product.images as string | string[] | null | undefined, 'product');
+  
+  const currentImageUrl = normalizedImages[selectedImage] || normalizedImages[0] || getFirstImage(null, 'product');
+  const currentImage = getOptimizedImageUrl(currentImageUrl, { width: 800, height: 800, quality: 90 });
   
   const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, (product as any).stockQuantity || 0));
   const decrementQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
@@ -138,7 +140,7 @@ export default function ProductDetail() {
         title={`${product.name} | Geelong Garage Doors`}
         description={product.shortDescription || product.description || `Buy ${product.name} from Geelong Garage Doors. Quality garage door parts and accessories with fast shipping across Australia.`}
         keywords={`${product.name}, garage door parts, ${(product as any).brand?.name || ''}, ${(product as any).category?.name || ''}`}
-        ogImage={images[0] || defaultImage}
+        ogImage={normalizedImages[0] || getFirstImage(null, 'product')}
         canonicalUrl={`${window.location.origin}/product/${product.slug}`}
         structuredData={combinedSchema}
       />
@@ -169,12 +171,13 @@ export default function ProductDetail() {
                 src={currentImage}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                onError={(e) => handleImageError(e, 'product')}
               />
             </div>
             
-            {images.length > 1 && (
+            {normalizedImages.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
-                {images.map((image: string, index: number) => (
+                {normalizedImages.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -186,6 +189,7 @@ export default function ProductDetail() {
                       src={getOptimizedImageUrl(image, { width: 150, height: 150, quality: 85 })}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
+                      onError={(e) => handleImageError(e, 'product')}
                     />
                   </button>
                 ))}
@@ -253,7 +257,10 @@ export default function ProductDetail() {
 
             {/* Short Description */}
             {product.description && (
-              <p className="text-gray-700 leading-relaxed">{product.description}</p>
+              <div 
+                className="text-gray-700 leading-relaxed prose prose-sm max-w-none" 
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
             )}
 
             {/* Quantity and Add to Cart */}
@@ -330,9 +337,16 @@ export default function ProductDetail() {
               <Card>
                 <CardContent className="p-6">
                   <div className="prose max-w-none">
-                    <p className="text-gray-700 leading-relaxed">
-                      {product.description || "Detailed product description would go here. This high-quality garage door product offers exceptional durability and performance for residential and commercial applications."}
-                    </p>
+                    {product.description ? (
+                      <div 
+                        className="text-gray-700 leading-relaxed" 
+                        dangerouslySetInnerHTML={{ __html: product.description }}
+                      />
+                    ) : (
+                      <p className="text-gray-700 leading-relaxed">
+                        Detailed product description would go here. This high-quality garage door product offers exceptional durability and performance for residential and commercial applications.
+                      </p>
+                    )}
                     <h4 className="font-semibold mt-4 mb-2">Key Features:</h4>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
                       <li>Premium construction materials</li>
@@ -405,9 +419,10 @@ export default function ProductDetail() {
                   <Card className="group cursor-pointer hover:shadow-lg transition-shadow">
                     <div className="aspect-square bg-gray-100 overflow-hidden rounded-t-lg">
                       <img
-                        src={similarProduct.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400"}
+                        src={getFirstImage(similarProduct.images, 'product')}
                         alt={similarProduct.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        onError={(e) => handleImageError(e, 'product')}
                       />
                     </div>
                     <CardContent className="p-4">

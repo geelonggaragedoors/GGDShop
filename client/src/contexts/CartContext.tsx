@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { getFirstImage } from "@/lib/imageUtils";
 
 export interface CartItem {
   id: string;
@@ -59,7 +60,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           name: product.name,
           price: parseFloat(product.price),
           quantity,
-          image: product.images?.[0],
+          image: getFirstImage(product.images, 'product'),
           sku: product.sku,
         }];
       }

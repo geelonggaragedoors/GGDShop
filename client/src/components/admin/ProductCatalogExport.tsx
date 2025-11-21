@@ -4,6 +4,8 @@ import { FileText, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { normalizeImageUrl } from "@/lib/imageUtils";
 
 interface Product {
   id: string;
@@ -96,23 +98,33 @@ export default function ProductCatalogExport() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const { data: productsData } = useQuery({
+  const { data: productsData, isLoading: productsLoading } = useQuery({
     queryKey: ['/api/admin/products'],
+    queryFn: () => api.admin.products.getAll({ limit: 1000 }), // Get all products
   });
 
-  const { data: categories } = useQuery({
+  const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['/api/categories'],
+    queryFn: () => api.categories.getAll(),
   });
 
-  const { data: brands } = useQuery({
+  const { data: brands, isLoading: brandsLoading } = useQuery({
     queryKey: ['/api/brands'],
+    queryFn: () => api.brands.getAll(),
   });
 
   const generatePDF = async () => {
+    console.log('PDF Generation - Data check:', {
+      productsData,
+      categories,
+      brands,
+      productsCount: productsData?.products?.length || 0
+    });
+
     if (!productsData || !categories || !brands) {
       toast({
         title: "Error",
-        description: "Product data not loaded yet",
+        description: "Product data not loaded yet. Please wait for data to load.",
         variant: "destructive",
       });
       return;
@@ -295,19 +307,16 @@ export default function ProductCatalogExport() {
             const hasImages = product.images && Array.isArray(product.images) && product.images.length > 0;
 
             if (hasImages) {
-              const firstImagePath = product.images[0];
+              const firstImagePath = normalizeImageUrl(product.images[0], 'product');
               
-              // Construct proper image URL
+              // Construct proper image URL for fetching
               let imageUrl: string;
               if (firstImagePath.startsWith('http://') || firstImagePath.startsWith('https://')) {
                 // Already absolute URL
                 imageUrl = firstImagePath;
-              } else if (firstImagePath.startsWith('/')) {
-                // Relative path from root
-                imageUrl = `${window.location.origin}${firstImagePath}`;
               } else {
-                // Relative path without leading slash
-                imageUrl = `${window.location.origin}/${firstImagePath}`;
+                // Relative path - add origin
+                imageUrl = `${window.location.origin}${firstImagePath}`;
               }
               
               console.log(`Loading image: ${imageUrl}`);
@@ -464,7 +473,7 @@ export default function ProductCatalogExport() {
       
       <Button
         onClick={generatePDF}
-        disabled={isGenerating || !productsData}
+        disabled={isGenerating || productsLoading || categoriesLoading || brandsLoading || !productsData}
         className="bg-blue-600 hover:bg-blue-700"
       >
         {isGenerating ? (
@@ -472,10 +481,15 @@ export default function ProductCatalogExport() {
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
             Generating PDF...
           </>
+        ) : (productsLoading || categoriesLoading || brandsLoading) ? (
+          <>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            Loading Data...
+          </>
         ) : (
           <>
             <Download className="h-4 w-4 mr-2" />
-            Generate PDF Catalog
+            Generate PDF Catalog ({productsData?.products?.length || 0} products)
           </>
         )}
       </Button>

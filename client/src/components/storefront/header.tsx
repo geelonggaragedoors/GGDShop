@@ -53,14 +53,7 @@ export default function StorefrontHeader() {
             </a>
           </div>
           <div className="flex items-center space-x-4">
-            {!isAuthenticated && (
-              <div className="flex items-center space-x-3">
-                <a href="/api/login" className="hover:text-primary transition-colors">Sign In</a>
-                <span className="text-gray-300">|</span>
-                <a href="/api/login" className="hover:text-primary transition-colors">Create Account</a>
-              </div>
-            )}
-
+            {/* Removed duplicate login links - they're in the main navbar below */}
           </div>
         </div>
         
@@ -169,7 +162,7 @@ export default function StorefrontHeader() {
             ) : (
               <div className="hidden sm:flex items-center space-x-2">
                 <Button variant="ghost" size="sm" asChild>
-                  <a href="/api/login" className="flex items-center space-x-1">
+                  <a href="/login" className="flex items-center space-x-1">
                     <User className="w-4 h-4" />
                     <span className="text-sm">Sign In</span>
                   </a>
@@ -229,10 +222,7 @@ export default function StorefrontHeader() {
         {/* Desktop Navigation */}
         <nav className="hidden md:block py-3 border-t border-gray-100">
           <ul className="flex space-x-8 text-sm font-bold">
-            <li><Link href="/" className="text-gray-700 hover:text-primary transition-colors">Home</Link></li>
-            <li><Link href="/products" className="text-gray-700 hover:text-primary transition-colors">All Products</Link></li>
-            
-            {/* Custom Menu Items */}
+            {/* Dynamic Menu Items from Database */}
             {menuItems?.filter((item) => !item.parentId && item.isVisible).map((item) => {
               const childItems = menuItems.filter((child) => child.parentId === item.id && child.isVisible);
               
@@ -292,8 +282,6 @@ export default function StorefrontHeader() {
                 </li>
               );
             })}
-            
-            <li><Link href="/contact" className="text-gray-700 hover:text-primary font-bold transition-colors">Contact</Link></li>
           </ul>
         </nav>
 
@@ -309,63 +297,53 @@ export default function StorefrontHeader() {
               {/* Mobile Menu Items */}
               <div className="px-4">
                 <ul className="space-y-4">
-                  <li><Link href="/" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Home</Link></li>
-                  <li><Link href="/products" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">All Products</Link></li>
-                  
-                  {/* Shop Section */}
-                  <li>
-                    <div className="text-gray-900 font-semibold py-2 mb-2 border-b border-gray-100">Shop</div>
-                    <ul className="space-y-2 ml-4">
-                      {menuItems?.filter((item) => !item.parentId && item.isVisible).map((item) => {
-                        const childItems = menuItems.filter((child) => child.parentId === item.id && child.isVisible);
-                        
-                        // Get the link URL based on menu item type
-                        const getMenuLink = (menuItem: MenuItemWithCategory) => {
-                          if (menuItem.type === 'category' && menuItem.category) {
-                            return `/product-category/${menuItem.category.slug}`;
-                          } else if (menuItem.type === 'custom' && menuItem.customUrl) {
-                            return menuItem.customUrl;
-                          }
-                          return '#';
-                        };
-                        
-                        return (
-                          <li key={item.id}>
-                            {item.type === 'group' ? (
-                              <span className="block text-gray-600 font-medium py-1">
-                                {item.label}
-                              </span>
-                            ) : (
-                              <Link 
-                                href={getMenuLink(item)}
-                                className="block text-gray-600 hover:text-primary transition-colors py-1"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                              >
-                                {item.label}
-                              </Link>
-                            )}
-                            {childItems.length > 0 && (
-                              <ul className="ml-4 mt-1 space-y-1">
-                                {childItems.map((childItem) => (
-                                  <li key={childItem.id}>
-                                    <Link 
-                                      href={getMenuLink(childItem)}
-                                      className="block text-gray-500 hover:text-primary transition-colors py-1 text-sm"
-                                      onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                      {childItem.label}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </li>
-                  
-                  <li><Link href="/contact" className="block text-gray-700 hover:text-primary font-medium transition-colors py-2">Contact</Link></li>
+                  {/* Dynamic Menu Items from Database */}
+                  {menuItems?.filter((item) => !item.parentId && item.isVisible).map((item) => {
+                    const childItems = menuItems.filter((child) => child.parentId === item.id && child.isVisible);
+                    
+                    // Get the link URL based on menu item type
+                    const getMenuLink = (menuItem: MenuItemWithCategory) => {
+                      if (menuItem.type === 'category' && menuItem.category) {
+                        return `/product-category/${menuItem.category.slug}`;
+                      } else if (menuItem.type === 'custom' && menuItem.customUrl) {
+                        return menuItem.customUrl;
+                      }
+                      return '#';
+                    };
+                    
+                    return (
+                      <li key={item.id}>
+                        {item.type === 'group' ? (
+                          <span className="block text-gray-700 font-medium py-2">
+                            {item.label}
+                          </span>
+                        ) : (
+                          <Link 
+                            href={getMenuLink(item)}
+                            className="block text-gray-700 hover:text-primary font-medium transition-colors py-2"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {item.label}
+                          </Link>
+                        )}
+                        {childItems.length > 0 && (
+                          <ul className="ml-4 mt-1 space-y-1">
+                            {childItems.map((childItem) => (
+                              <li key={childItem.id}>
+                                <Link 
+                                  href={getMenuLink(childItem)}
+                                  className="block text-gray-600 hover:text-primary transition-colors py-1 text-sm"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                  {childItem.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>

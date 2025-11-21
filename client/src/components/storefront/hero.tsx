@@ -6,30 +6,49 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { HeroContactForm } from "@/components/storefront/HeroContactForm";
 
 export default function Hero() {
-  const { data: heroSettings, isLoading } = useQuery({
+  const { data: heroSettings, isLoading, error } = useQuery({
     queryKey: ['/api/site-settings/hero'],
     queryFn: async () => {
-      const imageRes = await fetch('/api/site-settings/hero_image_url');
-      const titleRes = await fetch('/api/site-settings/hero_title');
-      const subtitleRes = await fetch('/api/site-settings/hero_subtitle');
-      const customPositionRes = await fetch('/api/site-settings/hero_image_position_custom');
-      const zoomRes = await fetch('/api/site-settings/hero_image_zoom');
-      
-      const [imageData, titleData, subtitleData, customPositionData, zoomData] = await Promise.all([
-        imageRes.json(),
-        titleRes.json(),
-        subtitleRes.json(),
-        customPositionRes.json(),
-        zoomRes.json()
-      ]);
+      try {
+        const fetchSetting = async (key: string) => {
+          const response = await fetch(`/api/site-settings/${key}`);
+          if (!response.ok) {
+            console.warn(`Failed to fetch ${key}: ${response.status}`);
+            return null;
+          }
+          const data = await response.json();
+          return data.value;
+        };
 
-      return {
-        imageUrl: imageData.value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=800',
-        title: titleData.value || 'Professional Garage Door Solutions',
-        subtitle: subtitleData.value || 'Quality residential and commercial garage doors, parts, and expert installation services across Geelong and surrounding areas.',
-        imagePosition: customPositionData.value || '50% 50%',
-        imageZoom: zoomData.value || '100'
-      };
+        const [imageUrl, title, subtitle, imagePosition, imageZoom] = await Promise.all([
+          fetchSetting('hero_image_url'),
+          fetchSetting('hero_title'),
+          fetchSetting('hero_subtitle'),
+          fetchSetting('hero_image_position_custom'),
+          fetchSetting('hero_image_zoom')
+        ]);
+
+        const settings = {
+          imageUrl: imageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=800',
+          title: title || 'Professional Garage Door Solutions',
+          subtitle: subtitle || 'Quality residential and commercial garage doors, parts, and expert installation services across Geelong and surrounding areas.',
+          imagePosition: imagePosition || '50% 50%',
+          imageZoom: imageZoom || '100'
+        };
+        
+        console.log('Hero settings loaded:', settings);
+        return settings;
+      } catch (error) {
+        console.error('Error fetching hero settings:', error);
+        // Return default values if API calls fail
+        return {
+          imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=800',
+          title: 'Professional Garage Door Solutions',
+          subtitle: 'Quality residential and commercial garage doors, parts, and expert installation services across Geelong and surrounding areas.',
+          imagePosition: '50% 50%',
+          imageZoom: '100'
+        };
+      }
     }
   });
 
@@ -62,7 +81,19 @@ export default function Hero() {
         style={{
           backgroundImage: `url('${heroSettings?.imageUrl}')`,
           backgroundPosition: heroSettings?.imagePosition || '50% 50%',
-          backgroundSize: heroSettings?.imageZoom ? `${heroSettings.imageZoom}%` : 'cover',
+          backgroundSize: heroSettings?.imageZoom ? (() => {
+            const zoom = parseFloat(heroSettings.imageZoom);
+            // If zoom is a decimal (like 1.0), convert to percentage
+            // If zoom is already a percentage (like 100), use as is
+            const percentage = zoom <= 10 ? zoom * 100 : zoom;
+            console.log('Background size calculation:', { 
+              originalZoom: heroSettings.imageZoom, 
+              parsedZoom: zoom, 
+              finalPercentage: percentage,
+              result: `${percentage}%`
+            });
+            return `${percentage}%`;
+          })() : 'cover',
           backgroundRepeat: 'no-repeat'
         }}
       ></div>

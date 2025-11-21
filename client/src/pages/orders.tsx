@@ -10,6 +10,7 @@ import { formatCurrency } from '@/lib/utils';
 import { Link } from 'wouter';
 import StorefrontHeader from '@/components/storefront/header';
 import StorefrontFooter from '@/components/storefront/footer';
+import { normalizeImageUrl, handleImageError } from '@/lib/imageUtils';
 
 interface Order {
   id: string;
@@ -161,9 +162,10 @@ export default function OrdersPage() {
                           <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
                             {item.image && (
                               <img 
-                                src={item.image} 
+                                src={normalizeImageUrl(item.image, 'product')} 
                                 alt={item.name} 
                                 className="w-12 h-12 object-cover rounded"
+                                onError={(e) => handleImageError(e, 'product')}
                               />
                             )}
                             <div className="flex-1">

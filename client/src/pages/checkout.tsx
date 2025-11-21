@@ -16,6 +16,7 @@ import SimpleHeader from "@/components/storefront/simple-header";
 import PayPalButton from "@/components/PayPalButton";
 import AddressAutocomplete from "@/components/ui/address-autocomplete";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { normalizeImageUrl, handleImageError } from "@/lib/imageUtils";
 
 export default function Checkout() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
@@ -955,13 +956,10 @@ export default function Checkout() {
                       <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
                         {item.image ? (
                           <img 
-                            src={item.image} 
+                            src={normalizeImageUrl(item.image, 'product')} 
                             alt={item.name}
                             className="w-16 h-16 object-cover rounded"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                              e.currentTarget.parentElement!.innerHTML = '<div class="text-gray-400 text-xs text-center">No Image</div>';
-                            }}
+                            onError={(e) => handleImageError(e, 'product')}
                           />
                         ) : (
                           <div className="text-gray-400 text-xs text-center">No Image</div>

@@ -11,6 +11,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Order } from "@shared/schema";
+import { getFirstImage, handleImageError } from "@/lib/imageUtils";
 import {
   Printer,
   ExternalLink,
@@ -387,13 +388,12 @@ export default function OrderDetails({ orderId, onClose }: OrderDetailsProps) {
                 {((order as any).items)?.map((item: any, index: number) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-4">
-                      {item.product?.images?.[0] && (
-                        <img
-                          src={item.product.images[0]}
-                          alt={item.product?.name || 'Product'}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      )}
+                      <img
+                        src={getFirstImage(item.product?.images, 'product')}
+                        alt={item.product?.name || 'Product'}
+                        className="w-16 h-16 object-cover rounded"
+                        onError={(e) => handleImageError(e, 'product')}
+                      />
                       <div>
                         <h4 className="font-medium">{item.product?.name || 'Product'}</h4>
                         <p className="text-sm text-gray-600">SKU: {item.product?.sku}</p>

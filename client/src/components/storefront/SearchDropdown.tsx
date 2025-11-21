@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
+import { getFirstImage, handleImageError } from "@/lib/imageUtils";
 
 interface SearchDropdownProps {
   className?: string;
@@ -77,12 +78,9 @@ export default function SearchDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Get first product image
+  // Get first product image using unified utilities
   const getProductImage = (product: any) => {
-    if (product.images && product.images.length > 0) {
-      return product.images[0];
-    }
-    return null;
+    return getFirstImage(product.images, 'product');
   };
 
   return (
@@ -151,6 +149,7 @@ export default function SearchDropdown({
                             alt={product.name}
                             className="w-full h-full object-cover"
                             loading="lazy"
+                            onError={(e) => handleImageError(e, 'product')}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">

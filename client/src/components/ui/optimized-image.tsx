@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { normalizeImageUrl, handleImageError } from "@/lib/imageUtils";
 
 interface OptimizedImageProps {
   src: string;
@@ -9,6 +10,7 @@ interface OptimizedImageProps {
   height?: number;
   priority?: boolean;
   sizes?: string;
+  type?: 'product' | 'category';
   onLoad?: () => void;
   onError?: () => void;
 }
@@ -21,24 +23,27 @@ export function OptimizedImage({
   height,
   priority = false,
   sizes,
+  type = 'product',
   onLoad,
   onError
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
+  // Normalize the source URL using the unified image utilities
+  const normalizedSrc = normalizeImageUrl(src, type);
+
   const handleLoad = () => {
     setIsLoaded(true);
     onLoad?.();
   };
 
-  const handleError = () => {
+  const handleErrorEvent = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setHasError(true);
+    // Use the unified error handler for consistent fallback behavior
+    handleImageError(e, type);
     onError?.();
   };
-
-  // Fallback image for errors
-  const fallbackSrc = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTI1SDE2MlYxMzhIMTc1VjEyNVoiIGZpbGw9IiM5Q0E0QUYiLz4KPHA+PC9wPgo8L3N2Zz4K";
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
@@ -52,7 +57,7 @@ export function OptimizedImage({
         </div>
       )}
       <img
-        src={hasError ? fallbackSrc : src}
+        src={normalizedSrc}
         alt={alt}
         width={width}
         height={height}
@@ -65,7 +70,7 @@ export function OptimizedImage({
           className
         )}
         onLoad={handleLoad}
-        onError={handleError}
+        onError={handleErrorEvent}
       />
     </div>
   );

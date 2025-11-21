@@ -95,12 +95,12 @@ export class AnalyticsService {
     const sanitizedData = {
       ...data,
       pageSpeed: (() => {
-        if (typeof data.pageSpeed === 'number') return data.pageSpeed;
+        if (typeof data.pageSpeed === 'number') return Math.round(data.pageSpeed);
         const strValue = String(data.pageSpeed);
         // Handle string values that should be null or numbers
         if (strValue === 'false' || strValue === 'true' || strValue === '' || strValue === 'null') return null;
-        const parsed = parseInt(strValue);
-        return isNaN(parsed) ? null : parsed;
+        const parsed = parseFloat(strValue);
+        return isNaN(parsed) ? null : Math.round(parsed);
       })(),
       mobileUsability: (() => {
         if (typeof data.mobileUsability === 'boolean') return data.mobileUsability;

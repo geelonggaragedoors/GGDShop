@@ -126,7 +126,7 @@ export default function EmailTest() {
         <CardContent>
           <div className="space-y-2 text-sm">
             <div><strong>From Address:</strong> orders@geelonggaragedoors.com</div>
-            <div><strong>Service:</strong> SendGrid</div>
+            <div><strong>Service:</strong> Resend</div>
             <div><strong>Status:</strong> <span className="text-green-600">Active</span></div>
           </div>
         </CardContent>

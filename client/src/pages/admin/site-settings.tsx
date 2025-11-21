@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, Upload, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { UploadButton } from "@/lib/uploadthing";
+// UploadThing removed - using local uploads
 
 interface SiteSetting {
   id: string;
@@ -179,25 +179,55 @@ export default function SiteSettings() {
                       <p className="text-sm text-gray-600 mb-3">
                         Upload a new hero image
                       </p>
-                      <UploadButton
-                        endpoint="imageUploader"
-                        onClientUploadComplete={(res) => {
-                          if (res && res.length > 0) {
-                            handleInputChange(setting.key, res[0].url);
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          const formData = new FormData();
+                          formData.append('file', file);
+                          
+                          try {
+                            const response = await fetch('/api/upload', {
+                              method: 'POST',
+                              body: formData,
+                            });
+                            
+                            if (response.ok) {
+                              const result = await response.json();
+                              console.log('Upload response:', result);
+                              console.log('Image URL:', result.file?.url || result.url);
+                              const imageUrl = result.file?.url || result.url; // Handle both response formats
+                              handleInputChange(setting.key, imageUrl);
+                              
+                              // Auto-save after upload
+                              try {
+                                await updateMutation.mutateAsync({ [setting.key]: imageUrl });
+                                toast({
+                                  title: "Image uploaded and saved",
+                                  description: "Hero image has been uploaded and saved successfully",
+                                });
+                              } catch (saveError) {
+                                toast({
+                                  title: "Image uploaded but save failed",
+                                  description: "Image uploaded but failed to save. Please click Save Changes.",
+                                  variant: "destructive",
+                                });
+                              }
+                            } else {
+                              throw new Error('Upload failed');
+                            }
+                          } catch (error) {
                             toast({
-                              title: "Image uploaded",
-                              description: "Hero image has been uploaded successfully",
+                              title: "Upload failed",
+                              description: error instanceof Error ? error.message : 'Upload failed',
+                              variant: "destructive",
                             });
                           }
                         }}
-                        onUploadError={(error: Error) => {
-                          toast({
-                            title: "Upload failed",
-                            description: error.message,
-                            variant: "destructive",
-                          });
-                        }}
-                        className="ut-button:bg-[#2b3990] ut-button:hover:bg-[#1e2870] ut-allowed-content:text-gray-600"
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#2b3990] file:text-white hover:file:bg-[#1e2870]"
                       />
                       <p className="text-xs text-gray-400 mt-2">
                         PNG, JPG, GIF up to 4MB
@@ -218,13 +248,7 @@ export default function SiteSettings() {
                       <div className="relative w-full max-w-2xl">
                         {/* Hero Section Preview */}
                         <div 
-                          className="relative h-48 rounded-lg overflow-hidden border-2 border-gray-300 cursor-move"
-                          style={{
-                            backgroundImage: `url('${formData[setting.key]}')`,
-                            backgroundSize: formData['hero_image_zoom'] ? `${formData['hero_image_zoom']}%` : 'cover',
-                            backgroundPosition: formData['hero_image_position_custom'] || '50% 50%',
-                            backgroundRepeat: 'no-repeat'
-                          }}
+                          className="relative h-48 rounded-lg overflow-hidden border-2 border-gray-300 cursor-move bg-gray-200"
                           onMouseDown={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect();
                             const startX = e.clientX;
@@ -249,6 +273,32 @@ export default function SiteSettings() {
                             document.addEventListener('mouseup', handleMouseUp);
                           }}
                         >
+                          {/* Background Image */}
+                          {formData[setting.key] && (
+                            <img
+                              src={formData[setting.key]}
+                              alt="Hero background"
+                              className="absolute inset-0 w-full h-full object-cover"
+                              style={{
+                                objectFit: 'cover',
+                                objectPosition: formData['hero_image_position_custom'] || '50% 50%',
+                                transform: `scale(${(() => {
+                                  const zoom = parseFloat(formData['hero_image_zoom']) || 100;
+                                  // If zoom is already a decimal (like 1.0), use it directly
+                                  // If zoom is a percentage (like 100), convert to decimal
+                                  return zoom <= 10 ? zoom : zoom / 100;
+                                })()})`,
+                                transformOrigin: formData['hero_image_position_custom'] || '50% 50%'
+                              }}
+                              onError={(e) => {
+                                console.error('Image failed to load:', formData[setting.key]);
+                                e.currentTarget.style.display = 'none';
+                              }}
+                              onLoad={() => {
+                                console.log('Image loaded successfully:', formData[setting.key]);
+                              }}
+                            />
+                          )}
                           {/* Dark overlay like the actual hero */}
                           <div className="absolute inset-0 bg-black bg-opacity-40"></div>
                           

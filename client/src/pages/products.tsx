@@ -12,6 +12,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
 import { getOptimizedImageUrl, generateSrcSet, generateSizes } from "@/lib/image-optimizer";
+import { getFirstImage, handleImageError } from "@/lib/imageUtils";
 import { ImageSkeleton } from "@/components/ui/image-skeleton";
 import StorefrontHeader from "@/components/storefront/header";
 import StorefrontFooter from "@/components/storefront/footer";
@@ -84,18 +85,8 @@ export default function Products() {
   };
 
   const getProductImage = (product: any) => {
-    const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600";
-    let imageUrl = defaultImage;
-    
-    // Safe check for product images
-    if (product && product.images && Array.isArray(product.images) && product.images.length > 0) {
-      const firstImage = product.images[0];
-      if (firstImage && typeof firstImage === 'string' && firstImage.trim() !== '') {
-        imageUrl = firstImage;
-      }
-    }
-    
-    return getOptimizedImageUrl(imageUrl, { width: 400, height: 300, quality: 85 });
+    const normalizedImageUrl = getFirstImage(product.images, 'product');
+    return getOptimizedImageUrl(normalizedImageUrl, { width: 400, height: 300, quality: 85 });
   };
 
   const handleAddToCart = (product: any, e: React.MouseEvent) => {
@@ -365,6 +356,7 @@ export default function Products() {
                             src={getProductImage(product)}
                             alt={product.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => handleImageError(e, 'product')}
                           />
                           {product.featured && (
                             <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
@@ -389,9 +381,12 @@ export default function Products() {
                             <h3 className="font-semibold text-gray-900 text-sm sm:text-base lg:text-lg mb-1 line-clamp-2 leading-tight">
                               {product.name}
                             </h3>
-                            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
-                              {product.shortDescription || product.description}
-                            </p>
+                            <div 
+                              className="text-xs sm:text-sm text-gray-600 line-clamp-2 prose prose-xs max-w-none"
+                              dangerouslySetInnerHTML={{ 
+                                __html: product.shortDescription || product.description || '' 
+                              }}
+                            />
                           </div>
                           
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 space-y-2 sm:space-y-0">
@@ -444,6 +439,7 @@ export default function Products() {
                               src={getProductImage(product)}
                               alt={product.name}
                               className="w-full h-full object-cover"
+                              onError={(e) => handleImageError(e, 'product')}
                             />
                           </div>
                           <div className="flex-1 space-y-3">

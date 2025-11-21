@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import facebookConversionsAPI from "./facebookConversionsApi";
 import { authRoutes } from "./authRoutes";
+import { authService } from "./authService";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { handlePayPalWebhook } from "./paypalWebhooks";
 import { calculateShippingCost, validateShippingDimensions, getAvailableServices, getAustraliaPostBoxes, calculateTotalShippingCost } from "./australiaPost";
@@ -23,8 +24,7 @@ import {
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
-import { createRouteHandler } from "uploadthing/express";
-import { ourFileRouter } from "./uploadthing";
+// UploadThing removed - using local uploads
 import { importService } from "./importService";
 import fs from "fs";
 import bcrypt from "bcryptjs";
@@ -85,10 +85,10 @@ const emailUpload = multer({
 });
 import { notificationService } from "./notificationService";
 import { analyticsService } from "./analyticsService";
-import { authService } from "./authService";
 import { emailService } from "./email";
 import { sitemapService } from "./sitemapService";
 import { generateSlug } from "../shared/utils";
+import { normalizeImageArray } from "./imageUtils";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add X-Robots-Tag header for pickup and delivery pages
@@ -145,12 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return res.status(401).json({ message: "Unauthorized" });
   };
 
-  // UploadThing routes
-  const uploadRouter = createRouteHandler({
-    router: ourFileRouter,
-  });
-
-  app.use("/api/uploadthing", uploadRouter);
+  // UploadThing removed - using local uploads only
 
   // Local file upload endpoint
   app.post('/api/upload', hybridAuth, upload.single('file'), async (req, res) => {
@@ -275,9 +270,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Provide legacy /api/login endpoint that proxies to the new auth router
-  app.post('/api/login', (req, res, next) => {
-    req.url = '/login';
-    return authRoutes(req, res, next);
+  app.post('/api/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+      
+      const user = await authService.loginUser({ email, password });
+      
+      // Set user in session
+      req.login(user, (err) => {
+        if (err) {
+          console.error('Session creation error:', err);
+          return res.status(500).json({ error: 'Session creation failed' });
+        }
+        
+        res.json({
+          message: 'Login successful',
+          user: {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            name: user.name
+          }
+        });
+      });
+      
+    } catch (error: any) {
+      console.error('Login error:', error);
+      res.status(401).json({ error: error.message || 'Login failed' });
+    }
   });
 
   // Enhanced authentication routes
@@ -861,6 +885,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const productData = insertProductSchema.parse(req.body);
       console.log("Parsed product data:", productData);
       
+      // Normalize images before saving
+      productData.images = normalizeImageArray(productData.images);
+      
       // Validate shipping dimensions
       const validation = validateShippingDimensions(productData);
       console.log("Shipping validation result:", validation);
@@ -948,6 +975,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/admin/products/:id', hybridAuth, async (req, res) => {
     try {
       const productData = insertProductSchema.partial().parse(req.body);
+      
+      // Normalize images if present before updating
+      if (productData.images !== undefined) {
+        productData.images = normalizeImageArray(productData.images);
+      }
       
       // Check if this update includes shipping dimensions
       const hasShippingData = productData.weight || productData.length || productData.width || productData.height;
